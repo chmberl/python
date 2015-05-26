@@ -1,0 +1,1824 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Item Loaders &mdash; Scrapy 0.24.4 文档</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+
+  
+    <link rel="stylesheet" href="https://media.readthedocs.org/css/sphinx_rtd_theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="https://media.readthedocs.org/css/readthedocs-doc-embed.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Scrapy 0.24.4 文档" href="../index.html"/>
+        <link rel="next" title="Scrapy终端(Scrapy shell)" href="shell.html"/>
+        <link rel="prev" title="选择器(Selectors)" href="selectors.html"/>
+ 
+<!-- RTD Extra Head -->
+
+
+
+<!-- 
+Read the Docs is acting as the canonical URL for your project. 
+If you want to change it, more info is available in our docs:
+  http://docs.readthedocs.org/en/latest/canonical.html
+-->
+<link rel="canonical" href="http://scrapy-chs.readthedocs.org/zh_CN/latest/topics/loaders.html" />
+
+<script type="text/javascript">
+  // This is included here because other places don't have access to the pagename variable.
+  var READTHEDOCS_DATA = {
+    project: "scrapy-chs",
+    version: "0.24",
+    language: "zh_CN",
+    page: "topics/loaders",
+    builder: "sphinx",
+    theme: "sphinx_rtd_theme",
+    docroot: "/",
+    source_suffix: ".rst",
+    api_host: "https://readthedocs.org",
+    commit: "ee32ff555971e7503903093bd2cbc7565cb7669e"
+  }
+  // Old variables
+  var doc_version = "0.24";
+  var doc_slug = "scrapy-chs";
+  var page_name = "topics/loaders";
+  var html_theme = "sphinx_rtd_theme";
+</script>
+<!-- RTD Analytics Code -->
+<!-- Included in the header because you don't have a footer block. -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17997319-1']);
+  _gaq.push(['_trackPageview']);
+
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<!-- end RTD Analytics Code -->
+<!-- end RTD <extrahead> -->
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> Scrapy
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">初窥Scrapy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id1">选择一个网站</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#intro-overview-item">定义您想抓取的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#spider">编写提取数据的Spider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id3">执行spider，获取数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id4">查看提取到的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#topics-whatelse">还有什么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id6">接下来</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">安装指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/install.html#scrapy">安装Scrapy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/install.html#intro-install-platform-notes">平台安装指南</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../intro/install.html#windows">Windows</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../intro/install.html#ubuntu-9-10">Ubuntu 9.10及以上版本</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../intro/install.html#archlinux">Archlinux</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Scrapy入门教程</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id2">创建项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#item">定义Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#spider">编写第一个爬虫(Spider)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../intro/tutorial.html#id3">爬取</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../intro/tutorial.html#id4">刚才发生了什么？</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../intro/tutorial.html#id5">提取Item</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../intro/tutorial.html#selectors">Selectors选择器简介</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../intro/tutorial.html#shellselector">在Shell中尝试Selector选择器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../intro/tutorial.html#id7">提取数据</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../intro/tutorial.html#id8">使用item</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id9">保存爬取到的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id10">下一步</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/examples.html">例子</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="commands.html">命令行工具(Command line tools)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#scrapy">默认的Scrapy项目结构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#id1">使用 <code class="docutils literal"><span class="pre">scrapy</span></code> 工具</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#id2">创建项目</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#id3">控制项目</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#tool-commands">可用的工具命令(tool commands)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#startproject">startproject</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#genspider">genspider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#crawl">crawl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#check">check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#list">list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#edit">edit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#fetch">fetch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#view">view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#shell">shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#parse">parse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#settings">settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#runspider">runspider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#version">version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#deploy">deploy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#bench">bench</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#id4">自定义项目命令</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#commands-module">COMMANDS_MODULE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="items.html">Items</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="items.html#item">声明Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#item-item-fields">Item字段(Item Fields)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id1">与Item配合</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id2">创建item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id3">获取字段的值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id4">设置字段的值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id5">获取所有获取到的值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id6">其他任务</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id7">扩展Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id8">Item对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#field">字段(Field)对象</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="spiders.html">Spiders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="spiders.html#spider">Spider参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spiders.html#topics-spiders-ref">内置Spider参考手册</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="spiders.html#id2">Spider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spiders.html#id3">Spider样例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spiders.html#crawlspider">CrawlSpider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spiders.html#crawling-rules">爬取规则(Crawling rules)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="spiders.html#id4">CrawlSpider样例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spiders.html#xmlfeedspider">XMLFeedSpider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spiders.html#id5">XMLFeedSpider例子</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spiders.html#csvfeedspider">CSVFeedSpider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spiders.html#id6">CSVFeedSpider例子</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spiders.html#sitemapspider">SitemapSpider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spiders.html#id7">SitemapSpider样例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="selectors.html">选择器(Selectors)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="selectors.html#id1">使用选择器(selectors)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#id2">构造选择器(selectors)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#id3">使用选择器(selectors)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#topics-selectors-nesting-selectors">嵌套选择器(selectors)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#id5">结合正则表达式使用选择器(selectors)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#xpaths">使用相对XPaths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#exslt">使用EXSLT扩展</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#id6">正则表达式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#id7">集合操作</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#some-xpath-tips">Some XPath tips</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#using-text-nodes-in-a-condition">Using text nodes in a condition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#beware-the-difference-between-node-1-and-node-1">Beware the difference between //node[1] and (//node)[1]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#when-querying-by-class-consider-using-css">When querying by class, consider using CSS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="selectors.html#module-scrapy.selector">内建选择器的参考</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#selectorlist">SelectorList对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#html">在HTML响应上的选择器样例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#xml">在XML响应上的选择器样例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#removing-namespaces">移除命名空间</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Item Loaders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#item-loadersitems">用Item Loaders装载Items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-and-output-processors">Input and Output processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#declaring-item-loaders">Declaring Item Loaders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#declaring-input-and-output-processors">Declaring Input and Output Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#item-loader-context">Item Loader Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#itemloader-objects">ItemLoader objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reusing-and-extending-item-loaders">Reusing and extending Item Loaders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scrapy.contrib.loader.processor">Available built-in processors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shell.html">Scrapy终端(Scrapy shell)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#id1">启动终端</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#id2">使用终端</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="shell.html#shortcut">可用的快捷命令(shortcut)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shell.html#scrapy">可用的Scrapy对象</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#shell-session">终端会话(shell session)样例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#spidershellresponse">在spider中启动shell来查看response</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="item-pipeline.html">Item Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id1">编写你自己的item pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id2">Item pipeline 样例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="item-pipeline.html#item">验证价格，同时丢弃没有价格的item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="item-pipeline.html#itemjson">将item写入JSON文件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="item-pipeline.html#id3">去重</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id4">启用一个Item Pipeline组件</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="feed-exports.html">Feed exports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#serialization-formats">序列化方式(Serialization formats)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#json">JSON</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#json-lines">JSON lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#csv">CSV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#xml">XML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#pickle">Pickle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#marshal">Marshal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#storages">存储(Storages)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#uri">存储URI参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#storage-backends">存储端(Storage backends)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#topics-feed-storage-fs">本地文件系统</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#ftp">FTP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#s3">S3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#topics-feed-storage-stdout">标准输出</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#settings">设定(Settings)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-uri">FEED_URI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-format">FEED_FORMAT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-store-empty">FEED_STORE_EMPTY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-storages">FEED_STORAGES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-storages-base">FEED_STORAGES_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-exporters">FEED_EXPORTERS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-exporters-base">FEED_EXPORTERS_BASE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="link-extractors.html">Link Extractors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="link-extractors.html#module-scrapy.contrib.linkextractors">内置Link Extractor 参考</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="link-extractors.html#module-scrapy.contrib.linkextractors.lxmlhtml">LxmlLinkExtractor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="link-extractors.html#module-scrapy.contrib.linkextractors.sgml">SgmlLinkExtractor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="link-extractors.html#basesgmllinkextractor">BaseSgmlLinkExtractor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log-levels">Log levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log">如何设置log级别</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log-messages">如何记录信息(log messages)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#spiderlog-logging-from-spiders">在Spider中添加log(Logging from Spiders)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#module-scrapy.log">scrapy.log模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#id1">Logging设置</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stats.html">数据收集(Stats Collection)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stats.html#topics-stats-usecases">常见数据收集器使用方法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stats.html#id2">可用的数据收集器</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stats.html#memorystatscollector">MemoryStatsCollector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stats.html#dummystatscollector">DummyStatsCollector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="email.html">发送email</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="email.html#id1">简单例子</a></li>
+<li class="toctree-l2"><a class="reference internal" href="email.html#mailsender">MailSender类参考手册</a></li>
+<li class="toctree-l2"><a class="reference internal" href="email.html#mail">Mail设置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-from">MAIL_FROM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-host">MAIL_HOST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-port">MAIL_PORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-user">MAIL_USER</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-pass">MAIL_PASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-tls">MAIL_TLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-ssl">MAIL_SSL</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="telnetconsole.html">Telnet终端(Telnet Console)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#telnet">如何访问telnet终端</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id1">telnet终端中可用的变量</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#telnet-console-usage-examples">Telnet console usage examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="telnetconsole.html#id2">查看引擎状态</a></li>
+<li class="toctree-l3"><a class="reference internal" href="telnetconsole.html#scrapy">暂停，恢复和停止Scrapy引擎</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id3">Telnet终端信号</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id4">Telnet设定</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="telnetconsole.html#telnetconsole-port">TELNETCONSOLE_PORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="telnetconsole.html#telnetconsole-host">TELNETCONSOLE_HOST</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="webservice.html">Web Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web-service-resources">Web Service资源(resources)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#json-rpc">可用JSON-RPC对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#module-scrapy.contrib.webservice.crawler">Crawler JSON-RPC资源</a></li>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#module-scrapy.contrib.webservice.stats">状态收集器(Stats Collector)JSON-RPC资源</a></li>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#spider-manager-json-rpc">爬虫管理器(Spider Manager)JSON-RPC资源</a></li>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#extension-manager-json-rpc">扩展管理器(Extension Manager)JSON-RPC资源</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#json">可用JSON资源</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#module-scrapy.contrib.webservice.enginestatus">引擎状态JSON资源</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web">Web服务设置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-enabled">WEBSERVICE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-logfile">WEBSERVICE_LOGFILE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-port">WEBSERVICE_PORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-host">WEBSERVICE_HOST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-resources">WEBSERVICE_RESOURCES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-resources-base">WEBSERVICE_RESOURCES_BASE</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web-resource">编写web服务资源(resource)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#id2">web服务资源例子</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#statsresource-json-rpc-resource">StatsResource (JSON-RPC resource)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#enginestatusresource-json-resource">EngineStatusResource (JSON resource)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#example-of-web-service-client">Example of web service client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#scrapy-ws-py-script">scrapy-ws.py script</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题(FAQ)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapybeautifulsouplxml">Scrapy相BeautifulSoup或lxml比较,如何呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapypython">Scrapy支持那些Python版本？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapypython-3">Scrapy支持Python 3么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapydjango-x">Scrapy是否从Django中&#8221;剽窃&#8221;了X呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapyhttp">Scrapy支持HTTP代理么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#item">如何爬取属性在不同页面的item呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-importerror-nomodule-named-win32api">Scrapy退出，ImportError: Nomodule named win32api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider">我要如何在spider里模拟用户登录呢?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy">Scrapy是以广度优先还是深度优先进行爬取的呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id3">我的Scrapy爬虫有内存泄露，怎么办?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id4">如何让Scrapy减少内存消耗?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spiderhttp">我能在spider中使用基本HTTP认证么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id5">为什么Scrapy下载了英文的页面，而不是我的本国语言？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id6">我能在哪里找到Scrapy项目的例子？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-spider">我能在不创建Scrapy项目的情况下运行一个爬虫(spider)么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#filtered-offsite-request">我收到了 &#8220;Filtered offsite request&#8221; 消息。如何修复？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id7">发布Scrapy爬虫到生产环境的推荐方式？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#large-exports-json">我能对大数据(large exports)使用JSON么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#signal-handler-twisted">我能在信号处理器(signal handler)中返回(Twisted)引用么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#reponse999">reponse返回的状态值999代表了什么?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider-pdb-set-trace">我能在spider中调用 <code class="docutils literal"><span class="pre">pdb.set_trace()</span></code> 来调试么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#item-dump-json-csv-xml">将所有爬取到的item转存(dump)到JSON/CSV/XML文件的最简单的方法?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#viewstate">在某些表单中巨大神秘的 <code class="docutils literal"><span class="pre">__VIEWSTATE</span></code> 参数是什么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#xml-csv">分析大XML/CSV数据源的最好方法是?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapycookies">Scrapy自动管理cookies么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapyscrapy">如何才能看到Scrapy发出及接收到的Scrapy呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id10">要怎么停止爬虫呢?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-bot-ban">如何避免我的Scrapy机器人(bot)被禁止(ban)呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider-arguments-settings-spider">我应该使用spider参数(arguments)还是设置(settings)来配置spider呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#xmlxpathitem">我爬取了一个XML文档但是XPath选择器不返回任何的item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#name-crawler">我得到错误: &#8220;不能导入name crawler“</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">调试(Debugging)Spiders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#parse">Parse命令</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#scrapy-shell">Scrapy终端(Shell)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#id1">在浏览器中打开</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contracts.html">Spiders Contracts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contracts.html#contracts">自定义Contracts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="practices.html">实践经验(Common Practices)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#scrapy">在脚本中运行Scrapy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#spider">同一进程运行多个spider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#distributed-crawls">分布式爬虫(Distributed crawls)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#ban">避免被禁止(ban)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#item">动态创建Item类</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="broad-crawls.html">通用爬虫(Broad Crawls)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id1">增加并发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#log">降低log级别</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#cookies">禁止cookies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id2">禁止重试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id3">减小下载超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id4">禁止重定向</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#ajax-crawlable-pages">启用 &#8220;Ajax Crawlable Pages&#8221; 爬取</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firefox.html">借助Firefox来爬取</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firefox.html#dom">在浏览器中检查DOM的注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firefox.html#topics-firefox-addons">对爬取有帮助的实用Firefox插件</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#firebug">Firebug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#xpather">XPather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#xpath-checker">XPath Checker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#tamper-data">Tamper Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#firecookie">Firecookie</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firebug.html">使用Firebug进行爬取</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#id1">介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#follow">获取到跟进(follow)的链接</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#id4">提取数据</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="leaks.html">调试内存溢出</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#id2">内存泄露的常见原因</a></li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#trackref">使用 <code class="docutils literal"><span class="pre">trackref</span></code> 调试内存泄露</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="leaks.html#id3">哪些对象被追踪了?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="leaks.html#id4">真实例子</a></li>
+<li class="toctree-l3"><a class="reference internal" href="leaks.html#spider">很多spider?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="leaks.html#scrapy-utils-trackref">scrapy.utils.trackref模块</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#guppy">使用Guppy调试内存泄露</a></li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#leaks-without-leaks">Leaks without leaks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="images.html">下载项目图片</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id2">使用图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id3">使用样例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#topics-images-enabling">开启你的图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id5">图片存储</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="images.html#id6">文件系统存储</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id7">额外的特性</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="images.html#id8">图片失效</a></li>
+<li class="toctree-l3"><a class="reference internal" href="images.html#topics-images-thumbnails">缩略图生成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="images.html#id10">滤出小图片</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#module-scrapy.contrib.pipeline.images">实现定制图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id12">定制图片管道的例子</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ubuntu.html">Ubuntu 软件包</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scrapyd.html">Scrapyd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autothrottle.html">自动限速(AutoThrottle)扩展</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id1">设计目标</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id2">扩展是如何实现的</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#autothrottle-algorithm">限速算法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id4">设置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autothrottle.html#autothrottle-enabled">AUTOTHROTTLE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autothrottle.html#autothrottle-start-delay">AUTOTHROTTLE_START_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autothrottle.html#autothrottle-max-delay">AUTOTHROTTLE_MAX_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autothrottle.html#autothrottle-debug">AUTOTHROTTLE_DEBUG</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarking.html">Benchmarking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs: 暂停，恢复爬虫</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#job">Job 路径</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id1">怎么使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id2">保持状态</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id3">持久化的一些坑</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jobs.html#cookies">Cookies的有效期</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jobs.html#id4">请求序列化</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="djangoitem.html">DjangoItem</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#id1">使用DjangoItem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#id2">DjangoItem注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#django">配置Django的设置</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">架构概览</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#id2">概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#id3">组件</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#scrapy-engine">Scrapy Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#scheduler">调度器(Scheduler)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#downloader">下载器(Downloader)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#spiders">Spiders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#item-pipeline">Item Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#downloader-middlewares">下载器中间件(Downloader middlewares)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#spider-spider-middlewares">Spider中间件(Spider middlewares)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#data-flow">数据流(Data flow)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-driven-networking">事件驱动网络(Event-driven networking)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="downloader-middleware.html">下载器中间件(Downloader Middleware)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#topics-downloader-middleware-setting">激活下载器中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#id2">编写您自己的下载器中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#topics-downloader-middleware-ref">内置下载中间件参考手册</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.cookies">CookiesMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#spidercookie-session">单spider多cookie session</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#cookies-enabled">COOKIES_ENABLED</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#cookies-debug">COOKIES_DEBUG</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.defaultheaders">DefaultHeadersMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.downloadtimeout">DownloadTimeoutMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.httpauth">HttpAuthMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.httpcache">HttpCacheMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#dummy">Dummy策略(默认值)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#rfc2616">RFC2616策略</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#filesystem-storage-backend">Filesystem storage backend (默认值)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#dbm-storage-backend">DBM storage backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#leveldb-storage-backend">LevelDB storage backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#httpcache">HTTPCache中间件设置</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.httpcompression">HttpCompressionMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#httpcompressionmiddleware-settings">HttpCompressionMiddleware Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.chunked">ChunkedTransferMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.httpproxy">HttpProxyMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.redirect">RedirectMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#redirectmiddleware-settings">RedirectMiddleware settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#metarefreshmiddleware">MetaRefreshMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#metarefreshmiddleware-settings">MetaRefreshMiddleware settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.retry">RetryMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#retrymiddleware-settings">RetryMiddleware Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.robotstxt">RobotsTxtMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.stats">DownloaderStats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.useragent">UserAgentMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.ajaxcrawl">AjaxCrawlMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#id4">AjaxCrawlMiddleware设置</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="spider-middleware.html">Spider中间件(Middleware)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#spider">激活spider中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#id1">编写您自己的spider中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#topics-spider-middleware-ref">内置spider中间件参考手册</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.depth">DepthMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.httperror">HttpErrorMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spider-middleware.html#httperrormiddleware-settings">HttpErrorMiddleware settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.offsite">OffsiteMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.referer">RefererMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spider-middleware.html#referermiddleware-settings">RefererMiddleware settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.urllength">UrlLengthMiddleware</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">扩展(Extensions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#extension-settings">扩展设置(Extension settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#id1">加载和激活扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#available-enabled-disabled">可用的(Available)、开启的(enabled)和禁用的(disabled)的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#disabling-an-extension">禁用扩展(Disabling an extension)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#id2">实现你的扩展</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#sample-extension">扩展例子(Sample extension)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#topics-extensions-ref">内置扩展介绍</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#id4">通用扩展</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.logstats">记录统计扩展(Log Stats extension)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.corestats">核心统计扩展(Core Stats extension)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.webservice">Web service 扩展</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.telnet">Telnet console 扩展</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.memusage">内存使用扩展(Memory usage extension)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.memdebug">内存调试扩展(Memory debugger extension)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.closespider">关闭spider扩展</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.statsmailer">StatsMailer extension</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#debugging-extensions">Debugging extensions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#stack-trace-dump-extension">Stack trace dump extension</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#debugger-extension">调试扩展(Debugger extension)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">核心API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#crawler-api">Crawler API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-scrapy.settings">设置(Settings) API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-scrapy.signalmanager">信号(Signals) API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#stats-collector-api">状态收集器(Stats Collector) API</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="request-response.html">Requests and Responses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-objects">Request objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#passing-additional-data-to-callback-functions">Passing additional data to callback functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-meta-special-keys">Request.meta special keys</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#bindaddress">bindaddress</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-subclasses">Request subclasses</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#formrequest-objects">FormRequest objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#request-usage-examples">Request usage examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="request-response.html#using-formrequest-to-send-data-via-http-post">Using FormRequest to send data via HTTP POST</a></li>
+<li class="toctree-l4"><a class="reference internal" href="request-response.html#formrequest-from-response">使用FormRequest.from_response()方法模拟用户登录</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#response-objects">Response objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#response-subclasses">Response subclasses</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#textresponse-objects">TextResponse objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#htmlresponse-objects">HtmlResponse objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#xmlresponse-objects">XmlResponse objects</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#designating-the-settings">指定设定(Designating the settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#populating-the-settings">获取设定值(Populating the settings)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#command-line-options">1. 命令行选项(Command line options)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#project-settings-module">2. 项目设定模块(Project settings module)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-settings-per-command">3. 命令默认设定(Default settings per-command)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-global-settings">4. 默认全局设定(Default global settings)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#how-to-access-settings">如何访问设定(How to access settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#id1">设定名字的命名规则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#topics-settings-ref">内置设定参考手册</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#aws-access-key-id">AWS_ACCESS_KEY_ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#aws-secret-access-key">AWS_SECRET_ACCESS_KEY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#bot-name">BOT_NAME</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#concurrent-items">CONCURRENT_ITEMS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#concurrent-requests">CONCURRENT_REQUESTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#concurrent-requests-per-domain">CONCURRENT_REQUESTS_PER_DOMAIN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#concurrent-requests-per-ip">CONCURRENT_REQUESTS_PER_IP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-item-class">DEFAULT_ITEM_CLASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-request-headers">DEFAULT_REQUEST_HEADERS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#depth-limit">DEPTH_LIMIT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#depth-priority">DEPTH_PRIORITY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#depth-stats">DEPTH_STATS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#depth-stats-verbose">DEPTH_STATS_VERBOSE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#dnscache-enabled">DNSCACHE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#downloader">DOWNLOADER</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#downloader-middlewares">DOWNLOADER_MIDDLEWARES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#downloader-middlewares-base">DOWNLOADER_MIDDLEWARES_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#downloader-stats">DOWNLOADER_STATS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#download-delay">DOWNLOAD_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#download-handlers">DOWNLOAD_HANDLERS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#download-handlers-base">DOWNLOAD_HANDLERS_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#download-timeout">DOWNLOAD_TIMEOUT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#dupefilter-class">DUPEFILTER_CLASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#dupefilter-debug">DUPEFILTER_DEBUG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#editor">EDITOR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#extensions">EXTENSIONS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#extensions-base">EXTENSIONS_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#item-pipelines">ITEM_PIPELINES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#item-pipelines-base">ITEM_PIPELINES_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-enabled">LOG_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-encoding">LOG_ENCODING</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-file">LOG_FILE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-level">LOG_LEVEL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-stdout">LOG_STDOUT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memdebug-enabled">MEMDEBUG_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memdebug-notify">MEMDEBUG_NOTIFY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-enabled">MEMUSAGE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-limit-mb">MEMUSAGE_LIMIT_MB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-notify-mail">MEMUSAGE_NOTIFY_MAIL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-report">MEMUSAGE_REPORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-warning-mb">MEMUSAGE_WARNING_MB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#newspider-module">NEWSPIDER_MODULE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#randomize-download-delay">RANDOMIZE_DOWNLOAD_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#redirect-max-times">REDIRECT_MAX_TIMES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#redirect-max-metarefresh-delay">REDIRECT_MAX_METAREFRESH_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#redirect-priority-adjust">REDIRECT_PRIORITY_ADJUST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#robotstxt-obey">ROBOTSTXT_OBEY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#scheduler">SCHEDULER</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-contracts">SPIDER_CONTRACTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-contracts-base">SPIDER_CONTRACTS_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-middlewares">SPIDER_MIDDLEWARES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-middlewares-base">SPIDER_MIDDLEWARES_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-modules">SPIDER_MODULES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#stats-class">STATS_CLASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#stats-dump">STATS_DUMP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#statsmailer-rcpts">STATSMAILER_RCPTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#telnetconsole-enabled">TELNETCONSOLE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#telnetconsole-port">TELNETCONSOLE_PORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#templates-dir">TEMPLATES_DIR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#urllength-limit">URLLENGTH_LIMIT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#user-agent">USER_AGENT</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="signals.html">信号(Signals)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="signals.html#deferred-signal-handlers">延迟的信号处理器(Deferred signal handlers)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html#module-scrapy.signals">内置信号参考手册(Built-in signals reference)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#engine-started">engine_started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#engine-stopped">engine_stopped</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#item-scraped">item_scraped</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#item-dropped">item_dropped</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#spider-closed">spider_closed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#spider-opened">spider_opened</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#spider-idle">spider_idle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#spider-error">spider_error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#request-scheduled">request_scheduled</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#response-received">response_received</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#response-downloaded">response_downloaded</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">异常(Exceptions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#built-in-exceptions-reference">内置异常参考手册(Built-in Exceptions reference)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#dropitem">DropItem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#closespider">CloseSpider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#ignorerequest">IgnoreRequest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#notconfigured">NotConfigured</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#notsupported">NotSupported</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exporters.html">Item Exporters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exporters.html#item-exporter">使用 Item Exporter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#field-serializer">1. 在 field 类中声明一个 serializer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#overriding-serialize-field">2. 覆盖(overriding) serialize_field() 方法</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="exporters.html#topics-exporters-reference">Item Exporters 参考资料</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#baseitemexporter">BaseItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#xmlitemexporter">XmlItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#csvitemexporter">CsvItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#pickleitemexporter">PickleItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#pprintitemexporter">PprintItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#jsonitemexporter">JsonItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#jsonlinesitemexporter">JsonLinesItemExporter</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id1">0.24.4 (2014-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id2">0.24.3 (2014-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id3">0.24.2 (2014-07-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id4">0.24.1 (2014-06-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id5">0.24.0 (2014-06-26)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#enhancements">Enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#bugfixes">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-02-14">0.22.2 (released 2014-02-14)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-02-08">0.22.1 (released 2014-02-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-01-17">0.22.0 (released 2014-01-17)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id6">Enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#fixes">Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-12-09">0.20.2 (released 2013-12-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-11-28">0.20.1 (released 2013-11-28)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-11-08">0.20.0 (released 2013-11-08)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id7">Enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id8">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#other">Other</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#thanks">Thanks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-10-10">0.18.4 (released 2013-10-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-10-03">0.18.3 (released 2013-10-03)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-09-03">0.18.2 (released 2013-09-03)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-08-27">0.18.1 (released 2013-08-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-08-09">0.18.0 (released 2013-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-05-30">0.16.5 (released 2013-05-30)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-01-23">0.16.4 (released 2013-01-23)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-12-07">0.16.3 (released 2012-12-07)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-11-09">0.16.2 (released 2012-11-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-10-26">0.16.1 (released 2012-10-26)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-10-18">0.16.0 (released 2012-10-18)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id9">0.14.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id10">0.14.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id11">0.14.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id12">0.14.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id13">0.14</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#new-features-and-settings">New features and settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#code-rearranged-and-removed">Code rearranged and removed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id14">0.12</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#new-features-and-improvements">New features and improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#scrapyd-changes">Scrapyd changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#changes-to-settings">Changes to settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#deprecated-obsoleted-functionality">Deprecated/obsoleted functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id15">0.10</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id16">New features and improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#command-line-tool-changes">Command-line tool changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#api-changes">API changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id17">Changes to settings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id18">0.9</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id19">New features and improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id20">API changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#changes-to-default-settings">Changes to default settings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id21">0.8</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#new-features">New features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#backwards-incompatible-changes">Backwards-incompatible changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id22">0.7</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to Scrapy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#reporting-bugs">Reporting bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#writing-patches">Writing patches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#submitting-patches">Submitting patches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#coding-style">Coding style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#scrapy-contrib">Scrapy Contrib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#documentation-policies">Documentation policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#tests">Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#running-tests">Running tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#writing-tests">Writing tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versioning.html">Versioning and API Stability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../versioning.html#id1">Versioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../versioning.html#api-stability">API Stability</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental/index.html">试验阶段特性</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html#id3">使用外部库插入命令</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Scrapy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Item Loaders</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/marchtea/scrapy_doc_chs/blob/0.24/topics/loaders.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+    
+  <div class="section" id="module-scrapy.contrib.loader">
+<span id="item-loaders"></span><span id="topics-loaders"></span><h1>Item Loaders<a class="headerlink" href="#module-scrapy.contrib.loader" title="永久链接至标题">¶</a></h1>
+<p>Item Loaders 提供了一种简便的构件（mechanism）来抓取:ref:<cite>Items&lt;topics-items&gt;</cite>.
+虽然Items可以从它自己的类似字典（dictionary-like）的API得到所需信息 ,不过
+Item Loaders提供了许多更加方便的API，这些API通过自动完成那些具有共通性的任务，可从抓取进程中得到这些信息,
+比如预先解析提取到的原生数据。
+换句话来解释, <a class="reference internal" href="items.html#topics-items"><span>Items</span></a> 提供了盛装抓取到的数据的*容器*
+, 而Item Loaders提供了构件*装载populating*该容器。</p>
+<p>Item Loaders 被设计用来提供一个既弹性又高效简便的构件，
+以扩展或重写爬虫或源格式(HTML, XML之类的)等区域的解析规则，
+这将不再是后期维护的噩梦。</p>
+<div class="section" id="item-loadersitems">
+<h2>用Item Loaders装载Items<a class="headerlink" href="#item-loadersitems" title="永久链接至标题">¶</a></h2>
+<p>要使用Item Loader, 你必须先将它实例化. 你可以使用类似字典的对象(例如: Item or dict)来进行实例化, 或者不使用对象也可以, 当不用对象进行实例化的时候,Item会自动使用 <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.default_item_class" title="scrapy.contrib.loader.ItemLoader.default_item_class"><code class="xref py py-attr docutils literal"><span class="pre">ItemLoader.default_item_class</span></code></a>
+属性中指定的Item 类在Item Loader constructor中实例化.</p>
+<p>然后,你开始收集数值到Item Loader时,通常使用
+<a class="reference internal" href="selectors.html#topics-selectors"><span>Selectors</span></a>. 你可以在同一个item field 里面添加多个数值;Item Loader将知道如何用合适的处理函数来“添加”这些数值.</p>
+<p>下面是在 <a class="reference internal" href="spiders.html#topics-spiders"><span>Spider</span></a> 中典型的Item Loader的用法, 使用 <a class="reference internal" href="items.html#topics-items"><span>Items chapter</span></a> 中声明的 <a class="reference internal" href="items.html#topics-items-declaring"><span>Product item</span></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.contrib.loader</span> <span class="kn">import</span> <span class="n">ItemLoader</span>
+<span class="kn">from</span> <span class="nn">myproject.items</span> <span class="kn">import</span> <span class="n">Product</span>
+
+<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">ItemLoader</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">Product</span><span class="p">(),</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">add_xpath</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;//div[@class=&quot;product_name&quot;]&#39;</span><span class="p">)</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">add_xpath</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;//div[@class=&quot;product_title&quot;]&#39;</span><span class="p">)</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">add_xpath</span><span class="p">(</span><span class="s">&#39;price&#39;</span><span class="p">,</span> <span class="s">&#39;//p[@id=&quot;price&quot;]&#39;</span><span class="p">)</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">add_css</span><span class="p">(</span><span class="s">&#39;stock&#39;</span><span class="p">,</span> <span class="s">&#39;p#stock]&#39;</span><span class="p">)</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="s">&#39;last_updated&#39;</span><span class="p">,</span> <span class="s">&#39;today&#39;</span><span class="p">)</span> <span class="c"># you can also use literal values</span>
+    <span class="k">return</span> <span class="n">l</span><span class="o">.</span><span class="n">load_item</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>快速查看这些代码之后,我们可以看到发现 <code class="docutils literal"><span class="pre">name</span></code>  字段被从页面中两个不同的XPath位置提取:</p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">//div[&#64;class=&quot;product_name&quot;]</span></code></li>
+<li><code class="docutils literal"><span class="pre">//div[&#64;class=&quot;product_title&quot;]</span></code></li>
+</ol>
+<p>换言之,数据通过用 <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_xpath" title="scrapy.contrib.loader.ItemLoader.add_xpath"><code class="xref py py-meth docutils literal"><span class="pre">add_xpath()</span></code></a> 的方法,把从两个不同的XPath位置提取的数据收集起来. 这是将在以后分配给 <code class="docutils literal"><span class="pre">name</span></code> 字段中的数据｡</p>
+<p>之后,类似的请求被用于 <code class="docutils literal"><span class="pre">price</span></code> 和 <code class="docutils literal"><span class="pre">stock</span></code> 字段
+(后者使用 CSS selector 和 <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_css" title="scrapy.contrib.loader.ItemLoader.add_css"><code class="xref py py-meth docutils literal"><span class="pre">add_css()</span></code></a> 方法),
+最后使用不同的方法 <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_value" title="scrapy.contrib.loader.ItemLoader.add_value"><code class="xref py py-meth docutils literal"><span class="pre">add_value()</span></code></a> 对 <code class="docutils literal"><span class="pre">last_update</span></code> 填充文本值( <code class="docutils literal"><span class="pre">today</span></code> ).</p>
+<p>最终, 当所有数据被收集起来之后, 调用 <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.load_item" title="scrapy.contrib.loader.ItemLoader.load_item"><code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.load_item()</span></code></a> 方法, 实际上填充并且返回了之前通过调用 <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_xpath" title="scrapy.contrib.loader.ItemLoader.add_xpath"><code class="xref py py-meth docutils literal"><span class="pre">add_xpath()</span></code></a>,
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_css" title="scrapy.contrib.loader.ItemLoader.add_css"><code class="xref py py-meth docutils literal"><span class="pre">add_css()</span></code></a>, and <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_value" title="scrapy.contrib.loader.ItemLoader.add_value"><code class="xref py py-meth docutils literal"><span class="pre">add_value()</span></code></a> 所提取和收集到的数据的Item.</p>
+</div>
+<div class="section" id="input-and-output-processors">
+<span id="topics-loaders-processors"></span><h2>Input and Output processors<a class="headerlink" href="#input-and-output-processors" title="永久链接至标题">¶</a></h2>
+<p>Item Loader在每个(Item)字段中都包含了一个输入处理器和一个输出处理器｡ 输入处理器收到数据时立刻提取数据 (通过 <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_xpath" title="scrapy.contrib.loader.ItemLoader.add_xpath"><code class="xref py py-meth docutils literal"><span class="pre">add_xpath()</span></code></a>, <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_css" title="scrapy.contrib.loader.ItemLoader.add_css"><code class="xref py py-meth docutils literal"><span class="pre">add_css()</span></code></a> 或者
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_value" title="scrapy.contrib.loader.ItemLoader.add_value"><code class="xref py py-meth docutils literal"><span class="pre">add_value()</span></code></a> 方法) 之后输入处理器的结果被收集起来并且保存在ItemLoader内. 收集到所有的数据后, 调用
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.load_item" title="scrapy.contrib.loader.ItemLoader.load_item"><code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.load_item()</span></code></a> 方法来填充,并得到填充后的
+<a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> 对象.  这是当输出处理器被和之前收集到的数据(和用输入处理器处理的)被调用.输出处理器的结果是被分配到Item的最终值｡</p>
+<p>让我们看一个例子来说明如何输入和输出处理器被一个特定的字段调用(同样适用于其他field)::</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">l</span> <span class="o">=</span> <span class="n">ItemLoader</span><span class="p">(</span><span class="n">Product</span><span class="p">(),</span> <span class="n">some_selector</span><span class="p">)</span>
+<span class="n">l</span><span class="o">.</span><span class="n">add_xpath</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">xpath1</span><span class="p">)</span> <span class="c"># (1)</span>
+<span class="n">l</span><span class="o">.</span><span class="n">add_xpath</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">xpath2</span><span class="p">)</span> <span class="c"># (2)</span>
+<span class="n">l</span><span class="o">.</span><span class="n">add_css</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">css</span><span class="p">)</span> <span class="c"># (3)</span>
+<span class="n">l</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;test&#39;</span><span class="p">)</span> <span class="c"># (4)</span>
+<span class="k">return</span> <span class="n">l</span><span class="o">.</span><span class="n">load_item</span><span class="p">()</span> <span class="c"># (5)</span>
+</pre></div>
+</div>
+<p>发生了这些事情:</p>
+<ol class="arabic simple">
+<li>从 <code class="docutils literal"><span class="pre">xpath1</span></code> 提取出的数据,传递给 <em>输入处理器</em> 的 <code class="docutils literal"><span class="pre">name</span></code> 字段.输入处理器的结果被收集和保存在Item Loader中(但尚未分配给该Item)｡</li>
+<li>从 <code class="docutils literal"><span class="pre">xpath2</span></code> 提取出来的数据,传递给(1)中使用的相同的 <em>输入处理器</em> .输入处理器的结果被附加到在(1)中收集的数据(如果有的话) ｡</li>
+<li>This case is similar to the previous ones, except that the data is extracted
+from the <code class="docutils literal"><span class="pre">css</span></code> CSS selector, and passed through the same <em>input
+processor</em> used in (1) and (2). The result of the input processor is appended to the
+data collected in (1) and (2) (if any).</li>
+<li>This case is also similar to the previous ones, except that the value to be
+collected is assigned directly, instead of being extracted from a XPath
+expression or a CSS selector.
+However, the value is still passed through the input processors. In this
+case, since the value is not iterable it is converted to an iterable of a
+single element before passing it to the input processor, because input
+processor always receive iterables.</li>
+<li>The data collected in steps (1), (2), (3) and (4) is passed through
+the <em>output processor</em> of the <code class="docutils literal"><span class="pre">name</span></code> field.
+The result of the output processor is the value assigned to the <code class="docutils literal"><span class="pre">name</span></code>
+field in the item.</li>
+</ol>
+<p>It&#8217;s worth noticing that processors are just callable objects, which are called
+with the data to be parsed, and return a parsed value. So you can use any
+function as input or output processor. The only requirement is that they must
+accept one (and only one) positional argument, which will be an iterator.</p>
+<div class="admonition note">
+<p class="first admonition-title">注解</p>
+<p class="last">Both input and output processors must receive an iterator as their
+first argument. The output of those functions can be anything. The result of
+input processors will be appended to an internal list (in the Loader)
+containing the collected values (for that field). The result of the output
+processors is the value that will be finally assigned to the item.</p>
+</div>
+<p>The other thing you need to keep in mind is that the values returned by input
+processors are collected internally (in lists) and then passed to output
+processors to populate the fields.</p>
+<p>Last, but not least, Scrapy comes with some <a class="reference internal" href="#topics-loaders-available-processors"><span>commonly used processors</span></a> built-in for convenience.</p>
+</div>
+<div class="section" id="declaring-item-loaders">
+<h2>Declaring Item Loaders<a class="headerlink" href="#declaring-item-loaders" title="永久链接至标题">¶</a></h2>
+<p>Item Loaders are declared like Items, by using a class definition syntax. Here
+is an example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.contrib.loader</span> <span class="kn">import</span> <span class="n">ItemLoader</span>
+<span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">TakeFirst</span><span class="p">,</span> <span class="n">MapCompose</span><span class="p">,</span> <span class="n">Join</span>
+
+<span class="k">class</span> <span class="nc">ProductLoader</span><span class="p">(</span><span class="n">ItemLoader</span><span class="p">):</span>
+
+    <span class="n">default_output_processor</span> <span class="o">=</span> <span class="n">TakeFirst</span><span class="p">()</span>
+
+    <span class="n">name_in</span> <span class="o">=</span> <span class="n">MapCompose</span><span class="p">(</span><span class="nb">unicode</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">name_out</span> <span class="o">=</span> <span class="n">Join</span><span class="p">()</span>
+
+    <span class="n">price_in</span> <span class="o">=</span> <span class="n">MapCompose</span><span class="p">(</span><span class="nb">unicode</span><span class="o">.</span><span class="n">strip</span><span class="p">)</span>
+
+    <span class="c"># ...</span>
+</pre></div>
+</div>
+<p>As you can see, input processors are declared using the <code class="docutils literal"><span class="pre">_in</span></code> suffix while
+output processors are declared using the <code class="docutils literal"><span class="pre">_out</span></code> suffix. And you can also
+declare a default input/output processors using the
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.default_input_processor" title="scrapy.contrib.loader.ItemLoader.default_input_processor"><code class="xref py py-attr docutils literal"><span class="pre">ItemLoader.default_input_processor</span></code></a> and
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.default_output_processor" title="scrapy.contrib.loader.ItemLoader.default_output_processor"><code class="xref py py-attr docutils literal"><span class="pre">ItemLoader.default_output_processor</span></code></a> attributes.</p>
+</div>
+<div class="section" id="declaring-input-and-output-processors">
+<span id="topics-loaders-processors-declaring"></span><h2>Declaring Input and Output Processors<a class="headerlink" href="#declaring-input-and-output-processors" title="永久链接至标题">¶</a></h2>
+<p>As seen in the previous section, input and output processors can be declared in
+the Item Loader definition, and it&#8217;s very common to declare input processors
+this way. However, there is one more place where you can specify the input and
+output processors to use: in the <a class="reference internal" href="items.html#topics-items-fields"><span>Item Field</span></a>
+metadata. Here is an example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scrapy</span>
+
+<span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">Join</span><span class="p">,</span> <span class="n">MapCompose</span><span class="p">,</span> <span class="n">TakeFirst</span>
+<span class="kn">from</span> <span class="nn">w3lib.html</span> <span class="kn">import</span> <span class="n">remove_tags</span>
+
+<span class="k">def</span> <span class="nf">filter_price</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">scrapy</span><span class="o">.</span><span class="n">Item</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">scrapy</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">input_processor</span><span class="o">=</span><span class="n">MapCompose</span><span class="p">(</span><span class="n">remove_tags</span><span class="p">),</span>
+        <span class="n">output_processor</span><span class="o">=</span><span class="n">Join</span><span class="p">(),</span>
+    <span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">scrapy</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">input_processor</span><span class="o">=</span><span class="n">MapCompose</span><span class="p">(</span><span class="n">remove_tags</span><span class="p">,</span> <span class="n">filter_price</span><span class="p">),</span>
+        <span class="n">output_processor</span><span class="o">=</span><span class="n">TakeFirst</span><span class="p">(),</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scrapy.contrib.loader</span> <span class="kn">import</span> <span class="n">ItemLoader</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">il</span> <span class="o">=</span> <span class="n">ItemLoader</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">Product</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">il</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">u&#39;Welcome to my&#39;</span><span class="p">,</span> <span class="s">u&#39;&lt;strong&gt;website&lt;/strong&gt;&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">il</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="s">&#39;price&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">u&#39;&amp;euro;&#39;</span><span class="p">,</span> <span class="s">u&#39;&lt;span&gt;1000&lt;/span&gt;&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">il</span><span class="o">.</span><span class="n">load_item</span><span class="p">()</span>
+<span class="go">{&#39;name&#39;: u&#39;Welcome to my website&#39;, &#39;price&#39;: u&#39;1000&#39;}</span>
+</pre></div>
+</div>
+<p>The precedence order, for both input and output processors, is as follows:</p>
+<ol class="arabic simple">
+<li>Item Loader field-specific attributes: <code class="docutils literal"><span class="pre">field_in</span></code> and <code class="docutils literal"><span class="pre">field_out</span></code> (most
+precedence)</li>
+<li>Field metadata (<code class="docutils literal"><span class="pre">input_processor</span></code> and <code class="docutils literal"><span class="pre">output_processor</span></code> key)</li>
+<li>Item Loader defaults: <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.default_input_processor" title="scrapy.contrib.loader.ItemLoader.default_input_processor"><code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.default_input_processor()</span></code></a> and
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.default_output_processor" title="scrapy.contrib.loader.ItemLoader.default_output_processor"><code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.default_output_processor()</span></code></a> (least precedence)</li>
+</ol>
+<p>See also: <a class="reference internal" href="#topics-loaders-extending"><span>Reusing and extending Item Loaders</span></a>.</p>
+</div>
+<div class="section" id="item-loader-context">
+<span id="topics-loaders-context"></span><h2>Item Loader Context<a class="headerlink" href="#item-loader-context" title="永久链接至标题">¶</a></h2>
+<p>The Item Loader Context is a dict of arbitrary key/values which is shared among
+all input and output processors in the Item Loader. It can be passed when
+declaring, instantiating or using Item Loader. They are used to modify the
+behaviour of the input/output processors.</p>
+<p>For example, suppose you have a function <code class="docutils literal"><span class="pre">parse_length</span></code> which receives a text
+value and extracts a length from it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">parse_length</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">loader_context</span><span class="p">):</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="n">loader_context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;unit&#39;</span><span class="p">,</span> <span class="s">&#39;m&#39;</span><span class="p">)</span>
+    <span class="c"># ... length parsing code goes here ...</span>
+    <span class="k">return</span> <span class="n">parsed_length</span>
+</pre></div>
+</div>
+<p>By accepting a <code class="docutils literal"><span class="pre">loader_context</span></code> argument the function is explicitly telling
+the Item Loader that it&#8217;s able to receive an Item Loader context, so the Item
+Loader passes the currently active context when calling it, and the processor
+function (<code class="docutils literal"><span class="pre">parse_length</span></code> in this case) can thus use them.</p>
+<p>There are several ways to modify Item Loader context values:</p>
+<ol class="arabic">
+<li><p class="first">By modifying the currently active Item Loader context
+(<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.context" title="scrapy.contrib.loader.ItemLoader.context"><code class="xref py py-attr docutils literal"><span class="pre">context</span></code></a> attribute):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">loader</span> <span class="o">=</span> <span class="n">ItemLoader</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">&#39;unit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;cm&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">On Item Loader instantiation (the keyword arguments of Item Loader
+constructor are stored in the Item Loader context):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">loader</span> <span class="o">=</span> <span class="n">ItemLoader</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s">&#39;cm&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">On Item Loader declaration, for those input/output processors that support
+instantiating them with an Item Loader context. <a class="reference internal" href="#scrapy.contrib.loader.processor.MapCompose" title="scrapy.contrib.loader.processor.MapCompose"><code class="xref py py-class docutils literal"><span class="pre">MapCompose</span></code></a> is one of
+them:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ProductLoader</span><span class="p">(</span><span class="n">ItemLoader</span><span class="p">):</span>
+    <span class="n">length_out</span> <span class="o">=</span> <span class="n">MapCompose</span><span class="p">(</span><span class="n">parse_length</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s">&#39;cm&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="itemloader-objects">
+<h2>ItemLoader objects<a class="headerlink" href="#itemloader-objects" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="scrapy.contrib.loader.ItemLoader">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.loader.</code><code class="descname">ItemLoader</code><span class="sig-paren">(</span><span class="optional">[</span><em>item</em>, <em>selector</em>, <em>response</em>, <span class="optional">]</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader" title="永久链接至目标">¶</a></dt>
+<dd><p>Return a new Item Loader for populating the given Item. If no item is
+given, one is instantiated automatically using the class in
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.default_item_class" title="scrapy.contrib.loader.ItemLoader.default_item_class"><code class="xref py py-attr docutils literal"><span class="pre">default_item_class</span></code></a>.</p>
+<p>When instantiated with a <cite>selector</cite> or a <cite>response</cite> parameters
+the <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader" title="scrapy.contrib.loader.ItemLoader"><code class="xref py py-class docutils literal"><span class="pre">ItemLoader</span></code></a> class provides convenient mechanisms for extracting
+data from web pages using <a class="reference internal" href="selectors.html#topics-selectors"><span>selectors</span></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">参数:</th><td class="field-body"><ul class="first last simple">
+<li><strong>item</strong> (<a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> object) &#8211; The item instance to populate using subsequent calls to
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_xpath" title="scrapy.contrib.loader.ItemLoader.add_xpath"><code class="xref py py-meth docutils literal"><span class="pre">add_xpath()</span></code></a>, <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_css" title="scrapy.contrib.loader.ItemLoader.add_css"><code class="xref py py-meth docutils literal"><span class="pre">add_css()</span></code></a>,
+or <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_value" title="scrapy.contrib.loader.ItemLoader.add_value"><code class="xref py py-meth docutils literal"><span class="pre">add_value()</span></code></a>.</li>
+<li><strong>selector</strong> (<a class="reference internal" href="selectors.html#scrapy.selector.Selector" title="scrapy.selector.Selector"><code class="xref py py-class docutils literal"><span class="pre">Selector</span></code></a> object) &#8211; The selector to extract data from, when using the
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_xpath" title="scrapy.contrib.loader.ItemLoader.add_xpath"><code class="xref py py-meth docutils literal"><span class="pre">add_xpath()</span></code></a> (resp. <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_css" title="scrapy.contrib.loader.ItemLoader.add_css"><code class="xref py py-meth docutils literal"><span class="pre">add_css()</span></code></a>) or <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.replace_xpath" title="scrapy.contrib.loader.ItemLoader.replace_xpath"><code class="xref py py-meth docutils literal"><span class="pre">replace_xpath()</span></code></a>
+(resp. <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.replace_css" title="scrapy.contrib.loader.ItemLoader.replace_css"><code class="xref py py-meth docutils literal"><span class="pre">replace_css()</span></code></a>) method.</li>
+<li><strong>response</strong> (<a class="reference internal" href="request-response.html#scrapy.http.Response" title="scrapy.http.Response"><code class="xref py py-class docutils literal"><span class="pre">Response</span></code></a> object) &#8211; The response used to construct the selector using the
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.default_selector_class" title="scrapy.contrib.loader.ItemLoader.default_selector_class"><code class="xref py py-attr docutils literal"><span class="pre">default_selector_class</span></code></a>, unless the selector argument is given,
+in which case this argument is ignored.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The item, selector, response and the remaining keyword arguments are
+assigned to the Loader context (accessible through the <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.context" title="scrapy.contrib.loader.ItemLoader.context"><code class="xref py py-attr docutils literal"><span class="pre">context</span></code></a> attribute).</p>
+<p><a class="reference internal" href="#scrapy.contrib.loader.ItemLoader" title="scrapy.contrib.loader.ItemLoader"><code class="xref py py-class docutils literal"><span class="pre">ItemLoader</span></code></a> instances have the following methods:</p>
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>value</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.get_value" title="永久链接至目标">¶</a></dt>
+<dd><p>Process the given <code class="docutils literal"><span class="pre">value</span></code> by the given <code class="docutils literal"><span class="pre">processors</span></code> and keyword
+arguments.</p>
+<p>Available keyword arguments:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">参数:</th><td class="field-body"><strong>re</strong> (<em>str or compiled regex</em>) &#8211; a regular expression to use for extracting data from the
+given value using <code class="xref py py-meth docutils literal"><span class="pre">extract_regex()</span></code> method,
+applied before processors</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">TakeFirst</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loader</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s">u&#39;name: foo&#39;</span><span class="p">,</span> <span class="n">TakeFirst</span><span class="p">(),</span> <span class="nb">unicode</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span> <span class="n">re</span><span class="o">=</span><span class="s">&#39;name: (.+)&#39;</span><span class="p">)</span>
+<span class="go">&#39;FOO`</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.add_value">
+<code class="descname">add_value</code><span class="sig-paren">(</span><em>field_name</em>, <em>value</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.add_value" title="永久链接至目标">¶</a></dt>
+<dd><p>Process and then add the given <code class="docutils literal"><span class="pre">value</span></code> for the given field.</p>
+<p>The value is first passed through <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.get_value" title="scrapy.contrib.loader.ItemLoader.get_value"><code class="xref py py-meth docutils literal"><span class="pre">get_value()</span></code></a> by giving the
+<code class="docutils literal"><span class="pre">processors</span></code> and <code class="docutils literal"><span class="pre">kwargs</span></code>, and then passed through the
+<a class="reference internal" href="#topics-loaders-processors"><span>field input processor</span></a> and its result
+appended to the data collected for that field. If the field already
+contains collected data, the new data is added.</p>
+<p>The given <code class="docutils literal"><span class="pre">field_name</span></code> can be <code class="docutils literal"><span class="pre">None</span></code>, in which case values for
+multiple fields may be added. And the processed value should be a dict
+with field_name mapped to values.</p>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">loader</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">u&#39;Color TV&#39;</span><span class="p">)</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="s">&#39;colours&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">u&#39;white&#39;</span><span class="p">,</span> <span class="s">u&#39;blue&#39;</span><span class="p">])</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="s">&#39;length&#39;</span><span class="p">,</span> <span class="s">u&#39;100&#39;</span><span class="p">)</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">u&#39;name: foo&#39;</span><span class="p">,</span> <span class="n">TakeFirst</span><span class="p">(),</span> <span class="n">re</span><span class="o">=</span><span class="s">&#39;name: (.+)&#39;</span><span class="p">)</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">add_value</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">u&#39;foo&#39;</span><span class="p">,</span> <span class="s">&#39;sex&#39;</span><span class="p">:</span> <span class="s">u&#39;male&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.replace_value">
+<code class="descname">replace_value</code><span class="sig-paren">(</span><em>field_name</em>, <em>value</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.replace_value" title="永久链接至目标">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_value" title="scrapy.contrib.loader.ItemLoader.add_value"><code class="xref py py-meth docutils literal"><span class="pre">add_value()</span></code></a> but replaces the collected data with the
+new value instead of adding it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.get_xpath">
+<code class="descname">get_xpath</code><span class="sig-paren">(</span><em>xpath</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.get_xpath" title="永久链接至目标">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.get_value" title="scrapy.contrib.loader.ItemLoader.get_value"><code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.get_value()</span></code></a> but receives an XPath instead of a
+value, which is used to extract a list of unicode strings from the
+selector associated with this <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader" title="scrapy.contrib.loader.ItemLoader"><code class="xref py py-class docutils literal"><span class="pre">ItemLoader</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">参数:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xpath</strong> (<em>str</em>) &#8211; the XPath to extract data from</li>
+<li><strong>re</strong> (<em>str or compiled regex</em>) &#8211; a regular expression to use for extracting data from the
+selected XPath region</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># HTML snippet: &lt;p class=&quot;product-name&quot;&gt;Color TV&lt;/p&gt;</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">get_xpath</span><span class="p">(</span><span class="s">&#39;//p[@class=&quot;product-name&quot;]&#39;</span><span class="p">)</span>
+<span class="c"># HTML snippet: &lt;p id=&quot;price&quot;&gt;the price is $1200&lt;/p&gt;</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">get_xpath</span><span class="p">(</span><span class="s">&#39;//p[@id=&quot;price&quot;]&#39;</span><span class="p">,</span> <span class="n">TakeFirst</span><span class="p">(),</span> <span class="n">re</span><span class="o">=</span><span class="s">&#39;the price is (.*)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.add_xpath">
+<code class="descname">add_xpath</code><span class="sig-paren">(</span><em>field_name</em>, <em>xpath</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.add_xpath" title="永久链接至目标">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_value" title="scrapy.contrib.loader.ItemLoader.add_value"><code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.add_value()</span></code></a> but receives an XPath instead of a
+value, which is used to extract a list of unicode strings from the
+selector associated with this <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader" title="scrapy.contrib.loader.ItemLoader"><code class="xref py py-class docutils literal"><span class="pre">ItemLoader</span></code></a>.</p>
+<p>See <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.get_xpath" title="scrapy.contrib.loader.ItemLoader.get_xpath"><code class="xref py py-meth docutils literal"><span class="pre">get_xpath()</span></code></a> for <code class="docutils literal"><span class="pre">kwargs</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">参数:</th><td class="field-body"><strong>xpath</strong> (<em>str</em>) &#8211; the XPath to extract data from</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># HTML snippet: &lt;p class=&quot;product-name&quot;&gt;Color TV&lt;/p&gt;</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">add_xpath</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;//p[@class=&quot;product-name&quot;]&#39;</span><span class="p">)</span>
+<span class="c"># HTML snippet: &lt;p id=&quot;price&quot;&gt;the price is $1200&lt;/p&gt;</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">add_xpath</span><span class="p">(</span><span class="s">&#39;price&#39;</span><span class="p">,</span> <span class="s">&#39;//p[@id=&quot;price&quot;]&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">=</span><span class="s">&#39;the price is (.*)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.replace_xpath">
+<code class="descname">replace_xpath</code><span class="sig-paren">(</span><em>field_name</em>, <em>xpath</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.replace_xpath" title="永久链接至目标">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_xpath" title="scrapy.contrib.loader.ItemLoader.add_xpath"><code class="xref py py-meth docutils literal"><span class="pre">add_xpath()</span></code></a> but replaces collected data instead of
+adding it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.get_css">
+<code class="descname">get_css</code><span class="sig-paren">(</span><em>css</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.get_css" title="永久链接至目标">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.get_value" title="scrapy.contrib.loader.ItemLoader.get_value"><code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.get_value()</span></code></a> but receives a CSS selector
+instead of a value, which is used to extract a list of unicode strings
+from the selector associated with this <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader" title="scrapy.contrib.loader.ItemLoader"><code class="xref py py-class docutils literal"><span class="pre">ItemLoader</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">参数:</th><td class="field-body"><ul class="first last simple">
+<li><strong>css</strong> (<em>str</em>) &#8211; the CSS selector to extract data from</li>
+<li><strong>re</strong> (<em>str or compiled regex</em>) &#8211; a regular expression to use for extracting data from the
+selected CSS region</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># HTML snippet: &lt;p class=&quot;product-name&quot;&gt;Color TV&lt;/p&gt;</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">get_css</span><span class="p">(</span><span class="s">&#39;p.product-name&#39;</span><span class="p">)</span>
+<span class="c"># HTML snippet: &lt;p id=&quot;price&quot;&gt;the price is $1200&lt;/p&gt;</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">get_css</span><span class="p">(</span><span class="s">&#39;p#price&#39;</span><span class="p">,</span> <span class="n">TakeFirst</span><span class="p">(),</span> <span class="n">re</span><span class="o">=</span><span class="s">&#39;the price is (.*)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.add_css">
+<code class="descname">add_css</code><span class="sig-paren">(</span><em>field_name</em>, <em>css</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.add_css" title="永久链接至目标">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_value" title="scrapy.contrib.loader.ItemLoader.add_value"><code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.add_value()</span></code></a> but receives a CSS selector
+instead of a value, which is used to extract a list of unicode strings
+from the selector associated with this <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader" title="scrapy.contrib.loader.ItemLoader"><code class="xref py py-class docutils literal"><span class="pre">ItemLoader</span></code></a>.</p>
+<p>See <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.get_css" title="scrapy.contrib.loader.ItemLoader.get_css"><code class="xref py py-meth docutils literal"><span class="pre">get_css()</span></code></a> for <code class="docutils literal"><span class="pre">kwargs</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">参数:</th><td class="field-body"><strong>css</strong> (<em>str</em>) &#8211; the CSS selector to extract data from</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># HTML snippet: &lt;p class=&quot;product-name&quot;&gt;Color TV&lt;/p&gt;</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">add_css</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;p.product-name&#39;</span><span class="p">)</span>
+<span class="c"># HTML snippet: &lt;p id=&quot;price&quot;&gt;the price is $1200&lt;/p&gt;</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">add_css</span><span class="p">(</span><span class="s">&#39;price&#39;</span><span class="p">,</span> <span class="s">&#39;p#price&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">=</span><span class="s">&#39;the price is (.*)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.replace_css">
+<code class="descname">replace_css</code><span class="sig-paren">(</span><em>field_name</em>, <em>css</em>, <em>*processors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.replace_css" title="永久链接至目标">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.add_css" title="scrapy.contrib.loader.ItemLoader.add_css"><code class="xref py py-meth docutils literal"><span class="pre">add_css()</span></code></a> but replaces collected data instead of
+adding it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.load_item">
+<code class="descname">load_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.load_item" title="永久链接至目标">¶</a></dt>
+<dd><p>Populate the item with the data collected so far, and return it. The
+data collected is first passed through the <a class="reference internal" href="#topics-loaders-processors"><span>output processors</span></a> to get the final value to assign to each
+item field.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.get_collected_values">
+<code class="descname">get_collected_values</code><span class="sig-paren">(</span><em>field_name</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.get_collected_values" title="永久链接至目标">¶</a></dt>
+<dd><p>Return the collected values for the given field.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.get_output_value">
+<code class="descname">get_output_value</code><span class="sig-paren">(</span><em>field_name</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.get_output_value" title="永久链接至目标">¶</a></dt>
+<dd><p>Return the collected values parsed using the output processor, for the
+given field. This method doesn&#8217;t populate or modify the item at all.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.get_input_processor">
+<code class="descname">get_input_processor</code><span class="sig-paren">(</span><em>field_name</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.get_input_processor" title="永久链接至目标">¶</a></dt>
+<dd><p>Return the input processor for the given field.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.loader.ItemLoader.get_output_processor">
+<code class="descname">get_output_processor</code><span class="sig-paren">(</span><em>field_name</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.get_output_processor" title="永久链接至目标">¶</a></dt>
+<dd><p>Return the output processor for the given field.</p>
+</dd></dl>
+
+<p><a class="reference internal" href="#scrapy.contrib.loader.ItemLoader" title="scrapy.contrib.loader.ItemLoader"><code class="xref py py-class docutils literal"><span class="pre">ItemLoader</span></code></a> instances have the following attributes:</p>
+<dl class="attribute">
+<dt id="scrapy.contrib.loader.ItemLoader.item">
+<code class="descname">item</code><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.item" title="永久链接至目标">¶</a></dt>
+<dd><p>The <a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> object being parsed by this Item Loader.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.loader.ItemLoader.context">
+<code class="descname">context</code><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.context" title="永久链接至目标">¶</a></dt>
+<dd><p>The currently active <a class="reference internal" href="#topics-loaders-context"><span>Context</span></a> of this
+Item Loader.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.loader.ItemLoader.default_item_class">
+<code class="descname">default_item_class</code><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.default_item_class" title="永久链接至目标">¶</a></dt>
+<dd><p>An Item class (or factory), used to instantiate items when not given in
+the constructor.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.loader.ItemLoader.default_input_processor">
+<code class="descname">default_input_processor</code><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.default_input_processor" title="永久链接至目标">¶</a></dt>
+<dd><p>The default input processor to use for those fields which don&#8217;t specify
+one.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.loader.ItemLoader.default_output_processor">
+<code class="descname">default_output_processor</code><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.default_output_processor" title="永久链接至目标">¶</a></dt>
+<dd><p>The default output processor to use for those fields which don&#8217;t specify
+one.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.loader.ItemLoader.default_selector_class">
+<code class="descname">default_selector_class</code><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.default_selector_class" title="永久链接至目标">¶</a></dt>
+<dd><p>The class used to construct the <a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.selector" title="scrapy.contrib.loader.ItemLoader.selector"><code class="xref py py-attr docutils literal"><span class="pre">selector</span></code></a> of this
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader" title="scrapy.contrib.loader.ItemLoader"><code class="xref py py-class docutils literal"><span class="pre">ItemLoader</span></code></a>, if only a response is given in the constructor.
+If a selector is given in the constructor this attribute is ignored.
+This attribute is sometimes overridden in subclasses.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.loader.ItemLoader.selector">
+<code class="descname">selector</code><a class="headerlink" href="#scrapy.contrib.loader.ItemLoader.selector" title="永久链接至目标">¶</a></dt>
+<dd><p>The <a class="reference internal" href="selectors.html#scrapy.selector.Selector" title="scrapy.selector.Selector"><code class="xref py py-class docutils literal"><span class="pre">Selector</span></code></a> object to extract data from.
+It&#8217;s either the selector given in the constructor or one created from
+the response given in the constructor using the
+<a class="reference internal" href="#scrapy.contrib.loader.ItemLoader.default_selector_class" title="scrapy.contrib.loader.ItemLoader.default_selector_class"><code class="xref py py-attr docutils literal"><span class="pre">default_selector_class</span></code></a>. This attribute is meant to be
+read-only.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="reusing-and-extending-item-loaders">
+<span id="topics-loaders-extending"></span><h2>Reusing and extending Item Loaders<a class="headerlink" href="#reusing-and-extending-item-loaders" title="永久链接至标题">¶</a></h2>
+<p>As your project grows bigger and acquires more and more spiders, maintenance
+becomes a fundamental problem, especially when you have to deal with many
+different parsing rules for each spider, having a lot of exceptions, but also
+wanting to reuse the common processors.</p>
+<p>Item Loaders are designed to ease the maintenance burden of parsing rules,
+without losing flexibility and, at the same time, providing a convenient
+mechanism for extending and overriding them. For this reason Item Loaders
+support traditional Python class inheritance for dealing with differences of
+specific spiders (or groups of spiders).</p>
+<p>Suppose, for example, that some particular site encloses their product names in
+three dashes (e.g. <code class="docutils literal"><span class="pre">---Plasma</span> <span class="pre">TV---</span></code>) and you don&#8217;t want to end up scraping
+those dashes in the final product names.</p>
+<p>Here&#8217;s how you can remove those dashes by reusing and extending the default
+Product Item Loader (<code class="docutils literal"><span class="pre">ProductLoader</span></code>):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">MapCompose</span>
+<span class="kn">from</span> <span class="nn">myproject.ItemLoaders</span> <span class="kn">import</span> <span class="n">ProductLoader</span>
+
+<span class="k">def</span> <span class="nf">strip_dashes</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">SiteSpecificLoader</span><span class="p">(</span><span class="n">ProductLoader</span><span class="p">):</span>
+    <span class="n">name_in</span> <span class="o">=</span> <span class="n">MapCompose</span><span class="p">(</span><span class="n">strip_dashes</span><span class="p">,</span> <span class="n">ProductLoader</span><span class="o">.</span><span class="n">name_in</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another case where extending Item Loaders can be very helpful is when you have
+multiple source formats, for example XML and HTML. In the XML version you may
+want to remove <code class="docutils literal"><span class="pre">CDATA</span></code> occurrences. Here&#8217;s an example of how to do it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">MapCompose</span>
+<span class="kn">from</span> <span class="nn">myproject.ItemLoaders</span> <span class="kn">import</span> <span class="n">ProductLoader</span>
+<span class="kn">from</span> <span class="nn">myproject.utils.xml</span> <span class="kn">import</span> <span class="n">remove_cdata</span>
+
+<span class="k">class</span> <span class="nc">XmlProductLoader</span><span class="p">(</span><span class="n">ProductLoader</span><span class="p">):</span>
+    <span class="n">name_in</span> <span class="o">=</span> <span class="n">MapCompose</span><span class="p">(</span><span class="n">remove_cdata</span><span class="p">,</span> <span class="n">ProductLoader</span><span class="o">.</span><span class="n">name_in</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And that&#8217;s how you typically extend input processors.</p>
+<p>As for output processors, it is more common to declare them in the field metadata,
+as they usually depend only on the field and not on each specific site parsing
+rule (as input processors do). See also:
+<a class="reference internal" href="#topics-loaders-processors-declaring"><span>Declaring Input and Output Processors</span></a>.</p>
+<p>There are many other possible ways to extend, inherit and override your Item
+Loaders, and different Item Loaders hierarchies may fit better for different
+projects. Scrapy only provides the mechanism; it doesn&#8217;t impose any specific
+organization of your Loaders collection - that&#8217;s up to you and your project&#8217;s
+needs.</p>
+</div>
+<div class="section" id="module-scrapy.contrib.loader.processor">
+<span id="available-built-in-processors"></span><span id="topics-loaders-available-processors"></span><h2>Available built-in processors<a class="headerlink" href="#module-scrapy.contrib.loader.processor" title="永久链接至标题">¶</a></h2>
+<p>Even though you can use any callable function as input and output processors,
+Scrapy provides some commonly used processors, which are described below. Some
+of them, like the <a class="reference internal" href="#scrapy.contrib.loader.processor.MapCompose" title="scrapy.contrib.loader.processor.MapCompose"><code class="xref py py-class docutils literal"><span class="pre">MapCompose</span></code></a> (which is typically used as input
+processor) compose the output of several functions executed in order, to
+produce the final parsed value.</p>
+<p>Here is a list of all built-in processors:</p>
+<dl class="class">
+<dt id="scrapy.contrib.loader.processor.Identity">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.loader.processor.</code><code class="descname">Identity</code><a class="headerlink" href="#scrapy.contrib.loader.processor.Identity" title="永久链接至目标">¶</a></dt>
+<dd><p>The simplest processor, which doesn&#8217;t do anything. It returns the original
+values unchanged. It doesn&#8217;t receive any constructor arguments nor accepts
+Loader contexts.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">Identity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span> <span class="o">=</span> <span class="n">Identity</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span><span class="p">([</span><span class="s">&#39;one&#39;</span><span class="p">,</span> <span class="s">&#39;two&#39;</span><span class="p">,</span> <span class="s">&#39;three&#39;</span><span class="p">])</span>
+<span class="go">[&#39;one&#39;, &#39;two&#39;, &#39;three&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="scrapy.contrib.loader.processor.TakeFirst">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.loader.processor.</code><code class="descname">TakeFirst</code><a class="headerlink" href="#scrapy.contrib.loader.processor.TakeFirst" title="永久链接至目标">¶</a></dt>
+<dd><p>Returns the first non-null/non-empty value from the values received,
+so it&#8217;s typically used as an output processor to single-valued fields.
+It doesn&#8217;t receive any constructor arguments, nor accept Loader contexts.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">TakeFirst</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span> <span class="o">=</span> <span class="n">TakeFirst</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span><span class="p">([</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;one&#39;</span><span class="p">,</span> <span class="s">&#39;two&#39;</span><span class="p">,</span> <span class="s">&#39;three&#39;</span><span class="p">])</span>
+<span class="go">&#39;one&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="scrapy.contrib.loader.processor.Join">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.loader.processor.</code><code class="descname">Join</code><span class="sig-paren">(</span><em>separator=u' '</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.processor.Join" title="永久链接至目标">¶</a></dt>
+<dd><p>Returns the values joined with the separator given in the constructor, which
+defaults to <code class="docutils literal"><span class="pre">u'</span> <span class="pre">'</span></code>. It doesn&#8217;t accept Loader contexts.</p>
+<p>When using the default separator, this processor is equivalent to the
+function: <code class="docutils literal"><span class="pre">u'</span> <span class="pre">'.join</span></code></p>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">Join</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span> <span class="o">=</span> <span class="n">Join</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span><span class="p">([</span><span class="s">&#39;one&#39;</span><span class="p">,</span> <span class="s">&#39;two&#39;</span><span class="p">,</span> <span class="s">&#39;three&#39;</span><span class="p">])</span>
+<span class="go">u&#39;one two three&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span> <span class="o">=</span> <span class="n">Join</span><span class="p">(</span><span class="s">&#39;&lt;br&gt;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span><span class="p">([</span><span class="s">&#39;one&#39;</span><span class="p">,</span> <span class="s">&#39;two&#39;</span><span class="p">,</span> <span class="s">&#39;three&#39;</span><span class="p">])</span>
+<span class="go">u&#39;one&lt;br&gt;two&lt;br&gt;three&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="scrapy.contrib.loader.processor.Compose">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.loader.processor.</code><code class="descname">Compose</code><span class="sig-paren">(</span><em>*functions</em>, <em>**default_loader_context</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.processor.Compose" title="永久链接至目标">¶</a></dt>
+<dd><p>A processor which is constructed from the composition of the given
+functions. This means that each input value of this processor is passed to
+the first function, and the result of that function is passed to the second
+function, and so on, until the last function returns the output value of
+this processor.</p>
+<p>By default, stop process on <code class="docutils literal"><span class="pre">None</span></code> value. This behaviour can be changed by
+passing keyword argument <code class="docutils literal"><span class="pre">stop_on_none=False</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">Compose</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span><span class="p">([</span><span class="s">&#39;hello&#39;</span><span class="p">,</span> <span class="s">&#39;world&#39;</span><span class="p">])</span>
+<span class="go">&#39;HELLO&#39;</span>
+</pre></div>
+</div>
+<p>Each function can optionally receive a <code class="docutils literal"><span class="pre">loader_context</span></code> parameter. For
+those which do, this processor will pass the currently active <a class="reference internal" href="#topics-loaders-context"><span>Loader
+context</span></a> through that parameter.</p>
+<p>The keyword arguments passed in the constructor are used as the default
+Loader context values passed to each function call. However, the final
+Loader context values passed to functions are overridden with the currently
+active Loader context accessible through the <code class="xref py py-meth docutils literal"><span class="pre">ItemLoader.context()</span></code>
+attribute.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="scrapy.contrib.loader.processor.MapCompose">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.loader.processor.</code><code class="descname">MapCompose</code><span class="sig-paren">(</span><em>*functions</em>, <em>**default_loader_context</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.loader.processor.MapCompose" title="永久链接至目标">¶</a></dt>
+<dd><p>A processor which is constructed from the composition of the given
+functions, similar to the <a class="reference internal" href="#scrapy.contrib.loader.processor.Compose" title="scrapy.contrib.loader.processor.Compose"><code class="xref py py-class docutils literal"><span class="pre">Compose</span></code></a> processor. The difference with
+this processor is the way internal results are passed among functions,
+which is as follows:</p>
+<p>The input value of this processor is <em>iterated</em> and the first function is
+applied to each element. The results of these function calls (one for each element)
+are concatenated to construct a new iterable, which is then used to apply the
+second function, and so on, until the last function is applied to each
+value of the list of values collected so far. The output values of the last
+function are concatenated together to produce the output of this processor.</p>
+<p>Each particular function can return a value or a list of values, which is
+flattened with the list of values returned by the same function applied to
+the other input values. The functions can also return <code class="docutils literal"><span class="pre">None</span></code> in which
+case the output of that function is ignored for further processing over the
+chain.</p>
+<p>This processor provides a convenient way to compose functions that only
+work with single values (instead of iterables). For this reason the
+<a class="reference internal" href="#scrapy.contrib.loader.processor.MapCompose" title="scrapy.contrib.loader.processor.MapCompose"><code class="xref py py-class docutils literal"><span class="pre">MapCompose</span></code></a> processor is typically used as input processor, since
+data is often extracted using the
+<a class="reference internal" href="selectors.html#scrapy.selector.Selector.extract" title="scrapy.selector.Selector.extract"><code class="xref py py-meth docutils literal"><span class="pre">extract()</span></code></a> method of <a class="reference internal" href="selectors.html#topics-selectors"><span>selectors</span></a>, which returns a list of unicode strings.</p>
+<p>The example below should clarify how it works:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">filter_world</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s">&#39;world&#39;</span> <span class="k">else</span> <span class="n">x</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scrapy.contrib.loader.processor</span> <span class="kn">import</span> <span class="n">MapCompose</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span> <span class="o">=</span> <span class="n">MapCompose</span><span class="p">(</span><span class="n">filter_world</span><span class="p">,</span> <span class="nb">unicode</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proc</span><span class="p">([</span><span class="s">u&#39;hello&#39;</span><span class="p">,</span> <span class="s">u&#39;world&#39;</span><span class="p">,</span> <span class="s">u&#39;this&#39;</span><span class="p">,</span> <span class="s">u&#39;is&#39;</span><span class="p">,</span> <span class="s">u&#39;scrapy&#39;</span><span class="p">])</span>
+<span class="go">[u&#39;HELLO, u&#39;THIS&#39;, u&#39;IS&#39;, u&#39;SCRAPY&#39;]</span>
+</pre></div>
+</div>
+<p>As with the Compose processor, functions can receive Loader contexts, and
+constructor keyword arguments are used as default context values. See
+<a class="reference internal" href="#scrapy.contrib.loader.processor.Compose" title="scrapy.contrib.loader.processor.Compose"><code class="xref py py-class docutils literal"><span class="pre">Compose</span></code></a> processor for more info.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+    
+        <h2>
+            讨论
+            <a class="headerlink" href="#discuss" title="永久链接至标题">¶</a>
+        </h2>
+
+        <div id="disqus_thread"></div>
+    
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="shell.html" class="btn btn-neutral float-right" title="Scrapy终端(Scrapy shell)" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="selectors.html" class="btn btn-neutral" title="选择器(Selectors)" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2008-2014, written by Scrapy developers, translated by Summer&amp;Friends.
+      最后更新于 May 05, 2015.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: 0.24
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl>
+        <dt>Versions</dt>
+        
+          <dd><a href="/zh_CN/latest/">latest</a></dd>
+        
+          <dd><a href="/zh_CN/stable/">stable</a></dd>
+        
+          <dd><a href="/zh_CN/master/">master</a></dd>
+        
+          <dd><a href="/zh_CN/0.24/">0.24</a></dd>
+        
+          <dd><a href="/zh_CN/0.22/">0.22</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>Downloads</dt>
+        
+          <dd><a href="//readthedocs.org/projects/scrapy-chs/downloads/htmlzip/0.24/">htmlzip</a></dd>
+        
+          <dd><a href="//readthedocs.org/projects/scrapy-chs/downloads/epub/0.24/">epub</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>On Read the Docs</dt>
+          <dd>
+            <a href="//readthedocs.org/projects/scrapy-chs/?fromdocs=scrapy-chs">Project Home</a>
+          </dd>
+          <dd>
+            <a href="//readthedocs.org/builds/scrapy-chs/?fromdocs=scrapy-chs">Builds</a>
+          </dd>
+      </dl>
+      <hr/>
+      Free document hosting provided by <a href="http://www.readthedocs.org">Read the Docs</a>.
+
+    </div>
+  </div>
+
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.24.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/jquery/jquery-2.0.3.min.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/jquery/jquery-migrate-1.2.1.min.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/underscore.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/doctools.js"></script>
+      <script type="text/javascript" src="../_static/translations.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/readthedocs-doc-embed.js"></script>
+
+  
+
+  
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'scrapychs'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-50189694-1', 'readthedocs.org');
+      ga('send', 'pageview');
+
+    </script>
+    
+
+
+</body>
+</html>

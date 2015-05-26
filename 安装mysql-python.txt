@@ -1,0 +1,29 @@
+卸载mysql
+sudo rm /usr/local/mysql
+sudo rm -rf /usr/local/mysql*
+sudo rm -rf /Library/StartupItems/MySQLCOM
+sudo rm -rf /Library/PreferencePanes/My*
+vim /etc/hostconfig and removed the line MYSQLCOM=-YES-
+rm -rf ~/Library/PreferencePanes/My*
+sudo rm -rf /Library/Receipts/mysql*
+sudo rm -rf /Library/Receipts/MySQL*
+sudo rm -rf /var/db/receipts/com.mysql.*
+
+
+安装mysql-python
+
+下载MySQL-python-1.2.5.zip
+cd MySQL-python-1.2.5
+vim site.cfg
+mysql_config = /usr/local/bin/mysql_config
+python setup.py build
+clang: error: unknown argument: '-mno-fused-madd' [-Wunused-command-line-argument-hard-error-in-future]clang: note: this will be a hard error (cannot be downgraded to a warning) in the futureerror: command 'cc' failed with exit status 1默认用cc编译器，导致挂了，所以换成gcc来编译
+CC=gcc ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future python setup.py build
+sudo python setup.py install
+sudo ln -s /usr/local/mysql/lib/libmysqlclient.18.dylib /usr/lib/
+
+vim ~/.bashrc
+export DYLD_LIBRARY_PATH="/usr/local/mysql/lib"
+
+vi /usr/loca/mysql/support-files/my-default.cnf
+

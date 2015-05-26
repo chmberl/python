@@ -1,0 +1,1748 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Spiders &mdash; Scrapy 0.24.4 文档</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+
+  
+    <link rel="stylesheet" href="https://media.readthedocs.org/css/sphinx_rtd_theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="https://media.readthedocs.org/css/readthedocs-doc-embed.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Scrapy 0.24.4 文档" href="../index.html"/>
+        <link rel="next" title="选择器(Selectors)" href="selectors.html"/>
+        <link rel="prev" title="Items" href="items.html"/>
+ 
+<!-- RTD Extra Head -->
+
+
+
+<!-- 
+Read the Docs is acting as the canonical URL for your project. 
+If you want to change it, more info is available in our docs:
+  http://docs.readthedocs.org/en/latest/canonical.html
+-->
+<link rel="canonical" href="http://scrapy-chs.readthedocs.org/zh_CN/latest/topics/spiders.html" />
+
+<script type="text/javascript">
+  // This is included here because other places don't have access to the pagename variable.
+  var READTHEDOCS_DATA = {
+    project: "scrapy-chs",
+    version: "0.24",
+    language: "zh_CN",
+    page: "topics/spiders",
+    builder: "sphinx",
+    theme: "sphinx_rtd_theme",
+    docroot: "/",
+    source_suffix: ".rst",
+    api_host: "https://readthedocs.org",
+    commit: "ee32ff555971e7503903093bd2cbc7565cb7669e"
+  }
+  // Old variables
+  var doc_version = "0.24";
+  var doc_slug = "scrapy-chs";
+  var page_name = "topics/spiders";
+  var html_theme = "sphinx_rtd_theme";
+</script>
+<!-- RTD Analytics Code -->
+<!-- Included in the header because you don't have a footer block. -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17997319-1']);
+  _gaq.push(['_trackPageview']);
+
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<!-- end RTD Analytics Code -->
+<!-- end RTD <extrahead> -->
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> Scrapy
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">初窥Scrapy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id1">选择一个网站</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#intro-overview-item">定义您想抓取的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#spider">编写提取数据的Spider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id3">执行spider，获取数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id4">查看提取到的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#topics-whatelse">还有什么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id6">接下来</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">安装指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/install.html#scrapy">安装Scrapy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/install.html#intro-install-platform-notes">平台安装指南</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../intro/install.html#windows">Windows</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../intro/install.html#ubuntu-9-10">Ubuntu 9.10及以上版本</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../intro/install.html#archlinux">Archlinux</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Scrapy入门教程</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id2">创建项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#item">定义Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#spider">编写第一个爬虫(Spider)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../intro/tutorial.html#id3">爬取</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../intro/tutorial.html#id4">刚才发生了什么？</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../intro/tutorial.html#id5">提取Item</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../intro/tutorial.html#selectors">Selectors选择器简介</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../intro/tutorial.html#shellselector">在Shell中尝试Selector选择器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../intro/tutorial.html#id7">提取数据</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../intro/tutorial.html#id8">使用item</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id9">保存爬取到的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id10">下一步</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/examples.html">例子</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="commands.html">命令行工具(Command line tools)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#scrapy">默认的Scrapy项目结构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#id1">使用 <code class="docutils literal"><span class="pre">scrapy</span></code> 工具</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#id2">创建项目</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#id3">控制项目</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#tool-commands">可用的工具命令(tool commands)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#startproject">startproject</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#genspider">genspider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#crawl">crawl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#check">check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#list">list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#edit">edit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#fetch">fetch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#view">view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#shell">shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#parse">parse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#settings">settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#runspider">runspider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#version">version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#deploy">deploy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#bench">bench</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#id4">自定义项目命令</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands.html#commands-module">COMMANDS_MODULE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="items.html">Items</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="items.html#item">声明Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#item-item-fields">Item字段(Item Fields)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id1">与Item配合</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id2">创建item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id3">获取字段的值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id4">设置字段的值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id5">获取所有获取到的值</a></li>
+<li class="toctree-l3"><a class="reference internal" href="items.html#id6">其他任务</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id7">扩展Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id8">Item对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#field">字段(Field)对象</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Spiders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#spider">Spider参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#topics-spiders-ref">内置Spider参考手册</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Spider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Spider样例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#crawlspider">CrawlSpider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#crawling-rules">爬取规则(Crawling rules)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">CrawlSpider样例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#xmlfeedspider">XMLFeedSpider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">XMLFeedSpider例子</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#csvfeedspider">CSVFeedSpider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id6">CSVFeedSpider例子</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sitemapspider">SitemapSpider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">SitemapSpider样例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="selectors.html">选择器(Selectors)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="selectors.html#id1">使用选择器(selectors)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#id2">构造选择器(selectors)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#id3">使用选择器(selectors)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#topics-selectors-nesting-selectors">嵌套选择器(selectors)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#id5">结合正则表达式使用选择器(selectors)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#xpaths">使用相对XPaths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#exslt">使用EXSLT扩展</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#id6">正则表达式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#id7">集合操作</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#some-xpath-tips">Some XPath tips</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#using-text-nodes-in-a-condition">Using text nodes in a condition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#beware-the-difference-between-node-1-and-node-1">Beware the difference between //node[1] and (//node)[1]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#when-querying-by-class-consider-using-css">When querying by class, consider using CSS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="selectors.html#module-scrapy.selector">内建选择器的参考</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="selectors.html#selectorlist">SelectorList对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#html">在HTML响应上的选择器样例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#xml">在XML响应上的选择器样例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="selectors.html#removing-namespaces">移除命名空间</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loaders.html">Item Loaders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#item-loadersitems">用Item Loaders装载Items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#input-and-output-processors">Input and Output processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#declaring-item-loaders">Declaring Item Loaders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#declaring-input-and-output-processors">Declaring Input and Output Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#item-loader-context">Item Loader Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#itemloader-objects">ItemLoader objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#reusing-and-extending-item-loaders">Reusing and extending Item Loaders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#module-scrapy.contrib.loader.processor">Available built-in processors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shell.html">Scrapy终端(Scrapy shell)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#id1">启动终端</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#id2">使用终端</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="shell.html#shortcut">可用的快捷命令(shortcut)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shell.html#scrapy">可用的Scrapy对象</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#shell-session">终端会话(shell session)样例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#spidershellresponse">在spider中启动shell来查看response</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="item-pipeline.html">Item Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id1">编写你自己的item pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id2">Item pipeline 样例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="item-pipeline.html#item">验证价格，同时丢弃没有价格的item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="item-pipeline.html#itemjson">将item写入JSON文件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="item-pipeline.html#id3">去重</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id4">启用一个Item Pipeline组件</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="feed-exports.html">Feed exports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#serialization-formats">序列化方式(Serialization formats)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#json">JSON</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#json-lines">JSON lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#csv">CSV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#xml">XML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#pickle">Pickle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#marshal">Marshal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#storages">存储(Storages)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#uri">存储URI参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#storage-backends">存储端(Storage backends)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#topics-feed-storage-fs">本地文件系统</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#ftp">FTP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#s3">S3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#topics-feed-storage-stdout">标准输出</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#settings">设定(Settings)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-uri">FEED_URI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-format">FEED_FORMAT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-store-empty">FEED_STORE_EMPTY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-storages">FEED_STORAGES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-storages-base">FEED_STORAGES_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-exporters">FEED_EXPORTERS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feed-exports.html#feed-exporters-base">FEED_EXPORTERS_BASE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="link-extractors.html">Link Extractors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="link-extractors.html#module-scrapy.contrib.linkextractors">内置Link Extractor 参考</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="link-extractors.html#module-scrapy.contrib.linkextractors.lxmlhtml">LxmlLinkExtractor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="link-extractors.html#module-scrapy.contrib.linkextractors.sgml">SgmlLinkExtractor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="link-extractors.html#basesgmllinkextractor">BaseSgmlLinkExtractor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log-levels">Log levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log">如何设置log级别</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log-messages">如何记录信息(log messages)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#spiderlog-logging-from-spiders">在Spider中添加log(Logging from Spiders)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#module-scrapy.log">scrapy.log模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#id1">Logging设置</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stats.html">数据收集(Stats Collection)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stats.html#topics-stats-usecases">常见数据收集器使用方法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stats.html#id2">可用的数据收集器</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stats.html#memorystatscollector">MemoryStatsCollector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stats.html#dummystatscollector">DummyStatsCollector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="email.html">发送email</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="email.html#id1">简单例子</a></li>
+<li class="toctree-l2"><a class="reference internal" href="email.html#mailsender">MailSender类参考手册</a></li>
+<li class="toctree-l2"><a class="reference internal" href="email.html#mail">Mail设置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-from">MAIL_FROM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-host">MAIL_HOST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-port">MAIL_PORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-user">MAIL_USER</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-pass">MAIL_PASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-tls">MAIL_TLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="email.html#mail-ssl">MAIL_SSL</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="telnetconsole.html">Telnet终端(Telnet Console)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#telnet">如何访问telnet终端</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id1">telnet终端中可用的变量</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#telnet-console-usage-examples">Telnet console usage examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="telnetconsole.html#id2">查看引擎状态</a></li>
+<li class="toctree-l3"><a class="reference internal" href="telnetconsole.html#scrapy">暂停，恢复和停止Scrapy引擎</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id3">Telnet终端信号</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id4">Telnet设定</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="telnetconsole.html#telnetconsole-port">TELNETCONSOLE_PORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="telnetconsole.html#telnetconsole-host">TELNETCONSOLE_HOST</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="webservice.html">Web Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web-service-resources">Web Service资源(resources)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#json-rpc">可用JSON-RPC对象</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#module-scrapy.contrib.webservice.crawler">Crawler JSON-RPC资源</a></li>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#module-scrapy.contrib.webservice.stats">状态收集器(Stats Collector)JSON-RPC资源</a></li>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#spider-manager-json-rpc">爬虫管理器(Spider Manager)JSON-RPC资源</a></li>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#extension-manager-json-rpc">扩展管理器(Extension Manager)JSON-RPC资源</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#json">可用JSON资源</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="webservice.html#module-scrapy.contrib.webservice.enginestatus">引擎状态JSON资源</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web">Web服务设置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-enabled">WEBSERVICE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-logfile">WEBSERVICE_LOGFILE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-port">WEBSERVICE_PORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-host">WEBSERVICE_HOST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-resources">WEBSERVICE_RESOURCES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#webservice-resources-base">WEBSERVICE_RESOURCES_BASE</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web-resource">编写web服务资源(resource)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#id2">web服务资源例子</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#statsresource-json-rpc-resource">StatsResource (JSON-RPC resource)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#enginestatusresource-json-resource">EngineStatusResource (JSON resource)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#example-of-web-service-client">Example of web service client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html#scrapy-ws-py-script">scrapy-ws.py script</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题(FAQ)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapybeautifulsouplxml">Scrapy相BeautifulSoup或lxml比较,如何呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapypython">Scrapy支持那些Python版本？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapypython-3">Scrapy支持Python 3么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapydjango-x">Scrapy是否从Django中&#8221;剽窃&#8221;了X呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapyhttp">Scrapy支持HTTP代理么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#item">如何爬取属性在不同页面的item呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-importerror-nomodule-named-win32api">Scrapy退出，ImportError: Nomodule named win32api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider">我要如何在spider里模拟用户登录呢?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy">Scrapy是以广度优先还是深度优先进行爬取的呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id3">我的Scrapy爬虫有内存泄露，怎么办?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id4">如何让Scrapy减少内存消耗?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spiderhttp">我能在spider中使用基本HTTP认证么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id5">为什么Scrapy下载了英文的页面，而不是我的本国语言？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id6">我能在哪里找到Scrapy项目的例子？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-spider">我能在不创建Scrapy项目的情况下运行一个爬虫(spider)么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#filtered-offsite-request">我收到了 &#8220;Filtered offsite request&#8221; 消息。如何修复？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id7">发布Scrapy爬虫到生产环境的推荐方式？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#large-exports-json">我能对大数据(large exports)使用JSON么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#signal-handler-twisted">我能在信号处理器(signal handler)中返回(Twisted)引用么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#reponse999">reponse返回的状态值999代表了什么?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider-pdb-set-trace">我能在spider中调用 <code class="docutils literal"><span class="pre">pdb.set_trace()</span></code> 来调试么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#item-dump-json-csv-xml">将所有爬取到的item转存(dump)到JSON/CSV/XML文件的最简单的方法?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#viewstate">在某些表单中巨大神秘的 <code class="docutils literal"><span class="pre">__VIEWSTATE</span></code> 参数是什么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#xml-csv">分析大XML/CSV数据源的最好方法是?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapycookies">Scrapy自动管理cookies么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapyscrapy">如何才能看到Scrapy发出及接收到的Scrapy呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id10">要怎么停止爬虫呢?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-bot-ban">如何避免我的Scrapy机器人(bot)被禁止(ban)呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider-arguments-settings-spider">我应该使用spider参数(arguments)还是设置(settings)来配置spider呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#xmlxpathitem">我爬取了一个XML文档但是XPath选择器不返回任何的item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#name-crawler">我得到错误: &#8220;不能导入name crawler“</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">调试(Debugging)Spiders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#parse">Parse命令</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#scrapy-shell">Scrapy终端(Shell)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#id1">在浏览器中打开</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contracts.html">Spiders Contracts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contracts.html#contracts">自定义Contracts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="practices.html">实践经验(Common Practices)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#scrapy">在脚本中运行Scrapy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#spider">同一进程运行多个spider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#distributed-crawls">分布式爬虫(Distributed crawls)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#ban">避免被禁止(ban)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#item">动态创建Item类</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="broad-crawls.html">通用爬虫(Broad Crawls)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id1">增加并发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#log">降低log级别</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#cookies">禁止cookies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id2">禁止重试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id3">减小下载超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id4">禁止重定向</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#ajax-crawlable-pages">启用 &#8220;Ajax Crawlable Pages&#8221; 爬取</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firefox.html">借助Firefox来爬取</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firefox.html#dom">在浏览器中检查DOM的注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firefox.html#topics-firefox-addons">对爬取有帮助的实用Firefox插件</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#firebug">Firebug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#xpather">XPather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#xpath-checker">XPath Checker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#tamper-data">Tamper Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firefox.html#firecookie">Firecookie</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firebug.html">使用Firebug进行爬取</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#id1">介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#follow">获取到跟进(follow)的链接</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#id4">提取数据</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="leaks.html">调试内存溢出</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#id2">内存泄露的常见原因</a></li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#trackref">使用 <code class="docutils literal"><span class="pre">trackref</span></code> 调试内存泄露</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="leaks.html#id3">哪些对象被追踪了?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="leaks.html#id4">真实例子</a></li>
+<li class="toctree-l3"><a class="reference internal" href="leaks.html#spider">很多spider?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="leaks.html#scrapy-utils-trackref">scrapy.utils.trackref模块</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#guppy">使用Guppy调试内存泄露</a></li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#leaks-without-leaks">Leaks without leaks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="images.html">下载项目图片</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id2">使用图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id3">使用样例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#topics-images-enabling">开启你的图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id5">图片存储</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="images.html#id6">文件系统存储</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id7">额外的特性</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="images.html#id8">图片失效</a></li>
+<li class="toctree-l3"><a class="reference internal" href="images.html#topics-images-thumbnails">缩略图生成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="images.html#id10">滤出小图片</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#module-scrapy.contrib.pipeline.images">实现定制图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id12">定制图片管道的例子</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ubuntu.html">Ubuntu 软件包</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scrapyd.html">Scrapyd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autothrottle.html">自动限速(AutoThrottle)扩展</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id1">设计目标</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id2">扩展是如何实现的</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#autothrottle-algorithm">限速算法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id4">设置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autothrottle.html#autothrottle-enabled">AUTOTHROTTLE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autothrottle.html#autothrottle-start-delay">AUTOTHROTTLE_START_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autothrottle.html#autothrottle-max-delay">AUTOTHROTTLE_MAX_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autothrottle.html#autothrottle-debug">AUTOTHROTTLE_DEBUG</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarking.html">Benchmarking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs: 暂停，恢复爬虫</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#job">Job 路径</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id1">怎么使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id2">保持状态</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id3">持久化的一些坑</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jobs.html#cookies">Cookies的有效期</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jobs.html#id4">请求序列化</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="djangoitem.html">DjangoItem</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#id1">使用DjangoItem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#id2">DjangoItem注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#django">配置Django的设置</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">架构概览</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#id2">概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#id3">组件</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#scrapy-engine">Scrapy Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#scheduler">调度器(Scheduler)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#downloader">下载器(Downloader)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#spiders">Spiders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#item-pipeline">Item Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#downloader-middlewares">下载器中间件(Downloader middlewares)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#spider-spider-middlewares">Spider中间件(Spider middlewares)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#data-flow">数据流(Data flow)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-driven-networking">事件驱动网络(Event-driven networking)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="downloader-middleware.html">下载器中间件(Downloader Middleware)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#topics-downloader-middleware-setting">激活下载器中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#id2">编写您自己的下载器中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#topics-downloader-middleware-ref">内置下载中间件参考手册</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.cookies">CookiesMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#spidercookie-session">单spider多cookie session</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#cookies-enabled">COOKIES_ENABLED</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#cookies-debug">COOKIES_DEBUG</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.defaultheaders">DefaultHeadersMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.downloadtimeout">DownloadTimeoutMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.httpauth">HttpAuthMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.httpcache">HttpCacheMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#dummy">Dummy策略(默认值)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#rfc2616">RFC2616策略</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#filesystem-storage-backend">Filesystem storage backend (默认值)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#dbm-storage-backend">DBM storage backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#leveldb-storage-backend">LevelDB storage backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#httpcache">HTTPCache中间件设置</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.httpcompression">HttpCompressionMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#httpcompressionmiddleware-settings">HttpCompressionMiddleware Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.chunked">ChunkedTransferMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.httpproxy">HttpProxyMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.redirect">RedirectMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#redirectmiddleware-settings">RedirectMiddleware settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#metarefreshmiddleware">MetaRefreshMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#metarefreshmiddleware-settings">MetaRefreshMiddleware settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.retry">RetryMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#retrymiddleware-settings">RetryMiddleware Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.robotstxt">RobotsTxtMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.stats">DownloaderStats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.useragent">UserAgentMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="downloader-middleware.html#module-scrapy.contrib.downloadermiddleware.ajaxcrawl">AjaxCrawlMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="downloader-middleware.html#id4">AjaxCrawlMiddleware设置</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="spider-middleware.html">Spider中间件(Middleware)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#spider">激活spider中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#id1">编写您自己的spider中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#topics-spider-middleware-ref">内置spider中间件参考手册</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.depth">DepthMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.httperror">HttpErrorMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spider-middleware.html#httperrormiddleware-settings">HttpErrorMiddleware settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.offsite">OffsiteMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.referer">RefererMiddleware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="spider-middleware.html#referermiddleware-settings">RefererMiddleware settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spider-middleware.html#module-scrapy.contrib.spidermiddleware.urllength">UrlLengthMiddleware</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">扩展(Extensions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#extension-settings">扩展设置(Extension settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#id1">加载和激活扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#available-enabled-disabled">可用的(Available)、开启的(enabled)和禁用的(disabled)的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#disabling-an-extension">禁用扩展(Disabling an extension)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#id2">实现你的扩展</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#sample-extension">扩展例子(Sample extension)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#topics-extensions-ref">内置扩展介绍</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#id4">通用扩展</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.logstats">记录统计扩展(Log Stats extension)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.corestats">核心统计扩展(Core Stats extension)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.webservice">Web service 扩展</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.telnet">Telnet console 扩展</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.memusage">内存使用扩展(Memory usage extension)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.memdebug">内存调试扩展(Memory debugger extension)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.closespider">关闭spider扩展</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#module-scrapy.contrib.statsmailer">StatsMailer extension</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#debugging-extensions">Debugging extensions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#stack-trace-dump-extension">Stack trace dump extension</a></li>
+<li class="toctree-l4"><a class="reference internal" href="extensions.html#debugger-extension">调试扩展(Debugger extension)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">核心API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#crawler-api">Crawler API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-scrapy.settings">设置(Settings) API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-scrapy.signalmanager">信号(Signals) API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#stats-collector-api">状态收集器(Stats Collector) API</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="request-response.html">Requests and Responses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-objects">Request objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#passing-additional-data-to-callback-functions">Passing additional data to callback functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-meta-special-keys">Request.meta special keys</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#bindaddress">bindaddress</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-subclasses">Request subclasses</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#formrequest-objects">FormRequest objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#request-usage-examples">Request usage examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="request-response.html#using-formrequest-to-send-data-via-http-post">Using FormRequest to send data via HTTP POST</a></li>
+<li class="toctree-l4"><a class="reference internal" href="request-response.html#formrequest-from-response">使用FormRequest.from_response()方法模拟用户登录</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#response-objects">Response objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#response-subclasses">Response subclasses</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#textresponse-objects">TextResponse objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#htmlresponse-objects">HtmlResponse objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="request-response.html#xmlresponse-objects">XmlResponse objects</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#designating-the-settings">指定设定(Designating the settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#populating-the-settings">获取设定值(Populating the settings)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#command-line-options">1. 命令行选项(Command line options)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#project-settings-module">2. 项目设定模块(Project settings module)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-settings-per-command">3. 命令默认设定(Default settings per-command)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-global-settings">4. 默认全局设定(Default global settings)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#how-to-access-settings">如何访问设定(How to access settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#id1">设定名字的命名规则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#topics-settings-ref">内置设定参考手册</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#aws-access-key-id">AWS_ACCESS_KEY_ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#aws-secret-access-key">AWS_SECRET_ACCESS_KEY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#bot-name">BOT_NAME</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#concurrent-items">CONCURRENT_ITEMS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#concurrent-requests">CONCURRENT_REQUESTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#concurrent-requests-per-domain">CONCURRENT_REQUESTS_PER_DOMAIN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#concurrent-requests-per-ip">CONCURRENT_REQUESTS_PER_IP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-item-class">DEFAULT_ITEM_CLASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-request-headers">DEFAULT_REQUEST_HEADERS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#depth-limit">DEPTH_LIMIT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#depth-priority">DEPTH_PRIORITY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#depth-stats">DEPTH_STATS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#depth-stats-verbose">DEPTH_STATS_VERBOSE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#dnscache-enabled">DNSCACHE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#downloader">DOWNLOADER</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#downloader-middlewares">DOWNLOADER_MIDDLEWARES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#downloader-middlewares-base">DOWNLOADER_MIDDLEWARES_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#downloader-stats">DOWNLOADER_STATS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#download-delay">DOWNLOAD_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#download-handlers">DOWNLOAD_HANDLERS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#download-handlers-base">DOWNLOAD_HANDLERS_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#download-timeout">DOWNLOAD_TIMEOUT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#dupefilter-class">DUPEFILTER_CLASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#dupefilter-debug">DUPEFILTER_DEBUG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#editor">EDITOR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#extensions">EXTENSIONS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#extensions-base">EXTENSIONS_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#item-pipelines">ITEM_PIPELINES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#item-pipelines-base">ITEM_PIPELINES_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-enabled">LOG_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-encoding">LOG_ENCODING</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-file">LOG_FILE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-level">LOG_LEVEL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#log-stdout">LOG_STDOUT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memdebug-enabled">MEMDEBUG_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memdebug-notify">MEMDEBUG_NOTIFY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-enabled">MEMUSAGE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-limit-mb">MEMUSAGE_LIMIT_MB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-notify-mail">MEMUSAGE_NOTIFY_MAIL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-report">MEMUSAGE_REPORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#memusage-warning-mb">MEMUSAGE_WARNING_MB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#newspider-module">NEWSPIDER_MODULE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#randomize-download-delay">RANDOMIZE_DOWNLOAD_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#redirect-max-times">REDIRECT_MAX_TIMES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#redirect-max-metarefresh-delay">REDIRECT_MAX_METAREFRESH_DELAY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#redirect-priority-adjust">REDIRECT_PRIORITY_ADJUST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#robotstxt-obey">ROBOTSTXT_OBEY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#scheduler">SCHEDULER</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-contracts">SPIDER_CONTRACTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-contracts-base">SPIDER_CONTRACTS_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-middlewares">SPIDER_MIDDLEWARES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-middlewares-base">SPIDER_MIDDLEWARES_BASE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#spider-modules">SPIDER_MODULES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#stats-class">STATS_CLASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#stats-dump">STATS_DUMP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#statsmailer-rcpts">STATSMAILER_RCPTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#telnetconsole-enabled">TELNETCONSOLE_ENABLED</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#telnetconsole-port">TELNETCONSOLE_PORT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#templates-dir">TEMPLATES_DIR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#urllength-limit">URLLENGTH_LIMIT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#user-agent">USER_AGENT</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="signals.html">信号(Signals)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="signals.html#deferred-signal-handlers">延迟的信号处理器(Deferred signal handlers)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html#module-scrapy.signals">内置信号参考手册(Built-in signals reference)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#engine-started">engine_started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#engine-stopped">engine_stopped</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#item-scraped">item_scraped</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#item-dropped">item_dropped</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#spider-closed">spider_closed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#spider-opened">spider_opened</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#spider-idle">spider_idle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#spider-error">spider_error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#request-scheduled">request_scheduled</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#response-received">response_received</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signals.html#response-downloaded">response_downloaded</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">异常(Exceptions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#built-in-exceptions-reference">内置异常参考手册(Built-in Exceptions reference)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#dropitem">DropItem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#closespider">CloseSpider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#ignorerequest">IgnoreRequest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#notconfigured">NotConfigured</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#notsupported">NotSupported</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exporters.html">Item Exporters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exporters.html#item-exporter">使用 Item Exporter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#field-serializer">1. 在 field 类中声明一个 serializer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#overriding-serialize-field">2. 覆盖(overriding) serialize_field() 方法</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="exporters.html#topics-exporters-reference">Item Exporters 参考资料</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#baseitemexporter">BaseItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#xmlitemexporter">XmlItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#csvitemexporter">CsvItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#pickleitemexporter">PickleItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#pprintitemexporter">PprintItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#jsonitemexporter">JsonItemExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exporters.html#jsonlinesitemexporter">JsonLinesItemExporter</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id1">0.24.4 (2014-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id2">0.24.3 (2014-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id3">0.24.2 (2014-07-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id4">0.24.1 (2014-06-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id5">0.24.0 (2014-06-26)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#enhancements">Enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#bugfixes">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-02-14">0.22.2 (released 2014-02-14)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-02-08">0.22.1 (released 2014-02-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-01-17">0.22.0 (released 2014-01-17)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id6">Enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#fixes">Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-12-09">0.20.2 (released 2013-12-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-11-28">0.20.1 (released 2013-11-28)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-11-08">0.20.0 (released 2013-11-08)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id7">Enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id8">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#other">Other</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#thanks">Thanks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-10-10">0.18.4 (released 2013-10-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-10-03">0.18.3 (released 2013-10-03)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-09-03">0.18.2 (released 2013-09-03)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-08-27">0.18.1 (released 2013-08-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-08-09">0.18.0 (released 2013-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-05-30">0.16.5 (released 2013-05-30)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-01-23">0.16.4 (released 2013-01-23)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-12-07">0.16.3 (released 2012-12-07)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-11-09">0.16.2 (released 2012-11-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-10-26">0.16.1 (released 2012-10-26)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-10-18">0.16.0 (released 2012-10-18)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id9">0.14.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id10">0.14.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id11">0.14.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id12">0.14.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id13">0.14</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#new-features-and-settings">New features and settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#code-rearranged-and-removed">Code rearranged and removed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id14">0.12</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#new-features-and-improvements">New features and improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#scrapyd-changes">Scrapyd changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#changes-to-settings">Changes to settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#deprecated-obsoleted-functionality">Deprecated/obsoleted functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id15">0.10</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id16">New features and improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#command-line-tool-changes">Command-line tool changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#api-changes">API changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id17">Changes to settings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id18">0.9</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id19">New features and improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#id20">API changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#changes-to-default-settings">Changes to default settings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id21">0.8</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#new-features">New features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../news.html#backwards-incompatible-changes">Backwards-incompatible changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id22">0.7</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to Scrapy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#reporting-bugs">Reporting bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#writing-patches">Writing patches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#submitting-patches">Submitting patches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#coding-style">Coding style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#scrapy-contrib">Scrapy Contrib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#documentation-policies">Documentation policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#tests">Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#running-tests">Running tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#writing-tests">Writing tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versioning.html">Versioning and API Stability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../versioning.html#id1">Versioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../versioning.html#api-stability">API Stability</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental/index.html">试验阶段特性</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html#id3">使用外部库插入命令</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Scrapy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Spiders</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/marchtea/scrapy_doc_chs/blob/0.24/topics/spiders.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+    
+  <div class="section" id="spiders">
+<span id="topics-spiders"></span><h1>Spiders<a class="headerlink" href="#spiders" title="永久链接至标题">¶</a></h1>
+<p>Spider类定义了如何爬取某个(或某些)网站。包括了爬取的动作(例如:是否跟进链接)以及如何从网页的内容中提取结构化数据(爬取item)。
+换句话说，Spider就是您定义爬取的动作及分析某个网页(或者是有些网页)的地方。</p>
+<p>对spider来说，爬取的循环类似下文:</p>
+<ol class="arabic">
+<li><p class="first">以初始的URL初始化Request，并设置回调函数。
+当该request下载完毕并返回时，将生成response，并作为参数传给该回调函数。</p>
+<p>spider中初始的request是通过调用 <a class="reference internal" href="#scrapy.spider.Spider.start_requests" title="scrapy.spider.Spider.start_requests"><code class="xref py py-meth docutils literal"><span class="pre">start_requests()</span></code></a> 来获取的。
+<a class="reference internal" href="#scrapy.spider.Spider.start_requests" title="scrapy.spider.Spider.start_requests"><code class="xref py py-meth docutils literal"><span class="pre">start_requests()</span></code></a> 读取 <a class="reference internal" href="#scrapy.spider.Spider.start_urls" title="scrapy.spider.Spider.start_urls"><code class="xref py py-attr docutils literal"><span class="pre">start_urls</span></code></a> 中的URL，
+并以 <a class="reference internal" href="#scrapy.spider.Spider.parse" title="scrapy.spider.Spider.parse"><code class="xref py py-attr docutils literal"><span class="pre">parse</span></code></a> 为回调函数生成 <a class="reference internal" href="request-response.html#scrapy.http.Request" title="scrapy.http.Request"><code class="xref py py-class docutils literal"><span class="pre">Request</span></code></a> 。</p>
+</li>
+<li><p class="first">在回调函数内分析返回的(网页)内容，返回 <a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> 对象或者 <a class="reference internal" href="request-response.html#scrapy.http.Request" title="scrapy.http.Request"><code class="xref py py-class docutils literal"><span class="pre">Request</span></code></a> 或者一个包括二者的可迭代容器。
+返回的Request对象之后会经过Scrapy处理，下载相应的内容，并调用设置的callback函数(函数可相同)。</p>
+</li>
+<li><p class="first">在回调函数内，您可以使用 <a class="reference internal" href="selectors.html#topics-selectors"><span>选择器(Selectors)</span></a>
+(您也可以使用BeautifulSoup, lxml 或者您想用的任何解析器) 来分析网页内容，并根据分析的数据生成item。</p>
+</li>
+<li><p class="first">最后，由spider返回的item将被存到数据库(由某些
+<a class="reference internal" href="item-pipeline.html#topics-item-pipeline"><span>Item Pipeline</span></a> 处理)或使用
+<a class="reference internal" href="feed-exports.html#topics-feed-exports"><span>Feed exports</span></a> 存入到文件中。</p>
+</li>
+</ol>
+<p>虽然该循环对任何类型的spider都(多少)适用，但Scrapy仍然为了不同的需求提供了多种默认spider。
+之后将讨论这些spider。</p>
+<div class="section" id="spider">
+<span id="spiderargs"></span><h2>Spider参数<a class="headerlink" href="#spider" title="永久链接至标题">¶</a></h2>
+<p>Spider可以通过接受参数来修改其功能。
+spider参数一般用来定义初始URL或者指定限制爬取网站的部分。
+您也可以使用其来配置spider的任何功能。</p>
+<p>在运行 <a class="reference internal" href="commands.html#std:command-crawl"><code class="xref std std-command docutils literal"><span class="pre">crawl</span></code></a> 时添加 <code class="docutils literal"><span class="pre">-a</span></code> 可以传递Spider参数:</p>
+<div class="highlight-python"><div class="highlight"><pre>scrapy crawl myspider -a category=electronics
+</pre></div>
+</div>
+<p>Spider在构造器(constructor)中获取参数:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scrapy</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">Spider</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;myspider&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MySpider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com/categories/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">category</span><span class="p">]</span>
+        <span class="c"># ...</span>
+</pre></div>
+</div>
+<p>Spider参数也可以通过Scrapyd的 <code class="docutils literal"><span class="pre">schedule.json</span></code> API来传递。
+参见 <a class="reference external" href="http://scrapyd.readthedocs.org/">Scrapyd documentation</a>.</p>
+</div>
+<div class="section" id="topics-spiders-ref">
+<span id="id1"></span><h2>内置Spider参考手册<a class="headerlink" href="#topics-spiders-ref" title="永久链接至标题">¶</a></h2>
+<p>Scrapy提供多种方便的通用spider供您继承使用。
+这些spider为一些常用的爬取情况提供方便的特性，
+例如根据某些规则跟进某个网站的所有链接、根据 <a class="reference external" href="http://www.sitemaps.org">Sitemaps</a> 来进行爬取，或者分析XML/CSV源。</p>
+<p>下面spider的示例中，我们假定您有个项目在 <code class="docutils literal"><span class="pre">myproject.items</span></code> 模块中声明了 <code class="docutils literal"><span class="pre">TestItem</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scrapy</span>
+
+<span class="k">class</span> <span class="nc">TestItem</span><span class="p">(</span><span class="n">scrapy</span><span class="o">.</span><span class="n">Item</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">scrapy</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">scrapy</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">scrapy</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
+</pre></div>
+</div>
+<span class="target" id="module-scrapy.spider"></span><div class="section" id="id2">
+<h3>Spider<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<dl class="class">
+<dt id="scrapy.spider.Spider">
+<em class="property">class </em><code class="descclassname">scrapy.spider.</code><code class="descname">Spider</code><a class="headerlink" href="#scrapy.spider.Spider" title="永久链接至目标">¶</a></dt>
+<dd><p>Spider是最简单的spider。每个其他的spider必须继承自该类(包括Scrapy自带的其他spider以及您自己编写的spider)。
+Spider并没有提供什么特殊的功能。
+其仅仅请求给定的 <code class="docutils literal"><span class="pre">start_urls</span></code>/<code class="docutils literal"><span class="pre">start_requests</span></code> ，并根据返回的结果(resulting responses)调用spider的 <code class="docutils literal"><span class="pre">parse</span></code> 方法。</p>
+<dl class="attribute">
+<dt id="scrapy.spider.Spider.name">
+<code class="descname">name</code><a class="headerlink" href="#scrapy.spider.Spider.name" title="永久链接至目标">¶</a></dt>
+<dd><p>定义spider名字的字符串(string)。spider的名字定义了Scrapy如何定位(并初始化)spider，所以其必须是唯一的。
+不过您可以生成多个相同的spider实例(instance)，这没有任何限制。
+name是spider最重要的属性，而且是必须的。</p>
+<p>如果该spider爬取单个网站(single domain)，一个常见的做法是以该网站(domain)(加或不加 <a class="reference external" href="http://en.wikipedia.org/wiki/Top-level_domain">后缀</a> )来命名spider。
+例如，如果spider爬取 <code class="docutils literal"><span class="pre">mywebsite.com</span></code> ，该spider通常会被命名为 <code class="docutils literal"><span class="pre">mywebsite</span></code> 。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.spider.Spider.allowed_domains">
+<code class="descname">allowed_domains</code><a class="headerlink" href="#scrapy.spider.Spider.allowed_domains" title="永久链接至目标">¶</a></dt>
+<dd><p>可选。包含了spider允许爬取的域名(domain)列表(list)。
+当 <a class="reference internal" href="spider-middleware.html#scrapy.contrib.spidermiddleware.offsite.OffsiteMiddleware" title="scrapy.contrib.spidermiddleware.offsite.OffsiteMiddleware"><code class="xref py py-class docutils literal"><span class="pre">OffsiteMiddleware</span></code></a> 启用时，
+域名不在列表中的URL不会被跟进。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.spider.Spider.start_urls">
+<code class="descname">start_urls</code><a class="headerlink" href="#scrapy.spider.Spider.start_urls" title="永久链接至目标">¶</a></dt>
+<dd><p>URL列表。当没有制定特定的URL时，spider将从该列表中开始进行爬取。
+因此，第一个被获取到的页面的URL将是该列表之一。
+后续的URL将会从获取到的数据中提取。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.spider.Spider.start_requests">
+<code class="descname">start_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.spider.Spider.start_requests" title="永久链接至目标">¶</a></dt>
+<dd><p>该方法必须返回一个可迭代对象(iterable)。该对象包含了spider用于爬取的第一个Request。</p>
+<p>当spider启动爬取并且未制定URL时，该方法被调用。
+当指定了URL时，<a class="reference internal" href="#scrapy.spider.Spider.make_requests_from_url" title="scrapy.spider.Spider.make_requests_from_url"><code class="xref py py-meth docutils literal"><span class="pre">make_requests_from_url()</span></code></a> 将被调用来创建Request对象。
+该方法仅仅会被Scrapy调用一次，因此您可以将其实现为生成器。</p>
+<p>该方法的默认实现是使用 <a class="reference internal" href="#scrapy.spider.Spider.start_urls" title="scrapy.spider.Spider.start_urls"><code class="xref py py-attr docutils literal"><span class="pre">start_urls</span></code></a> 的url生成Request。</p>
+<p>如果您想要修改最初爬取某个网站的Request对象，您可以重写(override)该方法。
+例如，如果您需要在启动时以POST登录某个网站，你可以这么写:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">start_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">scrapy</span><span class="o">.</span><span class="n">FormRequest</span><span class="p">(</span><span class="s">&quot;http://www.example.com/login&quot;</span><span class="p">,</span>
+                               <span class="n">formdata</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="s">&#39;john&#39;</span><span class="p">,</span> <span class="s">&#39;pass&#39;</span><span class="p">:</span> <span class="s">&#39;secret&#39;</span><span class="p">},</span>
+                               <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">logged_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="c"># here you would extract links to follow and return Requests for</span>
+    <span class="c"># each of them, with another callback</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.spider.Spider.make_requests_from_url">
+<code class="descname">make_requests_from_url</code><span class="sig-paren">(</span><em>url</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.spider.Spider.make_requests_from_url" title="永久链接至目标">¶</a></dt>
+<dd><p>该方法接受一个URL并返回用于爬取的 <a class="reference internal" href="request-response.html#scrapy.http.Request" title="scrapy.http.Request"><code class="xref py py-class docutils literal"><span class="pre">Request</span></code></a> 对象。
+该方法在初始化request时被 <a class="reference internal" href="#scrapy.spider.Spider.start_requests" title="scrapy.spider.Spider.start_requests"><code class="xref py py-meth docutils literal"><span class="pre">start_requests()</span></code></a> 调用，也被用于转化url为request。</p>
+<p>默认未被复写(overridden)的情况下，该方法返回的Request对象中，
+<a class="reference internal" href="#scrapy.spider.Spider.parse" title="scrapy.spider.Spider.parse"><code class="xref py py-meth docutils literal"><span class="pre">parse()</span></code></a> 作为回调函数，dont_filter参数也被设置为开启。
+(详情参见 <a class="reference internal" href="request-response.html#scrapy.http.Request" title="scrapy.http.Request"><code class="xref py py-class docutils literal"><span class="pre">Request</span></code></a>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.spider.Spider.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.spider.Spider.parse" title="永久链接至目标">¶</a></dt>
+<dd><p>当response没有指定回调函数时，该方法是Scrapy处理下载的response的默认方法。</p>
+<p><code class="docutils literal"><span class="pre">parse</span></code> 负责处理response并返回处理的数据以及(/或)跟进的URL。
+<a class="reference internal" href="#scrapy.spider.Spider" title="scrapy.spider.Spider"><code class="xref py py-class docutils literal"><span class="pre">Spider</span></code></a> 对其他的Request的回调函数也有相同的要求。</p>
+<p>该方法及其他的Request回调函数必须返回一个包含
+<a class="reference internal" href="request-response.html#scrapy.http.Request" title="scrapy.http.Request"><code class="xref py py-class docutils literal"><span class="pre">Request</span></code></a> 及(或) <a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a>
+的可迭代的对象。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">参数:</th><td class="field-body"><strong>response</strong> (<a class="reference internal" href="request-response.html#scrapy.http.Response" title="scrapy.http.Response"><code class="xref py py-class docutils literal"><span class="pre">Response</span></code></a>) &#8211; 用于分析的response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.spider.Spider.log">
+<code class="descname">log</code><span class="sig-paren">(</span><em>message</em><span class="optional">[</span>, <em>level</em>, <em>component</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.spider.Spider.log" title="永久链接至目标">¶</a></dt>
+<dd><p>使用 <a class="reference internal" href="logging.html#scrapy.log.msg" title="scrapy.log.msg"><code class="xref py py-func docutils literal"><span class="pre">scrapy.log.msg()</span></code></a> 方法记录(log)message。
+log中自动带上该spider的 <a class="reference internal" href="#scrapy.spider.Spider.name" title="scrapy.spider.Spider.name"><code class="xref py py-attr docutils literal"><span class="pre">name</span></code></a> 属性。
+更多数据请参见 <a class="reference internal" href="logging.html#topics-logging"><span>Logging</span></a> 。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.spider.Spider.closed">
+<code class="descname">closed</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.spider.Spider.closed" title="永久链接至目标">¶</a></dt>
+<dd><p>当spider关闭时，该函数被调用。
+该方法提供了一个替代调用signals.connect()来监听 <a class="reference internal" href="signals.html#std:signal-spider_closed"><code class="xref std std-signal docutils literal"><span class="pre">spider_closed</span></code></a> 信号的快捷方式。</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="id3">
+<h4>Spider样例<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h4>
+<p>让我们来看一个例子:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scrapy</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">scrapy</span><span class="o">.</span><span class="n">Spider</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;example.com&#39;</span>
+    <span class="n">allowed_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;example.com&#39;</span><span class="p">]</span>
+    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">&#39;http://www.example.com/1.html&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.example.com/2.html&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.example.com/3.html&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&#39;A response from </span><span class="si">%s</span><span class="s"> just arrived!&#39;</span> <span class="o">%</span> <span class="n">response</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>另一个在单个回调函数中返回多个Request以及Item的例子:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scrapy</span>
+<span class="kn">from</span> <span class="nn">myproject.items</span> <span class="kn">import</span> <span class="n">MyItem</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">scrapy</span><span class="o">.</span><span class="n">Spider</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;example.com&#39;</span>
+    <span class="n">allowed_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;example.com&#39;</span><span class="p">]</span>
+    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">&#39;http://www.example.com/1.html&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.example.com/2.html&#39;</span><span class="p">,</span>
+        <span class="s">&#39;http://www.example.com/3.html&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">sel</span> <span class="o">=</span> <span class="n">scrapy</span><span class="o">.</span><span class="n">Selector</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">h3</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//h3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">MyItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">h3</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//a/@href&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">scrapy</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="module-scrapy.contrib.spiders"></span></div>
+</div>
+<div class="section" id="crawlspider">
+<h3>CrawlSpider<a class="headerlink" href="#crawlspider" title="永久链接至标题">¶</a></h3>
+<dl class="class">
+<dt id="scrapy.contrib.spiders.CrawlSpider">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.spiders.</code><code class="descname">CrawlSpider</code><a class="headerlink" href="#scrapy.contrib.spiders.CrawlSpider" title="永久链接至目标">¶</a></dt>
+<dd><p>爬取一般网站常用的spider。其定义了一些规则(rule)来提供跟进link的方便的机制。
+也许该spider并不是完全适合您的特定网站或项目，但其对很多情况都使用。
+因此您可以以其为起点，根据需求修改部分方法。当然您也可以实现自己的spider。</p>
+<p>除了从Spider继承过来的(您必须提供的)属性外，其提供了一个新的属性:</p>
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.CrawlSpider.rules">
+<code class="descname">rules</code><a class="headerlink" href="#scrapy.contrib.spiders.CrawlSpider.rules" title="永久链接至目标">¶</a></dt>
+<dd><p>一个包含一个(或多个) <a class="reference internal" href="#scrapy.contrib.spiders.Rule" title="scrapy.contrib.spiders.Rule"><code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></a> 对象的集合(list)。
+每个 <a class="reference internal" href="#scrapy.contrib.spiders.Rule" title="scrapy.contrib.spiders.Rule"><code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></a> 对爬取网站的动作定义了特定表现。
+Rule对象在下边会介绍。
+如果多个rule匹配了相同的链接，则根据他们在本属性中被定义的顺序，第一个会被使用。</p>
+</dd></dl>
+
+<p>该spider也提供了一个可复写(overrideable)的方法:</p>
+<dl class="method">
+<dt id="scrapy.contrib.spiders.CrawlSpider.parse_start_url">
+<code class="descname">parse_start_url</code><span class="sig-paren">(</span><em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.spiders.CrawlSpider.parse_start_url" title="永久链接至目标">¶</a></dt>
+<dd><p>当start_url的请求返回时，该方法被调用。
+该方法分析最初的返回值并必须返回一个
+<a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> 对象或者
+一个 <a class="reference internal" href="request-response.html#scrapy.http.Request" title="scrapy.http.Request"><code class="xref py py-class docutils literal"><span class="pre">Request</span></code></a> 对象或者
+一个可迭代的包含二者对象。</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="crawling-rules">
+<h4>爬取规则(Crawling rules)<a class="headerlink" href="#crawling-rules" title="永久链接至标题">¶</a></h4>
+<dl class="class">
+<dt id="scrapy.contrib.spiders.Rule">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.spiders.</code><code class="descname">Rule</code><span class="sig-paren">(</span><em>link_extractor</em>, <em>callback=None</em>, <em>cb_kwargs=None</em>, <em>follow=None</em>, <em>process_links=None</em>, <em>process_request=None</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.spiders.Rule" title="永久链接至目标">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">link_extractor</span></code> 是一个 <a class="reference internal" href="link-extractors.html#topics-link-extractors"><span>Link Extractor</span></a> 对象。
+其定义了如何从爬取到的页面提取链接。</p>
+<p><code class="docutils literal"><span class="pre">callback</span></code> 是一个callable或string(该spider中同名的函数将会被调用)。
+从link_extractor中每获取到链接时将会调用该函数。该回调函数接受一个response作为其第一个参数，
+并返回一个包含 <a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> 以及(或) <a class="reference internal" href="request-response.html#scrapy.http.Request" title="scrapy.http.Request"><code class="xref py py-class docutils literal"><span class="pre">Request</span></code></a> 对象(或者这两者的子类)的列表(list)。</p>
+<div class="admonition warning">
+<p class="first admonition-title">警告</p>
+<p class="last">当编写爬虫规则时，请避免使用 <code class="docutils literal"><span class="pre">parse</span></code> 作为回调函数。
+由于 <a class="reference internal" href="#scrapy.contrib.spiders.CrawlSpider" title="scrapy.contrib.spiders.CrawlSpider"><code class="xref py py-class docutils literal"><span class="pre">CrawlSpider</span></code></a> 使用 <code class="docutils literal"><span class="pre">parse</span></code> 方法来实现其逻辑，如果
+您覆盖了 <code class="docutils literal"><span class="pre">parse</span></code> 方法，crawl spider 将会运行失败。</p>
+</div>
+<p><code class="docutils literal"><span class="pre">cb_kwargs</span></code> 包含传递给回调函数的参数(keyword argument)的字典。</p>
+<p><code class="docutils literal"><span class="pre">follow</span></code> 是一个布尔(boolean)值，指定了根据该规则从response提取的链接是否需要跟进。
+如果 <code class="docutils literal"><span class="pre">callback</span></code> 为None， <code class="docutils literal"><span class="pre">follow</span></code> 默认设置为 <code class="docutils literal"><span class="pre">True</span></code> ，否则默认为 <code class="docutils literal"><span class="pre">False</span></code> 。</p>
+<p><code class="docutils literal"><span class="pre">process_links</span></code> 是一个callable或string(该spider中同名的函数将会被调用)。
+从link_extractor中获取到链接列表时将会调用该函数。该方法主要用来过滤。</p>
+<p><code class="docutils literal"><span class="pre">process_request</span></code> 是一个callable或string(该spider中同名的函数将会被调用)。
+该规则提取到每个request时都会调用该函数。该函数必须返回一个request或者None。
+(用来过滤request)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="id4">
+<h4>CrawlSpider样例<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h4>
+<p>接下来给出配合rule使用CrawlSpider的例子:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scrapy</span>
+<span class="kn">from</span> <span class="nn">scrapy.contrib.spiders</span> <span class="kn">import</span> <span class="n">CrawlSpider</span><span class="p">,</span> <span class="n">Rule</span>
+<span class="kn">from</span> <span class="nn">scrapy.contrib.linkextractors</span> <span class="kn">import</span> <span class="n">LinkExtractor</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">CrawlSpider</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;example.com&#39;</span>
+    <span class="n">allowed_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;example.com&#39;</span><span class="p">]</span>
+    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com&#39;</span><span class="p">]</span>
+
+    <span class="n">rules</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="c"># 提取匹配 &#39;category.php&#39; (但不匹配 &#39;subsection.php&#39;) 的链接并跟进链接(没有callback意味着follow默认为True)</span>
+        <span class="n">Rule</span><span class="p">(</span><span class="n">LinkExtractor</span><span class="p">(</span><span class="n">allow</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;category\.php&#39;</span><span class="p">,</span> <span class="p">),</span> <span class="n">deny</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;subsection\.php&#39;</span><span class="p">,</span> <span class="p">))),</span>
+
+        <span class="c"># 提取匹配 &#39;item.php&#39; 的链接并使用spider的parse_item方法进行分析</span>
+        <span class="n">Rule</span><span class="p">(</span><span class="n">LinkExtractor</span><span class="p">(</span><span class="n">allow</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;item\.php&#39;</span><span class="p">,</span> <span class="p">)),</span> <span class="n">callback</span><span class="o">=</span><span class="s">&#39;parse_item&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">parse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&#39;Hi, this is an item page! </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">response</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="n">scrapy</span><span class="o">.</span><span class="n">Item</span><span class="p">()</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//td[@id=&quot;item_id&quot;]/text()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">re</span><span class="p">(</span><span class="s">r&#39;ID: (\d+)&#39;</span><span class="p">)</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//td[@id=&quot;item_name&quot;]/text()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//td[@id=&quot;item_description&quot;]/text()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">item</span>
+</pre></div>
+</div>
+<p>该spider将从example.com的首页开始爬取，获取category以及item的链接并对后者使用 <code class="docutils literal"><span class="pre">parse_item</span></code> 方法。
+当item获得返回(response)时，将使用XPath处理HTML并生成一些数据填入 <a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> 中。</p>
+</div>
+</div>
+<div class="section" id="xmlfeedspider">
+<h3>XMLFeedSpider<a class="headerlink" href="#xmlfeedspider" title="永久链接至标题">¶</a></h3>
+<dl class="class">
+<dt id="scrapy.contrib.spiders.XMLFeedSpider">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.spiders.</code><code class="descname">XMLFeedSpider</code><a class="headerlink" href="#scrapy.contrib.spiders.XMLFeedSpider" title="永久链接至目标">¶</a></dt>
+<dd><p>XMLFeedSpider被设计用于通过迭代各个节点来分析XML源(XML feed)。
+迭代器可以从 <code class="docutils literal"><span class="pre">iternodes</span></code> ， <code class="docutils literal"><span class="pre">xml</span></code> ， <code class="docutils literal"><span class="pre">html</span></code> 选择。
+鉴于 <code class="docutils literal"><span class="pre">xml</span></code> 以及 <code class="docutils literal"><span class="pre">html</span></code> 迭代器需要先读取所有DOM再分析而引起的性能问题，
+一般还是推荐使用 <code class="docutils literal"><span class="pre">iternodes</span></code> 。
+不过使用 <code class="docutils literal"><span class="pre">html</span></code> 作为迭代器能有效应对错误的XML。</p>
+<p>您必须定义下列类属性来设置迭代器以及标签名(tag name):</p>
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.XMLFeedSpider.iterator">
+<code class="descname">iterator</code><a class="headerlink" href="#scrapy.contrib.spiders.XMLFeedSpider.iterator" title="永久链接至目标">¶</a></dt>
+<dd><p>用于确定使用哪个迭代器的string。可选项有:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">'iternodes'</span></code> - 一个高性能的基于正则表达式的迭代器</li>
+<li><code class="docutils literal"><span class="pre">'html'</span></code> - 使用 <a class="reference internal" href="selectors.html#scrapy.selector.Selector" title="scrapy.selector.Selector"><code class="xref py py-class docutils literal"><span class="pre">Selector</span></code></a> 的迭代器。
+需要注意的是该迭代器使用DOM进行分析，其需要将所有的DOM载入内存，
+当数据量大的时候会产生问题。</li>
+<li><code class="docutils literal"><span class="pre">'xml'</span></code> - 使用 <a class="reference internal" href="selectors.html#scrapy.selector.Selector" title="scrapy.selector.Selector"><code class="xref py py-class docutils literal"><span class="pre">Selector</span></code></a> 的迭代器。
+需要注意的是该迭代器使用DOM进行分析，其需要将所有的DOM载入内存，
+当数据量大的时候会产生问题。</li>
+</ul>
+</div></blockquote>
+<p>默认值为 <code class="docutils literal"><span class="pre">iternodes</span></code> 。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.XMLFeedSpider.itertag">
+<code class="descname">itertag</code><a class="headerlink" href="#scrapy.contrib.spiders.XMLFeedSpider.itertag" title="永久链接至目标">¶</a></dt>
+<dd><p>一个包含开始迭代的节点名的string。例如:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">itertag</span> <span class="o">=</span> <span class="s">&#39;product&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.XMLFeedSpider.namespaces">
+<code class="descname">namespaces</code><a class="headerlink" href="#scrapy.contrib.spiders.XMLFeedSpider.namespaces" title="永久链接至目标">¶</a></dt>
+<dd><p>一个由 <code class="docutils literal"><span class="pre">(prefix,</span> <span class="pre">url)</span></code> 元组(tuple)所组成的list。
+其定义了在该文档中会被spider处理的可用的namespace。
+<code class="docutils literal"><span class="pre">prefix</span></code> 及 <code class="docutils literal"><span class="pre">uri</span></code> 会被自动调用
+<a class="reference internal" href="selectors.html#scrapy.selector.Selector.register_namespace" title="scrapy.selector.Selector.register_namespace"><code class="xref py py-meth docutils literal"><span class="pre">register_namespace()</span></code></a> 生成namespace。</p>
+<p>您可以通过在 <a class="reference internal" href="#scrapy.contrib.spiders.XMLFeedSpider.itertag" title="scrapy.contrib.spiders.XMLFeedSpider.itertag"><code class="xref py py-attr docutils literal"><span class="pre">itertag</span></code></a> 属性中制定节点的namespace。</p>
+<p>例如:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">YourSpider</span><span class="p">(</span><span class="n">XMLFeedSpider</span><span class="p">):</span>
+
+    <span class="n">namespaces</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;http://www.sitemaps.org/schemas/sitemap/0.9&#39;</span><span class="p">)]</span>
+    <span class="n">itertag</span> <span class="o">=</span> <span class="s">&#39;n:url&#39;</span>
+    <span class="c"># ...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<p>除了这些新的属性之外，该spider也有以下可以覆盖(overrideable)的方法:</p>
+<dl class="method">
+<dt id="scrapy.contrib.spiders.XMLFeedSpider.adapt_response">
+<code class="descname">adapt_response</code><span class="sig-paren">(</span><em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.spiders.XMLFeedSpider.adapt_response" title="永久链接至目标">¶</a></dt>
+<dd><p>该方法在spider分析response前被调用。您可以在response被分析之前使用该函数来修改内容(body)。
+该方法接受一个response并返回一个response(可以相同也可以不同)。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.spiders.XMLFeedSpider.parse_node">
+<code class="descname">parse_node</code><span class="sig-paren">(</span><em>response</em>, <em>selector</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.spiders.XMLFeedSpider.parse_node" title="永久链接至目标">¶</a></dt>
+<dd><p>当节点符合提供的标签名时(<code class="docutils literal"><span class="pre">itertag</span></code>)该方法被调用。
+接收到的response以及相应的 <a class="reference internal" href="selectors.html#scrapy.selector.Selector" title="scrapy.selector.Selector"><code class="xref py py-class docutils literal"><span class="pre">Selector</span></code></a> 作为参数传递给该方法。
+该方法返回一个 <a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> 对象或者
+<a class="reference internal" href="request-response.html#scrapy.http.Request" title="scrapy.http.Request"><code class="xref py py-class docutils literal"><span class="pre">Request</span></code></a> 对象 或者一个包含二者的可迭代对象(iterable)。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.spiders.XMLFeedSpider.process_results">
+<code class="descname">process_results</code><span class="sig-paren">(</span><em>response</em>, <em>results</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.spiders.XMLFeedSpider.process_results" title="永久链接至目标">¶</a></dt>
+<dd><p>当spider返回结果(item或request)时该方法被调用。
+设定该方法的目的是在结果返回给框架核心(framework core)之前做最后的处理，
+例如设定item的ID。其接受一个结果的列表(list of results)及对应的response。
+其结果必须返回一个结果的列表(list of results)(包含Item或者Request对象)。</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="id5">
+<h4>XMLFeedSpider例子<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h4>
+<p>该spider十分易用。下边是其中一个例子:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">scrapy.contrib.spiders</span> <span class="kn">import</span> <span class="n">XMLFeedSpider</span>
+<span class="kn">from</span> <span class="nn">myproject.items</span> <span class="kn">import</span> <span class="n">TestItem</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">XMLFeedSpider</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;example.com&#39;</span>
+    <span class="n">allowed_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;example.com&#39;</span><span class="p">]</span>
+    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com/feed.xml&#39;</span><span class="p">]</span>
+    <span class="n">iterator</span> <span class="o">=</span> <span class="s">&#39;iternodes&#39;</span> <span class="c"># This is actually unnecessary, since it&#39;s the default value</span>
+    <span class="n">itertag</span> <span class="o">=</span> <span class="s">&#39;item&#39;</span>
+
+    <span class="k">def</span> <span class="nf">parse_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s">&#39;Hi, this is a &lt;</span><span class="si">%s</span><span class="s">&gt; node!: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itertag</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">extract</span><span class="p">())))</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="n">TestItem</span><span class="p">()</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;@id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;description&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">item</span>
+</pre></div>
+</div>
+<p>简单来说，我们在这里创建了一个spider，从给定的 <code class="docutils literal"><span class="pre">start_urls</span></code> 中下载feed，
+并迭代feed中每个 <code class="docutils literal"><span class="pre">item</span></code> 标签，输出，并在 <a class="reference internal" href="items.html#scrapy.item.Item" title="scrapy.item.Item"><code class="xref py py-class docutils literal"><span class="pre">Item</span></code></a> 中存储有些随机数据。</p>
+</div>
+</div>
+<div class="section" id="csvfeedspider">
+<h3>CSVFeedSpider<a class="headerlink" href="#csvfeedspider" title="永久链接至标题">¶</a></h3>
+<dl class="class">
+<dt id="scrapy.contrib.spiders.CSVFeedSpider">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.spiders.</code><code class="descname">CSVFeedSpider</code><a class="headerlink" href="#scrapy.contrib.spiders.CSVFeedSpider" title="永久链接至目标">¶</a></dt>
+<dd><p>该spider除了其按行遍历而不是节点之外其他和XMLFeedSpider十分类似。
+而其在每次迭代时调用的是 <a class="reference internal" href="#scrapy.contrib.spiders.CSVFeedSpider.parse_row" title="scrapy.contrib.spiders.CSVFeedSpider.parse_row"><code class="xref py py-meth docutils literal"><span class="pre">parse_row()</span></code></a> 。</p>
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.CSVFeedSpider.delimiter">
+<code class="descname">delimiter</code><a class="headerlink" href="#scrapy.contrib.spiders.CSVFeedSpider.delimiter" title="永久链接至目标">¶</a></dt>
+<dd><p>在CSV文件中用于区分字段的分隔符。类型为string。
+默认为 <code class="docutils literal"><span class="pre">','</span></code> (逗号)。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.CSVFeedSpider.headers">
+<code class="descname">headers</code><a class="headerlink" href="#scrapy.contrib.spiders.CSVFeedSpider.headers" title="永久链接至目标">¶</a></dt>
+<dd><p>在CSV文件中包含的用来提取字段的行的列表。参考下边的例子。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.contrib.spiders.CSVFeedSpider.parse_row">
+<code class="descname">parse_row</code><span class="sig-paren">(</span><em>response</em>, <em>row</em><span class="sig-paren">)</span><a class="headerlink" href="#scrapy.contrib.spiders.CSVFeedSpider.parse_row" title="永久链接至目标">¶</a></dt>
+<dd><p>该方法接收一个response对象及一个以提供或检测出来的header为键的字典(代表每行)。
+该spider中，您也可以覆盖 <code class="docutils literal"><span class="pre">adapt_response</span></code> 及
+<code class="docutils literal"><span class="pre">process_results</span></code> 方法来进行预处理(pre-processing)及后(post-processing)处理。</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="id6">
+<h4>CSVFeedSpider例子<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h4>
+<p>下面的例子和之前的例子很像，但使用了
+<a class="reference internal" href="#scrapy.contrib.spiders.CSVFeedSpider" title="scrapy.contrib.spiders.CSVFeedSpider"><code class="xref py py-class docutils literal"><span class="pre">CSVFeedSpider</span></code></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">scrapy.contrib.spiders</span> <span class="kn">import</span> <span class="n">CSVFeedSpider</span>
+<span class="kn">from</span> <span class="nn">myproject.items</span> <span class="kn">import</span> <span class="n">TestItem</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">CSVFeedSpider</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;example.com&#39;</span>
+    <span class="n">allowed_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;example.com&#39;</span><span class="p">]</span>
+    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com/feed.csv&#39;</span><span class="p">]</span>
+    <span class="n">delimiter</span> <span class="o">=</span> <span class="s">&#39;;&#39;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s">&#39;Hi, this is a row!: </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">row</span><span class="p">)</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="n">TestItem</span><span class="p">()</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">item</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="sitemapspider">
+<h3>SitemapSpider<a class="headerlink" href="#sitemapspider" title="永久链接至标题">¶</a></h3>
+<dl class="class">
+<dt id="scrapy.contrib.spiders.SitemapSpider">
+<em class="property">class </em><code class="descclassname">scrapy.contrib.spiders.</code><code class="descname">SitemapSpider</code><a class="headerlink" href="#scrapy.contrib.spiders.SitemapSpider" title="永久链接至目标">¶</a></dt>
+<dd><p>SitemapSpider使您爬取网站时可以通过 <a class="reference external" href="http://www.sitemaps.org">Sitemaps</a> 来发现爬取的URL。</p>
+<p>其支持嵌套的sitemap，并能从 <a class="reference external" href="http://www.robotstxt.org/">robots.txt</a> 中获取sitemap的url。</p>
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.SitemapSpider.sitemap_urls">
+<code class="descname">sitemap_urls</code><a class="headerlink" href="#scrapy.contrib.spiders.SitemapSpider.sitemap_urls" title="永久链接至目标">¶</a></dt>
+<dd><p>包含您要爬取的url的sitemap的url列表(list)。
+您也可以指定为一个 <a class="reference external" href="http://www.robotstxt.org/">robots.txt</a> ，spider会从中分析并提取url。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.SitemapSpider.sitemap_rules">
+<code class="descname">sitemap_rules</code><a class="headerlink" href="#scrapy.contrib.spiders.SitemapSpider.sitemap_rules" title="永久链接至目标">¶</a></dt>
+<dd><p>一个包含 <code class="docutils literal"><span class="pre">(regex,</span> <span class="pre">callback)</span></code> 元组的列表(list):</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">regex</span></code> 是一个用于匹配从sitemap提供的url的正则表达式。
+<code class="docutils literal"><span class="pre">regex</span></code> 可以是一个字符串或者编译的正则对象(compiled regex object)。</li>
+<li>callback指定了匹配正则表达式的url的处理函数。
+<code class="docutils literal"><span class="pre">callback</span></code> 可以是一个字符串(spider中方法的名字)或者是callable。</li>
+</ul>
+<p>例如:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sitemap_rules</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;/product/&#39;</span><span class="p">,</span> <span class="s">&#39;parse_product&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>规则按顺序进行匹配，之后第一个匹配才会被应用。</p>
+<p>如果您忽略该属性，sitemap中发现的所有url将会被 <code class="docutils literal"><span class="pre">parse</span></code> 函数处理。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.SitemapSpider.sitemap_follow">
+<code class="descname">sitemap_follow</code><a class="headerlink" href="#scrapy.contrib.spiders.SitemapSpider.sitemap_follow" title="永久链接至目标">¶</a></dt>
+<dd><p>一个用于匹配要跟进的sitemap的正则表达式的列表(list)。其仅仅被应用在
+使用 <cite>Sitemap index files</cite> 来指向其他sitemap文件的站点。</p>
+<p>默认情况下所有的sitemap都会被跟进。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="scrapy.contrib.spiders.SitemapSpider.sitemap_alternate_links">
+<code class="descname">sitemap_alternate_links</code><a class="headerlink" href="#scrapy.contrib.spiders.SitemapSpider.sitemap_alternate_links" title="永久链接至目标">¶</a></dt>
+<dd><p>指定当一个 <code class="docutils literal"><span class="pre">url</span></code> 有可选的链接时，是否跟进。
+有些非英文网站会在一个 <code class="docutils literal"><span class="pre">url</span></code> 块内提供其他语言的网站链接。</p>
+<p>例如:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;url&gt;
+    &lt;loc&gt;http://example.com/&lt;/loc&gt;
+    &lt;xhtml:link rel=&quot;alternate&quot; hreflang=&quot;de&quot; href=&quot;http://example.com/de&quot;/&gt;
+&lt;/url&gt;
+</pre></div>
+</div>
+<p>当 <code class="docutils literal"><span class="pre">sitemap_alternate_links</span></code> 设置时，两个URL都会被获取。
+当 <code class="docutils literal"><span class="pre">sitemap_alternate_links</span></code> 关闭时，只有 <code class="docutils literal"><span class="pre">http://example.com/</span></code> 会被获取。</p>
+<p>默认 <code class="docutils literal"><span class="pre">sitemap_alternate_links</span></code> 关闭。</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="id7">
+<h4>SitemapSpider样例<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h4>
+<p>简单的例子: 使用 <code class="docutils literal"><span class="pre">parse</span></code> 处理通过sitemap发现的所有url:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.contrib.spiders</span> <span class="kn">import</span> <span class="n">SitemapSpider</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">SitemapSpider</span><span class="p">):</span>
+    <span class="n">sitemap_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com/sitemap.xml&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">pass</span> <span class="c"># ... scrape item here ...</span>
+</pre></div>
+</div>
+<p>用特定的函数处理某些url，其他的使用另外的callback:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.contrib.spiders</span> <span class="kn">import</span> <span class="n">SitemapSpider</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">SitemapSpider</span><span class="p">):</span>
+    <span class="n">sitemap_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com/sitemap.xml&#39;</span><span class="p">]</span>
+    <span class="n">sitemap_rules</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;/product/&#39;</span><span class="p">,</span> <span class="s">&#39;parse_product&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;/category/&#39;</span><span class="p">,</span> <span class="s">&#39;parse_category&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">pass</span> <span class="c"># ... scrape product ...</span>
+
+    <span class="k">def</span> <span class="nf">parse_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">pass</span> <span class="c"># ... scrape category ...</span>
+</pre></div>
+</div>
+<p>跟进 <a class="reference external" href="http://www.robotstxt.org/">robots.txt</a> 文件定义的sitemap并只跟进包含有 <code class="docutils literal"><span class="pre">..sitemap_shop</span></code> 的url:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.contrib.spiders</span> <span class="kn">import</span> <span class="n">SitemapSpider</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">SitemapSpider</span><span class="p">):</span>
+    <span class="n">sitemap_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com/robots.txt&#39;</span><span class="p">]</span>
+    <span class="n">sitemap_rules</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;/shop/&#39;</span><span class="p">,</span> <span class="s">&#39;parse_shop&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">sitemap_follow</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;/sitemap_shops&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">pass</span> <span class="c"># ... scrape shop here ...</span>
+</pre></div>
+</div>
+<p>在SitemapSpider中使用其他url:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.contrib.spiders</span> <span class="kn">import</span> <span class="n">SitemapSpider</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">SitemapSpider</span><span class="p">):</span>
+    <span class="n">sitemap_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com/robots.txt&#39;</span><span class="p">]</span>
+    <span class="n">sitemap_rules</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;/shop/&#39;</span><span class="p">,</span> <span class="s">&#39;parse_shop&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">other_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://www.example.com/about&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">start_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">requests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">MySpider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">start_requests</span><span class="p">())</span>
+        <span class="n">requests</span> <span class="o">+=</span> <span class="p">[</span><span class="n">scrapy</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_other</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">other_urls</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">requests</span>
+
+    <span class="k">def</span> <span class="nf">parse_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">pass</span> <span class="c"># ... scrape shop here ...</span>
+
+    <span class="k">def</span> <span class="nf">parse_other</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">pass</span> <span class="c"># ... scrape other here ...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+    
+        <h2>
+            讨论
+            <a class="headerlink" href="#discuss" title="永久链接至标题">¶</a>
+        </h2>
+
+        <div id="disqus_thread"></div>
+    
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="selectors.html" class="btn btn-neutral float-right" title="选择器(Selectors)" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="items.html" class="btn btn-neutral" title="Items" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2008-2014, written by Scrapy developers, translated by Summer&amp;Friends.
+      最后更新于 May 05, 2015.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: 0.24
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl>
+        <dt>Versions</dt>
+        
+          <dd><a href="/zh_CN/latest/">latest</a></dd>
+        
+          <dd><a href="/zh_CN/stable/">stable</a></dd>
+        
+          <dd><a href="/zh_CN/master/">master</a></dd>
+        
+          <dd><a href="/zh_CN/0.24/">0.24</a></dd>
+        
+          <dd><a href="/zh_CN/0.22/">0.22</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>Downloads</dt>
+        
+          <dd><a href="//readthedocs.org/projects/scrapy-chs/downloads/htmlzip/0.24/">htmlzip</a></dd>
+        
+          <dd><a href="//readthedocs.org/projects/scrapy-chs/downloads/epub/0.24/">epub</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>On Read the Docs</dt>
+          <dd>
+            <a href="//readthedocs.org/projects/scrapy-chs/?fromdocs=scrapy-chs">Project Home</a>
+          </dd>
+          <dd>
+            <a href="//readthedocs.org/builds/scrapy-chs/?fromdocs=scrapy-chs">Builds</a>
+          </dd>
+      </dl>
+      <hr/>
+      Free document hosting provided by <a href="http://www.readthedocs.org">Read the Docs</a>.
+
+    </div>
+  </div>
+
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.24.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/jquery/jquery-2.0.3.min.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/jquery/jquery-migrate-1.2.1.min.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/underscore.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/doctools.js"></script>
+      <script type="text/javascript" src="../_static/translations.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/readthedocs-doc-embed.js"></script>
+
+  
+
+  
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'scrapychs'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-50189694-1', 'readthedocs.org');
+      ga('send', 'pageview');
+
+    </script>
+    
+
+
+</body>
+</html>

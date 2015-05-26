@@ -1,23 +1,26 @@
-
 豆瓣电影表结构
 
 T_MOVIE/电影
 
 电影编号             m_id              varchar(9)
-电影名               m_name            varchar(50)
+电影名               m_name            varchar(100)
 年份                 m_year            char(4)
-导演                 m_drc             varchar(50)
-编剧                 m_scw             varchar(50)
+导演                 m_drc             varchar(150)
+编剧                 m_scw             varchar(150)
 主演                 m_act             varchar(600)
 类型                 m_genre           varchar(30)
-制片国家/地区        m_ct_area         varchar(20)
-语言                 m_language        varchar(20)
-上映日期             m_release_dt      varchar(30)
-片长                 m_runtime         varchar(10)
-又名                 m_alias           varchar(100)
+制片国家/地区        m_ct_area         varchar(120)
+语言                 m_language        varchar(60)
+上映日期             m_release_dt      varchar(100)
+片长                 m_runtime         varchar(100)
+又名                 m_alias           varchar(200)
+评分                 m_rating          varchar(4)
+评价人数             m_votes           varchar(8)
+
 
 
 T_CELEBRITY/人物
+
 人物编号             c_id              varchar(9)
 人物角色             role              varchar(6)
 姓名                 name              varchar(40)
@@ -28,4 +31,27 @@ T_CELEBRITY/人物
 职业                 job               varchar(50)
 家庭成员             family            varchar(60)
 别名                 alias             varchar(30)
+
+
+T_MOVIE_CELEBRITY_MAP/电影与人物映射表
+
+电影编号             m_id              varchar(9)
+人物编号             c_id              varchar(9)
+人物角色             role              varchar(6)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

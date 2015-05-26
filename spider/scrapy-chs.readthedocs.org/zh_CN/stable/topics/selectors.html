@@ -1,0 +1,1181 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>选择器（Selectors） &mdash; Scrapy 0.22.2 文档</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+
+  
+    <link rel="stylesheet" href="https://media.readthedocs.org/css/sphinx_rtd_theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="https://media.readthedocs.org/css/readthedocs-doc-embed.css" type="text/css" />
+  
+    <link rel="top" title="Scrapy 0.22.2 文档" href="../index.html"/>
+        <link rel="next" title="Item Loaders" href="loaders.html"/>
+        <link rel="prev" title="Spiders" href="spiders.html"/>
+ 
+<!-- RTD Extra Head -->
+
+
+
+<!-- 
+Read the Docs is acting as the canonical URL for your project. 
+If you want to change it, more info is available in our docs:
+  http://docs.readthedocs.org/en/latest/canonical.html
+-->
+<link rel="canonical" href="http://scrapy-chs.readthedocs.org/zh_CN/latest/topics/selectors.html" />
+
+<script type="text/javascript">
+  // This is included here because other places don't have access to the pagename variable.
+  var READTHEDOCS_DATA = {
+    project: "scrapy-chs",
+    version: "stable",
+    language: "zh_CN",
+    page: "topics/selectors",
+    builder: "sphinx",
+    theme: "sphinx_rtd_theme",
+    docroot: "/",
+    source_suffix: ".rst",
+    api_host: "https://readthedocs.org",
+    commit: "094b55236635f45d4531e48ee9f693c796e0144d"
+  }
+  // Old variables
+  var doc_version = "stable";
+  var doc_slug = "scrapy-chs";
+  var page_name = "topics/selectors";
+  var html_theme = "sphinx_rtd_theme";
+</script>
+<!-- RTD Analytics Code -->
+<!-- Included in the header because you don't have a footer block. -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17997319-1']);
+  _gaq.push(['_trackPageview']);
+
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<!-- end RTD Analytics Code -->
+<!-- end RTD <extrahead> -->
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../index.html" class="fa fa-home"> Scrapy</a>
+        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">初窥Scrapy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id1">选择一个网站</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#intro-overview-item">定义您想抓取的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#spider">编写提取数据的Spider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id3">执行spider，获取数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id4">查看提取到的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#topics-whatelse">还有什么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/overview.html#id6">接下来</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">安装指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/install.html#id2">前期准备</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/install.html#scrapy">安装Scrapy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/install.html#intro-install-platform-notes">平台安装指南</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Scrapy入门教程</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id2">创建项目</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#item">定义Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#spider">编写第一个爬虫(Spider)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id9">保存爬取到的数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial.html#id10">下一步</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/examples.html">例子</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="commands.html">命令行工具(Command line tools)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#scrapy">默认的Scrapy项目结构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#id1">使用 <tt class="docutils literal"><span class="pre">scrapy</span></tt> 工具</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#tool-commands">可用的工具命令(tool commands)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#id4">自定义项目命令</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="items.html">Items</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="items.html#item">声明Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#item-item-fields">Item字段(Item Fields)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id1">与Item配合</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id7">扩展Item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#id8">Item对象</a></li>
+<li class="toctree-l2"><a class="reference internal" href="items.html#field">字段(Field)对象</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="spiders.html">Spiders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="spiders.html#spider">Spider参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spiders.html#topics-spiders-ref">内置Spider参考手册</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">选择器（Selectors）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">使用选择器（selectors）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scrapy.selector">内建选择器的参考</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loaders.html">Item Loaders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#using-item-loaders-to-populate-items">Using Item Loaders to populate items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#input-and-output-processors">Input and Output processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#declaring-item-loaders">Declaring Item Loaders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#declaring-input-and-output-processors">Declaring Input and Output Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#item-loader-context">Item Loader Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#itemloader-objects">ItemLoader objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#reusing-and-extending-item-loaders">Reusing and extending Item Loaders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#module-scrapy.contrib.loader.processor">Available built-in processors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shell.html">Scrapy终端(Scrapy shell)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#id1">启动终端</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#id2">使用终端</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#shell-session">终端会话(shell session)样例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html#spidershellresponse">在spider中启动shell来查看response</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="item-pipeline.html">Item Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id1">编写你自己的item pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id2">Item pipeline 样例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="item-pipeline.html#id4">启用一个Item Pipeline组件</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="feed-exports.html">Feed exports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#serialization-formats">序列化方式(Serialization formats)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#storages">存储(Storages)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#uri">存储URI参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#storage-backends">存储端(Storage backends)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feed-exports.html#settings">设定(Settings)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="link-extractors.html">Link Extractors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="link-extractors.html#module-scrapy.contrib.linkextractors">内置Link Extractor 参考</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log-levels">Log levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log">如何设置log级别</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#log-messages">如何记录信息(log messages)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#spiderlog-logging-from-spiders">在Spider中添加log(Logging from Spiders)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#module-scrapy.log">scrapy.log模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#id1">Logging设置</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stats.html">数据收集(Stats Collection)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stats.html#topics-stats-usecases">常见数据收集器使用方法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stats.html#id2">可用的数据收集器</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="email.html">发送email</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="email.html#id1">简单例子</a></li>
+<li class="toctree-l2"><a class="reference internal" href="email.html#mailsender">MailSender类参考手册</a></li>
+<li class="toctree-l2"><a class="reference internal" href="email.html#mail">Mail设置</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="telnetconsole.html">Telnet终端(Telnet Console)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#telnet">如何访问telnet终端</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id1">telnet终端中可用的变量</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#telnet-console-usage-examples">Telnet console usage examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id3">Telnet终端信号</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telnetconsole.html#id4">Telnet设定</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="webservice.html">Web Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web-service-resources">Web Service资源(resources)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web">Web服务设置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#web-resource">编写web服务资源(resource)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#id2">web服务资源例子</a></li>
+<li class="toctree-l2"><a class="reference internal" href="webservice.html#example-of-web-service-client">Example of web service client</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题(FAQ)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapybeautifulsouplxml">Scrapy相BeautifulSoup或lxml比较,如何呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapypython">Scrapy支持那些Python版本？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapypython-3">Scrapy支持Python 3么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapydjango-x">Scrapy是否从Django中&#8221;剽窃&#8221;了X呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapyhttp">Scrapy支持HTTP代理么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#item">如何爬取属性在不同页面的item呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-importerror-nomodule-named-win32api">Scrapy退出，ImportError: Nomodule named win32api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider">我要如何在spider里模拟用户登录呢?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy">Scrapy是以广度优先还是深度优先进行爬取的呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id3">我的Scrapy爬虫有内存泄露，怎么办?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id4">如何让Scrapy减少内存消耗?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spiderhttp">我能在spider中使用基本HTTP认证么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id5">为什么Scrapy下载了英文的页面，而不是我的本国语言？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id6">我能在哪里找到Scrapy项目的例子？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-spider">我能在不创建Scrapy项目的情况下运行一个爬虫(spider)么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#filtered-offsite-request">我收到了 &#8220;Filtered offsite request&#8221; 消息。如何修复？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id7">发布Scrapy爬虫到生产环境的推荐方式？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#large-exports-json">我能对大数据(large exports)使用JSON么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#signal-handler-twisted">我能在信号处理器(signal handler)中返回(Twisted)引用么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#reponse999">reponse返回的状态值999代表了什么?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider-pdb-set-trace">我能在spider中调用 <tt class="docutils literal"><span class="pre">pdb.set_trace()</span></tt> 来调试么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#item-dump-json-csv-xml">将所有爬取到的item转存(dump)到JSON/CSV/XML文件的最简单的方法?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#viewstate">在某些表单中巨大神秘的 <tt class="docutils literal"><span class="pre">__VIEWSTATE</span></tt> 参数是什么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#xml-csv">分析大XML/CSV数据源的最好方法是?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapycookies">Scrapy自动管理cookies么？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapyscrapy">如何才能看到Scrapy发出及接收到的Scrapy呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#id10">要怎么停止爬虫呢?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#scrapy-bot-ban">如何避免我的Scrapy机器人(bot)被禁止(ban)呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#spider-arguments-settings-spider">我应该使用spider参数(arguments)还是设置(settings)来配置spider呢？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#xmlxpathitem">我爬取了一个XML文档但是XPath选择器不返回任何的item</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#name-crawler">我得到错误: &#8220;不能导入name crawler“</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">调试(Debugging)Spiders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#parse">Parse命令</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#scrapy-shell">Scrapy终端(Shell)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#id1">在浏览器中打开</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contracts.html">Spiders Contracts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contracts.html#contracts">自定义Contracts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="practices.html">实践经验(Common Practices)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#scrapy">在脚本中运行Scrapy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#spider">同一进程运行多个spider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#distributed-crawls">分布式爬虫(Distributed crawls)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#ban">避免被禁止(ban)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="practices.html#item">动态创建Item类</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="broad-crawls.html">通用爬虫(Broad Crawls)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id1">增加并发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#log">降低log级别</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#cookies">禁止cookies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id2">禁止重试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id3">减小下载超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#id4">禁止重定向</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broad-crawls.html#ajax-crawlable-pages">启用 &#8220;Ajax Crawlable Pages&#8221; 爬取</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firefox.html">借助Firefox来爬取</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firefox.html#dom">在浏览器中检查DOM的注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firefox.html#topics-firefox-addons">对爬取有帮助的实用Firefox插件</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firebug.html">使用Firebug进行爬取</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#id1">介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#follow">获取到跟进(follow)的链接</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firebug.html#id4">提取数据</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="leaks.html">调试内存溢出</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#id2">内存泄露的常见原因</a></li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#trackref">使用 <tt class="docutils literal"><span class="pre">trackref</span></tt> 调试内存泄露</a></li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#guppy">使用Guppy调试内存泄露</a></li>
+<li class="toctree-l2"><a class="reference internal" href="leaks.html#leaks-without-leaks">Leaks without leaks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="images.html">下载项目图片</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id2">使用图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id3">使用样例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#topics-images-enabling">开启你的图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id5">图片存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id7">额外的特性</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#module-scrapy.contrib.pipeline.images">实现定制图片管道</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html#id12">定制图片管道的例子</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ubuntu.html">Ubuntu 软件包</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scrapyd.html">Scrapyd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autothrottle.html">自动限速(AutoThrottle)扩展</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id1">设计目标</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id2">扩展是如何实现的</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#autothrottle-algorithm">限速算法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autothrottle.html#id4">设置</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarking.html">Benchmarking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs: 暂停，恢复爬虫</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#job">Job 路径</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id1">怎么使用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id2">保持状态</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html#id3">持久化的一些坑</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="djangoitem.html">DjangoItem</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#id1">使用DjangoItem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#id2">DjangoItem注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="djangoitem.html#django">配置Django的设置</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">架构概览</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#id2">概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#id3">组件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#data-flow">数据流(Data flow)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-driven-networking">事件驱动网络(Event-driven networking)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="downloader-middleware.html">下载器中间件(Downloader Middleware)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#topics-downloader-middleware-setting">激活下载器中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#id2">编写您自己的下载器中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloader-middleware.html#topics-downloader-middleware-ref">内置下载中间件参考手册</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="spider-middleware.html">Spider中间件(Middleware)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#spider">激活spider中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#id1">编写您自己的spider中间件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spider-middleware.html#topics-spider-middleware-ref">内置spider中间件参考手册</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">扩展(Extensions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#extension-settings">扩展设置(Extension settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#id1">加载和激活扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#available-enabled-disabled">可用的(Available)、开启的(enabled)和禁用的(disabled)的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#disabling-an-extension">禁用扩展(Disabling an extension)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#id2">实现你的扩展</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#topics-extensions-ref">内置扩展介绍</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">核心API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#crawler-api">Crawler API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-scrapy.settings">设置(Settings) API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-scrapy.signalmanager">信号(Signals) API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#stats-collector-api">状态收集器(Stats Collector) API</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="request-response.html">Requests and Responses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-objects">Request objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-meta-special-keys">Request.meta special keys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#request-subclasses">Request subclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#response-objects">Response objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-response.html#response-subclasses">Response subclasses</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#designating-the-settings">指定设定(Designating the settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#populating-the-settings">获取设定值(Populating the settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#how-to-access-settings">如何访问设定(How to access settings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#id1">设定名字的命名规则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#topics-settings-ref">内置设定参考手册</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="signals.html">信号(Signals)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="signals.html#deferred-signal-handlers">延迟的信号处理器(Deferred signal handlers)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html#module-scrapy.signals">内置信号参考手册(Built-in signals reference)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">异常(Exceptions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#built-in-exceptions-reference">内置异常参考手册(Built-in Exceptions reference)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exporters.html">Item Exporters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exporters.html#item-exporter">使用 Item Exporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exporters.html#topics-exporters-reference">Item Exporters 参考资料</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-02-14">0.22.2 (released 2014-02-14)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-02-08">0.22.1 (released 2014-02-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2014-01-17">0.22.0 (released 2014-01-17)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-12-09">0.20.2 (released 2013-12-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-11-28">0.20.1 (released 2013-11-28)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-11-08">0.20.0 (released 2013-11-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-10-10">0.18.4 (released 2013-10-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-10-03">0.18.3 (released 2013-10-03)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-09-03">0.18.2 (released 2013-09-03)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-08-27">0.18.1 (released 2013-08-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-08-09">0.18.0 (released 2013-08-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-05-30">0.16.5 (released 2013-05-30)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2013-01-23">0.16.4 (released 2013-01-23)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-12-07">0.16.3 (released 2012-12-07)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-11-09">0.16.2 (released 2012-11-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-10-26">0.16.1 (released 2012-10-26)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#released-2012-10-18">0.16.0 (released 2012-10-18)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id2">0.14.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id3">0.14.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id4">0.14.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id5">0.14.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id6">0.14</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id7">0.12</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id8">0.10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id11">0.9</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id14">0.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../news.html#id15">0.7</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to Scrapy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#reporting-bugs">Reporting bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#writing-patches">Writing patches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#submitting-patches">Submitting patches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#coding-style">Coding style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#scrapy-contrib">Scrapy Contrib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#documentation-policies">Documentation policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#tests">Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../versioning.html">Versioning and API Stability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../versioning.html#id1">Versioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../versioning.html#api-stability">API Stability</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental/index.html">试验阶段特性</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html#id3">使用外部库插入命令</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Scrapy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>选择器（Selectors）</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="https://github.com/marchtea/scrapy_doc_chs/blob/stable/topics/selectors.rst" class="fa fa-github"> Edit on GitHub</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+    
+  <div class="section" id="selectors">
+<span id="topics-selectors"></span><h1>选择器（Selectors）<a class="headerlink" href="#selectors" title="永久链接至标题">¶</a></h1>
+<p>当抓取网页时，你做的最常见的任务是从HTML源码中提取数据。现有的一些库可以达到这个目的：</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.crummy.com/software/BeautifulSoup/">BeautifulSoup</a> 是在程序员间非常流行的网页分析库，它基于HTML代码的结构来构造一个Python对象， 对不良标记的处理也非常合理，但它有一个缺点：慢。</li>
+<li><a class="reference external" href="http://codespeak.net/lxml/">lxml</a> 是一个基于 <a class="reference external" href="http://docs.python.org/library/xml.etree.elementtree.html">ElementTree</a> （不是Python标准库的一部分）的python化的XML解析库（也可以解析HTML）。</li>
+</ul>
+</div></blockquote>
+<p>Scrapy提取数据有自己的一套机制。它们被称作选择器（seletors），因为他们通过特定的 <a class="reference external" href="http://www.w3.org/TR/xpath">XPath</a> 或者 <a class="reference external" href="http://www.w3.org/TR/selectors">CSS</a> 表达式来“选择” HTML文件中的某个部分。</p>
+<p><a class="reference external" href="http://www.w3.org/TR/xpath">XPath</a> 是一门用来在XML文件中选择节点的语言，也可以用在HTML上。 <a class="reference external" href="http://www.w3.org/TR/selectors">CSS</a> 是一门将HTML文档样式化的语言。选择器由它定义，并与特定的HTML元素的样式相关连。</p>
+<p>Scrapy选择器构建于 <a class="reference external" href="http://codespeak.net/lxml/">lxml</a> 库之上，这意味着它们在速度和解析准确性上非常相似。</p>
+<p>本页面解释了选择器如何工作，并描述了相应的API。不同于 <a class="reference external" href="http://codespeak.net/lxml/">lxml</a> API的臃肿，该API短小而简洁。这是因为 <a class="reference external" href="http://codespeak.net/lxml/">lxml</a> 库除了用来选择标记化文档外，还可以用到许多任务上。</p>
+<p>选择器API的完全参考详见
+<a class="reference internal" href="#topics-selectors-ref"><em>Selector reference</em></a></p>
+<div class="section" id="id1">
+<h2>使用选择器（selectors）<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id2">
+<h3>构造选择器（selectors）<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<p>Scrapy选择器是类 <a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> 的一个实例，通过传入一个 <cite>Response</cite> 对象来构造，该对象作为第一个参数，其主体就是将要“选择”的内容:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scrapy.spider</span> <span class="kn">import</span> <span class="n">Spider</span>
+<span class="kn">from</span> <span class="nn">scrapy.selector</span> <span class="kn">import</span> <span class="n">Selector</span>
+
+<span class="k">class</span> <span class="nc">MySpider</span><span class="p">(</span><span class="n">Spider</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">sel</span> <span class="o">=</span> <span class="n">Selector</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="c"># Using XPath query</span>
+        <span class="k">print</span> <span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//p&#39;</span><span class="p">)</span>
+        <span class="c"># Using CSS query</span>
+        <span class="k">print</span> <span class="n">sel</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s">&#39;p&#39;</span><span class="p">)</span>
+        <span class="c"># Nesting queries</span>
+        <span class="k">print</span> <span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//div[@foo=&quot;bar&quot;]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s">&#39;span#bold&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>使用选择器（selectors）<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<p>我们将使用 <cite>Scrapy shell</cite> （提供交互测试）和位于Scrapy文档服务器的一个样例页面，来解释如何使用选择器：</p>
+<blockquote>
+<div><a class="reference external" href="http://doc.scrapy.org/en/latest/_static/selectors-sample1.html">http://doc.scrapy.org/en/latest/_static/selectors-sample1.html</a></div></blockquote>
+<p id="topics-selectors-htmlcode">这里是它的HTML源码:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+ <span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;base</span> <span class="na">href=</span><span class="s">&#39;http://example.com/&#39;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;title&gt;</span>Example website<span class="nt">&lt;/title&gt;</span>
+ <span class="nt">&lt;/head&gt;</span>
+ <span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;images&#39;</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;image1.html&#39;</span><span class="nt">&gt;</span>Name: My image 1 <span class="nt">&lt;br</span> <span class="nt">/&gt;&lt;img</span> <span class="na">src=</span><span class="s">&#39;image1_thumb.jpg&#39;</span> <span class="nt">/&gt;&lt;/a&gt;</span>
+   <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;image2.html&#39;</span><span class="nt">&gt;</span>Name: My image 2 <span class="nt">&lt;br</span> <span class="nt">/&gt;&lt;img</span> <span class="na">src=</span><span class="s">&#39;image2_thumb.jpg&#39;</span> <span class="nt">/&gt;&lt;/a&gt;</span>
+   <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;image3.html&#39;</span><span class="nt">&gt;</span>Name: My image 3 <span class="nt">&lt;br</span> <span class="nt">/&gt;&lt;img</span> <span class="na">src=</span><span class="s">&#39;image3_thumb.jpg&#39;</span> <span class="nt">/&gt;&lt;/a&gt;</span>
+   <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;image4.html&#39;</span><span class="nt">&gt;</span>Name: My image 4 <span class="nt">&lt;br</span> <span class="nt">/&gt;&lt;img</span> <span class="na">src=</span><span class="s">&#39;image4_thumb.jpg&#39;</span> <span class="nt">/&gt;&lt;/a&gt;</span>
+   <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;image5.html&#39;</span><span class="nt">&gt;</span>Name: My image 5 <span class="nt">&lt;br</span> <span class="nt">/&gt;&lt;img</span> <span class="na">src=</span><span class="s">&#39;image5_thumb.jpg&#39;</span> <span class="nt">/&gt;&lt;/a&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+ <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</div>
+<p>首先, 我们打开shell:</p>
+<div class="highlight-sh"><div class="highlight"><pre>scrapy shell http://doc.scrapy.org/en/latest/_static/selectors-sample1.html
+</pre></div>
+</div>
+<p>接着，在shell载入后，你将拥有一个名为 <tt class="docutils literal"><span class="pre">sel</span></tt> 的shell变量，它是一个实例化并可用的选择器。</p>
+<p>因为我们处理的是HTML，选择器将自动使用HTML语法分析。</p>
+<p>那么，通过查看 <a class="reference internal" href="#topics-selectors-htmlcode"><em>HTML code</em></a> 该页面的源码，我们构建一个XPath（使用一个HTML选择器）来选择title标签内的文字:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//title/text()&#39;</span><span class="p">)</span>
+<span class="go">[&lt;Selector (text) xpath=//title/text()&gt;]</span>
+</pre></div>
+</div>
+<p>如你所见， <tt class="docutils literal"><span class="pre">.xpath()</span></tt> 方法返回一个类
+<a class="reference internal" href="#scrapy.selector.SelectorList" title="scrapy.selector.SelectorList"><tt class="xref py py-class docutils literal"><span class="pre">SelectorList</span></tt></a> 的实例, 它是一个新选择器的列表。这个API可以用来快速的提取嵌套数据。</p>
+<p>为了提取真实的原文数据，你需要调用 <tt class="docutils literal"><span class="pre">.extract()</span></tt> 方法如下:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//title/text()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;Example website&#39;]</span>
+</pre></div>
+</div>
+<p>注意CSS选择器可以使用CSS3伪元素（pseudo-elements）来选择文字或者属性节点:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s">&#39;title::text&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;Example website&#39;]</span>
+</pre></div>
+</div>
+<p>现在我们将得到根URL（base URL）和一些图片链接:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//base/@href&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;http://example.com/&#39;]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s">&#39;base::attr(href)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;http://example.com/&#39;]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//a[contains(@href, &quot;image&quot;)]/@href&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;image1.html&#39;,</span>
+<span class="go"> u&#39;image2.html&#39;,</span>
+<span class="go"> u&#39;image3.html&#39;,</span>
+<span class="go"> u&#39;image4.html&#39;,</span>
+<span class="go"> u&#39;image5.html&#39;]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s">&#39;a[href*=image]::attr(href)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;image1.html&#39;,</span>
+<span class="go"> u&#39;image2.html&#39;,</span>
+<span class="go"> u&#39;image3.html&#39;,</span>
+<span class="go"> u&#39;image4.html&#39;,</span>
+<span class="go"> u&#39;image5.html&#39;]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//a[contains(@href, &quot;image&quot;)]/img/@src&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;image1_thumb.jpg&#39;,</span>
+<span class="go"> u&#39;image2_thumb.jpg&#39;,</span>
+<span class="go"> u&#39;image3_thumb.jpg&#39;,</span>
+<span class="go"> u&#39;image4_thumb.jpg&#39;,</span>
+<span class="go"> u&#39;image5_thumb.jpg&#39;]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s">&#39;a[href*=image] img::attr(src)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;image1_thumb.jpg&#39;,</span>
+<span class="go"> u&#39;image2_thumb.jpg&#39;,</span>
+<span class="go"> u&#39;image3_thumb.jpg&#39;,</span>
+<span class="go"> u&#39;image4_thumb.jpg&#39;,</span>
+<span class="go"> u&#39;image5_thumb.jpg&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="topics-selectors-nesting-selectors">
+<span id="id4"></span><h3>嵌套选择器（selectors）<a class="headerlink" href="#topics-selectors-nesting-selectors" title="永久链接至标题">¶</a></h3>
+<p>选择器方法（ <tt class="docutils literal"><span class="pre">.xpath()</span></tt> or <tt class="docutils literal"><span class="pre">.css()</span></tt> ）返回相同类型的选择器列表，因此你也可以对这些选择器调用选择器方法。下面是一个例子:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">links</span> <span class="o">=</span> <span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//a[contains(@href, &quot;image&quot;)]&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">links</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;&lt;a href=&quot;image1.html&quot;&gt;Name: My image 1 &lt;br&gt;&lt;img src=&quot;image1_thumb.jpg&quot;&gt;&lt;/a&gt;&#39;,</span>
+<span class="go"> u&#39;&lt;a href=&quot;image2.html&quot;&gt;Name: My image 2 &lt;br&gt;&lt;img src=&quot;image2_thumb.jpg&quot;&gt;&lt;/a&gt;&#39;,</span>
+<span class="go"> u&#39;&lt;a href=&quot;image3.html&quot;&gt;Name: My image 3 &lt;br&gt;&lt;img src=&quot;image3_thumb.jpg&quot;&gt;&lt;/a&gt;&#39;,</span>
+<span class="go"> u&#39;&lt;a href=&quot;image4.html&quot;&gt;Name: My image 4 &lt;br&gt;&lt;img src=&quot;image4_thumb.jpg&quot;&gt;&lt;/a&gt;&#39;,</span>
+<span class="go"> u&#39;&lt;a href=&quot;image5.html&quot;&gt;Name: My image 5 &lt;br&gt;&lt;img src=&quot;image5_thumb.jpg&quot;&gt;&lt;/a&gt;&#39;]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">link</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">links</span><span class="p">):</span>
+<span class="go">        args = (index, link.xpath(&#39;@href&#39;).extract(), link.xpath(&#39;img/@src&#39;).extract())</span>
+<span class="go">        print &#39;Link number %d points to url %s and image %s&#39; % args</span>
+
+<span class="go">Link number 0 points to url [u&#39;image1.html&#39;] and image [u&#39;image1_thumb.jpg&#39;]</span>
+<span class="go">Link number 1 points to url [u&#39;image2.html&#39;] and image [u&#39;image2_thumb.jpg&#39;]</span>
+<span class="go">Link number 2 points to url [u&#39;image3.html&#39;] and image [u&#39;image3_thumb.jpg&#39;]</span>
+<span class="go">Link number 3 points to url [u&#39;image4.html&#39;] and image [u&#39;image4_thumb.jpg&#39;]</span>
+<span class="go">Link number 4 points to url [u&#39;image5.html&#39;] and image [u&#39;image5_thumb.jpg&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>结合正则表达式使用选择器（selectors）<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<p><a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> 也有一个 <tt class="docutils literal"><span class="pre">.re()</span></tt> 方法，用来通过正则表达式来提取数据。然而，不同于使用 <tt class="docutils literal"><span class="pre">.xpath()</span></tt> 或者 <tt class="docutils literal"><span class="pre">.css()</span></tt> 方法, <tt class="docutils literal"><span class="pre">.re()</span></tt> 方法返回unicode字符串的列表。所以你无法构造嵌套式的 <tt class="docutils literal"><span class="pre">.re()</span></tt> 调用。</p>
+<p>下面是一个例子，从上面的 <a class="reference internal" href="#topics-selectors-htmlcode"><em>HTML code</em></a> 中提取图像名字:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//a[contains(@href, &quot;image&quot;)]/text()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">re</span><span class="p">(</span><span class="s">r&#39;Name:\s*(.*)&#39;</span><span class="p">)</span>
+<span class="go">[u&#39;My image 1&#39;,</span>
+<span class="go"> u&#39;My image 2&#39;,</span>
+<span class="go"> u&#39;My image 3&#39;,</span>
+<span class="go"> u&#39;My image 4&#39;,</span>
+<span class="go"> u&#39;My image 5&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="xpaths">
+<span id="topics-selectors-relative-xpaths"></span><h3>使用相对XPaths<a class="headerlink" href="#xpaths" title="永久链接至标题">¶</a></h3>
+<p>记住如果你使用嵌套的选择器，并使用起始为 <tt class="docutils literal"><span class="pre">/</span></tt> 的XPath，那么该XPath将对文档使用绝对路径，而且对于你调用的 <tt class="docutils literal"><span class="pre">Selector</span></tt> 不是相对路径。</p>
+<p>比如，假设你想提取在 <tt class="docutils literal"><span class="pre">&lt;div&gt;</span></tt> 元素中的所有 <tt class="docutils literal"><span class="pre">&lt;p&gt;</span></tt> 元素。首先，你将先得到所有的 <tt class="docutils literal"><span class="pre">&lt;div&gt;</span></tt> 元素:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">divs</span> <span class="o">=</span> <span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//div&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>开始时，你可能会尝试使用下面的错误的方法，因为它其实是从整篇文档中，而不仅仅是从那些 <tt class="docutils literal"><span class="pre">&lt;div&gt;</span></tt> 元素内部提取所有的 <tt class="docutils literal"><span class="pre">&lt;p&gt;</span></tt> 元素:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">divs</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//p&#39;</span><span class="p">)</span>  <span class="c"># this is wrong - gets all &lt;p&gt; from the whole document</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">print</span> <span class="n">p</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>下面是比较合适的处理方法（注意 <tt class="docutils literal"><span class="pre">.//p</span></tt> XPath的点前缀):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">divs</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;.//p&#39;</span><span class="p">)</span>  <span class="c"># extracts all &lt;p&gt; inside</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">print</span> <span class="n">p</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>另一种常见的情况将是提取所有直系 <tt class="docutils literal"><span class="pre">&lt;p&gt;</span></tt> 的结果:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">divs</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;p&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">print</span> <span class="n">p</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>更多关于相对XPaths的细节详见XPath说明中的 <a class="reference external" href="http://www.w3.org/TR/xpath#location-paths">Location Paths</a> 部分。</p>
+</div>
+<div class="section" id="exslt">
+<h3>使用EXSLT扩展<a class="headerlink" href="#exslt" title="永久链接至标题">¶</a></h3>
+<p>因建于 <a class="reference external" href="http://codespeak.net/lxml/">lxml</a> 之上, Scrapy选择器也支持一些 <a class="reference external" href="http://www.exslt.org/">EXSLT</a> 扩展，可以在XPath表达式中使用这些预先制定的命名空间：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="55%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">前缀</th>
+<th class="head">命名空间</th>
+<th class="head">用途</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>re</td>
+<td><a class="reference external" href="http://exslt.org/regular-expressions">http://exslt.org/regular-expressions</a></td>
+<td><a class="reference external" href="http://www.exslt.org/regexp/index.html">正则表达式</a></td>
+</tr>
+<tr class="row-odd"><td>set</td>
+<td><a class="reference external" href="http://exslt.org/sets">http://exslt.org/sets</a></td>
+<td><a class="reference external" href="http://www.exslt.org/set/index.html">集合操作</a></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="id6">
+<h4>正则表达式<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h4>
+<p>例如在XPath的 <tt class="docutils literal"><span class="pre">starts-with()</span></tt> 或 <tt class="docutils literal"><span class="pre">contains()</span></tt> 无法满足需求时， <tt class="docutils literal"><span class="pre">test()</span></tt> 函数可以非常有用。</p>
+<p>例如在列表中选择有&#8221;class&#8221;元素且结尾为一个数字的链接:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s">&lt;div&gt;</span>
+<span class="gp">... </span><span class="s">    &lt;ul&gt;</span>
+<span class="gp">... </span><span class="s">        &lt;li class=&quot;item-0&quot;&gt;&lt;a href=&quot;link1.html&quot;&gt;first item&lt;/a&gt;&lt;/li&gt;</span>
+<span class="gp">... </span><span class="s">        &lt;li class=&quot;item-1&quot;&gt;&lt;a href=&quot;link2.html&quot;&gt;second item&lt;/a&gt;&lt;/li&gt;</span>
+<span class="gp">... </span><span class="s">        &lt;li class=&quot;item-inactive&quot;&gt;&lt;a href=&quot;link3.html&quot;&gt;third item&lt;/a&gt;&lt;/li&gt;</span>
+<span class="gp">... </span><span class="s">        &lt;li class=&quot;item-1&quot;&gt;&lt;a href=&quot;link4.html&quot;&gt;fourth item&lt;/a&gt;&lt;/li&gt;</span>
+<span class="gp">... </span><span class="s">        &lt;li class=&quot;item-0&quot;&gt;&lt;a href=&quot;link5.html&quot;&gt;fifth item&lt;/a&gt;&lt;/li&gt;</span>
+<span class="gp">... </span><span class="s">    &lt;/ul&gt;</span>
+<span class="gp">... </span><span class="s">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span> <span class="o">=</span> <span class="n">Selector</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">doc</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;html&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//li//@href&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;link1.html&#39;, u&#39;link2.html&#39;, u&#39;link3.html&#39;, u&#39;link4.html&#39;, u&#39;link5.html&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//li[re:test(@class, &quot;item-\d$&quot;)]//@href&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="go">[u&#39;link1.html&#39;, u&#39;link2.html&#39;, u&#39;link4.html&#39;, u&#39;link5.html&#39;]</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">警告</p>
+<p class="last">C语言库 <tt class="docutils literal"><span class="pre">libxslt</span></tt> 不原生支持EXSLT正则表达式，因此 <a class="reference external" href="http://codespeak.net/lxml/">lxml</a> 在实现时使用了Python <tt class="docutils literal"><span class="pre">re</span></tt> 模块的钩子。
+因此，在XPath表达式中使用regexp函数可能会牺牲少量的性能。</p>
+</div>
+</div>
+<div class="section" id="id7">
+<h4>集合操作<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h4>
+<p>集合操作可以方便地用于在提取文字元素前从文档树中去除一些部分。</p>
+<p>例如使用itemscopes组和对应的itemprops来提取微数据（来自http://schema.org/Product的样本内容）:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s">&lt;div itemscope itemtype=&quot;http://schema.org/Product&quot;&gt;</span>
+<span class="gp">... </span><span class="s">  &lt;span itemprop=&quot;name&quot;&gt;Kenmore White 17&quot; Microwave&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s">  &lt;img src=&quot;kenmore-microwave-17in.jpg&quot; alt=&#39;Kenmore 17&quot; Microwave&#39; /&gt;</span>
+<span class="gp">... </span><span class="s">  &lt;div itemprop=&quot;aggregateRating&quot;</span>
+<span class="gp">... </span><span class="s">    itemscope itemtype=&quot;http://schema.org/AggregateRating&quot;&gt;</span>
+<span class="gp">... </span><span class="s">   Rated &lt;span itemprop=&quot;ratingValue&quot;&gt;3.5&lt;/span&gt;/5</span>
+<span class="gp">... </span><span class="s">   based on &lt;span itemprop=&quot;reviewCount&quot;&gt;11&lt;/span&gt; customer reviews</span>
+<span class="gp">... </span><span class="s">  &lt;/div&gt;</span>
+<span class="gp">...</span><span class="s"></span>
+<span class="gp">... </span><span class="s">  &lt;div itemprop=&quot;offers&quot; itemscope itemtype=&quot;http://schema.org/Offer&quot;&gt;</span>
+<span class="gp">... </span><span class="s">    &lt;span itemprop=&quot;price&quot;&gt;$55.00&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s">    &lt;link itemprop=&quot;availability&quot; href=&quot;http://schema.org/InStock&quot; /&gt;In stock</span>
+<span class="gp">... </span><span class="s">  &lt;/div&gt;</span>
+<span class="gp">...</span><span class="s"></span>
+<span class="gp">... </span><span class="s">  Product description:</span>
+<span class="gp">... </span><span class="s">  &lt;span itemprop=&quot;description&quot;&gt;0.7 cubic feet countertop microwave.</span>
+<span class="gp">... </span><span class="s">  Has six preset cooking categories and convenience features like</span>
+<span class="gp">... </span><span class="s">  Add-A-Minute and Child Lock.&lt;/span&gt;</span>
+<span class="gp">...</span><span class="s"></span>
+<span class="gp">... </span><span class="s">  Customer reviews:</span>
+<span class="gp">...</span><span class="s"></span>
+<span class="gp">... </span><span class="s">  &lt;div itemprop=&quot;review&quot; itemscope itemtype=&quot;http://schema.org/Review&quot;&gt;</span>
+<span class="gp">... </span><span class="s">    &lt;span itemprop=&quot;name&quot;&gt;Not a happy camper&lt;/span&gt; -</span>
+<span class="gp">... </span><span class="s">    by &lt;span itemprop=&quot;author&quot;&gt;Ellie&lt;/span&gt;,</span>
+<span class="gp">... </span><span class="s">    &lt;meta itemprop=&quot;datePublished&quot; content=&quot;2011-04-01&quot;&gt;April 1, 2011</span>
+<span class="gp">... </span><span class="s">    &lt;div itemprop=&quot;reviewRating&quot; itemscope itemtype=&quot;http://schema.org/Rating&quot;&gt;</span>
+<span class="gp">... </span><span class="s">      &lt;meta itemprop=&quot;worstRating&quot; content = &quot;1&quot;&gt;</span>
+<span class="gp">... </span><span class="s">      &lt;span itemprop=&quot;ratingValue&quot;&gt;1&lt;/span&gt;/</span>
+<span class="gp">... </span><span class="s">      &lt;span itemprop=&quot;bestRating&quot;&gt;5&lt;/span&gt;stars</span>
+<span class="gp">... </span><span class="s">    &lt;/div&gt;</span>
+<span class="gp">... </span><span class="s">    &lt;span itemprop=&quot;description&quot;&gt;The lamp burned out and now I have to replace</span>
+<span class="gp">... </span><span class="s">    it. &lt;/span&gt;</span>
+<span class="gp">... </span><span class="s">  &lt;/div&gt;</span>
+<span class="gp">...</span><span class="s"></span>
+<span class="gp">... </span><span class="s">  &lt;div itemprop=&quot;review&quot; itemscope itemtype=&quot;http://schema.org/Review&quot;&gt;</span>
+<span class="gp">... </span><span class="s">    &lt;span itemprop=&quot;name&quot;&gt;Value purchase&lt;/span&gt; -</span>
+<span class="gp">... </span><span class="s">    by &lt;span itemprop=&quot;author&quot;&gt;Lucas&lt;/span&gt;,</span>
+<span class="gp">... </span><span class="s">    &lt;meta itemprop=&quot;datePublished&quot; content=&quot;2011-03-25&quot;&gt;March 25, 2011</span>
+<span class="gp">... </span><span class="s">    &lt;div itemprop=&quot;reviewRating&quot; itemscope itemtype=&quot;http://schema.org/Rating&quot;&gt;</span>
+<span class="gp">... </span><span class="s">      &lt;meta itemprop=&quot;worstRating&quot; content = &quot;1&quot;/&gt;</span>
+<span class="gp">... </span><span class="s">      &lt;span itemprop=&quot;ratingValue&quot;&gt;4&lt;/span&gt;/</span>
+<span class="gp">... </span><span class="s">      &lt;span itemprop=&quot;bestRating&quot;&gt;5&lt;/span&gt;stars</span>
+<span class="gp">... </span><span class="s">    &lt;/div&gt;</span>
+<span class="gp">... </span><span class="s">    &lt;span itemprop=&quot;description&quot;&gt;Great microwave for the price. It is small and</span>
+<span class="gp">... </span><span class="s">    fits in my apartment.&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s">  &lt;/div&gt;</span>
+<span class="gp">... </span><span class="s">  ...</span>
+<span class="gp">... </span><span class="s">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s">&quot;&quot;&quot;</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;//div[@itemscope]&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="s">&quot;current scope:&quot;</span><span class="p">,</span> <span class="n">scope</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;@itemtype&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">props</span> <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&#39;&#39;&#39;</span>
+<span class="gp">... </span><span class="s">                set:difference(./descendant::*/@itemprop,</span>
+<span class="gp">... </span><span class="s">                               .//*[@itemscope]/*/@itemprop)&#39;&#39;&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="s">&quot;    properties:&quot;</span><span class="p">,</span> <span class="n">props</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">print</span>
+<span class="gp">...</span>
+<span class="go">current scope: [u&#39;http://schema.org/Product&#39;]</span>
+<span class="go">    properties: [u&#39;name&#39;, u&#39;aggregateRating&#39;, u&#39;offers&#39;, u&#39;description&#39;, u&#39;review&#39;, u&#39;review&#39;]</span>
+
+<span class="go">current scope: [u&#39;http://schema.org/AggregateRating&#39;]</span>
+<span class="go">    properties: [u&#39;ratingValue&#39;, u&#39;reviewCount&#39;]</span>
+
+<span class="go">current scope: [u&#39;http://schema.org/Offer&#39;]</span>
+<span class="go">    properties: [u&#39;price&#39;, u&#39;availability&#39;]</span>
+
+<span class="go">current scope: [u&#39;http://schema.org/Review&#39;]</span>
+<span class="go">    properties: [u&#39;name&#39;, u&#39;author&#39;, u&#39;datePublished&#39;, u&#39;reviewRating&#39;, u&#39;description&#39;]</span>
+
+<span class="go">current scope: [u&#39;http://schema.org/Rating&#39;]</span>
+<span class="go">    properties: [u&#39;worstRating&#39;, u&#39;ratingValue&#39;, u&#39;bestRating&#39;]</span>
+
+<span class="go">current scope: [u&#39;http://schema.org/Review&#39;]</span>
+<span class="go">    properties: [u&#39;name&#39;, u&#39;author&#39;, u&#39;datePublished&#39;, u&#39;reviewRating&#39;, u&#39;description&#39;]</span>
+
+<span class="go">current scope: [u&#39;http://schema.org/Rating&#39;]</span>
+<span class="go">    properties: [u&#39;worstRating&#39;, u&#39;ratingValue&#39;, u&#39;bestRating&#39;]</span>
+
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>在这里，我们首先在 <tt class="docutils literal"><span class="pre">itemscope</span></tt> 元素上迭代，对于其中的每一个元素，我们寻找所有的 <tt class="docutils literal"><span class="pre">itemprops</span></tt> 元素，并排除那些本身在另一个 <tt class="docutils literal"><span class="pre">itemscope</span></tt> 内的元素。</p>
+</div>
+</div>
+</div>
+<div class="section" id="module-scrapy.selector">
+<span id="id11"></span><span id="topics-selectors-ref"></span><h2>内建选择器的参考<a class="headerlink" href="#module-scrapy.selector" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="scrapy.selector.Selector">
+<em class="property">class </em><tt class="descclassname">scrapy.selector.</tt><tt class="descname">Selector</tt><big>(</big><em>response=None</em>, <em>text=None</em>, <em>type=None</em><big>)</big><a class="headerlink" href="#scrapy.selector.Selector" title="永久链接至目标">¶</a></dt>
+<dd><blockquote>
+<div><a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> 的实例是对选择某些内容响应的封装。</div></blockquote>
+<p><tt class="docutils literal"><span class="pre">response</span></tt> 是 <a class="reference internal" href="request-response.html#scrapy.http.HtmlResponse" title="scrapy.http.HtmlResponse"><tt class="xref py py-class docutils literal"><span class="pre">HtmlResponse</span></tt></a> 或
+<a class="reference internal" href="request-response.html#scrapy.http.XmlResponse" title="scrapy.http.XmlResponse"><tt class="xref py py-class docutils literal"><span class="pre">XmlResponse</span></tt></a> 的一个对象，将被用来选择和提取数据。</p>
+<p><tt class="docutils literal"><span class="pre">text</span></tt> 是在 <tt class="docutils literal"><span class="pre">response</span></tt> 不可用时的一个unicode字符串或utf-8编码的文字。将 <tt class="docutils literal"><span class="pre">text</span></tt> 和 <tt class="docutils literal"><span class="pre">response</span></tt> 一起使用是未定义行为。</p>
+<p><tt class="docutils literal"><span class="pre">type</span></tt> 定义了选择器类型，可以是 <tt class="docutils literal"><span class="pre">&quot;html&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;xml&quot;</span></tt> or <tt class="docutils literal"><span class="pre">None</span></tt> （默认）.</p>
+<blockquote>
+<div><blockquote>
+<div><p>如果 <tt class="docutils literal"><span class="pre">type</span></tt> 是 <tt class="docutils literal"><span class="pre">None</span></tt> ，选择器会根据 <tt class="docutils literal"><span class="pre">response</span></tt> 类型（参见下面）自动选择最佳的类型，或者在和 <tt class="docutils literal"><span class="pre">text</span></tt> 一起使用时，默认为 <tt class="docutils literal"><span class="pre">&quot;html&quot;</span></tt> 。</p>
+<p>如果 <tt class="docutils literal"><span class="pre">type</span></tt> 是 <tt class="docutils literal"><span class="pre">None</span></tt> ，并传递了一个 <tt class="docutils literal"><span class="pre">response</span></tt> ，选择器类型将从response类型中推导如下：</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">&quot;html&quot;</span></tt> for <a class="reference internal" href="request-response.html#scrapy.http.HtmlResponse" title="scrapy.http.HtmlResponse"><tt class="xref py py-class docutils literal"><span class="pre">HtmlResponse</span></tt></a> type</li>
+<li><tt class="docutils literal"><span class="pre">&quot;xml&quot;</span></tt> for <a class="reference internal" href="request-response.html#scrapy.http.XmlResponse" title="scrapy.http.XmlResponse"><tt class="xref py py-class docutils literal"><span class="pre">XmlResponse</span></tt></a> type</li>
+<li><tt class="docutils literal"><span class="pre">&quot;html&quot;</span></tt> for anything else</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>其他情况下，如果设定了 <tt class="docutils literal"><span class="pre">type</span></tt> ，选择器类型将被强制设定，而不进行检测。</p>
+</div></blockquote>
+<dl class="method">
+<dt id="scrapy.selector.Selector.xpath">
+<tt class="descname">xpath</tt><big>(</big><em>query</em><big>)</big><a class="headerlink" href="#scrapy.selector.Selector.xpath" title="永久链接至目标">¶</a></dt>
+<dd><p>寻找可以匹配xpath <tt class="docutils literal"><span class="pre">query</span></tt> 的节点，并返回 <a class="reference internal" href="#scrapy.selector.SelectorList" title="scrapy.selector.SelectorList"><tt class="xref py py-class docutils literal"><span class="pre">SelectorList</span></tt></a> 的一个实例结果，单一化其所有元素。列表元素也实现了 <a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> 的接口。</p>
+<p><tt class="docutils literal"><span class="pre">query</span></tt> 是包含XPATH查询请求的字符串。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.Selector.css">
+<tt class="descname">css</tt><big>(</big><em>query</em><big>)</big><a class="headerlink" href="#scrapy.selector.Selector.css" title="永久链接至目标">¶</a></dt>
+<dd><p>应用给定的CSS选择器，返回 <a class="reference internal" href="#scrapy.selector.SelectorList" title="scrapy.selector.SelectorList"><tt class="xref py py-class docutils literal"><span class="pre">SelectorList</span></tt></a> 的一个实例。</p>
+<p><tt class="docutils literal"><span class="pre">query</span></tt> 是一个包含CSS选择器的字符串。</p>
+<p>在后台，通过 <cite>cssselect</cite> 库和运行 <tt class="docutils literal"><span class="pre">.xpath()</span></tt> 方法，CSS查询会被转换为XPath查询。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.Selector.extract">
+<tt class="descname">extract</tt><big>(</big><big>)</big><a class="headerlink" href="#scrapy.selector.Selector.extract" title="永久链接至目标">¶</a></dt>
+<dd><p>串行化并将匹配到的节点返回一个unicode字符串列表。
+结尾是编码内容的百分比。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.Selector.re">
+<tt class="descname">re</tt><big>(</big><em>regex</em><big>)</big><a class="headerlink" href="#scrapy.selector.Selector.re" title="永久链接至目标">¶</a></dt>
+<dd><p>应用给定的regex，并返回匹配到的unicode字符串列表。、</p>
+<p><tt class="docutils literal"><span class="pre">regex</span></tt> 可以是一个已编译的正则表达式，也可以是一个将被 <tt class="docutils literal"><span class="pre">re.compile(regex)</span></tt> 编译为正则表达式的字符串。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.Selector.register_namespace">
+<tt class="descname">register_namespace</tt><big>(</big><em>prefix</em>, <em>uri</em><big>)</big><a class="headerlink" href="#scrapy.selector.Selector.register_namespace" title="永久链接至目标">¶</a></dt>
+<dd><p>注册给定的命名空间，其将在 <a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> 中使用。
+不注册命名空间，你将无法从非标准命名空间中选择或提取数据。参见下面的例子。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.Selector.remove_namespaces">
+<tt class="descname">remove_namespaces</tt><big>(</big><big>)</big><a class="headerlink" href="#scrapy.selector.Selector.remove_namespaces" title="永久链接至目标">¶</a></dt>
+<dd><p>移除所有的命名空间，允许使用少量的命名空间xpaths遍历文档。参加下面的例子。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.Selector.__nonzero__">
+<tt class="descname">__nonzero__</tt><big>(</big><big>)</big><a class="headerlink" href="#scrapy.selector.Selector.__nonzero__" title="永久链接至目标">¶</a></dt>
+<dd><p>如果选择了任意的真实文档，将返回 <tt class="docutils literal"><span class="pre">True</span></tt> ，否则返回 <tt class="docutils literal"><span class="pre">False</span></tt> 。
+也就是说， <a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> 的布尔值是通过它选择的内容确定的。</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="selectorlist">
+<h3>SelectorList对象<a class="headerlink" href="#selectorlist" title="永久链接至标题">¶</a></h3>
+<dl class="class">
+<dt id="scrapy.selector.SelectorList">
+<em class="property">class </em><tt class="descclassname">scrapy.selector.</tt><tt class="descname">SelectorList</tt><a class="headerlink" href="#scrapy.selector.SelectorList" title="永久链接至目标">¶</a></dt>
+<dd><blockquote>
+<div><a class="reference internal" href="#scrapy.selector.SelectorList" title="scrapy.selector.SelectorList"><tt class="xref py py-class docutils literal"><span class="pre">SelectorList</span></tt></a> 类是内建 <tt class="docutils literal"><span class="pre">list</span></tt> 类的子类，提供了一些额外的方法。</div></blockquote>
+<dl class="method">
+<dt id="scrapy.selector.SelectorList.xpath">
+<tt class="descname">xpath</tt><big>(</big><em>query</em><big>)</big><a class="headerlink" href="#scrapy.selector.SelectorList.xpath" title="永久链接至目标">¶</a></dt>
+<dd><p>对列表中的每个元素调用 <tt class="docutils literal"><span class="pre">.xpath()</span></tt> 方法，返回结果为另一个单一化的 <a class="reference internal" href="#scrapy.selector.SelectorList" title="scrapy.selector.SelectorList"><tt class="xref py py-class docutils literal"><span class="pre">SelectorList</span></tt></a> 。</p>
+<p><tt class="docutils literal"><span class="pre">query</span></tt> 和 <a class="reference internal" href="#scrapy.selector.Selector.xpath" title="scrapy.selector.Selector.xpath"><tt class="xref py py-meth docutils literal"><span class="pre">Selector.xpath()</span></tt></a> 中的参数相同。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.SelectorList.css">
+<tt class="descname">css</tt><big>(</big><em>query</em><big>)</big><a class="headerlink" href="#scrapy.selector.SelectorList.css" title="永久链接至目标">¶</a></dt>
+<dd><p>对列表中的各个元素调用 <tt class="docutils literal"><span class="pre">.css()</span></tt> 方法，返回结果为另一个单一化的 <a class="reference internal" href="#scrapy.selector.SelectorList" title="scrapy.selector.SelectorList"><tt class="xref py py-class docutils literal"><span class="pre">SelectorList</span></tt></a> 。</p>
+<p><tt class="docutils literal"><span class="pre">query</span></tt> 和 <a class="reference internal" href="#scrapy.selector.Selector.css" title="scrapy.selector.Selector.css"><tt class="xref py py-meth docutils literal"><span class="pre">Selector.css()</span></tt></a> 中的参数相同。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.SelectorList.extract">
+<tt class="descname">extract</tt><big>(</big><big>)</big><a class="headerlink" href="#scrapy.selector.SelectorList.extract" title="永久链接至目标">¶</a></dt>
+<dd><p>对列表中的各个元素调用 <tt class="docutils literal"><span class="pre">.extract()</span></tt> 方法，返回结果为单一化的unicode字符串列表。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.SelectorList.re">
+<tt class="descname">re</tt><big>(</big><big>)</big><a class="headerlink" href="#scrapy.selector.SelectorList.re" title="永久链接至目标">¶</a></dt>
+<dd><p>对列表中的各个元素调用 <tt class="docutils literal"><span class="pre">.re()</span></tt> 方法，返回结果为单一化的unicode字符串列表。</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scrapy.selector.SelectorList.__nonzero__">
+<tt class="descname">__nonzero__</tt><big>(</big><big>)</big><a class="headerlink" href="#scrapy.selector.SelectorList.__nonzero__" title="永久链接至目标">¶</a></dt>
+<dd><p>列表非空则返回True，否则返回False。</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="html">
+<h4>在HTML响应上的选择器样例<a class="headerlink" href="#html" title="永久链接至标题">¶</a></h4>
+<p>这里是一些 <a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> 的样例，用来说明一些概念。
+在所有的例子中，我们假设已经有一个通过 <a class="reference internal" href="request-response.html#scrapy.http.HtmlResponse" title="scrapy.http.HtmlResponse"><tt class="xref py py-class docutils literal"><span class="pre">HtmlResponse</span></tt></a> 对象实例化的 <a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> ，如下:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sel</span> <span class="o">=</span> <span class="n">Selector</span><span class="p">(</span><span class="n">html_response</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p class="first">从HTML响应主体中提取所有的 <tt class="docutils literal"><span class="pre">&lt;h1&gt;</span></tt> 元素，返回:class:<cite>Selector</cite> 对象（即 <a class="reference internal" href="#scrapy.selector.SelectorList" title="scrapy.selector.SelectorList"><tt class="xref py py-class docutils literal"><span class="pre">SelectorList</span></tt></a> 的一个对象）的列表:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&quot;//h1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">从HTML响应主体上提取所有 <tt class="docutils literal"><span class="pre">&lt;h1&gt;</span></tt> 元素的文字，返回一个unicode字符串的列表:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&quot;//h1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>         <span class="c"># this includes the h1 tag</span>
+<span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&quot;//h1/text()&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>  <span class="c"># this excludes the h1 tag</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">在所有 <tt class="docutils literal"><span class="pre">&lt;p&gt;</span></tt> 标签上迭代，打印它们的类属性:</p>
+<div class="highlight-python"><div class="highlight"><pre>for node in sel.xpath(&quot;//p&quot;):
+...    print node.xpath(&quot;@class&quot;).extract()
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="xml">
+<h4>在XML响应上的选择器样例<a class="headerlink" href="#xml" title="永久链接至标题">¶</a></h4>
+<p>这里是一些样例，用来说明一些概念。在两个例子中，我们假设已经有一个通过 <a class="reference internal" href="request-response.html#scrapy.http.XmlResponse" title="scrapy.http.XmlResponse"><tt class="xref py py-class docutils literal"><span class="pre">XmlResponse</span></tt></a> 对象实例化的 <a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> ，如下:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sel</span> <span class="o">=</span> <span class="n">Selector</span><span class="p">(</span><span class="n">xml_response</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p class="first">从XML响应主体中选择所有的 <tt class="docutils literal"><span class="pre">&lt;product&gt;</span></tt> 元素，返回 <a class="reference internal" href="#scrapy.selector.Selector" title="scrapy.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a> 对象（即 <a class="reference internal" href="#scrapy.selector.SelectorList" title="scrapy.selector.SelectorList"><tt class="xref py py-class docutils literal"><span class="pre">SelectorList</span></tt></a> 对象）的列表:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&quot;//product&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">从 <a class="reference external" href="http://base.google.com/support/bin/answer.py?hl=en&amp;answer=59461">Google Base XML feed</a> 中提取所有的价钱，这需要注册一个命名空间:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sel</span><span class="o">.</span><span class="n">register_namespace</span><span class="p">(</span><span class="s">&quot;g&quot;</span><span class="p">,</span> <span class="s">&quot;http://base.google.com/ns/1.0&quot;</span><span class="p">)</span>
+<span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&quot;//g:price&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">extract</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="removing-namespaces">
+<span id="id12"></span><h4>移除命名空间<a class="headerlink" href="#removing-namespaces" title="永久链接至标题">¶</a></h4>
+<p>在处理爬虫项目时，完全去掉命名空间而仅仅处理元素名字，写更多简单/实用的XPath会方便很多。你可以为此使用 <a class="reference internal" href="#scrapy.selector.Selector.remove_namespaces" title="scrapy.selector.Selector.remove_namespaces"><tt class="xref py py-meth docutils literal"><span class="pre">Selector.remove_namespaces()</span></tt></a> 方法。</p>
+<p>让我们来看一个例子，以Github博客的atom订阅来解释这个情况。</p>
+<p>首先，我们使用想爬取的url来打开shell:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ scrapy shell https://github.com/blog.atom
+</pre></div>
+</div>
+<p>一旦进入shell，我们可以尝试选择所有的 <tt class="docutils literal"><span class="pre">&lt;link&gt;</span></tt> 对象，可以看到没有结果（因为Atom XML命名空间混淆了这些节点）:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&quot;//link&quot;</span><span class="p">)</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<p>但一旦我们调用 <a class="reference internal" href="#scrapy.selector.Selector.remove_namespaces" title="scrapy.selector.Selector.remove_namespaces"><tt class="xref py py-meth docutils literal"><span class="pre">Selector.remove_namespaces()</span></tt></a> 方法，所有的节点都可以直接通过他们的名字来访问:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">remove_namespaces</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&quot;//link&quot;</span><span class="p">)</span>
+<span class="go">[&lt;Selector xpath=&#39;//link&#39; data=u&#39;&lt;link xmlns=&quot;http://www.w3.org/2005/Atom&#39;&gt;,</span>
+<span class="go"> &lt;Selector xpath=&#39;//link&#39; data=u&#39;&lt;link xmlns=&quot;http://www.w3.org/2005/Atom&#39;&gt;,</span>
+<span class="go"> ...</span>
+</pre></div>
+</div>
+<p>如果你对为什么命名空间移除操作并不总是被调用，而需要手动调用有疑惑。这是因为存在如下两个原因，按照相关顺序如下：</p>
+<ol class="arabic simple">
+<li>移除命名空间需要迭代并修改文件的所有节点，而这对于Scrapy爬取的所有文档操作需要一定的性能消耗</li>
+<li>会存在这样的情况，确实需要使用命名空间，但有些元素的名字与命名空间冲突。尽管这些情况非常少见。</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+
+
+    
+        <h2>
+            讨论
+            <a class="headerlink" href="#discuss" title="永久链接至标题">¶</a>
+        </h2>
+
+        <div id="disqus_thread"></div>
+    
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="loaders.html" class="btn btn-neutral float-right" title="Item Loaders">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="spiders.html" class="btn btn-neutral" title="Spiders"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2008-2014, written by Scrapy developers, translated by Summer&amp;Friends.
+      最后更新于 Feb 03, 2015.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: stable
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl>
+        <dt>Versions</dt>
+        
+          <dd><a href="/zh_CN/latest/">latest</a></dd>
+        
+          <dd><a href="/zh_CN/stable/">stable</a></dd>
+        
+          <dd><a href="/zh_CN/master/">master</a></dd>
+        
+          <dd><a href="/zh_CN/0.24/">0.24</a></dd>
+        
+          <dd><a href="/zh_CN/0.22/">0.22</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>Downloads</dt>
+        
+          <dd><a href="//readthedocs.org/projects/scrapy-chs/downloads/htmlzip/stable/">HTML</a></dd>
+        
+          <dd><a href="//readthedocs.org/projects/scrapy-chs/downloads/epub/stable/">Epub</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>On Read the Docs</dt>
+          <dd>
+            <a href="//readthedocs.org/projects/scrapy-chs/?fromdocs=scrapy-chs">Project Home</a>
+          </dd>
+          <dd>
+            <a href="//readthedocs.org/builds/scrapy-chs/?fromdocs=scrapy-chs">Builds</a>
+          </dd>
+      </dl>
+      <hr/>
+      Free document hosting provided by <a href="http://www.readthedocs.org">Read the Docs</a>.
+
+    </div>
+  </div>
+
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.22.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/jquery/jquery-2.0.3.min.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/jquery/jquery-migrate-1.2.1.min.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/underscore.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/doctools.js"></script>
+      <script type="text/javascript" src="../_static/translations.js"></script>
+      <script type="text/javascript" src="https://media.readthedocs.org/javascript/readthedocs-doc-embed.js"></script>
+
+  
+
+  
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'scrapychs'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-50189694-1', 'readthedocs.org');
+      ga('send', 'pageview');
+
+    </script>
+    
+
+
+</body>
+</html>
