@@ -1,5 +1,5 @@
 """
-Django settings for mydjango project.
+Django settings for tutorial project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 't(h^hhe_(j5420&h8__mx#6$ikwos6wsv8dt!7bvj6*v7h-8o^'
+SECRET_KEY = 'ze(0vdjba*-r!0gx=4is8$1i(o+8#&bv9%oy+wf)9_+on)obh('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,8 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'polls',
-    'blog',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -51,9 +49,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'mydjango.urls'
+ROOT_URLCONF = 'tutorial.urls'
 
-WSGI_APPLICATION = 'mydjango.wsgi.application'
+WSGI_APPLICATION = 'tutorial.wsgi.application'
 
 
 # Database
@@ -61,14 +59,11 @@ WSGI_APPLICATION = 'mydjango.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "movie",
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'myroot',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
+DJANGO_SETTINGS_MODULE = None
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 
