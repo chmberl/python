@@ -24,10 +24,10 @@
 			}
 		},
 		{
-			"file": "tutorial/manage.py",
+			"file": "test.py",
 			"settings":
 			{
-				"buffer_size": 251,
+				"buffer_size": 48,
 				"line_ending": "Unix"
 			}
 		},
@@ -47,10 +47,30 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 374.0,
-		"last_filter": "git:commit",
+		"height": 142.0,
+		"last_filter": "git:commit ",
 		"selected_items":
 		[
+			[
+				"git:commit ",
+				"Git: Quick Commit"
+			],
+			[
+				"git:com",
+				"Git: Commit"
+			],
+			[
+				"git add .",
+				"Git: Add..."
+			],
+			[
+				"git:add",
+				"Git: Add Current File"
+			],
+			[
+				"git:",
+				"Git: Add..."
+			],
 			[
 				"git:commit",
 				"Git: Commit"
@@ -109,16 +129,17 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/exit0/python/tutorial",
-		"/Users/exit0/python/tutorial/quickstart"
+		"/Users/exit0/python/tutorial"
 	],
 	"file_history":
 	[
 		"/Users/exit0/python/tutorial/manage.py",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/SublimeREPL/SublimeREPL.sublime-settings",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/SublimeREPL.sublime-settings",
+		"/Users/exit0/python/tutorial/quickstart/admin.py",
 		"/Users/exit0/python/tutorial/quickstart/__init__.py",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
-		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
-		"/Users/exit0/python/tutorial/quickstart/admin.py",
 		"/Users/exit0/python/tutorial/tutorial/urls.py",
 		"/Users/exit0/python/tutorial/tutorial/settings.py",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/Default/Default (OSX).sublime-keymap",
@@ -213,11 +234,11 @@
 				},
 				{
 					"buffer": 1,
-					"file": "tutorial/manage.py",
-					"semi_transient": true,
+					"file": "test.py",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 251,
+						"buffer_size": 48,
 						"regions":
 						{
 						},
@@ -276,7 +297,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 36.0
 	},
 	"layout":
 	{
