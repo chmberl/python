@@ -11,7 +11,13 @@
 	"folders":
 	[
 		{
-			"path": "tutorial"
+			"path": "/Users/exit0/dev/sandbox"
+		},
+		{
+			"path": "/Users/exit0/dev/Archive/django-oscar-api"
+		},
+		{
+			"path": "/Users/exit0/dev/demo"
 		}
 	]
 }

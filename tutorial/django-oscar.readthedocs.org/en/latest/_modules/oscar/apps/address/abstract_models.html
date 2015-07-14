@@ -1,0 +1,1581 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>oscar.apps.address.abstract_models &mdash; django-oscar 1.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+
+  
+    <link rel="stylesheet" href="https://cdnmedia.readthedocs.org/css/sphinx_rtd_theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="https://cdnmedia.readthedocs.org/css/readthedocs-doc-embed.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="django-oscar 1.2 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/>
+ 
+<!-- RTD Extra Head -->
+
+
+
+<!-- 
+Read the Docs is acting as the canonical URL for your project. 
+If you want to change it, more info is available in our docs:
+  http://docs.readthedocs.org/en/latest/canonical.html
+-->
+<link rel="canonical" href="abstract_models.html" />
+
+<script type="text/javascript">
+  // This is included here because other places don't have access to the pagename variable.
+  var READTHEDOCS_DATA = {
+    project: "django-oscar",
+    version: "latest",
+    language: "en",
+    page: "_modules/oscar/apps/address/abstract_models",
+    builder: "sphinx",
+    theme: "sphinx_rtd_theme",
+    docroot: "/docs/source/",
+    source_suffix: ".rst",
+    api_host: "https://readthedocs.org/",
+    commit: "35b09fc05d799181be9046c7447986cc5193d2ff"
+  }
+  // Old variables
+  var doc_version = "latest";
+  var doc_slug = "django-oscar";
+  var page_name = "_modules/oscar/apps/address/abstract_models";
+  var html_theme = "sphinx_rtd_theme";
+</script>
+<!-- RTD Analytics Code -->
+<!-- Included in the header because you don't have a footer block. -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17997319-1']);
+  _gaq.push(['_trackPageview']);
+
+  // User Analytics Code
+  _gaq.push(['user._setAccount', 'UA-45363517-1']);
+  _gaq.push(['user._trackPageview']);
+  // End User Analytics Code
+
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<!-- end RTD Analytics Code -->
+<!-- end RTD <extrahead> -->
+
+
+  
+  <script src="http://django-oscar.readthedocs.org/en/latest/_modules/oscar/apps/address/_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../../../../index.html" class="icon icon-home"> django-oscar
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="http://django-oscar.readthedocs.org/en/latest/search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../internals/sandbox.html">Sample Oscar projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/sandbox.html#the-sandbox-site">The sandbox site</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/sandbox.html#browse-the-external-sandbox-site">Browse the external sandbox site</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/sandbox.html#run-the-sandbox-locally">Run the sandbox locally</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/sandbox.html#the-us-site">The US site</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/sandbox.html#the-demo-site">The demo site</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/sandbox.html#browse-the-external-demo-site">Browse the external demo site</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/sandbox.html#run-the-demo-site-locally">Run the demo site locally</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../internals/getting_started.html">Building your own shop</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#install-oscar-and-its-dependencies">Install Oscar and its dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#django-settings">Django settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#urls">URLs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#search-backend">Search backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#database">Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/getting_started.html#create-database">Create database</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#initial-data">Initial data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#creating-product-classes-and-fulfillment-partners">Creating product classes and fulfillment partners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#defining-the-order-pipeline">Defining the order pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/getting_started.html#next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/key_questions.html">Building an e-commerce site: the key questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/key_questions.html#catalogue">Catalogue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#what-are-your-product-types">What are your product types?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#how-is-your-catalogue-organised">How is your catalogue organised?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#how-are-products-managed">How are products managed?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/key_questions.html#pricing-stock-and-availability">Pricing, stock and availability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#how-is-tax-calculated">How is tax calculated?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#what-availability-messages-are-shown-to-customers">What availability messages are shown to customers?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#do-you-allow-pre-and-back-orders">Do you allow pre- and back-orders</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/key_questions.html#shipping">Shipping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#how-are-shipping-charges-calculated">How are shipping charges calculated?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#which-shipping-methods-are-available">Which shipping methods are available?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/key_questions.html#payment">Payment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#how-are-customers-going-to-pay-for-orders">How are customers going to pay for orders?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#when-will-payment-be-taken">When will payment be taken?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/key_questions.html#order-processing">Order processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/key_questions.html#how-will-orders-be-processed">How will orders be processed?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/modelling_your_catalogue.html">Modelling your catalogue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/modelling_your_catalogue.html#product-classes">Product classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/modelling_your_catalogue.html#product-attributes">Product attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/modelling_your_catalogue.html#parent-and-child-products">Parent and child products</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/modelling_your_catalogue.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../internals/getting_help.html">Getting help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ref/glossary.html">Glossary</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/customisation.html">Customising Oscar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/customisation.html#fork-the-oscar-app">Fork the Oscar app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/customisation.html#replace-oscar-s-app-with-your-own-in-installed-apps">Replace Oscar&#8217;s app with your own in <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/customisation.html#start-customising">Start customising!</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/class_loading_explained.html">Dynamic class loading explained</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/class_loading_explained.html#why">Why?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/class_loading_explained.html#how-it-works">How it works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/class_loading_explained.html#in-practice">In practice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/class_loading_explained.html#using-get-class-in-your-own-code">Using <tt class="docutils literal"><span class="pre">get_class</span></tt> in your own code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/class_loading_explained.html#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/prices_and_availability.html">Prices and availability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/prices_and_availability.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/prices_and_availability.html#the-strategy-class">The strategy class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/prices_and_availability.html#this-seems-quite-complicated">This seems quite complicated...</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/prices_and_availability.html#api">API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/prices_and_availability.html#loading-a-strategy">Loading a strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/prices_and_availability.html#pricing-policies">Pricing policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/prices_and_availability.html#availability-policies">Availability policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/prices_and_availability.html#strategy-mixins">Strategy mixins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/prices_and_availability.html#default-strategy">Default strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/prices_and_availability.html#how-to-use">How to use</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/prices_and_availability.html#example-1-uk-vat">Example 1: UK VAT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/prices_and_availability.html#example-2-us-sales-tax">Example 2: US sales tax</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/deploying.html">Deploying Oscar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/deploying.html#performance">Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/deploying.html#security">Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/deploying.html#search-engine-optimisation">Search Engine Optimisation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/translation.html">Translation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/translation.html#translating-oscar-within-your-project">Translating Oscar within your project</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/upgrading.html">Upgrading</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/upgrading.html#migrations">Migrations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/upgrading.html#migrating-uncustomised-apps">Migrating uncustomised apps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/upgrading.html#migrating-customised-apps-models-unchanged">Migrating customised apps (models unchanged)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../topics/upgrading.html#migrating-customised-apps-models-changed">Migrating customised apps (models changed)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../topics/fork_app.html">Forking an app</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/fork_app.html#create-python-module-with-same-label">Create Python module with same label</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/fork_app.html#reference-oscar-s-models">Reference Oscar&#8217;s models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/fork_app.html#get-the-django-admin-working">Get the Django admin working</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/fork_app.html#django-1-7-use-supplied-app-config">Django 1.7+: Use supplied app config</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ref/core.html">Core functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/core.html#dynamic-class-loading">Dynamic class loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/core.html#url-patterns-and-views">URL patterns and views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/core.html#prices">Prices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/core.html#custom-model-fields">Custom model fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ref/apps/index.html">Oscar&#8217;s apps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/address.html">Address</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/address.html#module-oscar.apps.address.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/address.html#views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/analytics.html">Analytics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/analytics.html#module-oscar.apps.analytics.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/analytics.html#views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/basket.html">Basket</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/basket.html#module-oscar.apps.basket.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/basket.html#module-oscar.apps.basket.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/catalogue.html">Catalogue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/catalogue.html#module-oscar.apps.catalogue.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/catalogue.html#module-oscar.apps.catalogue.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/checkout.html">Checkout</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/checkout.html#flow">Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/checkout.html#abstract-models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/checkout.html#module-oscar.apps.checkout.views">Views and mixins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/checkout.html#module-oscar.apps.checkout.forms">Forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/checkout.html#module-oscar.apps.checkout.calculators">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/customer.html">Customer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/customer.html#module-oscar.apps.customer.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/customer.html#module-oscar.apps.customer.forms">Forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/customer.html#module-oscar.apps.customer.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/dashboard.html">Dashboard</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/dashboard.html#permission-based-dashboard">Permission-based dashboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/dashboard.html#abstract-models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/dashboard.html#module-oscar.apps.dashboard.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/offer.html">Offers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/offer.html#structure">Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/offer.html#availability">Availability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/offer.html#conditions">Conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/offer.html#benefits">Benefits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/offer.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/offer.html#module-oscar.apps.offer.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/offer.html#module-oscar.apps.offer.models">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/offer.html#module-oscar.apps.offer.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/order.html">Order</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/order.html#abstract-models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/order.html#module-oscar.apps.order.processing">Order processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/order.html#module-oscar.apps.order.utils">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/partner.html">Partner</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/partner.html#module-oscar.apps.partner.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/partner.html#module-oscar.apps.partner.strategy">Strategy classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/partner.html#module-oscar.apps.partner.prices">Pricing policies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/partner.html#module-oscar.apps.partner.availability">Availability policies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/payment.html">Payment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/payment.html#module-oscar.apps.payment.abstract_models">Abstract models</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/promotions.html">Promotions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/promotions.html#module-oscar.apps.promotions.models">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/promotions.html#module-oscar.apps.promotions.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/search.html">Search</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/search.html#module-oscar.apps.search.views">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/search.html#module-oscar.apps.search.forms">Forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/search.html#module-oscar.apps.search.facets">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/shipping.html">Shipping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/shipping.html#module-oscar.apps.shipping.methods">Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/shipping.html#module-oscar.apps.shipping.models">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/shipping.html#module-oscar.apps.shipping.repository">Repository</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/voucher.html">Voucher</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/voucher.html#module-oscar.apps.voucher.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/voucher.html#views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/apps/wishlists.html">Wishlists</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/wishlists.html#module-oscar.apps.wishlists.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/apps/wishlists.html#module-oscar.apps.customer.wishlists.views">Views</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../howto/index.html">Recipes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#customisation">Customisation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_customise_models.html">How to customise models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_models.html#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_models.html#customising-products">Customising Products</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_models.html#model-customisations-are-not-picked-up">Model customisations are not picked up</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_customise_templates.html">How to customise templates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_templates.html#method-1-forking">Method 1 - Forking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_templates.html#method-2-subclass-parent-but-use-same-template-path">Method 2 - Subclass parent but use same template path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_templates.html#overriding-individual-products-partials">Overriding individual products partials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_templates.html#example-changing-the-analytics-package">Example: Changing the analytics package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_disable_an_app.html">How to disable an app&#8217;s URLs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_change_a_url.html">How to add views or change URLs or permissions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_change_a_url.html#the-application-class">The application class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_change_a_url.html#the-application-tree">The application tree</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_change_a_url.html#changing-sub-app">Changing sub app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_change_a_url.html#changing-the-root-app">Changing the root app</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_customise_a_view.html">How to customise an existing view</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_a_view.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_configure_the_dashboard_navigation.html">How to configure the dashboard navigation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_configure_the_dashboard_navigation.html#add-your-own-dashboard-menu-item">Add your own dashboard menu item</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_configure_the_dashboard_navigation.html#add-an-icon-to-your-dashboard-menu">Add an icon to your dashboard menu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_configure_the_dashboard_navigation.html#controlling-visibility-per-user">Controlling visibility per user</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_customise_oscar_communications.html">Customising Oscar&#8217;s communications</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_oscar_communications.html#communications-api">Communications API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_oscar_communications.html#customising-through-code">Customising through code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_customise_oscar_communications.html#customising-through-the-database">Customising through the database</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#customers">Customers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/use_a_custom_user_model.html">How to use a custom user model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/use_a_custom_user_model.html#restrictions">Restrictions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/use_a_custom_user_model.html#migrations">Migrations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/use_a_custom_user_model.html#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#catalogue">Catalogue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_create_categories.html">How to create categories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/importing_a_catalogue.html">Importing a catalogue</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/importing_a_catalogue.html#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#pricing-stock-and-availability">Pricing, stock and availability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/enforcing_stock_rules.html">How to enforce stock rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_configure_stock_messaging.html">How to configure stock messaging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#payment">Payment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_integrate_payment.html">How to integrate payment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_integrate_payment.html#models">Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_integrate_payment.html#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_integrate_payment.html#integration-into-checkout">Integration into checkout</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_handle_us_taxes.html">How to handle US taxes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_handle_us_taxes.html#ensure-your-site-strategy-returns-prices-without-taxes-applied">Ensure your site strategy returns prices without taxes applied</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_handle_us_taxes.html#adjust-checkout-views-to-apply-taxes-once-they-are-known">Adjust checkout views to apply taxes once they are known</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#shipping">Shipping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_configure_shipping.html">How to configure shipping</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_configure_shipping.html#shipping-in-oscar">Shipping in Oscar</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_configure_shipping.html#core-shipping-methods">Core shipping methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#order-processing">Order processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_set_up_order_processing.html">How to set up order processing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_set_up_order_processing.html#structure">Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_set_up_order_processing.html#modelling">Modelling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_set_up_order_processing.html#event-handling">Event handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_set_up_order_processing.html#customisation">Customisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_set_up_order_processing.html#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#offers">Offers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_range.html">How to create a custom range</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_range.html#custom-range-interface">Custom range interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_range.html#create-range-instance">Create range instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_range.html#deploying-custom-ranges">Deploying custom ranges</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_condition.html">How to create a custom offer condition</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_condition.html#custom-condition-interface">Custom condition interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_condition.html#create-condition-instance">Create condition instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_condition.html#deploying-custom-conditions">Deploying custom conditions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_benefit.html">How to create a custom benefit</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_create_a_custom_benefit.html#custom-benefits">Custom benefits</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#appearance">Appearance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_handle_statics.html">How to change Oscar&#8217;s appearance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_handle_statics.html#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_handle_statics.html#customisation">Customisation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../howto/index.html#deployment-and-setup">Deployment and setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../howto/how_to_setup_solr.html">How to setup Solr with Oscar</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_setup_solr.html#starting-solr">Starting Solr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../howto/how_to_setup_solr.html#integrating-with-haystack">Integrating with Haystack</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ref/settings.html">Oscar settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#display-settings">Display settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-shop-name"><tt class="docutils literal"><span class="pre">OSCAR_SHOP_NAME</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-shop-tagline"><tt class="docutils literal"><span class="pre">OSCAR_SHOP_TAGLINE</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-homepage"><tt class="docutils literal"><span class="pre">OSCAR_HOMEPAGE</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-accounts-redirect-url"><tt class="docutils literal"><span class="pre">OSCAR_ACCOUNTS_REDIRECT_URL</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-recently-viewed-products"><tt class="docutils literal"><span class="pre">OSCAR_RECENTLY_VIEWED_PRODUCTS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-recently-viewed-cookie-lifetime"><tt class="docutils literal"><span class="pre">OSCAR_RECENTLY_VIEWED_COOKIE_LIFETIME</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-recently-viewed-cookie-name"><tt class="docutils literal"><span class="pre">OSCAR_RECENTLY_VIEWED_COOKIE_NAME</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#pagination">Pagination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-search-facets"><tt class="docutils literal"><span class="pre">OSCAR_SEARCH_FACETS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-product-search-handler"><tt class="docutils literal"><span class="pre">OSCAR_PRODUCT_SEARCH_HANDLER</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-promotion-positions"><tt class="docutils literal"><span class="pre">OSCAR_PROMOTION_POSITIONS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-promotion-merchandising-block-types"><tt class="docutils literal"><span class="pre">OSCAR_PROMOTION_MERCHANDISING_BLOCK_TYPES</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-dashboard-navigation"><tt class="docutils literal"><span class="pre">OSCAR_DASHBOARD_NAVIGATION</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-dashboard-default-access-function"><tt class="docutils literal"><span class="pre">OSCAR_DASHBOARD_DEFAULT_ACCESS_FUNCTION</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#order-settings">Order settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-initial-order-status"><tt class="docutils literal"><span class="pre">OSCAR_INITIAL_ORDER_STATUS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-initial-line-status"><tt class="docutils literal"><span class="pre">OSCAR_INITIAL_LINE_STATUS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-order-status-pipeline"><tt class="docutils literal"><span class="pre">OSCAR_ORDER_STATUS_PIPELINE</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-order-status-cascade"><tt class="docutils literal"><span class="pre">OSCAR_ORDER_STATUS_CASCADE</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-line-status-pipeline"><tt class="docutils literal"><span class="pre">OSCAR_LINE_STATUS_PIPELINE</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#checkout-settings">Checkout settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-allow-anon-checkout"><tt class="docutils literal"><span class="pre">OSCAR_ALLOW_ANON_CHECKOUT</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-required-address-fields"><tt class="docutils literal"><span class="pre">OSCAR_REQUIRED_ADDRESS_FIELDS</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#review-settings">Review settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-allow-anon-reviews"><tt class="docutils literal"><span class="pre">OSCAR_ALLOW_ANON_REVIEWS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-moderate-reviews"><tt class="docutils literal"><span class="pre">OSCAR_MODERATE_REVIEWS</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#communication-settings">Communication settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-eager-alerts"><tt class="docutils literal"><span class="pre">OSCAR_EAGER_ALERTS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-send-registration-email"><tt class="docutils literal"><span class="pre">OSCAR_SEND_REGISTRATION_EMAIL</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-from-email"><tt class="docutils literal"><span class="pre">OSCAR_FROM_EMAIL</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-static-base-url"><tt class="docutils literal"><span class="pre">OSCAR_STATIC_BASE_URL</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#offer-settings">Offer settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-offer-rounding-function"><tt class="docutils literal"><span class="pre">OSCAR_OFFER_ROUNDING_FUNCTION</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#basket-settings">Basket settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-basket-cookie-lifetime"><tt class="docutils literal"><span class="pre">OSCAR_BASKET_COOKIE_LIFETIME</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-max-basket-quantity-threshold"><tt class="docutils literal"><span class="pre">OSCAR_MAX_BASKET_QUANTITY_THRESHOLD</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-basket-cookie-open"><tt class="docutils literal"><span class="pre">OSCAR_BASKET_COOKIE_OPEN</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#currency-settings">Currency settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-default-currency"><tt class="docutils literal"><span class="pre">OSCAR_DEFAULT_CURRENCY</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-currency-format"><tt class="docutils literal"><span class="pre">OSCAR_CURRENCY_FORMAT</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#upload-media-settings">Upload/media settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-image-folder"><tt class="docutils literal"><span class="pre">OSCAR_IMAGE_FOLDER</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-delete-image-files"><tt class="docutils literal"><span class="pre">OSCAR_DELETE_IMAGE_FILES</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-promotion-folder"><tt class="docutils literal"><span class="pre">OSCAR_PROMOTION_FOLDER</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-missing-image-url"><tt class="docutils literal"><span class="pre">OSCAR_MISSING_IMAGE_URL</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-upload-root"><tt class="docutils literal"><span class="pre">OSCAR_UPLOAD_ROOT</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#slug-settings">Slug settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-slug-map"><tt class="docutils literal"><span class="pre">OSCAR_SLUG_MAP</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-slug-function"><tt class="docutils literal"><span class="pre">OSCAR_SLUG_FUNCTION</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-slug-blacklist"><tt class="docutils literal"><span class="pre">OSCAR_SLUG_BLACKLIST</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/settings.html#misc-settings">Misc settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/settings.html#oscar-cookies-delete-on-logout"><tt class="docutils literal"><span class="pre">OSCAR_COOKIES_DELETE_ON_LOGOUT</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ref/signals.html">Signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#product-viewed"><tt class="docutils literal"><span class="pre">product_viewed</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#product-search"><tt class="docutils literal"><span class="pre">product_search</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#user-registered"><tt class="docutils literal"><span class="pre">user_registered</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#basket-addition"><tt class="docutils literal"><span class="pre">basket_addition</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#voucher-addition"><tt class="docutils literal"><span class="pre">voucher_addition</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#start-checkout"><tt class="docutils literal"><span class="pre">start_checkout</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#pre-payment"><tt class="docutils literal"><span class="pre">pre_payment</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#post-payment"><tt class="docutils literal"><span class="pre">post_payment</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#order-placed"><tt class="docutils literal"><span class="pre">order_placed</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#post-checkout"><tt class="docutils literal"><span class="pre">post_checkout</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/signals.html#review-created"><tt class="docutils literal"><span class="pre">review_created</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ref/templatetags.html">Template tags</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../ref/templatetags.html#shipping-tags">Shipping tags</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/templatetags.html#shipping-charge"><tt class="docutils literal"><span class="pre">shipping_charge</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/templatetags.html#shipping-charge-discount"><tt class="docutils literal"><span class="pre">shipping_charge_discount</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../ref/templatetags.html#shipping-charge-excl-discount"><tt class="docutils literal"><span class="pre">shipping_charge_excl_discount</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../internals/design-decisions.html">Oscar design decisions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/design-decisions.html#core-models-are-abstract">Core models are abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/design-decisions.html#classes-are-loaded-dynamically">Classes are loaded dynamically</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/design-decisions.html#urls-and-permissions-for-apps-are-handled-by-application-instances">URLs and permissions for apps are handled by Application instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/design-decisions.html#templates-can-be-overridden">Templates can be overridden</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../releases/index.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.5.html">Oscar 0.5 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.5.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.5.html#what-s-new-in-oscar-0-5">What&#8217;s new in Oscar 0.5?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.5.html#offers">Offers++</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.5.html#new-dashboard-skin">New dashboard skin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.5.html#internationalisation">Internationalisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.5.html#minor-features">Minor features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.5.html#minor-improvements">Minor improvements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.5.html#upgrading">Upgrading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.5.html#migrations">Migrations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.5.1.html">Oscar 0.5.1 release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.5.2.html">Oscar 0.5.2 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.5.2.html#insecure-use-of-secret-key-in-basket-cookie">Insecure use of <tt class="docutils literal"><span class="pre">SECRET_KEY</span></tt> in basket cookie</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.5.3.html">Oscar 0.5.3 release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.6.html">Oscar 0.6 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.html#what-s-new-in-oscar-0-6">What&#8217;s new in Oscar 0.6?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#multiple-stockrecords-per-product">Multiple stockrecords per product</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#pricing-and-availability">Pricing and availability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#permission-based-dashboard">Permission-based dashboard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#payment-models-have-abstract-versions">Payment models have abstract versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#wishlists">Wishlists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#partner-dashboard-addresses">Partner dashboard &amp; addresses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#checkout">Checkout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#demo-site">Demo site</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#django-1-5-1-6-and-custom-user-model-support">Django 1.5, 1.6 and custom user model support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#accounts">Accounts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#bootstrap-wysihtml5-replaced-by-tinymce">Bootstrap-WYSIHTML5 replaced by TinyMCE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#improved-address-fields">Improved address fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#better-bankcard-handling">Better bankcard handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#customer-facing-range-pages">Customer-facing range pages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#reworked-search-app">Reworked search app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#order-processing-changes">Order processing changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#tracking-oscar-sites">Tracking Oscar sites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#minor-changes">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.html#backwards-incompatible-changes-in-0-6">Backwards incompatible changes in 0.6</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#additional-apps">Additional apps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#checkout-app">Checkout app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#shipping-app-changes">Shipping app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#address-model-changes">Address model changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#basket-app-changes">Basket app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#catalogue-app-changes">Catalogue app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#customer-app-changes">Customer app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#offer-app-changes">Offer app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#payment-app-changes">Payment app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#reviews-app-changes">Reviews app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#search-app-changes">Search app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#loading-baskets">Loading baskets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#renamed-templates">Renamed templates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#template-block-changes">Template block changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#changes-to-partner-permissions">Changes to Partner permissions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#migrations">Migrations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.html#features-deprecated-in-0-6">Features deprecated in 0.6</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#accessing-a-product-s-stockrecords">Accessing a product&#8217;s stockrecords</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#checkout-session-manager">Checkout session manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#checkout-order-placement-mixin">Checkout order placement mixin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#bankcard-model">Bankcard model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#partner-wrappers">&#8220;Partner wrappers&#8221;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.html#test-support-extension-brought-back-into-core">Test support extension brought back into core</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.6.1.html">Oscar 0.6.1 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.1.html#possible-data-loss-from-deleted-users">Possible data loss from deleted users</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.1.html#missing-translations">Missing translations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.6.2.html">Oscar 0.6.2 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.2.html#overriding-models">Overriding models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.6.2.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.6.3.html">Oscar 0.6.3 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.3.html#known-issues">Known issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.3.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.6.4.html">Oscar 0.6.4 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.4.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.6.5.html">Oscar 0.6.5 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.6.5.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.7.html">Oscar 0.7 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.7.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.7.html#compatibility">Compatibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.7.html#what-s-new-in-oscar-0-7">What&#8217;s new in Oscar 0.7?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.7.html#search-improvements">Search improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.7.html#extended-signals">Extended signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.7.html#checkout-reorganisation">Checkout reorganisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.7.html#minor-changes">Minor changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.7.html#bugfixes">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.7.html#backwards-incompatible-changes-in-0-7">Backwards incompatible changes in 0.7</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.7.html#removal-of-features-deprecated-in-0-6">Removal of features deprecated in 0.6</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v0.7.html#migrations">Migrations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.7.1.html">Oscar 0.7.1 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.7.1.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.7.2.html">Oscar 0.7.2 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v0.7.2.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v0.7.3.html">Oscar 0.7.3 release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v1.0.html">Oscar 1.0 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.0.html#compatibility">Compatibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.0.html#what-s-new-in-oscar-1-0">What&#8217;s new in Oscar 1.0?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#explicit-differentiation-of-child-parent-and-stand-alone-products">Explicit differentiation of child, parent and stand-alone products</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#better-handling-of-child-products-in-product-dashboard">Better handling of child products in product dashboard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#customisation-just-got-easier">Customisation just got easier!</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#django-1-7-support">Django 1.7 support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#billing-addresses-explicitly-passed-around-checkout">Billing addresses explicitly passed around checkout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#dashboard-for-weight-based-shipping-methods">Dashboard for weight-based shipping methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#us-demo-site">US demo site</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#faceting-for-category-browsing">Faceting for category browsing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#reworked-shipping-app">Reworked shipping app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#basket-additions-clean-up">Basket additions clean-up</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#checkout-improvements">Checkout improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#out-with-the-old-in-with-the-new">Out with the old, in with the new</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#minor-changes">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.0.html#backwards-incompatible-changes-in-1-0">Backwards incompatible changes in 1.0</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#product-structure">Product structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#product-editing">Product editing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#shipping">Shipping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#email-address-handling">Email address handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#id1">Django 1.7 support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#basket-line-stockrecords">Basket line stockrecords</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#basket-app-changes">Basket app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#misc">Misc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#migrations">Migrations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#deprecated-features">Deprecated features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.0.html#removal-of-deprecated-features">Removal of deprecated features</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.0.html#known-issues">Known issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v1.0.1.html">Oscar 1.0.1 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.0.1.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v1.0.2.html">Oscar 1.0.2 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.0.2.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../releases/v1.1.html">Oscar 1.1 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.1.html#compatibility">Compatibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.1.html#what-s-new-in-oscar-1-1">What&#8217;s new in Oscar 1.1?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.1.html#minor-changes">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.1.html#backwards-incompatible-changes-in-1-1">Backwards incompatible changes in 1.1</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.1.html#categories-refactor">Categories refactor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.1.html#misc">Misc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.1.html#migrations">Migrations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../releases/v1.1.html#dependency-changes">Dependency changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.1.html#deprecated-features">Deprecated features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../releases/v1.1.html#removal-of-deprecated-features">Removal of deprecated features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../internals/contributing/index.html">Contributing to Oscar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internals/contributing/index.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/contributing/development-environment.html">Setting up the development environment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/development-environment.html#jpeg-support">JPEG Support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/development-environment.html#creating-migrations">Creating migrations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/development-environment.html#writing-less-css">Writing LESS/CSS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/development-environment.html#testing-migrations-against-mysql-and-postgres">Testing migrations against MySQL and Postgres</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/contributing/bugs-and-features.html">Reporting bugs and requesting features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/bugs-and-features.html#reporting-security-issues">Reporting security issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/bugs-and-features.html#reporting-bugs">Reporting bugs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/bugs-and-features.html#reporting-user-interface-bugs-and-features">Reporting user interface bugs and features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/bugs-and-features.html#requesting-features">Requesting features</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/contributing/coding-style.html">Coding Style</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/coding-style.html#general">General</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/coding-style.html#urls">URLs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/coding-style.html#view-class-names">View class names</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/coding-style.html#referencing-managers">Referencing managers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/coding-style.html#html">HTML</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/contributing/submitting-pull-requests.html">Submitting pull requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/contributing/running-tests.html">Test suite</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/running-tests.html#running-tests">Running tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/running-tests.html#testing-against-different-setups">Testing against different setups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/running-tests.html#kinds-of-tests">Kinds of tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/running-tests.html#naming-tests">Naming tests</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../internals/contributing/writing-documentation.html">Writing documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/writing-documentation.html#directory-structure">Directory Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../internals/contributing/writing-documentation.html#style-guides">Style guides</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../../index.html">django-oscar</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      
+    <li>oscar.apps.address.abstract_models</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/django-oscar/django-oscar/blob/master/docs/source/_modules/oscar/apps/address/abstract_models.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for oscar.apps.address.abstract_models</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">zlib</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="kn">import</span> <span class="n">python_2_unicode_compatible</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span><span class="p">,</span> <span class="n">pgettext_lazy</span>
+<span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">exceptions</span>
+
+<span class="kn">from</span> <span class="nn">oscar.core.compat</span> <span class="kn">import</span> <span class="n">AUTH_USER_MODEL</span>
+<span class="kn">from</span> <span class="nn">oscar.models.fields</span> <span class="kn">import</span> <span class="n">UppercaseCharField</span><span class="p">,</span> <span class="n">PhoneNumberField</span>
+<span class="kn">from</span> <span class="nn">django.utils.six.moves</span> <span class="kn">import</span> <span class="nb">filter</span>
+
+
+<span class="nd">@python_2_unicode_compatible</span>
+<div class="viewcode-block" id="AbstractAddress"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractAddress">[docs]</a><span class="k">class</span> <span class="nc">AbstractAddress</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Superclass address object</span>
+
+<span class="sd">    This is subclassed and extended to provide models for</span>
+<span class="sd">    user, shipping and billing addresses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MR</span><span class="p">,</span> <span class="n">MISS</span><span class="p">,</span> <span class="n">MRS</span><span class="p">,</span> <span class="n">MS</span><span class="p">,</span> <span class="n">DR</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Mr&#39;</span><span class="p">,</span> <span class="s">&#39;Miss&#39;</span><span class="p">,</span> <span class="s">&#39;Mrs&#39;</span><span class="p">,</span> <span class="s">&#39;Ms&#39;</span><span class="p">,</span> <span class="s">&#39;Dr&#39;</span><span class="p">)</span>
+    <span class="n">TITLE_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">MR</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Mr&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">MISS</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Miss&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">MRS</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Mrs&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">MS</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Ms&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">DR</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Dr&quot;</span><span class="p">)),</span>
+    <span class="p">)</span>
+
+    <span class="n">POSTCODE_REQUIRED</span> <span class="o">=</span> <span class="s">&#39;postcode&#39;</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">OSCAR_REQUIRED_ADDRESS_FIELDS</span>
+
+    <span class="c"># Regex for each country. Not listed countries don&#39;t use postcodes</span>
+    <span class="c"># Based on http://en.wikipedia.org/wiki/List_of_postal_codes</span>
+    <span class="n">POSTCODES_REGEX</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;AC&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z]{4}[0-9][A-Z]$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AD&#39;</span><span class="p">:</span> <span class="s">r&#39;^AD[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AF&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AI&#39;</span><span class="p">:</span> <span class="s">r&#39;^AI-2640$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AL&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AR&#39;</span><span class="p">:</span> <span class="s">r&#39;^([0-9]{4}|[A-Z][0-9]{4}[A-Z]{3})$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AS&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}(-[0-9]{4}|-[0-9]{6})?$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AU&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AX&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AZ&#39;</span><span class="p">:</span> <span class="s">r&#39;^AZ[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BB&#39;</span><span class="p">:</span> <span class="s">r&#39;^BB[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BD&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BG&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BH&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3,4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BL&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z]{2}([0-9]{2}|[A-Z]{2})&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z}{2}[0-9]]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BO&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}(-[0-9]{3})?$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;BY&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z][0-9][A-Z][0-9][A-Z][0-9]$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CC&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CH&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CL&#39;</span><span class="p">:</span> <span class="s">r&#39;^([0-9]{7}|[0-9]{3}-[0-9]{4})$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CO&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4,5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CU&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CV&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CX&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CY&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CZ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;DE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;DK&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;DO&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;DZ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;EC&#39;</span><span class="p">:</span> <span class="s">r&#39;^EC[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;EE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;EG&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ES&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ET&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;FI&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;FK&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z]{4}[0-9][A-Z]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;FM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}(-[0-9]{4})?$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;FO&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;FR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{2}.*[0-9]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GB&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z][A-Z0-9]{1,3}[0-9][A-Z]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GF&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GG&#39;</span><span class="p">:</span> <span class="s">r&#39;^([A-Z]{2}[0-9]{2,3}[A-Z]{2})$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GI&#39;</span><span class="p">:</span> <span class="s">r&#39;^GX111AA$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GL&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GP&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GS&#39;</span><span class="p">:</span> <span class="s">r&#39;^SIQQ1ZZ$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GU&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GW&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;HM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;HN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;HR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;HT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;HU&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ID&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IL&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{7}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IM&#39;</span><span class="p">:</span> <span class="s">r&#39;^IM[0-9]{2,3}[A-Z]{2}$$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IO&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z]{4}[0-9][A-Z]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IQ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}-[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IS&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;JE&#39;</span><span class="p">:</span> <span class="s">r&#39;^JE[0-9]{2}[A-Z]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;JM&#39;</span><span class="p">:</span> <span class="s">r&#39;^JM[A-Z]{3}[0-9]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;JO&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;JP&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}-?[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;KE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;KG&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;KH&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;KR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}-?[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;KY&#39;</span><span class="p">:</span> <span class="s">r&#39;^KY[0-9]-[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;KZ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LB&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{8}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LI&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LK&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LS&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LT&#39;</span><span class="p">:</span> <span class="s">r&#39;^(LT-)?[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LU&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LV&#39;</span><span class="p">:</span> <span class="s">r&#39;^LV-[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LY&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MC&#39;</span><span class="p">:</span> <span class="s">r&#39;^980[0-9]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MD&#39;</span><span class="p">:</span> <span class="s">r&#39;^MD-?[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ME&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MF&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MG&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MH&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MK&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MP&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MQ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z]{3}[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MV&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4,5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MX&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MY&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MZ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NC&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NF&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NG&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NI&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}-[0-9]{3}-[0-9]$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NL&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}[A-Z]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NO&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NP&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NZ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;OM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PF&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PG&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PH&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PK&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PL&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{2}-?[0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z]{4}[0-9][A-Z]{2}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}(-?[0-9]{3})?$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PW&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PY&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;RE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;RO&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;RS&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;RU&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SD&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SG&#39;</span><span class="p">:</span> <span class="s">r&#39;^([0-9]{2}|[0-9]{4}|[0-9]{6})$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SH&#39;</span><span class="p">:</span> <span class="s">r&#39;^(STHL1ZZ|TDCU1ZZ)$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SI&#39;</span><span class="p">:</span> <span class="s">r&#39;^(SI-)?[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SK&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SV&#39;</span><span class="p">:</span> <span class="s">r&#39;^01101$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SZ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[A-Z][0-9]{3}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TC&#39;</span><span class="p">:</span> <span class="s">r&#39;^TKCA1ZZ$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TD&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TH&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TJ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TR&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;TW&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;UA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;US&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}(-[0-9]{4}|-[0-9]{6})?$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;UY&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;UZ&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;VA&#39;</span><span class="p">:</span> <span class="s">r&#39;^00120$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;VC&#39;</span><span class="p">:</span> <span class="s">r&#39;^VC[0-9]{4}&#39;</span><span class="p">,</span>
+        <span class="s">&#39;VE&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}[A-Z]?$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;VG&#39;</span><span class="p">:</span> <span class="s">r&#39;^VG[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;VI&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;VN&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{6}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;WF&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;XK&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;YT&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ZA&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{4}$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ZM&#39;</span><span class="p">:</span> <span class="s">r&#39;^[0-9]{5}$&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">pgettext_lazy</span><span class="p">(</span><span class="s">u&quot;Treatment Pronouns for the customer&quot;</span><span class="p">,</span> <span class="s">u&quot;Title&quot;</span><span class="p">),</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">TITLE_CHOICES</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;First name&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">last_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Last name&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c"># We use quite a few lines of an address as they are often quite long and</span>
+    <span class="c"># it&#39;s easier to just hide the unnecessary ones than add extra ones.</span>
+    <span class="n">line1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;First line of address&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">line2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Second line of address&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">line3</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Third line of address&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">line4</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;City&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;State/County&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">postcode</span> <span class="o">=</span> <span class="n">UppercaseCharField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Post/Zip-code&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">country</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;address.Country&#39;</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Country&quot;</span><span class="p">))</span>
+
+    <span class="c">#: A field only used for searching addresses - this contains all the</span>
+    <span class="c">#: relevant fields.  This is effectively a poor man&#39;s Solr text field.</span>
+    <span class="n">search_text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Search text - used only for searching addresses&quot;</span><span class="p">),</span> <span class="n">editable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;Address&#39;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;Addresses&#39;</span><span class="p">)</span>
+
+    <span class="c"># Saving</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_search_text</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AbstractAddress</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Strip all whitespace</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">,</span> <span class="s">&#39;line1&#39;</span><span class="p">,</span> <span class="s">&#39;line2&#39;</span><span class="p">,</span> <span class="s">&#39;line3&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;line4&#39;</span><span class="p">,</span> <span class="s">&#39;state&#39;</span><span class="p">,</span> <span class="s">&#39;postcode&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">field</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c"># Ensure postcodes are valid for country</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensure_postcode_is_valid_for_country</span><span class="p">()</span>
+
+<div class="viewcode-block" id="AbstractAddress.ensure_postcode_is_valid_for_country"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractAddress.ensure_postcode_is_valid_for_country">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_postcode_is_valid_for_country</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate postcode given the country</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">postcode</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">POSTCODE_REQUIRED</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">country_id</span><span class="p">:</span>
+            <span class="n">country_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">country</span><span class="o">.</span><span class="n">iso_3166_1_a2</span>
+            <span class="n">regex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">POSTCODES_REGEX</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">country_code</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">regex</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Addresses in </span><span class="si">%(country)s</span><span class="s"> require a valid postcode&quot;</span><span class="p">)</span> \
+                    <span class="o">%</span> <span class="p">{</span><span class="s">&#39;country&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">country</span><span class="p">}</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">postcode</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">country_id</span><span class="p">:</span>
+            <span class="c"># Ensure postcodes are always uppercase</span>
+            <span class="n">postcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">postcode</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">country_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">country</span><span class="o">.</span><span class="n">iso_3166_1_a2</span>
+            <span class="n">regex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">POSTCODES_REGEX</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">country_code</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+            <span class="c"># Validate postcode against regex for the country if available</span>
+            <span class="k">if</span> <span class="n">regex</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">postcode</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;The postcode &#39;</span><span class="si">%(postcode)s</span><span class="s">&#39; is not valid &quot;</span>
+                        <span class="s">&quot;for </span><span class="si">%(country)s</span><span class="s">&quot;</span><span class="p">)</span> \
+                    <span class="o">%</span> <span class="p">{</span><span class="s">&#39;postcode&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">postcode</span><span class="p">,</span>
+                       <span class="s">&#39;country&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">country</span><span class="p">}</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s">&#39;postcode&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">msg</span><span class="p">]})</span>
+</div>
+    <span class="k">def</span> <span class="nf">_update_search_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">search_fields</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="nb">bool</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">line1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">line2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">line3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">line4</span><span class="p">,</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">postcode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">country</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_text</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_fields</span><span class="p">)</span>
+
+    <span class="c"># Properties</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">city</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Common alias</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">line4</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AbstractAddress.summary"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractAddress.summary">[docs]</a>    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a single string summary of the address,</span>
+<span class="sd">        separating fields using commas.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">u&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_address_fields</span><span class="p">())</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AbstractAddress.salutation"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractAddress.salutation">[docs]</a>    <span class="k">def</span> <span class="nf">salutation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Name (including title)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_fields</span><span class="p">(</span>
+            <span class="p">(</span><span class="s">&#39;title&#39;</span><span class="p">,</span> <span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">),</span>
+            <span class="n">separator</span><span class="o">=</span><span class="s">u&quot; &quot;</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_fields</span><span class="p">((</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">),</span> <span class="n">separator</span><span class="o">=</span><span class="s">u&quot; &quot;</span><span class="p">)</span>
+
+    <span class="c"># Helpers</span>
+
+<div class="viewcode-block" id="AbstractAddress.generate_hash"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractAddress.generate_hash">[docs]</a>    <span class="k">def</span> <span class="nf">generate_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a hash of the address summary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># We use an upper-case version of the summary</span>
+        <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">crc32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;UTF8&#39;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="AbstractAddress.join_fields"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractAddress.join_fields">[docs]</a>    <span class="k">def</span> <span class="nf">join_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">u&quot;, &quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Join a sequence of fields using the specified separator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">field_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="c"># Title is special case</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s">&#39;title&#39;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_title_display</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+            <span class="n">field_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">separator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">field_values</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="AbstractAddress.populate_alternative_model"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractAddress.populate_alternative_model">[docs]</a>    <span class="k">def</span> <span class="nf">populate_alternative_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address_model</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For populating an address model using the matching fields</span>
+<span class="sd">        from this one.</span>
+
+<span class="sd">        This is used to convert a user address to a shipping address</span>
+<span class="sd">        as part of the checkout process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">destination_field_names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">address_model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">destination_field_names</span> <span class="ow">and</span> <span class="n">field_name</span> <span class="o">!=</span> <span class="s">&#39;id&#39;</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">address_model</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="AbstractAddress.active_address_fields"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractAddress.active_address_fields">[docs]</a>    <span class="k">def</span> <span class="nf">active_address_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_salutation</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the non-empty components of the address, but merging the</span>
+<span class="sd">        title, first_name and last_name into a single line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">line1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">line2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">line3</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">line4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">postcode</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">include_salutation</span><span class="p">:</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">salutation</span><span class="p">]</span> <span class="o">+</span> <span class="n">fields</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span> <span class="k">if</span> <span class="n">f</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">country</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ObjectDoesNotExist</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">fields</span>
+
+</div></div>
+<span class="nd">@python_2_unicode_compatible</span>
+<div class="viewcode-block" id="AbstractCountry"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractCountry">[docs]</a><span class="k">class</span> <span class="nc">AbstractCountry</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    International Organization for Standardization (ISO) 3166-1 Country list.</span>
+
+<span class="sd">    The field names are a bit awkward, but kept for backwards compatibility.</span>
+<span class="sd">    pycountry&#39;s syntax of alpha2, alpha3, name and official_name seems sane.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">iso_3166_1_a2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&#39;ISO 3166-1 alpha-2&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">iso_3166_1_a3</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&#39;ISO 3166-1 alpha-3&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">iso_3166_1_numeric</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&#39;ISO 3166-1 numeric&#39;</span><span class="p">),</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c">#: The commonly used name; e.g. &#39;United Kingdom&#39;</span>
+    <span class="n">printable_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Country name&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+    <span class="c">#: The full official name of a country</span>
+    <span class="c">#: e.g. &#39;United Kingdom of Great Britain and Northern Ireland&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Official name&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+
+    <span class="n">display_order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveSmallIntegerField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Display order&quot;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Higher the number, higher the country in the list.&#39;</span><span class="p">))</span>
+
+    <span class="n">is_shipping_country</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Is shipping country&quot;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">app_label</span> <span class="o">=</span> <span class="s">&#39;address&#39;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;Country&#39;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;Countries&#39;</span><span class="p">)</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;-display_order&#39;</span><span class="p">,</span> <span class="s">&#39;printable_name&#39;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">printable_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AbstractCountry.code"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractCountry.code">[docs]</a>    <span class="k">def</span> <span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shorthand for the ISO 3166 Alpha-2 code</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iso_3166_1_a2</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AbstractCountry.numeric_code"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractCountry.numeric_code">[docs]</a>    <span class="k">def</span> <span class="nf">numeric_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shorthand for the ISO 3166 numeric code.</span>
+
+<span class="sd">        iso_3166_1_numeric used to wrongly be a integer field, but has to be</span>
+<span class="sd">        padded with leading zeroes. It&#39;s since been converted to a char field,</span>
+<span class="sd">        but the database might still contain non-padded strings. That&#39;s why</span>
+<span class="sd">        the padding is kept.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">u&quot;</span><span class="si">%.03d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iso_3166_1_numeric</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="AbstractShippingAddress"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractShippingAddress">[docs]</a><span class="k">class</span> <span class="nc">AbstractShippingAddress</span><span class="p">(</span><span class="n">AbstractAddress</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A shipping address.</span>
+
+<span class="sd">    A shipping address should not be edited once the order has been placed -</span>
+<span class="sd">    it should be read-only after that.</span>
+
+<span class="sd">    NOTE:</span>
+<span class="sd">    ShippingAddress is a model of the order app. But moving it there is tricky</span>
+<span class="sd">    due to circular import issues that are amplified by get_model/get_class</span>
+<span class="sd">    calls pre-Django 1.7 to register receivers. So...</span>
+<span class="sd">    TODO: Once Django 1.6 support is dropped, move AbstractBillingAddress and</span>
+<span class="sd">    AbstractShippingAddress to the order app, and move</span>
+<span class="sd">    PartnerAddress to the partner app.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">phone_number</span> <span class="o">=</span> <span class="n">PhoneNumberField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Phone number&quot;</span><span class="p">),</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;In case we need to call you about your order&quot;</span><span class="p">))</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Instructions&#39;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Tell us anything we should know when delivering &quot;</span>
+                    <span class="s">&quot;your order.&quot;</span><span class="p">))</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c"># ShippingAddress is registered in order/models.py</span>
+        <span class="n">app_label</span> <span class="o">=</span> <span class="s">&#39;order&#39;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Shipping address&quot;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Shipping addresses&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AbstractShippingAddress.order"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractShippingAddress.order">[docs]</a>    <span class="k">def</span> <span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the order linked to this shipping address</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">order_set</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+</div></div>
+<div class="viewcode-block" id="AbstractUserAddress"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractUserAddress">[docs]</a><span class="k">class</span> <span class="nc">AbstractUserAddress</span><span class="p">(</span><span class="n">AbstractShippingAddress</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A user&#39;s address.  A user can have many of these and together they form an</span>
+<span class="sd">    &#39;address book&#39; of sorts for the user.</span>
+
+<span class="sd">    We use a separate model for shipping and billing (even though there will be</span>
+<span class="sd">    some data duplication) because we don&#39;t want shipping/billing addresses</span>
+<span class="sd">    changed or deleted once an order has been placed.  By having a separate</span>
+<span class="sd">    model, we allow users the ability to add/edit/delete from their address</span>
+<span class="sd">    book without affecting orders already placed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">AUTH_USER_MODEL</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&#39;addresses&#39;</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;User&quot;</span><span class="p">))</span>
+
+    <span class="c">#: Whether this address is the default for shipping</span>
+    <span class="n">is_default_for_shipping</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Default shipping address?&quot;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="c">#: Whether this address should be the default for billing.</span>
+    <span class="n">is_default_for_billing</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s">&quot;Default billing address?&quot;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="c">#: We keep track of the number of times an address has been used</span>
+    <span class="c">#: as a shipping address so we can show the most popular ones</span>
+    <span class="c">#: first at the checkout.</span>
+    <span class="n">num_orders</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Number of Orders&quot;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c">#: A hash is kept to try and avoid duplicate addresses being added</span>
+    <span class="c">#: to the address book.</span>
+    <span class="nb">hash</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Address Hash&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                            <span class="n">editable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">date_created</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Date Created&quot;</span><span class="p">),</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AbstractUserAddress.save"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractUserAddress.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save a hash of the address fields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Save a hash of the address fields so we can check whether two</span>
+        <span class="c"># addresses are the same to avoid saving duplicates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_hash</span><span class="p">()</span>
+
+        <span class="c"># Ensure that each user only has one default shipping address</span>
+        <span class="c"># and billing address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_defaults_integrity</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AbstractUserAddress</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_ensure_defaults_integrity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_default_for_shipping</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">_default_manager</span>\
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">is_default_for_shipping</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>\
+                <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">is_default_for_shipping</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_default_for_billing</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">_default_manager</span>\
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">is_default_for_billing</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>\
+                <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">is_default_for_billing</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">app_label</span> <span class="o">=</span> <span class="s">&#39;address&#39;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;User address&quot;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;User addresses&quot;</span><span class="p">)</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;-num_orders&#39;</span><span class="p">]</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="s">&#39;hash&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate_unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AbstractAddress</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate_unique</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+            <span class="nb">hash</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_hash</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">qs</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">({</span>
+                <span class="s">&#39;__all__&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;This address is already in your address&quot;</span>
+                              <span class="s">&quot; book&quot;</span><span class="p">)]})</span>
+
+</div>
+<span class="k">class</span> <span class="nc">AbstractBillingAddress</span><span class="p">(</span><span class="n">AbstractAddress</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c"># BillingAddress is registered in order/models.py</span>
+        <span class="n">app_label</span> <span class="o">=</span> <span class="s">&#39;order&#39;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Billing address&quot;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Billing addresses&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the order linked to this shipping address</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">order_set</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+
+<div class="viewcode-block" id="AbstractPartnerAddress"><a class="viewcode-back" href="../../../../ref/apps/address.html#oscar.apps.address.abstract_models.AbstractPartnerAddress">[docs]</a><span class="k">class</span> <span class="nc">AbstractPartnerAddress</span><span class="p">(</span><span class="n">AbstractAddress</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A partner can have one or more addresses. This can be useful e.g. when</span>
+<span class="sd">    determining US tax which depends on the origin of the shipment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">partner</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;partner.Partner&#39;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&#39;addresses&#39;</span><span class="p">,</span>
+                                <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Partner&#39;</span><span class="p">))</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">app_label</span> <span class="o">=</span> <span class="s">&#39;partner&#39;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Partner address&quot;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Partner addresses&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright .
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: latest
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl>
+        <dt>Versions</dt>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/latest/">latest</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/stable/">stable</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-1.1/">releases-1.1</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-1.0/">releases-1.0</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-0.7/">releases-0.7</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-0.6/">releases-0.6</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-0.5/">releases-0.5</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>Downloads</dt>
+        
+          <dd><a href="http://readthedocs.org/projects/django-oscar/downloads/pdf/latest/">pdf</a></dd>
+        
+          <dd><a href="http://readthedocs.org/projects/django-oscar/downloads/htmlzip/latest/">htmlzip</a></dd>
+        
+          <dd><a href="http://readthedocs.org/projects/django-oscar/downloads/epub/latest/">epub</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>On Read the Docs</dt>
+          <dd>
+            <a href="http://https://readthedocs.org/projects/django-oscar/?fromdocs=django-oscar">Project Home</a>
+          </dd>
+          <dd>
+            <a href="http://https://readthedocs.org/builds/django-oscar/?fromdocs=django-oscar">Builds</a>
+          </dd>
+      </dl>
+      <hr/>
+      Free document hosting provided by <a href="http://www.readthedocs.org">Read the Docs</a>.
+
+    </div>
+  </div>
+
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/jquery/jquery-2.0.3.min.js"></script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/jquery/jquery-migrate-1.2.1.min.js"></script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/underscore.js"></script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/readthedocs-doc-embed.js"></script>
+
+  
+
+  
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

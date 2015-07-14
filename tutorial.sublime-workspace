@@ -4,6 +4,38 @@
 		"selected_items":
 		[
 			[
+				"snippet",
+				"SnippetSerializer	class"
+			],
+			[
+				"se",
+				"serializer	statement"
+			],
+			[
+				"Snippet",
+				"SnippetSerializer	class"
+			],
+			[
+				"sin",
+				"SnippetSerializer	class"
+			],
+			[
+				"Htt",
+				"HttpResponse	class"
+			],
+			[
+				"q",
+				"quickstart	module"
+			],
+			[
+				"Group",
+				"GroupSerializer	import"
+			],
+			[
+				"User",
+				"UserSerializer	import"
+			],
+			[
 				"Http",
 				"HttpRequest	class"
 			],
@@ -15,30 +47,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "tutorial/quickstart/models.py",
-			"settings":
-			{
-				"buffer_size": 32,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "test.py",
-			"settings":
-			{
-				"buffer_size": 48,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "tutorial/tutorial/urls.py",
-			"settings":
-			{
-				"buffer_size": 292,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -47,10 +55,14 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 142.0,
-		"last_filter": "git:commit ",
+		"height": 374.0,
+		"last_filter": ":w",
 		"selected_items":
 		[
+			[
+				":w",
+				":w - Save"
+			],
 			[
 				"git:commit ",
 				"Git: Quick Commit"
@@ -129,22 +141,70 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/exit0/python/tutorial"
+		"/Users/exit0/python/tutorial/tutorial",
+		"/Users/exit0/dev/Archive/django-oscar/oscar/lib/python2.7",
+		"/Users/exit0/dev/Archive/django-oscar/sites/demo",
+		"/Users/exit0/dev/Archive/django-oscar/sites/demo/apps",
+		"/Users/exit0/dev/Archive/django-oscar/sites/demo/static",
+		"/Users/exit0/dev/Archive/django-oscar/sites/sandbox/public/media/image_not_found.jpg",
+		"/Users/exit0/dev/sandbox/apps",
+		"/Users/exit0/dev/sandbox/apps/product",
+		"/Users/exit0/dev/Archive/django-oscar-api",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi/serializers",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi/views",
+		"/Users/exit0/dev/Archive/django-oscar-api/sandbox"
 	],
 	"file_history":
 	[
+		"/Users/exit0/dev/Archive/django-oscar/src/oscar/core/loading.py",
+		"/Users/exit0/dev/oscar/lib/python2.7/site-packages/django/apps/registry.py",
+		"/Users/exit0/dev/sandbox/settings.py",
+		"/Users/exit0/dev/sandbox/apps/product/models.py",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi/models.py",
+		"/Library/Python/2.7/site-packages/django_oscar-1.2_dev-py2.7.egg/oscar/core/application.py",
+		"/Users/exit0/dev/sandbox/urls.py",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi/urls.py",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Side Bar.sublime-settings",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/SideBarEnhancements/Side Bar.sublime-settings",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi/views/basket.py",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi/views/checkout.py",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi/app.py",
+		"/Users/exit0/dev/Archive/django-oscar-api/oscarapi/admin.py",
+		"/Users/exit0/python/tutorial/snippets/models.py",
+		"/Users/exit0/dev/Archive/django-oscar-api/sandbox/settings.py",
+		"/Users/exit0/dev/sandbox/apps/product/migrations/__init__.py",
+		"/Users/exit0/dev/sandbox/apps/product/urls.py",
+		"/Users/exit0/dev/Geek/Geek/settings.py",
+		"/Users/exit0/python/tutorial/tutorial/urls.py",
+		"/Users/exit0/dev/sandbox/apps/product/views.py",
+		"/Users/exit0/dev/sandbox/apps/product/serializers.py",
+		"/Users/exit0/python/tutorial/snippets/urls.py",
+		"/Library/Python/2.7/site-packages/Django-1.8.2-py2.7.egg/django/db/models/base.py",
+		"/Library/Python/2.7/site-packages/Django-1.8.2-py2.7.egg/django/db/models/__init__.py",
+		"/Users/exit0/python/tutorial/snippets/serializers_bak.py",
+		"/Users/exit0/dev/Archive/django-oscar/sites/sandbox/settings.py",
+		"/Users/exit0/python/tutorial/tutorial/settings.py",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/SideBarEnhancements/Default (OSX).sublime-keymap",
+		"/Users/exit0/python/tutorial/snippets/views_bak1.py",
+		"/Users/exit0/python/tutorial/snippets/views.py",
+		"/Users/exit0/python/tutorial/quickstart/views.py",
+		"/Users/exit0/python/tutorial/snippets/views_bak.py",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Library/Python/2.7/site-packages/rest_framework/serializers.py",
+		"/Users/exit0/python/tutorial/snippets/serializers.py",
+		"/Users/exit0/python/tutorial/quickstart/serializers.py",
+		"/Users/exit0/python/tutorial/quickstart/models.py",
+		"/Users/exit0/python/test.py",
 		"/Users/exit0/python/tutorial/manage.py",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/SublimeREPL/SublimeREPL.sublime-settings",
-		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/SublimeREPL.sublime-settings",
 		"/Users/exit0/python/tutorial/quickstart/admin.py",
 		"/Users/exit0/python/tutorial/quickstart/__init__.py",
-		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
-		"/Users/exit0/python/tutorial/tutorial/urls.py",
-		"/Users/exit0/python/tutorial/tutorial/settings.py",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/Default/Default (OSX).sublime-keymap",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/SublimeCodeIntel.sublime-settings",
-		"/Users/exit0/python/tutorial/quickstart/models.py",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/SublimeCodeIntel/SublimeCodeIntel.sublime-settings",
 		"/Library/Python/2.7/site-packages/Django-1.8.dev20141031120640-py2.7.egg/django/conf/urls/__init__.py",
 		"/Users/exit0/python/tutorial/tutorial/__init__.py",
@@ -153,9 +213,7 @@
 		"/Library/Python/2.7/site-packages/Django-1.8.dev20141031120640-py2.7.egg/django/contrib/admin/__init__.py",
 		"/Library/Python/2.7/site-packages/Django-1.8.dev20141031120640-py2.7.egg/django/contrib/admin/sites.py",
 		"/Users/exit0/python/tutorial/quickstart/migrations/__init__.py",
-		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
 		"/Users/exit0/Downloads/Package Control Messages",
-		"/Users/exit0/python/test.py",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/Anaconda/Anaconda.sublime-settings",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/Pylinter/Pylinter.sublime-settings",
 		"/Users/exit0/Library/Application Support/Sublime Text 3/Packages/User/Pylinter.sublime-settings"
@@ -176,6 +234,11 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"False",
+			"groups",
+			"Snippet",
+			"'')",
+			"Meta",
 			"\n>>>",
 			"'",
 			"Create",
@@ -190,6 +253,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"Product",
 			"\""
 		],
 		"reverse": false,
@@ -201,99 +265,14 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "tutorial/quickstart/models.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 32,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								31,
-								31
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "test.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 48,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "tutorial/tutorial/urls.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 292,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								292,
-								292
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 27.0
+		"height": 36.0
 	},
 	"input":
 	{
@@ -376,7 +355,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 150.0,
+	"side_bar_width": 233.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

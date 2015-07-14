@@ -1,0 +1,1555 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Prices and availability &mdash; django-oscar 1.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+
+  
+    <link rel="stylesheet" href="https://cdnmedia.readthedocs.org/css/sphinx_rtd_theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="https://cdnmedia.readthedocs.org/css/readthedocs-doc-embed.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="django-oscar 1.2 documentation" href="../index.html"/>
+        <link rel="next" title="Deploying Oscar" href="deploying.html"/>
+        <link rel="prev" title="Dynamic class loading explained" href="class_loading_explained.html"/>
+ 
+<!-- RTD Extra Head -->
+
+
+
+<!-- 
+Read the Docs is acting as the canonical URL for your project. 
+If you want to change it, more info is available in our docs:
+  http://docs.readthedocs.org/en/latest/canonical.html
+-->
+<link rel="canonical" href="prices_and_availability.html" />
+
+<script type="text/javascript">
+  // This is included here because other places don't have access to the pagename variable.
+  var READTHEDOCS_DATA = {
+    project: "django-oscar",
+    version: "latest",
+    language: "en",
+    page: "topics/prices_and_availability",
+    builder: "sphinx",
+    theme: "sphinx_rtd_theme",
+    docroot: "/docs/source/",
+    source_suffix: ".rst",
+    api_host: "https://readthedocs.org/",
+    commit: "35b09fc05d799181be9046c7447986cc5193d2ff"
+  }
+  // Old variables
+  var doc_version = "latest";
+  var doc_slug = "django-oscar";
+  var page_name = "topics/prices_and_availability";
+  var html_theme = "sphinx_rtd_theme";
+</script>
+<!-- RTD Analytics Code -->
+<!-- Included in the header because you don't have a footer block. -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17997319-1']);
+  _gaq.push(['_trackPageview']);
+
+  // User Analytics Code
+  _gaq.push(['user._setAccount', 'UA-45363517-1']);
+  _gaq.push(['user._trackPageview']);
+  // End User Analytics Code
+
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<!-- end RTD Analytics Code -->
+<!-- end RTD <extrahead> -->
+
+
+  
+  <script src="http://django-oscar.readthedocs.org/en/latest/topics/_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> django-oscar
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="http://django-oscar.readthedocs.org/en/latest/search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../internals/sandbox.html">Sample Oscar projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/sandbox.html#the-sandbox-site">The sandbox site</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../internals/sandbox.html#browse-the-external-sandbox-site">Browse the external sandbox site</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../internals/sandbox.html#run-the-sandbox-locally">Run the sandbox locally</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/sandbox.html#the-us-site">The US site</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/sandbox.html#the-demo-site">The demo site</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../internals/sandbox.html#browse-the-external-demo-site">Browse the external demo site</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../internals/sandbox.html#run-the-demo-site-locally">Run the demo site locally</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/getting_started.html">Building your own shop</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#install-oscar-and-its-dependencies">Install Oscar and its dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#django-settings">Django settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#urls">URLs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#search-backend">Search backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#database">Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../internals/getting_started.html#create-database">Create database</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#initial-data">Initial data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#creating-product-classes-and-fulfillment-partners">Creating product classes and fulfillment partners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#defining-the-order-pipeline">Defining the order pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/getting_started.html#next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="key_questions.html">Building an e-commerce site: the key questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="key_questions.html#catalogue">Catalogue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#what-are-your-product-types">What are your product types?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#how-is-your-catalogue-organised">How is your catalogue organised?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#how-are-products-managed">How are products managed?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="key_questions.html#pricing-stock-and-availability">Pricing, stock and availability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#how-is-tax-calculated">How is tax calculated?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#what-availability-messages-are-shown-to-customers">What availability messages are shown to customers?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#do-you-allow-pre-and-back-orders">Do you allow pre- and back-orders</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="key_questions.html#shipping">Shipping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#how-are-shipping-charges-calculated">How are shipping charges calculated?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#which-shipping-methods-are-available">Which shipping methods are available?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="key_questions.html#payment">Payment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#how-are-customers-going-to-pay-for-orders">How are customers going to pay for orders?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#when-will-payment-be-taken">When will payment be taken?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="key_questions.html#order-processing">Order processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="key_questions.html#how-will-orders-be-processed">How will orders be processed?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modelling_your_catalogue.html">Modelling your catalogue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modelling_your_catalogue.html#product-classes">Product classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modelling_your_catalogue.html#product-attributes">Product attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modelling_your_catalogue.html#parent-and-child-products">Parent and child products</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modelling_your_catalogue.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/getting_help.html">Getting help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ref/glossary.html">Glossary</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="customisation.html">Customising Oscar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="customisation.html#fork-the-oscar-app">Fork the Oscar app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customisation.html#replace-oscar-s-app-with-your-own-in-installed-apps">Replace Oscar&#8217;s app with your own in <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="customisation.html#start-customising">Start customising!</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="class_loading_explained.html">Dynamic class loading explained</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="class_loading_explained.html#why">Why?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_loading_explained.html#how-it-works">How it works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_loading_explained.html#in-practice">In practice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_loading_explained.html#using-get-class-in-your-own-code">Using <tt class="docutils literal"><span class="pre">get_class</span></tt> in your own code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_loading_explained.html#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="prices_and_availability.html">Prices and availability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="prices_and_availability.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prices_and_availability.html#the-strategy-class">The strategy class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="prices_and_availability.html#this-seems-quite-complicated">This seems quite complicated...</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prices_and_availability.html#api">API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="prices_and_availability.html#loading-a-strategy">Loading a strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prices_and_availability.html#pricing-policies">Pricing policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prices_and_availability.html#availability-policies">Availability policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prices_and_availability.html#strategy-mixins">Strategy mixins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prices_and_availability.html#default-strategy">Default strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prices_and_availability.html#how-to-use">How to use</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="prices_and_availability.html#example-1-uk-vat">Example 1: UK VAT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prices_and_availability.html#example-2-us-sales-tax">Example 2: US sales tax</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deploying.html">Deploying Oscar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deploying.html#performance">Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploying.html#security">Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploying.html#search-engine-optimisation">Search Engine Optimisation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="translation.html">Translation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="translation.html#translating-oscar-within-your-project">Translating Oscar within your project</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="upgrading.html">Upgrading</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="upgrading.html#migrations">Migrations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="upgrading.html#migrating-uncustomised-apps">Migrating uncustomised apps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upgrading.html#migrating-customised-apps-models-unchanged">Migrating customised apps (models unchanged)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upgrading.html#migrating-customised-apps-models-changed">Migrating customised apps (models changed)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fork_app.html">Forking an app</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fork_app.html#create-python-module-with-same-label">Create Python module with same label</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fork_app.html#reference-oscar-s-models">Reference Oscar&#8217;s models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fork_app.html#get-the-django-admin-working">Get the Django admin working</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fork_app.html#django-1-7-use-supplied-app-config">Django 1.7+: Use supplied app config</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ref/core.html">Core functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref/core.html#dynamic-class-loading">Dynamic class loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/core.html#url-patterns-and-views">URL patterns and views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/core.html#prices">Prices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/core.html#custom-model-fields">Custom model fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ref/apps/index.html">Oscar&#8217;s apps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/address.html">Address</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/address.html#module-oscar.apps.address.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/address.html#views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/analytics.html">Analytics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/analytics.html#module-oscar.apps.analytics.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/analytics.html#views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/basket.html">Basket</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/basket.html#module-oscar.apps.basket.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/basket.html#module-oscar.apps.basket.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/catalogue.html">Catalogue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/catalogue.html#module-oscar.apps.catalogue.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/catalogue.html#module-oscar.apps.catalogue.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/checkout.html">Checkout</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/checkout.html#flow">Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/checkout.html#abstract-models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/checkout.html#module-oscar.apps.checkout.views">Views and mixins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/checkout.html#module-oscar.apps.checkout.forms">Forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/checkout.html#module-oscar.apps.checkout.calculators">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/customer.html">Customer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/customer.html#module-oscar.apps.customer.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/customer.html#module-oscar.apps.customer.forms">Forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/customer.html#module-oscar.apps.customer.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/dashboard.html">Dashboard</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/dashboard.html#permission-based-dashboard">Permission-based dashboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/dashboard.html#abstract-models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/dashboard.html#module-oscar.apps.dashboard.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/offer.html">Offers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/offer.html#structure">Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/offer.html#availability">Availability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/offer.html#conditions">Conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/offer.html#benefits">Benefits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/offer.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/offer.html#module-oscar.apps.offer.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/offer.html#module-oscar.apps.offer.models">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/offer.html#module-oscar.apps.offer.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/order.html">Order</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/order.html#abstract-models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/order.html#module-oscar.apps.order.processing">Order processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/order.html#module-oscar.apps.order.utils">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/partner.html">Partner</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/partner.html#module-oscar.apps.partner.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/partner.html#module-oscar.apps.partner.strategy">Strategy classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/partner.html#module-oscar.apps.partner.prices">Pricing policies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/partner.html#module-oscar.apps.partner.availability">Availability policies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/payment.html">Payment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/payment.html#module-oscar.apps.payment.abstract_models">Abstract models</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/promotions.html">Promotions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/promotions.html#module-oscar.apps.promotions.models">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/promotions.html#module-oscar.apps.promotions.views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/search.html">Search</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/search.html#module-oscar.apps.search.views">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/search.html#module-oscar.apps.search.forms">Forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/search.html#module-oscar.apps.search.facets">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/shipping.html">Shipping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/shipping.html#module-oscar.apps.shipping.methods">Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/shipping.html#module-oscar.apps.shipping.models">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/shipping.html#module-oscar.apps.shipping.repository">Repository</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/voucher.html">Voucher</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/voucher.html#module-oscar.apps.voucher.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/voucher.html#views">Views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/apps/wishlists.html">Wishlists</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/wishlists.html#module-oscar.apps.wishlists.abstract_models">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/apps/wishlists.html#module-oscar.apps.customer.wishlists.views">Views</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../howto/index.html">Recipes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#customisation">Customisation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_customise_models.html">How to customise models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_models.html#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_models.html#customising-products">Customising Products</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_models.html#model-customisations-are-not-picked-up">Model customisations are not picked up</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_customise_templates.html">How to customise templates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_templates.html#method-1-forking">Method 1 - Forking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_templates.html#method-2-subclass-parent-but-use-same-template-path">Method 2 - Subclass parent but use same template path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_templates.html#overriding-individual-products-partials">Overriding individual products partials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_templates.html#example-changing-the-analytics-package">Example: Changing the analytics package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_disable_an_app.html">How to disable an app&#8217;s URLs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_change_a_url.html">How to add views or change URLs or permissions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_change_a_url.html#the-application-class">The application class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_change_a_url.html#the-application-tree">The application tree</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_change_a_url.html#changing-sub-app">Changing sub app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_change_a_url.html#changing-the-root-app">Changing the root app</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_customise_a_view.html">How to customise an existing view</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_a_view.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_configure_the_dashboard_navigation.html">How to configure the dashboard navigation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_configure_the_dashboard_navigation.html#add-your-own-dashboard-menu-item">Add your own dashboard menu item</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_configure_the_dashboard_navigation.html#add-an-icon-to-your-dashboard-menu">Add an icon to your dashboard menu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_configure_the_dashboard_navigation.html#controlling-visibility-per-user">Controlling visibility per user</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_customise_oscar_communications.html">Customising Oscar&#8217;s communications</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_oscar_communications.html#communications-api">Communications API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_oscar_communications.html#customising-through-code">Customising through code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_customise_oscar_communications.html#customising-through-the-database">Customising through the database</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#customers">Customers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/use_a_custom_user_model.html">How to use a custom user model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/use_a_custom_user_model.html#restrictions">Restrictions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/use_a_custom_user_model.html#migrations">Migrations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/use_a_custom_user_model.html#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#catalogue">Catalogue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_create_categories.html">How to create categories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/importing_a_catalogue.html">Importing a catalogue</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/importing_a_catalogue.html#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#pricing-stock-and-availability">Pricing, stock and availability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/enforcing_stock_rules.html">How to enforce stock rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_configure_stock_messaging.html">How to configure stock messaging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#payment">Payment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_integrate_payment.html">How to integrate payment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_integrate_payment.html#models">Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_integrate_payment.html#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_integrate_payment.html#integration-into-checkout">Integration into checkout</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_handle_us_taxes.html">How to handle US taxes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_handle_us_taxes.html#ensure-your-site-strategy-returns-prices-without-taxes-applied">Ensure your site strategy returns prices without taxes applied</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_handle_us_taxes.html#adjust-checkout-views-to-apply-taxes-once-they-are-known">Adjust checkout views to apply taxes once they are known</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#shipping">Shipping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_configure_shipping.html">How to configure shipping</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_configure_shipping.html#shipping-in-oscar">Shipping in Oscar</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_configure_shipping.html#core-shipping-methods">Core shipping methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#order-processing">Order processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_set_up_order_processing.html">How to set up order processing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_set_up_order_processing.html#structure">Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_set_up_order_processing.html#modelling">Modelling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_set_up_order_processing.html#event-handling">Event handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_set_up_order_processing.html#customisation">Customisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_set_up_order_processing.html#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#offers">Offers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_create_a_custom_range.html">How to create a custom range</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_create_a_custom_range.html#custom-range-interface">Custom range interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_create_a_custom_range.html#create-range-instance">Create range instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_create_a_custom_range.html#deploying-custom-ranges">Deploying custom ranges</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_create_a_custom_condition.html">How to create a custom offer condition</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_create_a_custom_condition.html#custom-condition-interface">Custom condition interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_create_a_custom_condition.html#create-condition-instance">Create condition instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_create_a_custom_condition.html#deploying-custom-conditions">Deploying custom conditions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_create_a_custom_benefit.html">How to create a custom benefit</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_create_a_custom_benefit.html#custom-benefits">Custom benefits</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#appearance">Appearance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_handle_statics.html">How to change Oscar&#8217;s appearance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_handle_statics.html#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_handle_statics.html#customisation">Customisation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../howto/index.html#deployment-and-setup">Deployment and setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../howto/how_to_setup_solr.html">How to setup Solr with Oscar</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_setup_solr.html#starting-solr">Starting Solr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../howto/how_to_setup_solr.html#integrating-with-haystack">Integrating with Haystack</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ref/settings.html">Oscar settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#display-settings">Display settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-shop-name"><tt class="docutils literal"><span class="pre">OSCAR_SHOP_NAME</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-shop-tagline"><tt class="docutils literal"><span class="pre">OSCAR_SHOP_TAGLINE</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-homepage"><tt class="docutils literal"><span class="pre">OSCAR_HOMEPAGE</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-accounts-redirect-url"><tt class="docutils literal"><span class="pre">OSCAR_ACCOUNTS_REDIRECT_URL</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-recently-viewed-products"><tt class="docutils literal"><span class="pre">OSCAR_RECENTLY_VIEWED_PRODUCTS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-recently-viewed-cookie-lifetime"><tt class="docutils literal"><span class="pre">OSCAR_RECENTLY_VIEWED_COOKIE_LIFETIME</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-recently-viewed-cookie-name"><tt class="docutils literal"><span class="pre">OSCAR_RECENTLY_VIEWED_COOKIE_NAME</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#pagination">Pagination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-search-facets"><tt class="docutils literal"><span class="pre">OSCAR_SEARCH_FACETS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-product-search-handler"><tt class="docutils literal"><span class="pre">OSCAR_PRODUCT_SEARCH_HANDLER</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-promotion-positions"><tt class="docutils literal"><span class="pre">OSCAR_PROMOTION_POSITIONS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-promotion-merchandising-block-types"><tt class="docutils literal"><span class="pre">OSCAR_PROMOTION_MERCHANDISING_BLOCK_TYPES</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-dashboard-navigation"><tt class="docutils literal"><span class="pre">OSCAR_DASHBOARD_NAVIGATION</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-dashboard-default-access-function"><tt class="docutils literal"><span class="pre">OSCAR_DASHBOARD_DEFAULT_ACCESS_FUNCTION</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#order-settings">Order settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-initial-order-status"><tt class="docutils literal"><span class="pre">OSCAR_INITIAL_ORDER_STATUS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-initial-line-status"><tt class="docutils literal"><span class="pre">OSCAR_INITIAL_LINE_STATUS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-order-status-pipeline"><tt class="docutils literal"><span class="pre">OSCAR_ORDER_STATUS_PIPELINE</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-order-status-cascade"><tt class="docutils literal"><span class="pre">OSCAR_ORDER_STATUS_CASCADE</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-line-status-pipeline"><tt class="docutils literal"><span class="pre">OSCAR_LINE_STATUS_PIPELINE</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#checkout-settings">Checkout settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-allow-anon-checkout"><tt class="docutils literal"><span class="pre">OSCAR_ALLOW_ANON_CHECKOUT</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-required-address-fields"><tt class="docutils literal"><span class="pre">OSCAR_REQUIRED_ADDRESS_FIELDS</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#review-settings">Review settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-allow-anon-reviews"><tt class="docutils literal"><span class="pre">OSCAR_ALLOW_ANON_REVIEWS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-moderate-reviews"><tt class="docutils literal"><span class="pre">OSCAR_MODERATE_REVIEWS</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#communication-settings">Communication settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-eager-alerts"><tt class="docutils literal"><span class="pre">OSCAR_EAGER_ALERTS</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-send-registration-email"><tt class="docutils literal"><span class="pre">OSCAR_SEND_REGISTRATION_EMAIL</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-from-email"><tt class="docutils literal"><span class="pre">OSCAR_FROM_EMAIL</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-static-base-url"><tt class="docutils literal"><span class="pre">OSCAR_STATIC_BASE_URL</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#offer-settings">Offer settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-offer-rounding-function"><tt class="docutils literal"><span class="pre">OSCAR_OFFER_ROUNDING_FUNCTION</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#basket-settings">Basket settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-basket-cookie-lifetime"><tt class="docutils literal"><span class="pre">OSCAR_BASKET_COOKIE_LIFETIME</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-max-basket-quantity-threshold"><tt class="docutils literal"><span class="pre">OSCAR_MAX_BASKET_QUANTITY_THRESHOLD</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-basket-cookie-open"><tt class="docutils literal"><span class="pre">OSCAR_BASKET_COOKIE_OPEN</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#currency-settings">Currency settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-default-currency"><tt class="docutils literal"><span class="pre">OSCAR_DEFAULT_CURRENCY</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-currency-format"><tt class="docutils literal"><span class="pre">OSCAR_CURRENCY_FORMAT</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#upload-media-settings">Upload/media settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-image-folder"><tt class="docutils literal"><span class="pre">OSCAR_IMAGE_FOLDER</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-delete-image-files"><tt class="docutils literal"><span class="pre">OSCAR_DELETE_IMAGE_FILES</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-promotion-folder"><tt class="docutils literal"><span class="pre">OSCAR_PROMOTION_FOLDER</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-missing-image-url"><tt class="docutils literal"><span class="pre">OSCAR_MISSING_IMAGE_URL</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-upload-root"><tt class="docutils literal"><span class="pre">OSCAR_UPLOAD_ROOT</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#slug-settings">Slug settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-slug-map"><tt class="docutils literal"><span class="pre">OSCAR_SLUG_MAP</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-slug-function"><tt class="docutils literal"><span class="pre">OSCAR_SLUG_FUNCTION</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-slug-blacklist"><tt class="docutils literal"><span class="pre">OSCAR_SLUG_BLACKLIST</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/settings.html#misc-settings">Misc settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/settings.html#oscar-cookies-delete-on-logout"><tt class="docutils literal"><span class="pre">OSCAR_COOKIES_DELETE_ON_LOGOUT</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ref/signals.html">Signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#product-viewed"><tt class="docutils literal"><span class="pre">product_viewed</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#product-search"><tt class="docutils literal"><span class="pre">product_search</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#user-registered"><tt class="docutils literal"><span class="pre">user_registered</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#basket-addition"><tt class="docutils literal"><span class="pre">basket_addition</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#voucher-addition"><tt class="docutils literal"><span class="pre">voucher_addition</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#start-checkout"><tt class="docutils literal"><span class="pre">start_checkout</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#pre-payment"><tt class="docutils literal"><span class="pre">pre_payment</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#post-payment"><tt class="docutils literal"><span class="pre">post_payment</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#order-placed"><tt class="docutils literal"><span class="pre">order_placed</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#post-checkout"><tt class="docutils literal"><span class="pre">post_checkout</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/signals.html#review-created"><tt class="docutils literal"><span class="pre">review_created</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ref/templatetags.html">Template tags</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref/templatetags.html#shipping-tags">Shipping tags</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/templatetags.html#shipping-charge"><tt class="docutils literal"><span class="pre">shipping_charge</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/templatetags.html#shipping-charge-discount"><tt class="docutils literal"><span class="pre">shipping_charge_discount</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/templatetags.html#shipping-charge-excl-discount"><tt class="docutils literal"><span class="pre">shipping_charge_excl_discount</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../internals/design-decisions.html">Oscar design decisions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/design-decisions.html#core-models-are-abstract">Core models are abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/design-decisions.html#classes-are-loaded-dynamically">Classes are loaded dynamically</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/design-decisions.html#urls-and-permissions-for-apps-are-handled-by-application-instances">URLs and permissions for apps are handled by Application instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/design-decisions.html#templates-can-be-overridden">Templates can be overridden</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.5.html">Oscar 0.5 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.5.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.5.html#what-s-new-in-oscar-0-5">What&#8217;s new in Oscar 0.5?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.5.html#offers">Offers++</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.5.html#new-dashboard-skin">New dashboard skin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.5.html#internationalisation">Internationalisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.5.html#minor-features">Minor features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.5.html#minor-improvements">Minor improvements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.5.html#upgrading">Upgrading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.5.html#migrations">Migrations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.5.1.html">Oscar 0.5.1 release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.5.2.html">Oscar 0.5.2 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.5.2.html#insecure-use-of-secret-key-in-basket-cookie">Insecure use of <tt class="docutils literal"><span class="pre">SECRET_KEY</span></tt> in basket cookie</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.5.3.html">Oscar 0.5.3 release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.6.html">Oscar 0.6 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.html#what-s-new-in-oscar-0-6">What&#8217;s new in Oscar 0.6?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#multiple-stockrecords-per-product">Multiple stockrecords per product</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#pricing-and-availability">Pricing and availability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#permission-based-dashboard">Permission-based dashboard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#payment-models-have-abstract-versions">Payment models have abstract versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#wishlists">Wishlists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#partner-dashboard-addresses">Partner dashboard &amp; addresses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#checkout">Checkout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#demo-site">Demo site</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#django-1-5-1-6-and-custom-user-model-support">Django 1.5, 1.6 and custom user model support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#accounts">Accounts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#bootstrap-wysihtml5-replaced-by-tinymce">Bootstrap-WYSIHTML5 replaced by TinyMCE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#improved-address-fields">Improved address fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#better-bankcard-handling">Better bankcard handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#customer-facing-range-pages">Customer-facing range pages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#reworked-search-app">Reworked search app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#order-processing-changes">Order processing changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#tracking-oscar-sites">Tracking Oscar sites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#minor-changes">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.html#backwards-incompatible-changes-in-0-6">Backwards incompatible changes in 0.6</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#additional-apps">Additional apps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#checkout-app">Checkout app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#shipping-app-changes">Shipping app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#address-model-changes">Address model changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#basket-app-changes">Basket app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#catalogue-app-changes">Catalogue app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#customer-app-changes">Customer app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#offer-app-changes">Offer app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#payment-app-changes">Payment app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#reviews-app-changes">Reviews app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#search-app-changes">Search app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#loading-baskets">Loading baskets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#renamed-templates">Renamed templates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#template-block-changes">Template block changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#changes-to-partner-permissions">Changes to Partner permissions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#migrations">Migrations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.html#features-deprecated-in-0-6">Features deprecated in 0.6</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#accessing-a-product-s-stockrecords">Accessing a product&#8217;s stockrecords</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#checkout-session-manager">Checkout session manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#checkout-order-placement-mixin">Checkout order placement mixin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#bankcard-model">Bankcard model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#partner-wrappers">&#8220;Partner wrappers&#8221;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.html#test-support-extension-brought-back-into-core">Test support extension brought back into core</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.6.1.html">Oscar 0.6.1 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.1.html#possible-data-loss-from-deleted-users">Possible data loss from deleted users</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.1.html#missing-translations">Missing translations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.6.2.html">Oscar 0.6.2 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.2.html#overriding-models">Overriding models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.6.2.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.6.3.html">Oscar 0.6.3 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.3.html#known-issues">Known issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.3.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.6.4.html">Oscar 0.6.4 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.4.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.6.5.html">Oscar 0.6.5 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.6.5.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.7.html">Oscar 0.7 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.7.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.7.html#compatibility">Compatibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.7.html#what-s-new-in-oscar-0-7">What&#8217;s new in Oscar 0.7?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.7.html#search-improvements">Search improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.7.html#extended-signals">Extended signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.7.html#checkout-reorganisation">Checkout reorganisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.7.html#minor-changes">Minor changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.7.html#bugfixes">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.7.html#backwards-incompatible-changes-in-0-7">Backwards incompatible changes in 0.7</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.7.html#removal-of-features-deprecated-in-0-6">Removal of features deprecated in 0.6</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v0.7.html#migrations">Migrations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.7.1.html">Oscar 0.7.1 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.7.1.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.7.2.html">Oscar 0.7.2 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v0.7.2.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v0.7.3.html">Oscar 0.7.3 release notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v1.0.html">Oscar 1.0 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.0.html#compatibility">Compatibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.0.html#what-s-new-in-oscar-1-0">What&#8217;s new in Oscar 1.0?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#explicit-differentiation-of-child-parent-and-stand-alone-products">Explicit differentiation of child, parent and stand-alone products</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#better-handling-of-child-products-in-product-dashboard">Better handling of child products in product dashboard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#customisation-just-got-easier">Customisation just got easier!</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#django-1-7-support">Django 1.7 support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#billing-addresses-explicitly-passed-around-checkout">Billing addresses explicitly passed around checkout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#dashboard-for-weight-based-shipping-methods">Dashboard for weight-based shipping methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#us-demo-site">US demo site</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#faceting-for-category-browsing">Faceting for category browsing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#reworked-shipping-app">Reworked shipping app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#basket-additions-clean-up">Basket additions clean-up</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#checkout-improvements">Checkout improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#out-with-the-old-in-with-the-new">Out with the old, in with the new</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#minor-changes">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.0.html#backwards-incompatible-changes-in-1-0">Backwards incompatible changes in 1.0</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#product-structure">Product structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#product-editing">Product editing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#shipping">Shipping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#email-address-handling">Email address handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#id1">Django 1.7 support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#basket-line-stockrecords">Basket line stockrecords</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#basket-app-changes">Basket app changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#misc">Misc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#migrations">Migrations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#deprecated-features">Deprecated features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.0.html#removal-of-deprecated-features">Removal of deprecated features</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.0.html#known-issues">Known issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v1.0.1.html">Oscar 1.0.1 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.0.1.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v1.0.2.html">Oscar 1.0.2 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.0.2.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/v1.1.html">Oscar 1.1 release notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.1.html#compatibility">Compatibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.1.html#what-s-new-in-oscar-1-1">What&#8217;s new in Oscar 1.1?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.1.html#minor-changes">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.1.html#backwards-incompatible-changes-in-1-1">Backwards incompatible changes in 1.1</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.1.html#categories-refactor">Categories refactor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.1.html#misc">Misc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.1.html#migrations">Migrations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v1.1.html#dependency-changes">Dependency changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.1.html#deprecated-features">Deprecated features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../releases/v1.1.html#removal-of-deprecated-features">Removal of deprecated features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/contributing/index.html">Contributing to Oscar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/contributing/index.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../internals/contributing/development-environment.html">Setting up the development environment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/development-environment.html#jpeg-support">JPEG Support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/development-environment.html#creating-migrations">Creating migrations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/development-environment.html#writing-less-css">Writing LESS/CSS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/development-environment.html#testing-migrations-against-mysql-and-postgres">Testing migrations against MySQL and Postgres</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../internals/contributing/bugs-and-features.html">Reporting bugs and requesting features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/bugs-and-features.html#reporting-security-issues">Reporting security issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/bugs-and-features.html#reporting-bugs">Reporting bugs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/bugs-and-features.html#reporting-user-interface-bugs-and-features">Reporting user interface bugs and features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/bugs-and-features.html#requesting-features">Requesting features</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../internals/contributing/coding-style.html">Coding Style</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/coding-style.html#general">General</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/coding-style.html#urls">URLs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/coding-style.html#view-class-names">View class names</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/coding-style.html#referencing-managers">Referencing managers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/coding-style.html#html">HTML</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../internals/contributing/submitting-pull-requests.html">Submitting pull requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../internals/contributing/running-tests.html">Test suite</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/running-tests.html#running-tests">Running tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/running-tests.html#testing-against-different-setups">Testing against different setups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/running-tests.html#kinds-of-tests">Kinds of tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/running-tests.html#naming-tests">Naming tests</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../internals/contributing/writing-documentation.html">Writing documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/writing-documentation.html#directory-structure">Directory Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../internals/contributing/writing-documentation.html#style-guides">Style guides</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">django-oscar</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Prices and availability</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/django-oscar/django-oscar/blob/master/docs/source/topics/prices_and_availability.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="prices-and-availability">
+<h1>Prices and availability<a class="headerlink" href="prices_and_availability.html#prices-and-availability" title="Permalink to this headline">¶</a></h1>
+<p>This page explains how prices and availability are determined in Oscar.  In
+short, it seems quite complicated at first as there are several parts to it, but what
+this buys is flexibility: buckets of it.</p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="prices_and_availability.html#overview" title="Permalink to this headline">¶</a></h2>
+<p>Simpler e-commerce frameworks often tie prices to the product model directly:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">product</span> <span class="o">=</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">product</span><span class="o">.</span><span class="n">price</span>
+<span class="go">Decimal(&#39;17.99&#39;)</span>
+</pre></div>
+</div>
+<p>Oscar, on the other hand, distinguishes products from stockrecords and provides
+a swappable &#8216;strategy&#8217; component for selecting the appropriate stockrecord,
+calculating prices and availability information.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">product</span> <span class="o">=</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">fetch_for_product</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+
+<span class="go"># Availability information</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span><span class="o">.</span><span class="n">availability</span><span class="o">.</span><span class="n">is_available_to_buy</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msg</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">availability</span><span class="o">.</span><span class="n">message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">unicode</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="go">u&quot;In stock (58 available)&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span><span class="o">.</span><span class="n">availability</span><span class="o">.</span><span class="n">is_purchase_permitted</span><span class="p">(</span><span class="mi">59</span><span class="p">)</span>
+<span class="go">(False, u&quot;A maximum of 58 can be bought&quot;)</span>
+
+<span class="go"># Price information</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">excl_tax</span>
+<span class="go">Decimal(&#39;17.99&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">is_tax_known</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">incl_tax</span>
+<span class="go">Decimal(&#39;21.59&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">tax</span>
+<span class="go">Decimal(&#39;3.60&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">currency</span>
+<span class="go">&#39;GBP&#39;</span>
+</pre></div>
+</div>
+<p>The product model captures the core data about the product (title, description,
+images) while a stockrecord represents fulfillment information for one
+particular partner (number in stock, base price).  A product can have multiple
+stockrecords although only one is selected by the strategy to determine pricing and
+availability.</p>
+<p>By using your own custom strategy class, a wide range of pricing, tax and
+availability problems can be easily solved.</p>
+</div>
+<div class="section" id="the-strategy-class">
+<span id="strategy-class"></span><h2>The strategy class<a class="headerlink" href="prices_and_availability.html#the-strategy-class" title="Permalink to this headline">¶</a></h2>
+<p>Oscar uses a &#8216;strategy&#8217; object to determine product availability and pricing.  A
+new strategy instance is assigned to the request by the basket middleware.  A
+<a class="reference internal" href="../ref/apps/partner.html#oscar.apps.partner.strategy.Selector" title="oscar.apps.partner.strategy.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a>
+class determines the appropriate strategy for the
+request.  By modifying the
+<a class="reference internal" href="../ref/apps/partner.html#oscar.apps.partner.strategy.Selector" title="oscar.apps.partner.strategy.Selector"><tt class="xref py py-class docutils literal"><span class="pre">Selector</span></tt></a>
+class, it&#8217;s possible to return
+different strategies for different customers.</p>
+<p>Given a product, the strategy class is responsible for:</p>
+<ul class="simple">
+<li>Selecting a &#8220;pricing policy&#8221;, an object detailing the prices of the product and whether tax is known.</li>
+<li>Selecting an &#8220;availability policy&#8221;, an object responsible for
+availability logic (ie is the product available to buy) and customer
+messaging.</li>
+<li>Selecting the appropriate stockrecord to use for fulfillment.  If a product
+can be fulfilled by several fulfilment partners, then each will have their
+own stockrecord.</li>
+</ul>
+<p>These three entities are wrapped up in a <tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt> object, which is a
+simple named tuple.  The strategy class provides <tt class="docutils literal"><span class="pre">fetch_for_product</span></tt> and
+<tt class="docutils literal"><span class="pre">fetch_for_parent</span></tt> methods which takes a product and returns a <tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt>
+instance:</p>
+<p>The strategy class is accessed in several places in Oscar&#8217;s codebase.  In templates, a
+<tt class="docutils literal"><span class="pre">purchase_info_for_product</span></tt> template tag is used to load the price and availability
+information into the template context:</p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">load</span> <span class="nv">purchase_info_tags</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">load</span> <span class="nv">currency_filters</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">purchase_info_for_product</span> <span class="nv">request</span> <span class="nv">product</span> <span class="k">as</span> <span class="nv">session</span> <span class="cp">%}</span>
+
+<span class="nt">&lt;p&gt;</span>
+<span class="cp">{%</span> <span class="k">if</span> <span class="nv">session.price.is_tax_known</span> <span class="cp">%}</span>
+    Price is <span class="cp">{{</span> <span class="nv">session.price.incl_tax</span><span class="o">|</span><span class="nf">currency</span><span class="o">:</span><span class="nv">session.price.currency</span> <span class="cp">}}</span>
+<span class="cp">{%</span> <span class="k">else</span> <span class="cp">%}</span>
+    Price is <span class="cp">{{</span> <span class="nv">session.price.excl_tax</span><span class="o">|</span><span class="nf">currency</span><span class="o">:</span><span class="nv">session.price.currency</span> <span class="cp">}}</span> +
+    tax
+<span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+<span class="nt">&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p>Note that the <tt class="docutils literal"><span class="pre">currency</span></tt> template tag accepts a currency parameter from the
+pricing policy.</p>
+<p>Also, basket instances have a strategy instance assigned so they can calculate
+prices including taxes.  This is done automatically in the basket middleware.</p>
+<div class="section" id="this-seems-quite-complicated">
+<h3>This seems quite complicated...<a class="headerlink" href="prices_and_availability.html#this-seems-quite-complicated" title="Permalink to this headline">¶</a></h3>
+<p>While this probably seems like quite an involved way of looking up a product&#8217;s
+price, it gives the developer an immense amount of flexibility.  Here&#8217;s a few
+examples of things you can do with a strategy class:</p>
+<ul class="simple">
+<li>Transact in multiple currencies.  The strategy
+class can use the customer&#8217;s location to select a stockrecord from a local
+distribution partner which will be in the local currency of the customer.</li>
+<li>Elegantly handle different tax models.  A strategy can return prices including
+tax for a UK or European visitor, but without tax for US
+visitors where tax is only determined once shipping details are confirmed.</li>
+<li>Charge different prices to different customers.  A strategy can return a
+different pricing policy depending on the user/session.</li>
+<li>Use a chain of preferred partners for fulfillment.  A site could have many
+stockrecords for the same product, each from a different fulfillment partner.
+The strategy class could select the partner with the best margin and stock
+available.  When stock runs out with that partner, the strategy could
+seamlessly switch to the next best partner.</li>
+</ul>
+<p>These are the kinds of problems that other e-commerce frameworks would struggle
+with.</p>
+</div>
+<div class="section" id="api">
+<h3>API<a class="headerlink" href="prices_and_availability.html#api" title="Permalink to this headline">¶</a></h3>
+<p>All strategies subclass a common <tt class="docutils literal"><span class="pre">Base</span></tt> class:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.strategy.</tt><tt class="descname">Base</tt><big>(</big><em>request=None</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Base"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>The base strategy class</p>
+<p>Given a product, strategies are responsible for returning a
+<tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt> instance which contains:</p>
+<ul class="simple">
+<li>The appropriate stockrecord for this customer</li>
+<li>A pricing policy instance</li>
+<li>An availability policy instance</li>
+</ul>
+<dl class="method">
+<dt>
+<tt class="descname">fetch_for_line</tt><big>(</big><em>line</em>, <em>stockrecord=None</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Base.fetch_for_line"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Given a basket line instance, fetch a <tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt> instance.</p>
+<p>This method is provided to allow purchase info to be determined using a
+basket line&#8217;s attributes.  For instance, &#8220;bundle&#8221; products often use
+basket line attributes to store SKUs of contained products.  For such
+products, we need to look at the availability of each contained product
+to determine overall availability.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">fetch_for_parent</tt><big>(</big><em>product</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Base.fetch_for_parent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Given a parent product, fetch a <tt class="docutils literal"><span class="pre">StockInfo</span></tt> instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">fetch_for_product</tt><big>(</big><em>product</em>, <em>stockrecord=None</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Base.fetch_for_product"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Given a product, return a <tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt> instance.</p>
+<p>The <tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt> class is a named tuple with attributes:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">price</span></tt>: a pricing policy object.</li>
+<li><tt class="docutils literal"><span class="pre">availability</span></tt>: an availability policy object.</li>
+<li><tt class="docutils literal"><span class="pre">stockrecord</span></tt>: the stockrecord that is being used</li>
+</ul>
+<p>If a stockrecord is passed, return the appropriate <tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt>
+instance for that product and stockrecord is returned.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Oscar also provides a &#8220;structured&#8221; strategy class which provides overridable
+methods for selecting the stockrecord, and determining pricing and availability
+policies:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.strategy.</tt><tt class="descname">Structured</tt><big>(</big><em>request=None</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Structured"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>A strategy class which provides separate, overridable methods for
+determining the 3 things that a <tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt> instance requires:</p>
+<ol class="arabic simple">
+<li>A stockrecord</li>
+<li>A pricing policy</li>
+<li>An availability policy</li>
+</ol>
+<dl class="method">
+<dt>
+<tt class="descname">availability_policy</tt><big>(</big><em>product</em>, <em>stockrecord</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Structured.availability_policy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the appropriate availability policy</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">fetch_for_product</tt><big>(</big><em>product</em>, <em>stockrecord=None</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Structured.fetch_for_product"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the appropriate <tt class="docutils literal"><span class="pre">PurchaseInfo</span></tt> instance.</p>
+<p>This method is not intended to be overridden.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">pricing_policy</tt><big>(</big><em>product</em>, <em>stockrecord</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Structured.pricing_policy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the appropriate pricing policy</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">select_children_stockrecords</tt><big>(</big><em>product</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Structured.select_children_stockrecords"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Select appropriate stock record for all children of a product</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">select_stockrecord</tt><big>(</big><em>product</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Structured.select_stockrecord"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Select the appropriate stockrecord</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>For most projects, subclassing and overriding the <tt class="docutils literal"><span class="pre">Structured</span></tt> base class
+should be sufficient.  However, Oscar also provides mixins to easily compose the
+appropriate strategy class for your domain.</p>
+</div>
+</div>
+<div class="section" id="loading-a-strategy">
+<h2>Loading a strategy<a class="headerlink" href="prices_and_availability.html#loading-a-strategy" title="Permalink to this headline">¶</a></h2>
+<p>Strategy instances are determined by the <tt class="docutils literal"><span class="pre">Selector</span></tt> class:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.strategy.</tt><tt class="descname">Selector</tt><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Selector"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Responsible for returning the appropriate strategy class for a given
+user/session.</p>
+<p>This can be called in three ways:</p>
+<ol class="arabic simple">
+<li>Passing a request and user.  This is for determining
+prices/availability for a normal user browsing the site.</li>
+<li>Passing just the user.  This is for offline processes that don&#8217;t
+have a request instance but do know which user to determine prices for.</li>
+<li>Passing nothing.  This is for offline processes that don&#8217;t
+correspond to a specific user.  Eg, determining a price to store in
+a search index.</li>
+</ol>
+<dl class="method">
+<dt>
+<tt class="descname">strategy</tt><big>(</big><em>request=None</em>, <em>user=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#Selector.strategy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return an instanticated strategy instance</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>It&#8217;s common to override this class so a custom strategy class can be returned.</p>
+</div>
+<div class="section" id="pricing-policies">
+<span id="id1"></span><h2>Pricing policies<a class="headerlink" href="prices_and_availability.html#pricing-policies" title="Permalink to this headline">¶</a></h2>
+<p>A pricing policy is a simple class with several properties  Its job is to
+contain all price and tax information about a product.</p>
+<p>There is a base class that defines the interface a pricing policy should have:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.prices.</tt><tt class="descname">Base</tt><a class="reference internal" href="../_modules/oscar/apps/partner/prices.html#Base"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>The interface that any pricing policy must support</p>
+<dl class="attribute">
+<dt>
+<tt class="descname">currency</tt><em class="property"> = None</em></dt>
+<dd><p>Price currency (3 char code)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">excl_tax</tt><em class="property"> = None</em></dt>
+<dd><p>Price excluding tax</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">exists</tt><em class="property"> = False</em></dt>
+<dd><p>Whether any prices exist</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">incl_tax</tt><em class="property"> = None</em></dt>
+<dd><p>Price including tax</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">is_tax_known</tt><em class="property"> = False</em></dt>
+<dd><p>Whether tax is known</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">retail</tt><em class="property"> = None</em></dt>
+<dd><p>Retail price</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">tax</tt><em class="property"> = None</em></dt>
+<dd><p>Price tax</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>There are also several policies that accommodate common scenarios:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.prices.</tt><tt class="descname">Unavailable</tt><a class="reference internal" href="../_modules/oscar/apps/partner/prices.html#Unavailable"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This should be used as a pricing policy when a product is unavailable and
+no prices are known.</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.prices.</tt><tt class="descname">FixedPrice</tt><big>(</big><em>currency</em>, <em>excl_tax</em>, <em>tax=None</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/prices.html#FixedPrice"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This should be used for when the price of a product is known in advance.</p>
+<p>It can work for when tax isn&#8217;t known (like in the US).</p>
+<p>Note that this price class uses the tax-exclusive price for offers, even if
+the tax is known.  This may not be what you want.  Use the
+TaxInclusiveFixedPrice class if you want offers to use tax-inclusive
+prices.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="availability-policies">
+<span id="id2"></span><h2>Availability policies<a class="headerlink" href="prices_and_availability.html#availability-policies" title="Permalink to this headline">¶</a></h2>
+<p>Like pricing policies, availability policies are simple classes with several
+properties and methods.  The job of an availability policy is to provide
+availability messaging to show to the customer as well as methods to determine
+if the product is available to buy.</p>
+<p>The base class defines the interface:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.availability.</tt><tt class="descname">Base</tt><a class="reference internal" href="../_modules/oscar/apps/partner/availability.html#Base"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Base availability policy.</p>
+<dl class="attribute">
+<dt>
+<tt class="descname">code</tt><em class="property"> = ''</em></dt>
+<dd><p>Availability code.  This is used for HTML classes</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">dispatch_date</tt><em class="property"> = None</em></dt>
+<dd><p>When this item should be dispatched</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">is_available_to_buy</tt><a class="reference internal" href="../_modules/oscar/apps/partner/availability.html#Base.is_available_to_buy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Test if this product is available to be bought.  This is used for
+validation when a product is added to a user&#8217;s basket.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">is_purchase_permitted</tt><big>(</big><em>quantity</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/availability.html#Base.is_purchase_permitted"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Test whether a proposed purchase is allowed</p>
+<p>Should return a boolean and a reason</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">message</tt><em class="property"> = ''</em></dt>
+<dd><p>A description of the availability of a product.  This is shown on the
+product detail page.  Eg &#8220;In stock&#8221;, &#8220;Out of stock&#8221; etc</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">short_message</tt><a class="reference internal" href="../_modules/oscar/apps/partner/availability.html#Base.short_message"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>A shorter version of the availability message, suitable for showing on
+browsing pages.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>There are also several pre-defined availability policies:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.availability.</tt><tt class="descname">Unavailable</tt><a class="reference internal" href="../_modules/oscar/apps/partner/availability.html#Unavailable"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Policy for when a product is unavailable</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.availability.</tt><tt class="descname">Available</tt><a class="reference internal" href="../_modules/oscar/apps/partner/availability.html#Available"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>For when a product is always available, irrespective of stock level.</p>
+<p>This might be appropriate for digital products where stock doesn&#8217;t need to
+be tracked and the product is always available to buy.</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.availability.</tt><tt class="descname">StockRequired</tt><big>(</big><em>num_available</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/availability.html#StockRequired"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Allow a product to be bought while there is stock.  This policy is
+instantiated with a stock number (<tt class="docutils literal"><span class="pre">num_available</span></tt>).  It ensures that the
+product is only available to buy while there is stock available.</p>
+<p>This is suitable for physical products where back orders (eg allowing
+purchases when there isn&#8217;t stock available) are not permitted.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="strategy-mixins">
+<h2>Strategy mixins<a class="headerlink" href="prices_and_availability.html#strategy-mixins" title="Permalink to this headline">¶</a></h2>
+<p>Oscar also ships with several mixins which implement one method of the
+<tt class="docutils literal"><span class="pre">Structured</span></tt> strategy.  These allow strategies to be easily
+composed from re-usable parts:</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.strategy.</tt><tt class="descname">UseFirstStockRecord</tt><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#UseFirstStockRecord"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Stockrecord selection mixin for use with the <tt class="docutils literal"><span class="pre">Structured</span></tt> base strategy.
+This mixin picks the first (normally only) stockrecord to fulfil a product.</p>
+<p>This is backwards compatible with Oscar&lt;0.6 where only one stockrecord per
+product was permitted.</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.strategy.</tt><tt class="descname">StockRequired</tt><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#StockRequired"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Availability policy mixin for use with the <tt class="docutils literal"><span class="pre">Structured</span></tt> base strategy.
+This mixin ensures that a product can only be bought if it has stock
+available (if stock is being tracked).</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.strategy.</tt><tt class="descname">NoTax</tt><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#NoTax"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Pricing policy mixin for use with the <tt class="docutils literal"><span class="pre">Structured</span></tt> base strategy.
+This mixin specifies zero tax and uses the <tt class="docutils literal"><span class="pre">price_excl_tax</span></tt> from the
+stockrecord.</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.strategy.</tt><tt class="descname">FixedRateTax</tt><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#FixedRateTax"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Pricing policy mixin for use with the <tt class="docutils literal"><span class="pre">Structured</span></tt> base strategy.  This
+mixin applies a fixed rate tax to the base price from the product&#8217;s
+stockrecord.  The price_incl_tax is quantized to two decimal places.
+Rounding behaviour is Decimal&#8217;s default</p>
+<dl class="method">
+<dt>
+<tt class="descname">get_exponent</tt><big>(</big><em>stockrecord</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#FixedRateTax.get_exponent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This method serves as hook to be able to plug in support for a varying exponent
+based on the currency.</p>
+<p>TODO: Needs tests.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">get_rate</tt><big>(</big><em>product</em>, <em>stockrecord</em><big>)</big><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#FixedRateTax.get_rate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This method serves as hook to be able to plug in support for varying tax rates
+based on the product.</p>
+<p>TODO: Needs tests.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">oscar.apps.partner.strategy.</tt><tt class="descname">DeferredTax</tt><a class="reference internal" href="../_modules/oscar/apps/partner/strategy.html#DeferredTax"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Pricing policy mixin for use with the <tt class="docutils literal"><span class="pre">Structured</span></tt> base strategy.
+This mixin does not specify the product tax and is suitable to territories
+where tax isn&#8217;t known until late in the checkout process.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="default-strategy">
+<h2>Default strategy<a class="headerlink" href="prices_and_availability.html#default-strategy" title="Permalink to this headline">¶</a></h2>
+<p>Oscar&#8217;s default <tt class="docutils literal"><span class="pre">Selector</span></tt> class returns a <tt class="docutils literal"><span class="pre">Default</span></tt> strategy built from
+the strategy mixins:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Default</span><span class="p">(</span><span class="n">UseFirstStockRecord</span><span class="p">,</span> <span class="n">StockRequired</span><span class="p">,</span> <span class="n">NoTax</span><span class="p">,</span> <span class="n">Structured</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>The behaviour of this strategy is:</p>
+<ul class="simple">
+<li>Always picks the first stockrecord (this is backwards compatible with
+Oscar&lt;0.6 where a product could only have one stockrecord).</li>
+<li>Charge no tax.</li>
+<li>Only allow purchases where there is appropriate stock (eg no back-orders).</li>
+</ul>
+</div>
+<div class="section" id="how-to-use">
+<h2>How to use<a class="headerlink" href="prices_and_availability.html#how-to-use" title="Permalink to this headline">¶</a></h2>
+<p>There&#8217;s lots of ways to use strategies, pricing and availability policies to
+handle your domain&#8217;s requirements.</p>
+<p>The normal first step is provide your own <tt class="docutils literal"><span class="pre">Selector</span></tt> class which returns a custom
+strategy class.  Your custom strategy class can be composed of the above mixins
+or your own custom logic.</p>
+<div class="section" id="example-1-uk-vat">
+<h3>Example 1: UK VAT<a class="headerlink" href="prices_and_availability.html#example-1-uk-vat" title="Permalink to this headline">¶</a></h3>
+<p>Here&#8217;s an example <tt class="docutils literal"><span class="pre">strategy.py</span></tt> module which is used to charge VAT on prices.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># myproject/partner/strategy.py</span>
+
+<span class="kn">from</span> <span class="nn">oscar.apps.partner</span> <span class="kn">import</span> <span class="n">strategy</span><span class="p">,</span> <span class="n">prices</span>
+
+
+<span class="k">class</span> <span class="nc">Selector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom selector to return a UK-specific strategy that charges VAT</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">UKStrategy</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">IncludingVAT</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">FixedRateTax</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Price policy to charge VAT on the base price</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># We can simply override the tax rate on the core FixedRateTax.  Note</span>
+    <span class="c"># this is a simplification: in reality, you might want to store tax</span>
+    <span class="c"># rates and the date ranges they apply in a database table.  Your</span>
+    <span class="c"># pricing policy could simply look up the appropriate rate.</span>
+    <span class="n">rate</span> <span class="o">=</span> <span class="n">D</span><span class="p">(</span><span class="s">&#39;0.20&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UKStrategy</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">UseFirstStockRecord</span><span class="p">,</span> <span class="n">IncludingVAT</span><span class="p">,</span>
+                 <span class="n">strategy</span><span class="o">.</span><span class="n">StockRequired</span><span class="p">,</span> <span class="n">strategy</span><span class="o">.</span><span class="n">Structured</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Typical UK strategy for physical goods.</span>
+
+<span class="sd">    - There&#39;s only one warehouse/partner so we use the first and only stockrecord</span>
+<span class="sd">    - Enforce stock level.  Don&#39;t allow purchases when we don&#39;t have stock.</span>
+<span class="sd">    - Charge UK VAT on prices.  Assume everything is standard-rated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2-us-sales-tax">
+<h3>Example 2: US sales tax<a class="headerlink" href="prices_and_availability.html#example-2-us-sales-tax" title="Permalink to this headline">¶</a></h3>
+<p>Here&#8217;s an example <tt class="docutils literal"><span class="pre">strategy.py</span></tt> module which is suitable for use in the US
+where taxes can&#8217;t be calculated until the shipping address is known.  You
+normally need to use a 3rd party service to determine taxes - details omitted
+here.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">oscar.apps.partner</span> <span class="kn">import</span> <span class="n">strategy</span><span class="p">,</span> <span class="n">prices</span>
+
+
+<span class="k">class</span> <span class="nc">Selector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom selector class to returns a US strategy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">USStrategy</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">USStrategy</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">UseFirstStockRecord</span><span class="p">,</span> <span class="n">strategy</span><span class="o">.</span><span class="n">DeferredTax</span><span class="p">,</span>
+                 <span class="n">strategy</span><span class="o">.</span><span class="n">StockRequired</span><span class="p">,</span> <span class="n">strategy</span><span class="o">.</span><span class="n">Structured</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Typical US strategy for physical goods.  Note we use the ``DeferredTax``</span>
+<span class="sd">    mixin to ensure prices are returned without tax.</span>
+
+<span class="sd">    - Use first stockrecord</span>
+<span class="sd">    - Enforce stock level</span>
+<span class="sd">    - Taxes aren&#39;t known for prices at this stage</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="deploying.html" class="btn btn-neutral float-right" title="Deploying Oscar" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="class_loading_explained.html" class="btn btn-neutral" title="Dynamic class loading explained" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright .
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: latest
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl>
+        <dt>Versions</dt>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/latest/">latest</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/stable/">stable</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-1.1/">releases-1.1</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-1.0/">releases-1.0</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-0.7/">releases-0.7</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-0.6/">releases-0.6</a></dd>
+        
+          <dd><a href="http://django-oscar.readthedocs.org/en/releases-0.5/">releases-0.5</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>Downloads</dt>
+        
+          <dd><a href="http://readthedocs.org/projects/django-oscar/downloads/pdf/latest/">pdf</a></dd>
+        
+          <dd><a href="http://readthedocs.org/projects/django-oscar/downloads/htmlzip/latest/">htmlzip</a></dd>
+        
+          <dd><a href="http://readthedocs.org/projects/django-oscar/downloads/epub/latest/">epub</a></dd>
+        
+      </dl>
+      <dl>
+        <dt>On Read the Docs</dt>
+          <dd>
+            <a href="http://https://readthedocs.org/projects/django-oscar/?fromdocs=django-oscar">Project Home</a>
+          </dd>
+          <dd>
+            <a href="http://https://readthedocs.org/builds/django-oscar/?fromdocs=django-oscar">Builds</a>
+          </dd>
+      </dl>
+      <hr/>
+      Free document hosting provided by <a href="http://www.readthedocs.org">Read the Docs</a>.
+
+    </div>
+  </div>
+
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/jquery/jquery-2.0.3.min.js"></script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/jquery/jquery-migrate-1.2.1.min.js"></script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/underscore.js"></script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnmedia.readthedocs.org/javascript/readthedocs-doc-embed.js"></script>
+
+  
+
+  
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
