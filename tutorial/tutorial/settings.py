@@ -22,7 +22,6 @@ SECRET_KEY = 'ze(0vdjba*-r!0gx=4is8$1i(o+8#&bv9%oy+wf)9_+on)obh('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -37,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'oauth2_provider',
     # 'quickstart',
     'snippets',
 )
@@ -86,3 +86,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
+OAUTH2_PROVIDER = {
+    'SCOPES': {'read': 'Read scope',
+               'write': 'Write scope',
+               'groups': "Access to your groups"}
+}
+
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
