@@ -5,7 +5,11 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-import MySQLdb
+# import MySQLdb
+import psycopg2
+# 数据库连接参数
+conn = psycopg2.connect(database="basedb", user="postdb", password="postdb", host="127.0.0.1", port="5432")
+
 
 class DoubanmoviePipeline(object):
 
@@ -14,14 +18,19 @@ class DoubanmoviePipeline(object):
         return item
 
     def open_spider(self, spider):
-        self.conn = MySQLdb.connect(
-                host="localhost",
-                port=3306,
-                db="movie",
-                user="root",
-                passwd="myroot",
-                charset="utf8"
-                )
+        ## self.conn = MySQLdb.connect(
+        ##         host="localhost",
+        ##         port=3306,
+        ##         db="movie",
+        ##         user="root",
+        ##         passwd="myroot",
+        ##         charset="utf8"
+        ##         )
+        self.conn = conn = psycopg2.connect(database="basedb",
+                                            user="postdb",
+                                            password="postdb",
+                                            host="127.0.0.1",
+                                            port="5432")
         self.cur = self.conn.cursor()
 
     def close_spider(self, spider):
@@ -30,7 +39,7 @@ class DoubanmoviePipeline(object):
         self.conn.close()
 
     def _save(self, item):
-        sqlv = "select 1 from t_movie where m_id=%s" % item["mid"]
+        sqlv = "select 1 from t_movie where m_id='%s'" % item["mid"]
         self.cur.execute(sqlv)
         result = self.cur.fetchone()
         if not result:

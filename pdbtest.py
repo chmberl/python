@@ -1,7 +1,7 @@
 print "start"
 
 
-def f():
+def f()
     for i in range(3):
         l = 2
         print "hello"
@@ -10,3 +10,10 @@ def f():
 a = f()
 
 print "end"
+
+def fff(s, df=1.1-1j):
+    pass
+
+
+def ff(s, df="df"):
+    pass

@@ -88,7 +88,7 @@ class MovieDoubanSpider(CrawlSpider):
     name = "moviedouban"
     allowed_domains = ["movie.douban.com", "www.douban.com"]
 
-    start_urls = ["http://www.douban.com/tag/%E6%88%98%E4%BA%89/?focus=movie"]
+    start_urls = ["http://www.douban.com/tag/2014/?focus=movie"]
 
     rules = [
             Rule(sgml(allow=(r'http://movie.douban.com/\?start=\d+.*'))),
