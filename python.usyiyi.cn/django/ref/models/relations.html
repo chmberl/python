@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>关联对象参考 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Models"/>
+<link href="class.html" rel="next" title="Model class reference"/>
+<link href="meta.html" rel="prev" title="Model _meta API"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/models/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/models/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="42">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="meta.html" title='Model &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;_meta&lt;/span&gt;&lt;/tt&gt; API'>previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="class.html" title="Model class reference">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-models-relations">
+<div class="section" id="s-related-objects-reference">
+<span id="related-objects-reference"></span><h1><font id="43">关联对象参考</font><a class="headerlink" href="relations.html#related-objects-reference" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="django.db.models.fields.related.RelatedManager">
+<em class="property">class </em><tt class="descname">RelatedManager</tt><a class="headerlink" href="relations.html#django.db.models.fields.related.RelatedManager" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="1">"关联管理器"是在一对多或者多对多的关联上下文中使用的管理器。</font><font id="2">它存在于下面两种情况：</font></p>
+<ul>
+<li><p class="first"><font id="3"><a class="reference internal" href="fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>关系的“另一边”。</font><font id="4">像这样：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Reporter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Article</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">reporter</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Reporter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="5">在上面的例子中，管理器<tt class="docutils literal"><span class="pre">reporter.article_set</span></tt>拥有下面的方法。</font></p>
+</li>
+<li><p class="first"><font id="6"><a class="reference internal" href="fields.html#django.db.models.ManyToManyField" title="django.db.models.ManyToManyField"><tt class="xref py py-class docutils literal"><span class="pre">ManyToManyField</span></tt></a>关系的两边：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Topping</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="7">这个例子中，<tt class="docutils literal"><span class="pre">topping.pizza_set</span></tt> 和<tt class="docutils literal"><span class="pre">pizza.toppings</span></tt>都拥有下面的方法。</font></p>
+</li>
+</ul>
+<dl class="method">
+<dt id="django.db.models.fields.related.RelatedManager.add">
+<tt class="descname">add</tt>(<em>obj1</em><span class="optional">[</span>, <em>obj2</em>, <em>...</em><span class="optional">]</span>)<a class="headerlink" href="relations.html#django.db.models.fields.related.RelatedManager.add" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="8">把指定的模型对象添加到关联对象集中。</font></p>
+<p><font id="9">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Blog</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">Entry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">234</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">entry_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="c"># Associates Entry e with Blog b.</span>
+</pre></div>
+</div>
+<p><font id="10">在上面的例子中，对于<a class="reference internal" href="fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>关系，<tt class="docutils literal"><span class="pre">e.save()</span></tt>由关联管理器调用，执行更新操作。</font><font id="11">然而，在多对多关系中使用<tt class="docutils literal"><span class="pre">add()</span></tt>并不会调用任何&nbsp;<tt class="docutils literal"><span class="pre">save()</span></tt>方法，而是由<a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.bulk_create" title="django.db.models.query.QuerySet.bulk_create"><tt class="xref py py-meth docutils literal"><span class="pre">QuerySet.bulk_create()</span></tt></a>创建关系。</font><font id="12">如果你需要在关系被创建时执行一些自定义的逻辑，请监听<a class="reference internal" href="../signals.html#django.db.models.signals.m2m_changed" title="django.db.models.signals.m2m_changed"><tt class="xref py py-data docutils literal"><span class="pre">m2m_changed</span></tt></a>信号。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.fields.related.RelatedManager.create">
+<tt class="descname">create</tt>(<em>**kwargs</em>)<a class="headerlink" href="relations.html#django.db.models.fields.related.RelatedManager.create" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="13">创建一个新的对象，保存对象，并将它添加到关联对象集之中。</font><font id="14">返回新创建的对象：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Blog</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">entry_set</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">headline</span><span class="o">=</span><span class="s">'Hello'</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">body_text</span><span class="o">=</span><span class="s">'Hi'</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">pub_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2005</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="go"># No need to call e.save() at this point -- it's already been saved.</span>
+</pre></div>
+</div>
+<p><font id="15">这完全等价于（不过更加简洁于）：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Blog</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">blog</span><span class="o">=</span><span class="n">b</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">headline</span><span class="o">=</span><span class="s">'Hello'</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">body_text</span><span class="o">=</span><span class="s">'Hi'</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">pub_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2005</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">force_insert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="16">要注意我们并不需要指定模型中用于定义关系的关键词参数。</font><font id="17">在上面的例子中，我们并没有传入<tt class="docutils literal"><span class="pre">blog</span></tt>参数给<tt class="docutils literal"><span class="pre">create()</span></tt>。</font><font id="18">Django会明白新的&nbsp;<tt class="docutils literal"><span class="pre">Entry</span></tt>对象<tt class="docutils literal"><span class="pre">blog</span></tt> 应该添加到<tt class="docutils literal"><span class="pre">b</span></tt>中。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.fields.related.RelatedManager.remove">
+<tt class="descname">remove</tt>(<em>obj1</em><span class="optional">[</span>, <em>obj2</em>, <em>...</em><span class="optional">]</span>)<a class="headerlink" href="relations.html#django.db.models.fields.related.RelatedManager.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="19">从关联对象集中移除执行的模型对象：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Blog</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">Entry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">234</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">entry_set</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="c"># Disassociates Entry e from Blog b.</span>
+</pre></div>
+</div>
+<p><font id="20">和<a class="reference internal" href="relations.html#django.db.models.fields.related.RelatedManager.add" title="django.db.models.fields.related.RelatedManager.add"><tt class="xref py py-meth docutils literal"><span class="pre">add()</span></tt></a>相似，上面的例子中，<tt class="docutils literal"><span class="pre">e.save()</span></tt>可会执行更新操作。</font><font id="21">但是，多对多关系上的<tt class="docutils literal"><span class="pre">remove()</span></tt>，会使用<a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.delete" title="django.db.models.query.QuerySet.delete"><tt class="xref py py-meth docutils literal"><span class="pre">QuerySet.delete()</span></tt></a>删除关系，意思是并不会有任何模型调用<tt class="docutils literal"><span class="pre">save()</span></tt>方法：</font><font id="22">如果你想在一个关系被删除时执行自定义的代码，请监听<a class="reference internal" href="../signals.html#django.db.models.signals.m2m_changed" title="django.db.models.signals.m2m_changed"><tt class="xref py py-data docutils literal"><span class="pre">m2m_changed</span></tt></a>信号。</font></p>
+<p><font id="23">对于<a class="reference internal" href="fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>对象，这个方法仅在<tt class="docutils literal"><span class="pre">null=True</span></tt>时存在。</font><font id="24">如果关联的字段不能设置为<tt class="docutils literal"><span class="pre">None</span></tt> (<tt class="docutils literal"><span class="pre">NULL</span></tt>)，则这个对象在添加到另一个关联之前不能移除关联。</font><font id="25">在上面的例子中，从<tt class="docutils literal"><span class="pre">b.entry_set()</span></tt>移除<tt class="docutils literal"><span class="pre">e</span></tt>等价于让<tt class="docutils literal"><span class="pre">e.blog</span> <span class="pre">=</span> <span class="pre">None</span></tt>，由于<tt class="docutils literal"><span class="pre">blog</span></tt>的<a class="reference internal" href="fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>没有设置<tt class="docutils literal"><span class="pre">null=True</span></tt>，这个操作是无效的。</font></p>
+<p><font id="26">对于<a class="reference internal" href="fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>对象，该方法接受一个<tt class="docutils literal"><span class="pre">bulk</span></tt>参数来控制它如果执行操作。</font><font id="27">如果为<tt class="docutils literal"><span class="pre">True</span></tt>（默认值），<tt class="docutils literal"><span class="pre">QuerySet.update()</span></tt>会被使用。</font><font id="28">而如果<tt class="docutils literal"><span class="pre">bulk=False</span></tt>，会在每个单独的模型实例上调用<tt class="docutils literal"><span class="pre">save()</span></tt>方法。</font><font id="29">这会触发<a class="reference internal" href="../signals.html#django.db.models.signals.pre_save" title="django.db.models.signals.pre_save"><tt class="xref py py-data docutils literal"><span class="pre">pre_save</span></tt></a>和<a class="reference internal" href="../signals.html#django.db.models.signals.post_save" title="django.db.models.signals.post_save"><tt class="xref py py-data docutils literal"><span class="pre">post_save</span></tt></a>，它们会消耗一定的性能。
+</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.fields.related.RelatedManager.clear">
+<tt class="descname">clear</tt>()<a class="headerlink" href="relations.html#django.db.models.fields.related.RelatedManager.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="30">从关联对象集中移除一切对象。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Blog</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">entry_set</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="31">注意这样不会删除对象 —— 只会删除他们之间的关联。</font></p>
+<p><font id="32">就像&nbsp;<tt class="docutils literal"><span class="pre">remove()</span></tt> 方法一样，<tt class="docutils literal"><span class="pre">clear()</span></tt>只能在&nbsp;<tt class="docutils literal"><span class="pre">null=True</span></tt>的<a class="reference internal" href="fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>上被调用，也可以接受<tt class="docutils literal"><span class="pre">bulk</span></tt>关键词参数。</font></p>
+</dd></dl>
+<div class="admonition note">
+<p class="first admonition-title"><font id="33">注意</font></p>
+<p><font id="34">注意对于所有类型的关联字段，<tt class="docutils literal"><span class="pre">add()</span></tt>、<tt class="docutils literal"><span class="pre">create()</span></tt>、<tt class="docutils literal"><span class="pre">remove()</span></tt>和<tt class="docutils literal"><span class="pre">clear()</span></tt>都会马上更新数据库。</font><font id="35">换句话说，在关联的任何一端，都不需要再调用<tt class="docutils literal"><span class="pre">save()</span></tt>方法。</font></p>
+<p class="last"><font id="36">同样，如果你再多对多关系中使用了<a class="reference internal" href="../../topics/db/models.html#intermediary-manytomany"><em>中间模型</em></a>，一些关联管理的方法会被禁用。</font></p>
+</div>
+</dd></dl>
+<div class="section" id="s-direct-assignment">
+<span id="s-id1"></span><span id="direct-assignment"></span><span id="id1"></span><h2><font id="44">直接赋值</font><a class="headerlink" href="relations.html#direct-assignment" title="Permalink to this headline">¶</a></h2>
+<p><font id="37">通过赋值一个新的可迭代的对象，关联对象集可以被整体替换掉。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">new_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">,</span> <span class="n">obj3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span><span class="o">.</span><span class="n">related_set</span> <span class="o">=</span> <span class="n">new_list</span>
+</pre></div>
+</div>
+<p><font id="38">如果外键关系满足<tt class="docutils literal"><span class="pre">null=True</span></tt>，关联管理器会在添加<tt class="docutils literal"><span class="pre">new_list</span></tt>中的内容之前，首先调用<tt class="docutils literal"><span class="pre">clear()</span></tt>方法来解除关联集中一切已存在对象的关联。</font><font id="39">否则，&nbsp;<tt class="docutils literal"><span class="pre">new_list</span></tt>中的对象会在已存在的关联的基础上被添加。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="45">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="relations.html#"><font id="51">关联对象参考</font></a><ul>
+<li><a class="reference internal" href="relations.html#direct-assignment"><font id="52">直接赋值</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="46">浏览</font></h3>
+<ul>
+<li><font id="53">上一页：<a href="meta.html">模型 <tt class="docutils literal"><span class="pre">_meta</span></tt> API</a></font></li>
+<li><font id="54">下一页：<a href="class.html">模型类参考</a></font></li>
+</ul>
+<h3><font id="47">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="55">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="56">API 参考</font></a>
+<ul><li><a href="index.html"><font id="57">模型</font></a>
+<ul><li><font id="58">关联对象参考</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="48">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/models/relations.txt" rel="nofollow"><font id="59">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="49">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="40"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="50">最后更新：</font></h3>
+<p class="topless"><font id="41">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="meta.html" title='Model &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;_meta&lt;/span&gt;&lt;/tt&gt; API'>previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="class.html" title="Model class reference">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/models/relations';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

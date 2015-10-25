@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>报告错误 — Django 1.8.2.dev20150513143415 documentation</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="http://python.usyiyi.cn/django/howto/index.html" rel="up" title="“How-to” guides"/>
+<link href="initial-data.html" rel="next" title="Providing initial data for models"/>
+<link href="http://python.usyiyi.cn/django/howto/upgrade-version.html" rel="prev" title="Upgrading Django to a newer version"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="68">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="http://python.usyiyi.cn/django/howto/upgrade-version.html" title="Upgrading Django to a newer version">previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="initial-data.html" title="Providing initial data for models">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="howto-error-reporting">
+<div class="section" id="s-error-reporting">
+<span id="error-reporting"></span><h1><font id="69">错误报告</font><a class="headerlink" href="error-reporting.html#error-reporting" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">当你运行一个公开站点时，你应该始终关闭<a class="reference internal" href="../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a> 设置。</font><font id="2">这会使你的服务器运行得更快，也会防止恶意用户看到由错误页面展示的一些应用细节。</font></p>
+<p><font id="3">但是，运行在&nbsp;<a class="reference internal" href="../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a>为<tt class="docutils literal"><span class="pre">False</span></tt>的情况下，你不会看到你的站点所生成的错误 -- 每个人都只能看到公开的错误页面。</font><font id="4">你需要跟踪部署的站点上的错误，所以可以配置Django来生成带有错误细节的报告。</font></p>
+<div class="section" id="s-email-reports">
+<span id="email-reports"></span><h2><font id="70">报告邮件</font><a class="headerlink" href="error-reporting.html#email-reports" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-server-errors">
+<span id="server-errors"></span><h3><font id="72">服务器错误</font><a class="headerlink" href="error-reporting.html#server-errors" title="Permalink to this headline">¶</a></h3>
+<p><font id="5"><a class="reference internal" href="../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a> 为 <tt class="docutils literal"><span class="pre">False</span></tt>的时候，无论什么时候代码产生了未处理的异常，并且出现了服务器内部错误（HTTP状态码 500），Django 都会给<a class="reference internal" href="../ref/settings.html#std:setting-ADMINS"><tt class="xref std std-setting docutils literal"><span class="pre">ADMINS</span></tt></a>设置中的用户发送邮件。 </font><font id="6">这会向管理员提供任何错误的及时通知。</font><font id="7">&nbsp;<a class="reference internal" href="../ref/settings.html#std:setting-ADMINS"><tt class="xref std std-setting docutils literal"><span class="pre">ADMINS</span></tt></a>会得到一份错误的描述，完整的Python&nbsp;traceback，以及HTTP请求和导致错误的详细信息。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="8">注意</font></p>
+<p class="last"><font id="9">为了发送邮件，DJango需要一些设置来告诉它如何连接到邮件服务器。</font><font id="10">最起码，你需要指定 <a class="reference internal" href="../ref/settings.html#std:setting-EMAIL_HOST"><tt class="xref std std-setting docutils literal"><span class="pre">EMAIL_HOST</span></tt></a> ，可能需要 <a class="reference internal" href="../ref/settings.html#std:setting-EMAIL_HOST_USER"><tt class="xref std std-setting docutils literal"><span class="pre">EMAIL_HOST_USER</span></tt></a> 和<a class="reference internal" href="../ref/settings.html#std:setting-EMAIL_HOST_PASSWORD"><tt class="xref std std-setting docutils literal"><span class="pre">EMAIL_HOST_PASSWORD</span></tt></a>，尽管所需的其他设置可能也依赖于你的邮件服务器的配置。</font><font id="11">邮件相关设置的完整列表请见 <a class="reference internal" href="../ref/settings.html"><em>Django设置文档</em></a>。</font></p>
+</div>
+<p><font id="12">Django通常从<a class="reference external" href="mailto:root%40localhost">root<span>@</span>localhost</a>发送邮件。</font><font id="13">但是一些邮件提供商会拒收所有来自这个地址的邮件。</font><font id="14">修改<a class="reference internal" href="../ref/settings.html#std:setting-SERVER_EMAIL"><tt class="xref std std-setting docutils literal"><span class="pre">SERVER_EMAIL</span></tt></a>设置可以使用不同的发信人地址。</font></p>
+<p><font id="15">将收信人的邮箱地址放入<a class="reference internal" href="../ref/settings.html#std:setting-ADMINS"><tt class="xref std std-setting docutils literal"><span class="pre">ADMINS</span></tt></a>设置中来激活这一行为。</font></p>
+<div class="admonition seealso">
+<p class="first admonition-title"><font id="16">另见</font></p>
+<p class="last"><font id="17">服务器错误邮件使用日志框架来发送，所以你可以通过&nbsp;<a class="reference internal" href="../topics/logging.html"><em>自定义你的日志配置</em></a>自定义这一行为。</font></p>
+</div>
+</div>
+<div class="section" id="s-errors">
+<span id="errors"></span><h3><font id="73">404错误</font><a class="headerlink" href="error-reporting.html#errors" title="Permalink to this headline">¶</a></h3>
+<p><font id="18">也可以配置Django来发送关于死链的邮件（404"找不到页面"错误）。</font><font id="19">Django在以下情况发送404错误的邮件：</font></p>
+<ul class="simple">
+<li><font id="82"><a class="reference internal" href="../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a>为 <tt class="docutils literal"><span class="pre">False</span></tt>；</font></li>
+<li><font id="83">你的<a class="reference internal" href="../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a> 设置含有 <a class="reference internal" href="../ref/middleware.html#django.middleware.common.BrokenLinkEmailsMiddleware" title="django.middleware.common.BrokenLinkEmailsMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">django.middleware.common.BrokenLinkEmailsMiddleware</span></tt></a>。</font></li>
+</ul>
+<p><font id="20">如果符合这些条件，无论什么时候你的代码产生404错误，并且请求带有referer， Django 都会给<a class="reference internal" href="../ref/settings.html#std:setting-MANAGERS"><tt class="xref std std-setting docutils literal"><span class="pre">MANAGERS</span></tt></a>中的用户发送邮件。 </font><font id="21">(It doesn’t bother to email for 404s that don’t have a referer – those are usually just people typing in broken URLs or broken Web ‘bots).</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="22">注意</font></p>
+<p class="last"><font id="23"><a class="reference internal" href="../ref/middleware.html#django.middleware.common.BrokenLinkEmailsMiddleware" title="django.middleware.common.BrokenLinkEmailsMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">BrokenLinkEmailsMiddleware</span></tt></a> 必须出现在其它拦截404错误的中间件之前，比如 <a class="reference internal" href="../ref/middleware.html#django.middleware.locale.LocaleMiddleware" title="django.middleware.locale.LocaleMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">LocaleMiddleware</span></tt></a> 或者 <a class="reference internal" href="../ref/contrib/flatpages.html#django.contrib.flatpages.middleware.FlatpageFallbackMiddleware" title="django.contrib.flatpages.middleware.FlatpageFallbackMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">FlatpageFallbackMiddleware</span></tt></a>。</font><font id="24">把它放在你的<a class="reference internal" href="../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>设置的最上面。</font></p>
+</div>
+<p><font id="25">你可以通过调整<a class="reference internal" href="../ref/settings.html#std:setting-IGNORABLE_404_URLS"><tt class="xref std std-setting docutils literal"><span class="pre">IGNORABLE_404_URLS</span></tt></a>设置，告诉Django停止报告特定的404错误。</font><font id="26">它应该为一个元组，含有编译后的正则表达式对象。</font><font id="27">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">re</span>
+<span class="n">IGNORABLE_404_URLS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r'\.(php|cgi)$'</span><span class="p">),</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r'^/phpmyadmin/'</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="28">在这个例子中，任何以<tt class="docutils literal"><span class="pre">.php</span></tt> 或者<tt class="docutils literal"><span class="pre">.cgi</span></tt>结尾URL的404错误都<em>不会</em>报告。</font><font id="29">任何以<tt class="docutils literal"><span class="pre">/phpmyadmin/</span></tt>开头的URL也不会。</font></p>
+<p><font id="30">下面的例子展示了如何排除一些浏览器或爬虫经常请求的常用URL：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">re</span>
+<span class="n">IGNORABLE_404_URLS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r'^/apple-touch-icon.*\.png$'</span><span class="p">),</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r'^/favicon\.ico$'</span><span class="p">),</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r'^/robots\.txt$'</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="31">（要注意这些是正则表达式，所以需要在句号前面添加反斜线来对它转义。）</font></p>
+<p><font id="32">如果你打算进一步自定义<a class="reference internal" href="../ref/middleware.html#django.middleware.common.BrokenLinkEmailsMiddleware" title="django.middleware.common.BrokenLinkEmailsMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">django.middleware.common.BrokenLinkEmailsMiddleware</span></tt></a> 的行为（比如忽略来自web爬虫的请求），你应该继承它并覆写它的方法。</font></p>
+<div class="admonition seealso">
+<p class="first admonition-title"><font id="33">另见</font></p>
+<p class="last"><font id="34">404错误使用日志框架来记录。</font><font id="35">通常，日志记录会被忽略，但是你可以通过编写合适的处理器和<a class="reference internal" href="../topics/logging.html"><em>配置日志</em></a>，将它们用于错误报告。</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-filtering-error-reports">
+<span id="s-id1"></span><span id="filtering-error-reports"></span><span id="id1"></span><h2><font id="71">过滤错误报告</font><a class="headerlink" href="error-reporting.html#filtering-error-reports" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-filtering-sensitive-information">
+<span id="filtering-sensitive-information"></span><h3><font id="74">过滤敏感的信息</font><a class="headerlink" href="error-reporting.html#filtering-sensitive-information" title="Permalink to this headline">¶</a></h3>
+<p><font id="36">错误报告对错误的调试及其有用，所以对于这些错误，通常它会尽可能多的记录下相关信息。</font><font id="37">例如，通常DJango会为产生的异常记录<a class="reference external" href="http://en.wikipedia.org/wiki/Stack_trace">完整的traceback</a>，<a class="reference external" href="http://en.wikipedia.org/wiki/Stack_frame">traceback 帧</a>的每个局部变量，以及<a class="reference internal" href="../ref/request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a>的<a class="reference internal" href="../ref/request-response.html#httprequest-attributes"><em>属性</em></a>。</font></p>
+<p><font id="38">然而，有时特定的消息类型十分敏感，并不适合跟踪消息，比如用户的密码或者信用卡卡号。</font><font id="39">所以Django提供一套函数装饰器，来帮助你控制需要在生产环境（也就是<a class="reference internal" href="../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a>为 <tt class="docutils literal"><span class="pre">False</span></tt>的情况）中的错误报告中过滤的消息：<a class="reference internal" href="error-reporting.html#django.views.decorators.debug.sensitive_variables" title="django.views.decorators.debug.sensitive_variables"><tt class="xref py py-func docutils literal"><span class="pre">sensitive_variables()</span></tt></a>和<a class="reference internal" href="error-reporting.html#django.views.decorators.debug.sensitive_post_parameters" title="django.views.decorators.debug.sensitive_post_parameters"><tt class="xref py py-func docutils literal"><span class="pre">sensitive_post_parameters()</span></tt></a>。</font></p>
+<dl class="function">
+<dt id="django.views.decorators.debug.sensitive_variables">
+<tt class="descname">sensitive_variables</tt>(<em>*variables</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/decorators/debug.html#sensitive_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="error-reporting.html#django.views.decorators.debug.sensitive_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="40">如果你的代码中一个函数（视图或者常规的回调）使用可能含有敏感信息的局部变量，你可能需要使用<tt class="docutils literal"><span class="pre">sensitive_variables</span></tt> 装饰器，来阻止错误报告包含这些变量的值。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.decorators.debug</span> <span class="kn">import</span> <span class="n">sensitive_variables</span>
+
+<span class="nd">@sensitive_variables</span><span class="p">(</span><span class="s">'user'</span><span class="p">,</span> <span class="s">'pw'</span><span class="p">,</span> <span class="s">'cc'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">process_info</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="n">pw</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">pass_word</span>
+    <span class="n">cc</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">credit_card_number</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="41">在上面的例子中，<tt class="docutils literal"><span class="pre">user</span></tt>, <tt class="docutils literal"><span class="pre">pw</span></tt> 和<tt class="docutils literal"><span class="pre">cc</span></tt> 变量的值会在错误报告中隐藏并且使用星号(<cite>**********</cite>) 来代替，虽然<tt class="docutils literal"><span class="pre">name</span></tt> 变量的值会公开。</font></p>
+<p><font id="42">要想有顺序地在错误报告中隐藏一个函数的所有局部变量，不要向<tt class="docutils literal"><span class="pre">sensitive_variables</span></tt> 装饰器提供任何参数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@sensitive_variables</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">my_function</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition-when-using-multiple-decorators admonition">
+<p class="first admonition-title"><font id="43">使用多个装饰器的时候</font></p>
+<p><font id="44">如果你想要隐藏的变量也是一个函数的参数（例如，下面例子中的<tt class="docutils literal"><span class="pre">user</span></tt>），并且被装饰的函数有多个装饰器，你需要确保将<tt class="docutils literal"><span class="pre">@sensitive_variables</span></tt> 放在装饰器链的顶端。</font><font id="45">这种方法也会隐藏函数参数，尽管它通过其它装饰器传递：</font></p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="nd">@sensitive_variables</span><span class="p">(</span><span class="s">'user'</span><span class="p">,</span> <span class="s">'pw'</span><span class="p">,</span> <span class="s">'cc'</span><span class="p">)</span>
+<span class="nd">@some_decorator</span>
+<span class="nd">@another_decorator</span>
+<span class="k">def</span> <span class="nf">process_info</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+<dl class="function">
+<dt id="django.views.decorators.debug.sensitive_post_parameters">
+<tt class="descname">sensitive_post_parameters</tt>(<em>*parameters</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/decorators/debug.html#sensitive_post_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="error-reporting.html#django.views.decorators.debug.sensitive_post_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="46">如果你的代码中一个视图接收到了可能带有敏感信息的，带有<a class="reference internal" href="../ref/request-response.html#django.http.HttpRequest.POST" title="django.http.HttpRequest.POST"><tt class="xref py py-attr docutils literal"><span class="pre">POST</span> <span class="pre">参数</span></tt></a>的<a class="reference internal" href="../ref/request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a>对象，你可能需要使用<tt class="docutils literal"><span class="pre">sensitive_post_parameters</span></tt>&nbsp; 装饰器，来阻止错误报告包含这些参数的值。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.decorators.debug</span> <span class="kn">import</span> <span class="n">sensitive_post_parameters</span>
+
+<span class="nd">@sensitive_post_parameters</span><span class="p">(</span><span class="s">'pass_word'</span><span class="p">,</span> <span class="s">'credit_card_number'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">record_user_profile</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">UserProfile</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                       <span class="n">password</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">'pass_word'</span><span class="p">],</span>
+                       <span class="n">credit_card</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">'credit_card_number'</span><span class="p">],</span>
+                       <span class="n">name</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">'name'</span><span class="p">])</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="47">在上面的例子中，<tt class="docutils literal"><span class="pre">pass_word</span></tt> 和 <tt class="docutils literal"><span class="pre">credit_card_number</span></tt> POST参数的值会在错误报告中隐藏并且使用星号(<cite>**********</cite>) 来代替，虽然<tt class="docutils literal"><span class="pre">name</span></tt>变量的值会公开。</font></p>
+<p><font id="48">要想有顺序地在错误报告中隐藏一个请求的所有POST 参数，不要向<tt class="docutils literal"><span class="pre">sensitive_post_parameters</span></tt>&nbsp; 装饰器提供任何参数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@sensitive_post_parameters</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="49">所有POST参数按顺序被过滤出特定<a class="reference internal" href="../topics/auth/default.html#module-django.contrib.auth.views" title="django.contrib.auth.views"><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.auth.views</span></tt></a> 视图的错误报告（<tt class="docutils literal"><span class="pre">login</span></tt>, <tt class="docutils literal"><span class="pre">password_reset_confirm</span></tt>, <tt class="docutils literal"><span class="pre">password_change</span></tt>, <tt class="docutils literal"><span class="pre">add_view</span></tt> 和<tt class="docutils literal"><span class="pre">auth</span></tt>中的<tt class="docutils literal"><span class="pre">user_change_password</span></tt>），来防止像是用户密码这样的敏感信息的泄露。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-custom-error-reports">
+<span id="s-id2"></span><span id="custom-error-reports"></span><span id="id2"></span><h3><font id="75">自定义错误报告</font><a class="headerlink" href="error-reporting.html#custom-error-reports" title="Permalink to this headline">¶</a></h3>
+<p><font id="50">所有<a class="reference internal" href="error-reporting.html#django.views.decorators.debug.sensitive_variables" title="django.views.decorators.debug.sensitive_variables"><tt class="xref py py-func docutils literal"><span class="pre">sensitive_variables()</span></tt></a>&nbsp; 和 <a class="reference internal" href="error-reporting.html#django.views.decorators.debug.sensitive_post_parameters" title="django.views.decorators.debug.sensitive_post_parameters"><tt class="xref py py-func docutils literal"><span class="pre">sensitive_post_parameters()</span></tt></a>分别用敏感变量的名字向被装饰的函数添加注解，以及用POST敏感参数的名字向<tt class="docutils literal"><span class="pre">HttpRequest</span></tt>对象添加注解，以便在错误产生时可以随后过滤掉报告中的敏感信息。</font><font id="51">Django的默认错误包告过滤器<a class="reference internal" href="error-reporting.html#django.views.debug.SafeExceptionReporterFilter" title="django.views.debug.SafeExceptionReporterFilter"><tt class="xref py py-class docutils literal"><span class="pre">django.views.debug.SafeExceptionReporterFilter</span></tt></a>会完成实际的过滤操作。
+</font><font id="52">产生错误报告的时候，这个过滤器使用装饰器的注解来将相应的值替换为星号&nbsp;(<cite>**********</cite>) 。</font><font id="53">如果你希望为你的整个站点覆写或自定义这一默认的属性，你需要定义你自己的过滤器类，并且通过<a class="reference internal" href="../ref/settings.html#std:setting-DEFAULT_EXCEPTION_REPORTER_FILTER"><tt class="xref std std-setting docutils literal"><span class="pre">DEFAULT_EXCEPTION_REPORTER_FILTER</span></tt></a> 设置来让Django使用它。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DEFAULT_EXCEPTION_REPORTER_FILTER</span> <span class="o">=</span> <span class="s">'path.to.your.CustomExceptionReporterFilter'</span>
+</pre></div>
+</div>
+<p><font id="54">你也可能会以更精细的方式来控制在提供的视图中使用哪种过滤器，通过设置&nbsp;<tt class="docutils literal"><span class="pre">HttpRequest</span></tt>的<tt class="docutils literal"><span class="pre">exception_reporter_filter</span></tt>属性。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">exception_reporter_filter</span> <span class="o">=</span> <span class="n">CustomExceptionReporterFilter</span><span class="p">()</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="55">你的自定义过滤器类需要继承自&nbsp;<a class="reference internal" href="error-reporting.html#django.views.debug.SafeExceptionReporterFilter" title="django.views.debug.SafeExceptionReporterFilter"><tt class="xref py py-class docutils literal"><span class="pre">django.views.debug.SafeExceptionReporterFilter</span></tt></a>，并且可能需要覆写以下方法：</font></p>
+<dl class="class">
+<dt id="django.views.debug.SafeExceptionReporterFilter">
+<em class="property">class </em><tt class="descname">SafeExceptionReporterFilter</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/debug.html#SafeExceptionReporterFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="error-reporting.html#django.views.debug.SafeExceptionReporterFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="method">
+<dt id="django.views.debug.SafeExceptionReporterFilter.is_active">
+<tt class="descclassname">SafeExceptionReporterFilter.</tt><tt class="descname">is_active</tt>(<em>request</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/debug.html#SafeExceptionReporterFilter.is_active"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="error-reporting.html#django.views.debug.SafeExceptionReporterFilter.is_active" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="56">如果其它方法中操作的过滤器已激活，返回<tt class="docutils literal"><span class="pre">True</span></tt>。</font><font id="57">如果 <a class="reference internal" href="../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a>为<tt class="docutils literal"><span class="pre">False</span></tt>，通常过滤器是激活的。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.views.debug.SafeExceptionReporterFilter.get_request_repr">
+<tt class="descclassname">SafeExceptionReporterFilter.</tt><tt class="descname">get_request_repr</tt>(<em>request</em>)<a class="headerlink" href="error-reporting.html#django.views.debug.SafeExceptionReporterFilter.get_request_repr" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="58">Returns the representation string of the request object, that is, the value that would be returned by <tt class="docutils literal"><span class="pre">repr(request)</span></tt>, except it uses the filtered dictionary of POST parameters as determined by <a class="reference internal" href="error-reporting.html#django.views.debug.SafeExceptionReporterFilter.get_post_parameters" title="django.views.debug.SafeExceptionReporterFilter.get_post_parameters"><tt class="xref py py-meth docutils literal"><span class="pre">SafeExceptionReporterFilter.get_post_parameters()</span></tt></a>.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.views.debug.SafeExceptionReporterFilter.get_post_parameters">
+<tt class="descclassname">SafeExceptionReporterFilter.</tt><tt class="descname">get_post_parameters</tt>(<em>request</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/debug.html#SafeExceptionReporterFilter.get_post_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="error-reporting.html#django.views.debug.SafeExceptionReporterFilter.get_post_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="59">返回过滤后的POST参数字典。</font><font id="60">通常它会把敏感参数的值以星号&nbsp;(<cite>**********</cite>)替换。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.views.debug.SafeExceptionReporterFilter.get_traceback_frame_variables">
+<tt class="descclassname">SafeExceptionReporterFilter.</tt><tt class="descname">get_traceback_frame_variables</tt>(<em>request</em>, <em>tb_frame</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/debug.html#SafeExceptionReporterFilter.get_traceback_frame_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="error-reporting.html#django.views.debug.SafeExceptionReporterFilter.get_traceback_frame_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="61">返回过滤后的，所提供traceback帧的局部变量的字典。</font><font id="62">通常它会把敏感变量的值以星号&nbsp;(<cite>**********</cite>)替换。</font></p>
+</dd></dl>
+<div class="admonition seealso">
+<p class="first admonition-title"><font id="63">另见</font></p>
+<p class="last"><font id="64">你也可以通过编写自定义的<a class="reference internal" href="../topics/http/middleware.html#exception-middleware"><em>exception middleware</em></a>来建立自定义的错误报告。</font><font id="65">如果你编写了自定义的错误处理器，模拟Django内建的错误处理器，只在<a class="reference internal" href="../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a> 为 <tt class="docutils literal"><span class="pre">False</span></tt>时报告或记录错误是个好主意。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="76">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="error-reporting.html#"><font id="84">Error reporting</font></a><ul>
+<li><a class="reference internal" href="error-reporting.html#email-reports"><font id="85">Email reports</font></a><ul>
+<li><a class="reference internal" href="error-reporting.html#server-errors"><font id="86">Server errors</font></a></li>
+<li><a class="reference internal" href="error-reporting.html#errors"><font id="87">404 errors</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="error-reporting.html#filtering-error-reports"><font id="88">Filtering error reports</font></a><ul>
+<li><a class="reference internal" href="error-reporting.html#filtering-sensitive-information"><font id="89">Filtering sensitive information</font></a></li>
+<li><a class="reference internal" href="error-reporting.html#custom-error-reports"><font id="90">Custom error reports</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="77">Browse</font></h3>
+<ul>
+<li><font id="91">Prev: <a href="http://python.usyiyi.cn/django/howto/upgrade-version.html">Upgrading Django to a newer version</a></font></li>
+<li><font id="92">Next: <a href="initial-data.html">Providing initial data for models</a></font></li>
+</ul>
+<h3><font id="78">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="93">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="http://python.usyiyi.cn/django/howto/index.html">“How-to” guides</a>
+<ul><li><font id="94">Error reporting</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="79">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/howto/error-reporting.txt" rel="nofollow"><font id="95">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="80">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="66"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="81">Last update:</font></h3>
+<p class="topless"><font id="67">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="http://python.usyiyi.cn/django/howto/upgrade-version.html" title="Upgrading Django to a newer version">previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="initial-data.html" title="Providing initial data for models">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/howto/error-reporting';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

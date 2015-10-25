@@ -1,0 +1,489 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Admin actions — Django 1.8.2 中文文档</title>
+<link href="../../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="The Django admin site"/>
+<link href="admindocs.html" rel="next" title="The Django admin documentation generator"/>
+<link href="index.html" rel="prev" title="The Django admin site"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/contrib/admin/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/contrib/admin/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="85">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../../index.html" title="Home page">Home</a>  |
+        <a href="../../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="index.html" title="The Django admin site">previous</a>
+     |
+    <a accesskey="U" href="../../index.html" title="API Reference">up</a>
+   |
+    <a href="admindocs.html" title="The Django admin documentation generator">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-contrib-admin-actions">
+<div class="section" id="s-admin-actions">
+<span id="admin-actions"></span><h1><font id="86">管理操作</font><a class="headerlink" href="actions.html#admin-actions" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">简而言之，Django管理后台的基本流程是，“选择一个对象并改变它”。</font><font id="2">在大多数情况下，这是非常适合的。</font><font id="3">然而当你一次性要对多个对象做相同的改变，这个流程是非常的单调乏味的。</font></p>
+<p><font id="4">在这些例子中，Django管理后台可以让你实现和注册“操作” —— 仅仅只是一个以已选中对象集合为参数的回调函数。</font></p>
+<p><font id="5">在Django自带的管理页面中都能看到这样的例子。</font><font id="6">Django在所有的模型中自带了一个“删除所选对象”操作。</font><font id="7">例如，下面是 <a class="reference internal" href="../../../topics/auth/index.html#module-django.contrib.auth" title="django.contrib.auth: Django's authentication framework."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.auth</span></tt></a> app 在Django's创建的用户模型:</font></p>
+<img alt="../../../_images/user_actions.png" src="../../../_images/user_actions.png"/>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="8">警告</font></p>
+<p><font id="9">“删除所选对象”的操作由于性能因素使用了<a class="reference internal" href="../../models/querysets.html#django.db.models.query.QuerySet.delete" title="django.db.models.query.QuerySet.delete"><tt class="xref py py-meth docutils literal"><span class="pre">QuerySet.delete()</span></tt></a>，这里有个附加说明：它不会调用你模型的<tt class="docutils literal"><span class="pre">delete()</span></tt>方法。</font></p>
+<p><font id="10">如果你想覆写这一行为，编写自定义操作，以你的方式实现删除就可以了 -- 例如，对每个已选择的元素调用<tt class="docutils literal"><span class="pre">Model.delete()</span></tt>。</font></p>
+<p class="last"><font id="11">关于整体删除的更多信息，参见<a class="reference internal" href="../../../topics/db/queries.html#topics-db-queries-delete"><em>对象删除</em></a>的文档。
+</font></p>
+</div>
+<p><font id="12">继续阅读，来弄清楚如何向列表添加你自己的操作。</font></p>
+<div class="section" id="s-writing-actions">
+<span id="writing-actions"></span><h2><font id="87">编写操作</font><a class="headerlink" href="actions.html#writing-actions" title="Permalink to this headline">¶</a></h2>
+<p><font id="13">通过示例来解释操作最为简单，让我们开始吧。</font></p>
+<p><font id="14">操作的一个最为普遍的用例是模型的整体更新。</font><font id="15">考虑带有<tt class="docutils literal"><span class="pre">Article</span></tt>模型的简单新闻应用：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="n">STATUS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s">'d'</span><span class="p">,</span> <span class="s">'Draft'</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">'p'</span><span class="p">,</span> <span class="s">'Published'</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">'w'</span><span class="p">,</span> <span class="s">'Withdrawn'</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Article</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">STATUS_CHOICES</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c"># __unicode__ on Python 2</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+</pre></div>
+</div>
+<p><font id="16">我们可能在模型上执行的一个普遍任务是，将文章状态从“草稿”更新为“已发布”。</font><font id="17">我们在后台一次处理一篇文章非常轻松，但是如果我们想要批量发布一些文章，会非常麻烦。</font><font id="18">所以让我们编写一个操作，可以让我们将一篇文章的状态修改为“已发布”。</font></p>
+<div class="section" id="s-writing-action-functions">
+<span id="writing-action-functions"></span><h3><font id="89">编写操作 函数</font><a class="headerlink" href="actions.html#writing-action-functions" title="Permalink to this headline">¶</a></h3>
+<p><font id="19">首先，我们需要定义一个函数，当后台操作被点击触发的时候调用。</font><font id="20">操作函数，跟普通的函数一样，需要接收三个参数：</font></p>
+<ul class="simple">
+<li><font id="105">当前的 <a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a></font></li>
+<li><font id="106">表示当前请求的<a class="reference internal" href="../../request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a></font></li>
+<li><font id="107">含有用户所选的对象集合的<a class="reference internal" href="../../models/querysets.html#django.db.models.query.QuerySet" title="django.db.models.query.QuerySet"><tt class="xref py py-class docutils literal"><span class="pre">QuerySet</span></tt></a></font></li>
+</ul>
+<p><font id="21">我们用于发布这些文章的函数并不需要<a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a>或者请求对象，但是我们会用到查询集：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">make_published</span><span class="p">(</span><span class="n">modeladmin</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+    <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s">'p'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="22">注意</font></p>
+<p><font id="23">为了性能最优，我们使用查询集的<a class="reference internal" href="../../../topics/db/queries.html#topics-db-queries-update"><em>update 方法</em></a>。</font><font id="24">其它类型的操作可能需要分别处理每个对象；</font><font id="25">这种情况下我们需要对查询集进行遍历：</font></p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">queryset</span><span class="p">:</span>
+    <span class="n">do_something_with</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><font id="26">编写操作的全部内容实际上就这么多了。</font><font id="27">但是，我们要进行一个可选但是有用的步骤，在后台给操作起一个“非常棒”的标题。</font><font id="28">通常，操作以“Make published”的方式出现在操作列表中 -- 所有空格被下划线替换后的函数名称。</font><font id="29">这样就很好了，但是我们可以提供一个更好、更人性化的名称，通过向<tt class="docutils literal"><span class="pre">make_published</span></tt>函数添加<tt class="docutils literal"><span class="pre">short_description</span></tt> 属性：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">make_published</span><span class="p">(</span><span class="n">modeladmin</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+    <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s">'p'</span><span class="p">)</span>
+<span class="n">make_published</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s">"Mark selected stories as published"</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="30">注意</font></p>
+<p class="last"><font id="31">这看起来可能会有点熟悉；</font><font id="32">admin的<tt class="docutils literal"><span class="pre">list_display</span></tt>选项使用同样的技巧，为这里注册的回掉函数来提供人类可读的描述。</font></p>
+</div>
+</div>
+<div class="section" id="s-adding-actions-to-the-modeladmin">
+<span id="adding-actions-to-the-modeladmin"></span><h3><font id="90">添加操作到 </font><a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a></h3>
+<p><font id="33">接下来，我们需要把操作告诉<a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a>。</font><font id="34">它和其他配置项的工作方式相同。</font><font id="35">所以，带有操作及其注册的完整的<tt class="docutils literal"><span class="pre">admin.py</span></tt>看起来像这样：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">Article</span>
+
+<span class="k">def</span> <span class="nf">make_published</span><span class="p">(</span><span class="n">modeladmin</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+    <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s">'p'</span><span class="p">)</span>
+<span class="n">make_published</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s">"Mark selected stories as published"</span>
+
+<span class="k">class</span> <span class="nc">ArticleAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="s">'title'</span><span class="p">,</span> <span class="s">'status'</span><span class="p">]</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s">'title'</span><span class="p">]</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="n">make_published</span><span class="p">]</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Article</span><span class="p">,</span> <span class="n">ArticleAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="36">这段代码会向我们提供admin的更改列表，看起来像这样：</font></p>
+<img alt="../../../_images/article_actions.png" src="../../../_images/article_actions.png"/>
+<p><font id="37">这就是全部内容了。</font><font id="38">如果你想编写自己的操作，你现在应该知道怎么开始了。</font><font id="39">这篇文档的剩余部分会介绍更多高级技巧。</font></p>
+</div>
+<div class="section" id="s-handling-errors-in-actions">
+<span id="handling-errors-in-actions"></span><h3><font id="91">在操作中处理错误</font><a class="headerlink" href="actions.html#handling-errors-in-actions" title="Permalink to this headline">¶</a></h3>
+<p><font id="40">如果你预见到，运行你的操作时可能出现一些错误，你应该以优雅的方式向用户通知这些错误。</font><font id="41">也就是说，异常处理和使用<a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin.message_user" title="django.contrib.admin.ModelAdmin.message_user"><tt class="xref py py-meth docutils literal"><span class="pre">django.contrib.admin.ModelAdmin.message_user()</span></tt></a>可以在响应中展示用户友好的问题描述。</font></p>
+</div>
+</div>
+<div class="section" id="s-advanced-action-techniques">
+<span id="advanced-action-techniques"></span><h2><font id="88">操作的高级技巧</font><a class="headerlink" href="actions.html#advanced-action-techniques" title="Permalink to this headline">¶</a></h2>
+<p><font id="42">对于进一步的选择，你可以使用一些额外的选项。</font></p>
+<div class="section" id="s-actions-as-modeladmin-methods">
+<span id="actions-as-modeladmin-methods"></span><h3><font id="92">ModelAdmin上的操作&nbsp;</font><a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a></h3>
+<p><font id="43">上面的例子展示了定义为一个简单函数的<tt class="docutils literal"><span class="pre">make_published</span></tt>操作。</font><font id="44">这真是极好的，但是以视图的代码设计角度来看，它并不完美：由于操作与<tt class="docutils literal"><span class="pre">Article</span></tt>紧密耦合，不如将操作直接绑定到<tt class="docutils literal"><span class="pre">ArticleAdmin</span></tt>对象上更有意义。</font></p>
+<p><font id="45">这样做十分简单：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ArticleAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="s">'make_published'</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">make_published</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+        <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s">'p'</span><span class="p">)</span>
+    <span class="n">make_published</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s">"Mark selected stories as published"</span>
+</pre></div>
+</div>
+<p><font id="46">首先注意，我们将<tt class="docutils literal"><span class="pre">make_published</span></tt>放到一个方法中，并重命名&nbsp;<tt class="docutils literal"><span class="pre">modeladmin</span></tt>&nbsp;为<tt class="docutils literal"><span class="pre">self</span></tt>，其次，我们现在将<tt class="docutils literal"><span class="pre">'make_published'</span></tt>字符串放进了<tt class="docutils literal"><span class="pre">actions</span></tt>，而不是一个直接的函数引用。</font><font id="47">这样会让&nbsp;<a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a>将这个操作视为方法。</font></p>
+<p><font id="48">将操作定义为方法，可以使操作以更加直接、符合语言习惯的方式来访问<a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a>，调用任何admin提供的方法。</font></p>
+<p id="custom-admin-action"><font id="49">例如，我们可以使用<tt class="docutils literal"><span class="pre">self</span></tt>来向用户发送消息，告诉她操作成功了：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ArticleAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">make_published</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+        <span class="n">rows_updated</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s">'p'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rows_updated</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">message_bit</span> <span class="o">=</span> <span class="s">"1 story was"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message_bit</span> <span class="o">=</span> <span class="s">"</span><span class="si">%s</span><span class="s"> stories were"</span> <span class="o">%</span> <span class="n">rows_updated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">"</span><span class="si">%s</span><span class="s"> successfully marked as published."</span> <span class="o">%</span> <span class="n">message_bit</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="50">这会使动作与后台在成功执行动作后做的事情相匹配：</font></p>
+<img alt="../../../_images/article_actions_message.png" src="../../../_images/article_actions_message.png"/>
+</div>
+<div class="section" id="s-actions-that-provide-intermediate-pages">
+<span id="actions-that-provide-intermediate-pages"></span><h3><font id="93">提供中间页面的操作</font><a class="headerlink" href="actions.html#actions-that-provide-intermediate-pages" title="Permalink to this headline">¶</a></h3>
+<p><font id="51">通常，在执行操作之后，用户会简单地通过重定向返回到之前的修改列表页面中。</font><font id="52">然而，一些操作，尤其是更加复杂的操作，需要返回一个中间页面。</font><font id="53">例如，内建的删除操作，在删除选中对象之前需要向用户询问来确认。</font></p>
+<p><font id="54">要提供中间页面，只要从你的操作返回<a class="reference internal" href="../../request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>（或其子类）就可以了。</font><font id="55">例如，你可能编写了一个简单的导出函数，它使用了Django的<a class="reference internal" href="../../../topics/serialization.html"><em>序列化函数</em></a>来将一些选中的对象转换为JSON：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">serializers</span>
+
+<span class="k">def</span> <span class="nf">export_as_json</span><span class="p">(</span><span class="n">modeladmin</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s">"application/json"</span><span class="p">)</span>
+    <span class="n">serializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s">"json"</span><span class="p">,</span> <span class="n">queryset</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p><font id="56">通常，上面的代码的实现方式并不是很好。</font><font id="57">大多数情况下，最佳实践是返回&nbsp;<a class="reference internal" href="../../request-response.html#django.http.HttpResponseRedirect" title="django.http.HttpResponseRedirect"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponseRedirect</span></tt></a>，并且使用户重定向到你编写的视图中，向GET查询字符串传递选中对象的列表。</font><font id="58">这需要你在中间界面上提供复杂的交互逻辑。</font><font id="59">例如，如果你打算提供一个更加复杂的导出函数，你会希望让用户选择一种格式，以及可能在导出中包含一个含有字段的列表。</font><font id="60">最佳方式是编写一个小型的操作，简单重定向到你的自定义导出视图中：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+
+<span class="k">def</span> <span class="nf">export_selected_objects</span><span class="p">(</span><span class="n">modeladmin</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+    <span class="n">selected</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ACTION_CHECKBOX_NAME</span><span class="p">)</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">queryset</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s">"/export/?ct=</span><span class="si">%s</span><span class="s">&amp;ids=</span><span class="si">%s</span><span class="s">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">selected</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p><font id="61">就像你看到的那样，这个操作是最简单的部分；</font><font id="62">所有复杂的逻辑都在你的导出视图里面。</font><font id="63">这需要处理任何类型的对象，所以需要处理<tt class="docutils literal"><span class="pre">ContentType</span></tt>。</font></p>
+<p><font id="64">这个视图的编写作为一个练习留给读者。</font></p>
+</div>
+<div class="section" id="s-making-actions-available-site-wide">
+<span id="s-adminsite-actions"></span><span id="making-actions-available-site-wide"></span><span id="adminsite-actions"></span><h3><font id="94">在整个站点应用操作</font><a class="headerlink" href="actions.html#making-actions-available-site-wide" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.contrib.admin.AdminSite.add_action">
+<tt class="descclassname">AdminSite.</tt><tt class="descname">add_action</tt>(<em>action</em><span class="optional">[</span>, <em>name</em><span class="optional">]</span>)<a class="headerlink" href="actions.html#django.contrib.admin.AdminSite.add_action" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="65">如果一些操作对管理站点的<em>任何</em>对象都可用的话，是非常不错的 -- 上面所定义的导出操作是个不错的备选方案。</font><font id="66">你可以使用<a class="reference internal" href="actions.html#django.contrib.admin.AdminSite.add_action" title="django.contrib.admin.AdminSite.add_action"><tt class="xref py py-meth docutils literal"><span class="pre">AdminSite.add_action()</span></tt></a>让一个操作在全局都可以使用。</font><font id="67">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">add_action</span><span class="p">(</span><span class="n">export_selected_objects</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="68">这样，<tt class="docutils literal"><span class="pre">export_selected_objects</span></tt> 操作可以在全局使用，名称为“export_selected_objects”。</font><font id="69">你也可以显式指定操作的名称 – 如果你想以编程的方式<a class="reference internal" href="actions.html#disabling-admin-actions"><em>移除这个操作</em></a> – 通过向<a class="reference internal" href="actions.html#django.contrib.admin.AdminSite.add_action" title="django.contrib.admin.AdminSite.add_action"><tt class="xref py py-meth docutils literal"><span class="pre">AdminSite.add_action()</span></tt></a>传递第二个参数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">add_action</span><span class="p">(</span><span class="n">export_selected_objects</span><span class="p">,</span> <span class="s">'export_selected'</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-disabling-actions">
+<span id="s-disabling-admin-actions"></span><span id="disabling-actions"></span><span id="disabling-admin-actions"></span><h3><font id="95">禁用操作</font><a class="headerlink" href="actions.html#disabling-actions" title="Permalink to this headline">¶</a></h3>
+<p><font id="70">有时你需要禁用特定的操作 -- 尤其是<a class="reference internal" href="actions.html#adminsite-actions"><em>注册的站点级操作</em></a> -- 对于特定的对象。</font><font id="71">你可以使用一些方法来禁用操作：</font></p>
+<div class="section" id="s-disabling-a-site-wide-action">
+<span id="disabling-a-site-wide-action"></span><h4><font id="102">禁用整个站点的操作</font><a class="headerlink" href="actions.html#disabling-a-site-wide-action" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt id="django.contrib.admin.AdminSite.disable_action">
+<tt class="descclassname">AdminSite.</tt><tt class="descname">disable_action</tt>(<em>name</em>)<a class="headerlink" href="actions.html#django.contrib.admin.AdminSite.disable_action" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="72">如果你需要禁用<a class="reference internal" href="actions.html#adminsite-actions"><em>站点级操作</em></a> ，你可以调用 <a class="reference internal" href="actions.html#django.contrib.admin.AdminSite.disable_action" title="django.contrib.admin.AdminSite.disable_action"><tt class="xref py py-meth docutils literal"><span class="pre">AdminSite.disable_action()</span></tt></a>。</font></p>
+<p><font id="73">例如，你可以使用这个方法来移除内建的“删除选中的对象”操作：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">disable_action</span><span class="p">(</span><span class="s">'delete_selected'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="74">一旦你执行了上面的代码，这个操作不再对整个站点中可用。</font></p>
+<p><font id="75">然而，如果你需要为特定的模型重新启动在全局禁用的对象，把它显式放在<tt class="docutils literal"><span class="pre">ModelAdmin.actions</span></tt> 列表中就可以了：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Globally disable delete selected</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">disable_action</span><span class="p">(</span><span class="s">'delete_selected'</span><span class="p">)</span>
+
+<span class="c"># This ModelAdmin will not have delete_selected available</span>
+<span class="k">class</span> <span class="nc">SomeModelAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="s">'some_other_action'</span><span class="p">]</span>
+    <span class="o">...</span>
+
+<span class="c"># This one will</span>
+<span class="k">class</span> <span class="nc">AnotherModelAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="s">'delete_selected'</span><span class="p">,</span> <span class="s">'a_third_action'</span><span class="p">]</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-disabling-all-actions-for-a-particular-modeladmin">
+<span id="disabling-all-actions-for-a-particular-modeladmin"></span><h4><font id="103">为特定的ModelAdmin禁用所有操作&nbsp;</font><a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a></h4>
+<p><font id="76">如果你想批量<em>移除</em>所提供&nbsp;<a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a>上的所有操作，可以把<a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin.actions" title="django.contrib.admin.ModelAdmin.actions"><tt class="xref py py-attr docutils literal"><span class="pre">ModelAdmin.actions</span></tt></a>设置为<tt class="docutils literal"><span class="pre">None</span></tt>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<p><font id="77">这样会告诉<a class="reference internal" href="index.html#django.contrib.admin.ModelAdmin" title="django.contrib.admin.ModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">ModelAdmin</span></tt></a>，不要展示或者允许任何操作，包括<a class="reference internal" href="actions.html#adminsite-actions"><em>站点级操作</em></a>。</font></p>
+</div>
+<div class="section" id="s-conditionally-enabling-or-disabling-actions">
+<span id="conditionally-enabling-or-disabling-actions"></span><h4><font id="104">按需启用或禁用操作</font><a class="headerlink" href="actions.html#conditionally-enabling-or-disabling-actions" title="Permalink to this headline">¶</a></h4>
+<dl class="method">
+<dt id="django.contrib.admin.ModelAdmin.get_actions">
+<tt class="descclassname">ModelAdmin.</tt><tt class="descname">get_actions</tt>(<em>request</em>)<a class="headerlink" href="actions.html#django.contrib.admin.ModelAdmin.get_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="78">最后，你可以通过覆写<a class="reference internal" href="actions.html#django.contrib.admin.ModelAdmin.get_actions" title="django.contrib.admin.ModelAdmin.get_actions"><tt class="xref py py-meth docutils literal"><span class="pre">ModelAdmin.get_actions()</span></tt></a>，对每个请求（每个用户）按需开启或禁用操作。</font></p>
+<p><font id="79">这个函数返回包含允许操作的字典。</font><font id="80">字典的键是操作的名称，值是&nbsp;<tt class="docutils literal"><span class="pre">(function,</span> <span class="pre">name,</span> <span class="pre">short_description)</span></tt>元组。</font></p>
+<p><font id="81">多数情况下，你会按需使用这一方法，来从超类中的列表移除操作。</font><font id="82">例如，如果我只希望名称以'J'开头的用户可以批量删除对象，我可以执行下面的代码：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModelAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MyModelAdmin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_actions</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s">'J'</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">'delete_selected'</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">actions</span><span class="p">[</span><span class="s">'delete_selected'</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">actions</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="96">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="actions.html#"><font id="108">Admin actions</font></a><ul>
+<li><a class="reference internal" href="actions.html#writing-actions"><font id="109">Writing actions</font></a><ul>
+<li><a class="reference internal" href="actions.html#writing-action-functions"><font id="110">Writing action functions</font></a></li>
+<li><a class="reference internal" href="actions.html#adding-actions-to-the-modeladmin"><font id="111">None</font></a></li>
+<li><a class="reference internal" href="actions.html#handling-errors-in-actions"><font id="112">Handling errors in actions</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="actions.html#advanced-action-techniques"><font id="113">Advanced action techniques</font></a><ul>
+<li><a class="reference internal" href="actions.html#actions-as-modeladmin-methods"><font id="114">None</font></a></li>
+<li><a class="reference internal" href="actions.html#actions-that-provide-intermediate-pages"><font id="115">Actions that provide intermediate pages</font></a></li>
+<li><a class="reference internal" href="actions.html#making-actions-available-site-wide"><font id="116">Making actions available site-wide</font></a></li>
+<li><a class="reference internal" href="actions.html#disabling-actions"><font id="117">Disabling actions</font></a><ul>
+<li><a class="reference internal" href="actions.html#disabling-a-site-wide-action"><font id="118">Disabling a site-wide action</font></a></li>
+<li><a class="reference internal" href="actions.html#disabling-all-actions-for-a-particular-modeladmin"><font id="119">None</font></a></li>
+<li><a class="reference internal" href="actions.html#conditionally-enabling-or-disabling-actions"><font id="120">Conditionally enabling or disabling actions</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="97">Browse</font></h3>
+<ul>
+<li><font id="121">Prev: <a href="index.html">The Django admin site</a></font></li>
+<li><font id="122">Next: <a href="admindocs.html">The Django admin documentation generator</a></font></li>
+</ul>
+<h3><font id="98">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../../index.html"><font id="123">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../../index.html"><font id="124">API Reference</font></a>
+<ul><li><a href="../index.html"><font id="125">None</font></a>
+<ul><li><a href="index.html"><font id="126">The Django admin site</font></a>
+<ul><li><font id="127">Admin actions</font></li></ul>
+</li></ul></li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="99">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/contrib/admin/actions.txt" rel="nofollow"><font id="128">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="100">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="83"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="101">Last update:</font></h3>
+<p class="topless"><font id="84">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="index.html" title="The Django admin site">previous</a>
+     |
+    <a accesskey="U" href="../../index.html" title="API Reference">up</a>
+   |
+    <a href="admindocs.html" title="The Django admin documentation generator">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/contrib/admin/actions.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

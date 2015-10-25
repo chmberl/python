@@ -1,0 +1,457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>原始SQL查询 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Models and databases"/>
+<link href="transactions.html" rel="next" title="Database transactions"/>
+<link href="managers.html" rel="prev" title="Managers"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/db/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/db/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="94">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="managers.html" title="Managers">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="transactions.html" title="Database transactions">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-db-sql">
+<div class="section" id="s-performing-raw-sql-queries">
+<span id="performing-raw-sql-queries"></span><h1><font id="95">进行原始的SQL查询</font><a class="headerlink" href="sql.html#performing-raw-sql-queries" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">在<a class="reference internal" href="queries.html"><em>模型查询API</em></a>不够用的情况下，你可以使用原始的SQL语句。</font><font id="2">Django 提供两种方法使用原始SQL进行查询：一种是使用<a class="reference internal" href="sql.html#django.db.models.Manager.raw" title="django.db.models.Manager.raw"><tt class="xref py py-meth docutils literal"><span class="pre">Manager.raw()</span></tt></a>方法，并<a class="reference internal" href="sql.html#performing-raw-queries">进行原始查询并返回模型实例</a>；另一种是完全避开模型层，<a class="reference internal" href="sql.html#executing-custom-sql-directly">直接执行自定义的SQL语句</a>。</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="3">警告</font></p>
+<p class="last"><font id="4">编写原始的SQL语句时，应该格外小心。 </font><font id="5">每次使用的时候，都要确保转义了<tt class="docutils literal"><span class="pre">参数</span></tt>中任何用户可以控制的字符，以防受到SQL注入攻击。</font><font id="6">更多信息请参阅<a class="reference internal" href="../security.html#sql-injection-protection"><em>防止SQL注入</em></a>。</font></p>
+</div>
+<div class="section" id="s-performing-raw-queries">
+<span id="s-executing-raw-queries"></span><span id="performing-raw-queries"></span><span id="executing-raw-queries"></span><h2><font id="96">进行原始查询</font><a class="headerlink" href="sql.html#performing-raw-queries" title="Permalink to this headline">¶</a></h2>
+<p><font id="7"><tt class="docutils literal"><span class="pre">raw()</span></tt> 管理器方法用于原始的SQL查询，并返回模型的实例：</font></p>
+<dl class="method">
+<dt id="django.db.models.Manager.raw">
+<tt class="descclassname">Manager.</tt><tt class="descname">raw</tt>(<em>raw_query</em>, <em>params=None</em>, <em>translations=None</em>)<a class="headerlink" href="sql.html#django.db.models.Manager.raw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="8">这个方法执行原始的SQL查询，并返回一个<tt class="docutils literal"><span class="pre">django.db.models.query.RawQuerySet</span></tt> 实例。</font><font id="9">这个<tt class="docutils literal"><span class="pre">RawQuerySet</span></tt> 实例可以像一般的<a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet" title="django.db.models.query.QuerySet"><tt class="xref py py-class docutils literal"><span class="pre">查询集</span></tt></a>那样，通过迭代来提供对象实例。</font></p>
+<p><font id="10">这里最好通过例子展示一下， </font><font id="11">假设存在以下模型：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">last_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">birth_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="12">你可以像这样执行自定义的SQL语句：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT * FROM myapp_person'</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="go">John Smith</span>
+<span class="go">Jane Jones</span>
+</pre></div>
+</div>
+<p><font id="13">当然，这个例子不是特别有趣——和直接使用<tt class="docutils literal"><span class="pre">Person.objects.all()</span></tt>的结果一模一样。</font><font id="14">但是，<tt class="docutils literal"><span class="pre">raw()</span></tt>&nbsp;拥有其它更强大的使用方法。</font></p>
+<div class="admonition-model-table-names admonition">
+<p class="first admonition-title"><font id="15">模型表的名称</font></p>
+<p><font id="16">在上面的例子中，<tt class="docutils literal"><span class="pre">Person</span></tt>表的名称是从哪里得到的？</font></p>
+<p><font id="17">通常，Django通过将模型的名称和模型的“应用标签”（你在<tt class="docutils literal"><span class="pre">manage.py</span> <span class="pre">startapp</span></tt>中使用的名称）进行关联，用一条下划线连接他们，来组合表的名称。</font><font id="18">在这里我们假定<tt class="docutils literal"><span class="pre">Person</span></tt>模型存在于一个叫做<tt class="docutils literal"><span class="pre">myapp</span></tt>的应用中，所以表就应该叫做<tt class="docutils literal"><span class="pre">myapp_person</span></tt>。</font></p>
+<p class="last"><font id="19">更多细节请查看<a class="reference internal" href="../../ref/models/options.html#django.db.models.Options.db_table" title="django.db.models.Options.db_table"><tt class="xref py py-attr docutils literal"><span class="pre">db_table</span></tt></a>选项的文档，它也可以让你自定义表的名称。</font></p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="20">警告</font></p>
+<p class="last"><font id="21">传递给&nbsp;<tt class="docutils literal"><span class="pre">.raw()</span></tt>方法的sql语句并没有任何检查。</font><font id="22">django默认它会返回一个数据集，但这不是强制性的。 </font><font id="23">如果查询的结果不是数据集，则会产生一个错误。</font></p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="24">警告</font></p>
+<p class="last"><font id="25">如果你在mysql上执行查询，注意在类型不一致的时候，mysql的静默类型强制可能导致意想不到的结果发生。 </font><font id="26">如果你在一个字符串类型的列上查询一个整数类型的值，mysql会在比较前强制把每个值的类型转成整数。 </font><font id="27">例如，如果你的表中包含值<tt class="docutils literal"><span class="pre">'abc'</span></tt>和<tt class="docutils literal"><span class="pre">'def'</span></tt>，你查询<tt class="docutils literal"><span class="pre">WHERE</span> <span class="pre">mycolumn=0</span></tt>，那么两行都会匹配。</font><font id="28">要防止这种情况，在查询中使用值之前，要做好正确的类型转换。</font></p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="29">警告</font></p>
+<p class="last"><font id="30">虽然<tt class="docutils literal"><span class="pre">RawQuerySet</span></tt>可以像普通的<a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet" title="django.db.models.query.QuerySet"><tt class="xref py py-class docutils literal"><span class="pre">QuerySet</span></tt></a>一样迭代，<tt class="docutils literal"><span class="pre">RawQuerySet</span></tt>并没有实现可以在&nbsp;<tt class="docutils literal"><span class="pre">QuerySet</span></tt>上使用的所有方法。</font><font id="31">例如，<tt class="docutils literal"><span class="pre">__bool__()</span></tt>和<tt class="docutils literal"><span class="pre">__len__()</span></tt>在<tt class="docutils literal"><span class="pre">RawQuerySet</span></tt>中没有被定义，所以所有<tt class="docutils literal"><span class="pre">RawQuerySet</span></tt>转化为布尔值的结果都是<tt class="docutils literal"><span class="pre">True</span></tt>。</font><font id="32"><tt class="docutils literal"><span class="pre">RawQuerySet</span></tt>中没有实现他们的原因是，在没有内部缓存的情况下会导致性能下降，而且增加内部缓存不向后兼容。</font></p>
+</div>
+<div class="section" id="s-mapping-query-fields-to-model-fields">
+<span id="mapping-query-fields-to-model-fields"></span><h3><font id="98">将查询字段映射到模型字段</font><a class="headerlink" href="sql.html#mapping-query-fields-to-model-fields" title="Permalink to this headline">¶</a></h3>
+<p><font id="33"><tt class="docutils literal"><span class="pre">raw()</span></tt>方法自动将查询字段映射到模型字段。</font></p>
+<p><font id="34">字段的顺序并不重要。 </font><font id="35">换句话说，下面两种查询的作用相同：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT id, first_name, last_name, birth_date FROM myapp_person'</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT last_name, birth_date, first_name, id FROM myapp_person'</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p><font id="36">Django会根据名字进行匹配。 </font><font id="37">这意味着你可以使用SQL的<tt class="docutils literal"><span class="pre">AS</span></tt>子句来将查询中的字段映射成模型的字段。</font><font id="38">所以如果在其他的表中有一些<tt class="docutils literal"><span class="pre">Person</span></tt>数据，你可以很容易地把它们映射成<tt class="docutils literal"><span class="pre">Person</span></tt>实例:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'''SELECT first AS first_name,</span>
+<span class="gp">... </span><span class="s">                             last AS last_name,</span>
+<span class="gp">... </span><span class="s">                             bd AS birth_date,</span>
+<span class="gp">... </span><span class="s">                             pk AS id,</span>
+<span class="gp">... </span><span class="s">                      FROM some_other_table'''</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="39">只要名字能对应上，模型的实例就会被正确创建。&nbsp;</font></p>
+<p><font id="40">又或者，你可以在<tt class="docutils literal"><span class="pre">raw()</span></tt>方法中使用<tt class="docutils literal"><span class="pre">translations</span></tt>&nbsp;参数。</font><font id="41">这个参数是一个字典，将查询中的字段名称映射为模型中的字段名称。</font><font id="42">例如，上面的查询可以写成这样：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">name_map</span> <span class="o">=</span> <span class="p">{</span><span class="s">'first'</span><span class="p">:</span> <span class="s">'first_name'</span><span class="p">,</span> <span class="s">'last'</span><span class="p">:</span> <span class="s">'last_name'</span><span class="p">,</span> <span class="s">'bd'</span><span class="p">:</span> <span class="s">'birth_date'</span><span class="p">,</span> <span class="s">'pk'</span><span class="p">:</span> <span class="s">'id'</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT * FROM some_other_table'</span><span class="p">,</span> <span class="n">translations</span><span class="o">=</span><span class="n">name_map</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-index-lookups">
+<span id="index-lookups"></span><h3><font id="99">索引访问</font><a class="headerlink" href="sql.html#index-lookups" title="Permalink to this headline">¶</a></h3>
+<p><font id="43"><tt class="docutils literal"><span class="pre">raw()</span></tt>方法支持索引访问，所以如果只需要第一条记录，可以这样写：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">first_person</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT * FROM myapp_person'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="44">然而，索引和切片并不在数据库层面上进行操作。 </font><font id="45">如果数据库中有很多的<tt class="docutils literal"><span class="pre">Person</span></tt>对象，更加高效的方法是在SQL层面限制查询中结果的数量：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">first_person</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT * FROM myapp_person LIMIT 1'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-deferring-model-fields">
+<span id="deferring-model-fields"></span><h3><font id="100">延迟加载模型字段</font><a class="headerlink" href="sql.html#deferring-model-fields" title="Permalink to this headline">¶</a></h3>
+<p><font id="46">字段也可以像这样被省略：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">people</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT id, first_name FROM myapp_person'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="47">查询返回的<tt class="docutils literal"><span class="pre">Person</span></tt>对象是一个延迟的模型实例（请见 <a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet.defer" title="django.db.models.query.QuerySet.defer"><tt class="xref py py-meth docutils literal"><span class="pre">defer()</span></tt></a>）。</font><font id="48">这意味着被省略的字段，在访问时才被加载。</font><font id="49">例如:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT id, first_name FROM myapp_person'</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="c"># This will be retrieved by the original query</span>
+<span class="gp">... </span>          <span class="n">p</span><span class="o">.</span><span class="n">last_name</span><span class="p">)</span> <span class="c"># This will be retrieved on demand</span>
+<span class="gp">...</span>
+<span class="go">John Smith</span>
+<span class="go">Jane Jones</span>
+</pre></div>
+</div>
+<p><font id="50">从表面上来看，看起来这个查询获取了first_name和last_name。</font><font id="51">然而，这个例子实际上执行了3次查询。 </font><font id="52">只有first_name字段在raw()查询中获取，last_name字符在执行打印命令时才被获取。</font></p>
+<p><font id="53">只有一种字段不可以被省略——就是主键。 </font><font id="54">Django 使用主键来识别模型的实例，所以它在每次原始查询中都必须包含。 </font><font id="55">如果你忘记包含主键的话，会抛出一个<tt class="docutils literal"><span class="pre">InvalidQuery</span></tt>异常。</font></p>
+</div>
+<div class="section" id="s-adding-annotations">
+<span id="adding-annotations"></span><h3><font id="101">增加注解</font><a class="headerlink" href="sql.html#adding-annotations" title="Permalink to this headline">¶</a></h3>
+<p><font id="56">你也可以在查询中包含模型中没有定义的字段。 </font><font id="57">例如，我们可以使用<a class="reference external" href="http://www.postgresql.org/docs/current/static/functions-datetime.html">PostgreSQL 的age() 函数</a>来获得一群人的列表，带有数据库计算出的年龄：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">people</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT *, age(birth_date) AS age FROM myapp_person'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">people</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="si">%s</span><span class="s"> is </span><span class="si">%s</span><span class="s">."</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span><span class="p">))</span>
+<span class="go">John is 37.</span>
+<span class="go">Jane is 42.</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-passing-parameters-into-raw">
+<span id="passing-parameters-into-raw"></span><h3><font id="102">向<tt class="docutils literal"><span class="pre">raw()</span></tt>方法中传递参数</font><a class="headerlink" href="sql.html#passing-parameters-into-raw" title="Permalink to this headline">¶</a></h3>
+<p><font id="58">如果你需要参数化的查询，可以向<tt class="docutils literal"><span class="pre">raw()</span></tt>方法传递<tt class="docutils literal"><span class="pre">params</span></tt>参数。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">lname</span> <span class="o">=</span> <span class="s">'Doe'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s">'SELECT * FROM myapp_person WHERE last_name = </span><span class="si">%s</span><span class="s">'</span><span class="p">,</span> <span class="p">[</span><span class="n">lname</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="59"><tt class="docutils literal"><span class="pre">params</span></tt>是存放参数的列表或字典。</font><font id="60">你可以在查询语句中使用<tt class="docutils literal"><span class="pre">%s</span></tt>占位符，或者对于字典使用<tt class="docutils literal"><span class="pre">%(key)</span></tt>占位符（<tt class="docutils literal"><span class="pre">key</span></tt>会被替换成字典中键为key的值），无论你的数据库引擎是什么。</font><font id="61">这些占位符将用<tt class="docutils literal"><span class="pre">params</span></tt> 参数中的值替换。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="62">注意</font></p>
+<p class="last"><font id="63">SQLite后端不支持字典，</font><font id="64">你必须以列表的形式传递参数。</font></p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="65">警告</font></p>
+<p><font id="66"><strong>不要在原始查询中使用字符串格式化！</strong></font></p>
+<p><font id="67">它类似于这种样子：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="s">'SELECT * FROM myapp_person WHERE last_name = </span><span class="si">%s</span><span class="s">'</span> <span class="o">%</span> <span class="n">lname</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="68"><strong>千万不要。</strong></font></p>
+<p class="last"><font id="69">使用<tt class="docutils literal"><span class="pre">params</span></tt>参数可以完全防止<a class="reference external" href="http://en.wikipedia.org/wiki/SQL_injection">SQL注入攻击</a>，它是一种普遍的漏洞，使攻击者可以向你的数据库中注入任何SQL语句。</font><font id="70">如果你使用字符串格式化，早晚会受到SQL注入攻击。 </font><font id="71">只要你记住默认使用&nbsp;<tt class="docutils literal"><span class="pre">params</span></tt>&nbsp;参数，就可以免于攻击。</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-executing-custom-sql-directly">
+<span id="s-executing-custom-sql"></span><span id="executing-custom-sql-directly"></span><span id="executing-custom-sql"></span><h2><font id="97">直接执行自定义的SQL</font><a class="headerlink" href="sql.html#executing-custom-sql-directly" title="Permalink to this headline">¶</a></h2>
+<p><font id="72">有时<a class="reference internal" href="sql.html#django.db.models.Manager.raw" title="django.db.models.Manager.raw"><tt class="xref py py-meth docutils literal"><span class="pre">Manager.raw()</span></tt></a>方法并不十分好用，你不需要将查询结果映射成模型，或者你需要执行<tt class="docutils literal"><span class="pre">UPDATE</span></tt>、&nbsp;<tt class="docutils literal"><span class="pre">INSERT</span></tt>以及<tt class="docutils literal"><span class="pre">DELETE</span></tt>查询。</font></p>
+<p><font id="73">在这些情况下，你可以直接访问数据库，完全避开模型层。</font></p>
+<p><font id="74"><tt class="docutils literal"><span class="pre">django.db.connection</span></tt>对象提供了常规数据库连接的方式。</font><font id="75">为了使用数据库连接，先要调用<tt class="docutils literal"><span class="pre">connection.cursor()</span></tt>方法来获取一个游标对象</font><font id="76">之后，调用<tt class="docutils literal"><span class="pre">cursor.execute(sql,</span> <span class="pre">[params])</span></tt>来执行sql语句，调用<tt class="docutils literal"><span class="pre">cursor.fetchone()</span></tt>或者<tt class="docutils literal"><span class="pre">cursor.fetchall()</span></tt>来返回结果行。</font></p>
+<p><font id="77">例如:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
+
+<span class="k">def</span> <span class="nf">my_custom_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">"UPDATE bar SET foo = 1 WHERE baz = </span><span class="si">%s</span><span class="s">"</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">baz</span><span class="p">])</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">"SELECT foo FROM bar WHERE baz = </span><span class="si">%s</span><span class="s">"</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">baz</span><span class="p">])</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">row</span>
+</pre></div>
+</div>
+<p><font id="78">注意如果你的查询中包含百分号字符，你需要写成两个百分号字符，以便能正确传递参数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">"SELECT foo FROM bar WHERE baz = '30%'"</span><span class="p">)</span>
+<span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">"SELECT foo FROM bar WHERE baz = '30</span><span class="si">%%</span><span class="s">' AND id = </span><span class="si">%s</span><span class="s">"</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="79">如果你使用了<a class="reference internal" href="multi-db.html"><em>不止一个数据库</em></a>，你可以使用<tt class="docutils literal"><span class="pre">django.db.connections</span></tt>来获取针对特定数据库的连接（以及游标）对象。</font><font id="80"><tt class="docutils literal"><span class="pre">django.db.connections</span></tt>是一个类似于字典的对象，允许你通过它的别名获取特定的连接。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connections</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="s">'my_db_alias'</span><span class="p">]</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="c"># Your code here...</span>
+</pre></div>
+</div>
+<p><font id="81">默认情况下，Python DB API会返回不带字段的结果，这意味着你得到的是一个<tt class="docutils literal"><span class="pre">列表</span></tt>，而不是一个<tt class="docutils literal"><span class="pre">字典</span></tt>。</font><font id="82">花费一点性能代价之后，你可以返回一个<tt class="docutils literal"><span class="pre">字典</span></tt>形式的结果，像这样：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">dictfetchall</span><span class="p">(</span><span class="n">cursor</span><span class="p">):</span>
+    <span class="s">"Returns all rows from a cursor as a dict"</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">description</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">([</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">desc</span><span class="p">],</span> <span class="n">row</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="83">下面是一个体现二者区别的例子:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">"SELECT id, parent_id FROM test LIMIT 2"</span><span class="p">);</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+<span class="go">((54360982L, None), (54360880L, None))</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">"SELECT id, parent_id FROM test LIMIT 2"</span><span class="p">);</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dictfetchall</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+<span class="go">[{'parent_id': None, 'id': 54360982L}, {'parent_id': None, 'id': 54360880L}]</span>
+</pre></div>
+</div>
+<div class="section" id="s-connections-and-cursors">
+<span id="connections-and-cursors"></span><h3><font id="103">连接和游标</font><a class="headerlink" href="sql.html#connections-and-cursors" title="Permalink to this headline">¶</a></h3>
+<p><font id="84"><tt class="docutils literal"><span class="pre">连接</span></tt>和<tt class="docutils literal"><span class="pre">游标</span></tt>主要实现&nbsp;<span class="target" id="index-0"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0249"><strong>PEP 249</strong></a>中描述的Python DB API标准——除非它涉及到<a class="reference internal" href="transactions.html"><em>事务处理</em></a>。</font></p>
+<p><font id="85">如果你不熟悉Python DB-API，注意<tt class="docutils literal"><span class="pre">cursor.execute()</span></tt>中的SQL语句使用占位符<tt class="docutils literal"><span class="pre">"%s"</span></tt>，而不是直接在SQL中添加参数。</font><font id="126">如果你使用这种方法，底层数据库的库会在必要时自动转义你的参数。</font></p>
+<p><font id="86">还要注意Django 使用<tt class="docutils literal"><span class="pre">"%s"</span></tt>占位符，<em>而不是</em> SQLite Python 使用的<tt class="docutils literal"><span class="pre">"?"</span></tt>占位符。这是一致性和可用性的缘故。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7.</span> </div>
+<p><font id="87"><span class="target" id="index-1"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0249"><strong>PEP 249</strong></a>并没有说明游标是否可以作为上下文管理器使用。</font><font id="88">在Python 2.7之前，由于魔术方法查询（<a class="reference external" href="https://bugs.python.org/issue9220">Python ticket #9220</a>）中的一个意想不到的行为，游标可以用作上下文管理器。</font><font id="89">Django 1.7 明确添加允许使用游标作为上下文管理器的支持。</font></p>
+<p><font id="90">将游标作为上下文管理器使用:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">c</span><span class="p">:</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="91">等价于：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">c</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="104">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="sql.html#"><font id="110">进行原始的SQL查询</font></a><ul>
+<li><a class="reference internal" href="sql.html#performing-raw-queries"><font id="111">进行原始查询</font></a><ul>
+<li><a class="reference internal" href="sql.html#mapping-query-fields-to-model-fields"><font id="112">将查询字段映射到模型字段</font></a></li>
+<li><a class="reference internal" href="sql.html#index-lookups"><font id="113">索引访问</font></a></li>
+<li><a class="reference internal" href="sql.html#deferring-model-fields"><font id="114">延迟加载模型字段</font></a></li>
+<li><a class="reference internal" href="sql.html#adding-annotations"><font id="115">增加注解</font></a></li>
+<li><a class="reference internal" href="sql.html#passing-parameters-into-raw"><font id="116">向 <tt class="docutils literal"><span class="pre">raw()</span></tt>方法中传递参数</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="sql.html#executing-custom-sql-directly"><font id="117">直接执行自定义SQL</font></a><ul>
+<li><a class="reference internal" href="sql.html#connections-and-cursors"><font id="118">连接和游标</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="105">浏览</font></h3>
+<ul>
+<li><font id="119">上一页：<a href="managers.html">管理器</a></font></li>
+<li><font id="120">下一页：<a href="transactions.html">数据库事务</a></font></li>
+</ul>
+<h3><font id="106">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="121">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="122">使用 Django</font></a>
+<ul><li><a href="index.html"><font id="123">模型和数据库</font></a>
+<ul><li><font id="124">进行原始的SQL查询</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="107">当前页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/db/sql.txt" rel="nofollow"><font id="125">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="108">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="92"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="109">最后更新：</font></h3>
+<p class="topless"><font id="93">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="managers.html" title="Managers">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="transactions.html" title="Database transactions">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/db/sql';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>内建基于类的视图的API — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="../index.html" rel="up" title="API Reference"/>
+<link href="base.html" rel="next" title="Base views"/>
+<link href="../checks.html" rel="prev" title="System check framework"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="21">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="../checks.html" title="System check framework">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="base.html" title="Base views">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-class-based-views-index">
+<div class="section" id="s-built-in-class-based-views-api">
+<span id="built-in-class-based-views-api"></span><h1><font id="22">内建基于类的视图的API</font><a class="headerlink" href="index.html#built-in-class-based-views-api" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">基于类的视图的API 参考。</font><font id="2">另请参见<a class="reference internal" href="../../topics/class-based-views/index.html"><em>基于类的视图</em></a> 的简介。</font></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="base.html"><font id="31">基础视图</font></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="base.html#view"><font id="32">View</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="base.html#templateview"><font id="33">TemplateView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="base.html#redirectview"><font id="34">RedirectView</font></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generic-display.html"><font id="35">通用的显示视图</font></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generic-display.html#detailview"><font id="36">DetailView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-display.html#listview"><font id="37">ListView</font></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generic-editing.html"><font id="38">通用的编辑视图</font></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generic-editing.html#formview"><font id="39">FormView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-editing.html#createview"><font id="40">CreateView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-editing.html#updateview"><font id="41">UpdateView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-editing.html#deleteview"><font id="42">DeleteView</font></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generic-date-based.html"><font id="43">通用的日期视图</font></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generic-date-based.html#archiveindexview"><font id="44">ArchiveIndexView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-date-based.html#yeararchiveview"><font id="45">YearArchiveView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-date-based.html#montharchiveview"><font id="46">MonthArchiveView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-date-based.html#weekarchiveview"><font id="47">WeekArchiveView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-date-based.html#dayarchiveview"><font id="48">DayArchiveView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-date-based.html#todayarchiveview"><font id="49">TodayArchiveView</font></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-date-based.html#datedetailview"><font id="50">DateDetailView</font></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mixins.html"><font id="51">基于类的视图的Mixins</font></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mixins-simple.html"><font id="52">Simple mixins</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mixins-simple.html#contextmixin"><font id="53">ContextMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-simple.html#templateresponsemixin"><font id="54">TemplateResponseMixin</font></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixins-single-object.html"><font id="55">Single object mixins</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mixins-single-object.html#singleobjectmixin"><font id="56">SingleObjectMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-single-object.html#singleobjecttemplateresponsemixin"><font id="57">SingleObjectTemplateResponseMixin</font></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixins-multiple-object.html"><font id="58">Multiple object mixins</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mixins-multiple-object.html#multipleobjectmixin"><font id="59">MultipleObjectMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-multiple-object.html#multipleobjecttemplateresponsemixin"><font id="60">MultipleObjectTemplateResponseMixin</font></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixins-editing.html"><font id="61">Editing mixins</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mixins-editing.html#formmixin"><font id="62">FormMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-editing.html#modelformmixin"><font id="63">ModelFormMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-editing.html#processformview"><font id="64">ProcessFormView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-editing.html#deletionmixin"><font id="65">DeletionMixin</font></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mixins-date-based.html"><font id="66">Date-based mixins</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mixins-date-based.html#yearmixin"><font id="67">YearMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-date-based.html#monthmixin"><font id="68">MonthMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-date-based.html#daymixin"><font id="69">DayMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-date-based.html#weekmixin"><font id="70">WeekMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-date-based.html#datemixin"><font id="71">DateMixin</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mixins-date-based.html#basedatelistview"><font id="72">BaseDateListView</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="flattened-index.html"><font id="73">基于类的通用视图 —— 索引</font></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="flattened-index.html#simple-generic-views"><font id="74">Simple generic views</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#view"><font id="75">View</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#templateview"><font id="76">TemplateView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#redirectview"><font id="77">RedirectView</font></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flattened-index.html#detail-views"><font id="78">Detail Views</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#detailview"><font id="79">DetailView</font></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flattened-index.html#list-views"><font id="80">List Views</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#listview"><font id="81">ListView</font></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flattened-index.html#editing-views"><font id="82">Editing views</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#formview"><font id="83">FormView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#createview"><font id="84">CreateView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#updateview"><font id="85">UpdateView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#deleteview"><font id="86">DeleteView</font></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flattened-index.html#date-based-views"><font id="87">Date-based views</font></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#archiveindexview"><font id="88">ArchiveIndexView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#yeararchiveview"><font id="89">YearArchiveView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#montharchiveview"><font id="90">MonthArchiveView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#weekarchiveview"><font id="91">WeekArchiveView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#dayarchiveview"><font id="92">DayArchiveView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#todayarchiveview"><font id="93">TodayArchiveView</font></a></li>
+<li class="toctree-l3"><a class="reference internal" href="flattened-index.html#datedetailview"><font id="94">DateDetailView</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="s-specification">
+<span id="specification"></span><h2><font id="23">说明</font><a class="headerlink" href="index.html#specification" title="Permalink to this headline">¶</a></h2>
+<p><font id="3">由基于类的视图处理的每个请求都具有一个独立的状态；</font><font id="4">所以，在实例中保存状态变量是安全的（例如，<tt class="docutils literal"><span class="pre">self.foo</span> <span class="pre">=</span> <span class="pre">3</span></tt> 是线程安全的操作）。</font></p>
+<p><font id="5">基于类的视图在URL 模式中的部署使用<a class="reference internal" href="base.html#django.views.generic.base.View.as_view" title="django.views.generic.base.View.as_view"><tt class="xref py py-meth docutils literal"><span class="pre">as_view()</span></tt></a> &nbsp;类方法：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^view/$'</span><span class="p">,</span> <span class="n">MyView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">42</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition-thread-safety-with-view-arguments admonition">
+<p class="first admonition-title"><font id="6">视图参数的线程安全性</font></p>
+<p class="last"><font id="7">传递给视图的参数在视图的每个实例之间共享。</font><font id="8">这表示不应该使用列表、字典或其它可变对象作为视图的参数。</font><font id="9">如果你真这么做而且对共享的对象做过修改，某个用户的行为可能对后面访问同一个视图的用户产生影响。</font></p>
+</div>
+<p><font id="10">传递给<a class="reference internal" href="base.html#django.views.generic.base.View.as_view" title="django.views.generic.base.View.as_view"><tt class="xref py py-meth docutils literal"><span class="pre">as_view()</span></tt></a> 的参数将赋值给服务请求的实例。</font><font id="11">利用前面的例子，这表示对<tt class="docutils literal"><span class="pre">MyView</span></tt> 的每个请求都可以使用 <tt class="docutils literal"><span class="pre">self.size</span></tt>。</font><font id="12">参数必须对应于在类中已经存在的属性（<tt class="docutils literal"><span class="pre">hasattr</span></tt> 检查可以返回<tt class="docutils literal"><span class="pre">True</span></tt>）。</font></p>
+</div>
+<div class="section" id="s-base-vs-generic-views">
+<span id="base-vs-generic-views"></span><h2><font id="24">基础视图 VS. 通用视图</font><a class="headerlink" href="index.html#base-vs-generic-views" title="Permalink to this headline">¶</a></h2>
+<p><font id="13">基于类的基础视图可以认为是<em>父</em>视图，它们可以直接使用或者继承它们。</font><font id="14">它们不能满足项目中所有的需求，在这种情况下有Mixin 可以扩展基础视图的功能。</font></p>
+<p><font id="15">Django 的通用视图建立在基础视图之上，用于作为经常用到的功能的快捷方式，例如显示对象的详细信息。</font><font id="16">它们提炼视图开发中常见的风格和模式并将它们抽象，这样你可以快速编写常见的视图而不用重复你自己。</font></p>
+<p><font id="17">大部分通常视图需要<tt class="docutils literal"><span class="pre">queryset</span></tt> 键 ，它是一个<tt class="docutils literal"><span class="pre">查询集</span></tt> 实例；</font><font id="18">关于<tt class="docutils literal"><span class="pre">查询集</span></tt>对象的更多信息，请参见<a class="reference internal" href="../../topics/db/queries.html"><em>执行查询</em></a>。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="25">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="index.html#"><font id="95">内建基于类的视图的API</font></a><ul>
+<li><a class="reference internal" href="index.html#specification"><font id="96">说明</font></a></li>
+<li><a class="reference internal" href="index.html#base-vs-generic-views"><font id="97">基础视图 VS. 通用视图</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="26">浏览</font></h3>
+<ul>
+<li><font id="98">上一页：<a href="../checks.html">系统检查框架</a></font></li>
+<li><font id="99">下一页：<a href="base.html">基础视图</a></font></li>
+</ul>
+<h3><font id="27">你在这里</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="100">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="101">API 参考</font></a>
+<ul><li><font id="102">内建基于类的视图的API</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="28">本页：</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/class-based-views/index.txt" rel="nofollow"><font id="103">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="29">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="19"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="30">最后更新：</font></h3>
+<p class="topless"><font id="20">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="../checks.html" title="System check framework">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="base.html" title="Base views">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/class-based-views/index.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

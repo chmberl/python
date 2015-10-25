@@ -1,0 +1,669 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>时区 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Internationalization and localization"/>
+<link href="../localflavor.html" rel="next" title="The “local flavor” add-ons"/>
+<link href="formatting.html" rel="prev" title="Format localization"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/i18n/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/i18n/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="224">Django 1.8.2开发文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="formatting.html" title="Format localization">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="../localflavor.html" title="The &amp;#8220;local flavor&amp;#8221; add-ons">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-i18n-timezones">
+<div class="section" id="s-time-zones">
+<span id="s-id1"></span><span id="time-zones"></span><span id="id1"></span><h1><font id="225">时区</font><a class="headerlink" href="timezones.html#time-zones" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="s-overview">
+<span id="s-time-zones-overview"></span><span id="overview"></span><span id="time-zones-overview"></span><h2><font id="226">概览</font><a class="headerlink" href="timezones.html#overview" title="Permalink to this headline">¶</a></h2>
+<p><font id="1">When support for time zones is enabled, Django stores datetime information in UTC in the database, uses time-zone-aware datetime objects internally, and translates them to the end user’s time zone in templates and forms.</font></p>
+<p><font id="2">This is handy if your users live in more than one time zone and you want to display datetime information according to each user’s wall clock.</font></p>
+<p><font id="3">Even if your Web site is available in only one time zone, it’s still good practice to store data in UTC in your database. </font><font id="4">One main reason is Daylight Saving Time (DST). </font><font id="5">Many countries have a system of DST, where clocks are moved forward in spring and backward in autumn. </font><font id="6">If you’re working in local time, you’re likely to encounter errors twice a year, when the transitions happen. </font><font id="7">(The <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> documentation discusses <a class="reference external" href="http://pytz.sourceforge.net/#problems-with-localtime">these issues</a> in greater detail.) </font><font id="8">This probably doesn’t matter for your blog, but it’s a problem if you over-bill or under-bill your customers by one hour, twice a year, every year. </font><font id="9">The solution to this problem is to use UTC in the code and use local time only when interacting with end users.</font></p>
+<p><font id="10">Time zone support is disabled by default. </font><font id="11">To enable it, set <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">True</span></tt></a> in your settings file. </font><font id="12">Installing <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> is highly recommended, but may not be mandatory depending on your particular database backend, operating system and time zone. </font><font id="13">If you encounter an exception querying dates or times, please try installing it before filing a bug. </font><font id="14">It’s as simple as:</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> pip install pytz
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="15">Note</font></p>
+<p class="last"><font id="16">The default <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file created by <a class="reference internal" href="../../ref/django-admin.html#django-admin-startproject"><tt class="xref std std-djadmin docutils literal"><span class="pre">django-admin</span> <span class="pre">startproject</span></tt></a> includes <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">True</span></tt></a> for convenience.</font></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="17">Note</font></p>
+<p class="last"><font id="18">There is also an independent but related <a class="reference internal" href="../../ref/settings.html#std:setting-USE_L10N"><tt class="xref std std-setting docutils literal"><span class="pre">USE_L10N</span></tt></a> setting that controls whether Django should activate format localization. </font><font id="19">See <a class="reference internal" href="formatting.html"><em>Format localization</em></a> for more details.</font></p>
+</div>
+<p><font id="20">If you’re wrestling with a particular problem, start with the <a class="reference internal" href="timezones.html#time-zones-faq"><em>time zone FAQ</em></a>.</font></p>
+</div>
+<div class="section" id="s-concepts">
+<span id="concepts"></span><h2><font id="227">Concepts</font><a class="headerlink" href="timezones.html#concepts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-naive-and-aware-datetime-objects">
+<span id="s-naive-vs-aware-datetimes"></span><span id="naive-and-aware-datetime-objects"></span><span id="naive-vs-aware-datetimes"></span><h3><font id="232">Naive and aware datetime objects</font><a class="headerlink" href="timezones.html#naive-and-aware-datetime-objects" title="Permalink to this headline">¶</a></h3>
+<p><font id="21">Python’s <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></tt></a> objects have a <tt class="docutils literal"><span class="pre">tzinfo</span></tt> attribute that can be used to store time zone information, represented as an instance of a subclass of <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.tzinfo" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">datetime.tzinfo</span></tt></a>. </font><font id="22">When this attribute is set and describes an offset, a datetime object is <strong>aware</strong>. </font><font id="23">Otherwise, it’s <strong>naive</strong>.</font></p>
+<p><font id="24">You can use <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.is_aware" title="django.utils.timezone.is_aware"><tt class="xref py py-func docutils literal"><span class="pre">is_aware()</span></tt></a> and <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.is_naive" title="django.utils.timezone.is_naive"><tt class="xref py py-func docutils literal"><span class="pre">is_naive()</span></tt></a> to determine whether datetimes are aware or naive.</font></p>
+<p><font id="25">When time zone support is disabled, Django uses naive datetime objects in local time. </font><font id="26">This is simple and sufficient for many use cases. </font><font id="27">In this mode, to obtain the current time, you would write:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="28">When time zone support is enabled (<a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ=True</span></tt></a>), Django uses time-zone-aware datetime objects. </font><font id="29">If your code creates datetime objects, they should be aware too. </font><font id="30">In this mode, the example above becomes:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+
+<span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="31">Warning</font></p>
+<p class="last"><font id="32">Dealing with aware datetime objects isn’t always intuitive. </font><font id="33">For instance, the <tt class="docutils literal"><span class="pre">tzinfo</span></tt> argument of the standard datetime constructor doesn’t work reliably for time zones with DST. </font><font id="34">Using UTC is generally safe; </font><font id="35">if you’re using other time zones, you should review the <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> documentation carefully.</font></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="36">Note</font></p>
+<p><font id="37">Python’s <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.time" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">datetime.time</span></tt></a> objects also feature a <tt class="docutils literal"><span class="pre">tzinfo</span></tt> attribute, and PostgreSQL has a matching <tt class="docutils literal"><span class="pre">time</span> <span class="pre">with</span> <span class="pre">time</span> <span class="pre">zone</span></tt> type. </font><font id="38">However, as PostgreSQL’s docs put it, this type “exhibits properties which lead to questionable usefulness”.</font></p>
+<p class="last"><font id="39">Django only supports naive time objects and will raise an exception if you attempt to save an aware time object, as a timezone for a time with no associated date does not make sense.</font></p>
+</div>
+</div>
+<div class="section" id="s-interpretation-of-naive-datetime-objects">
+<span id="s-naive-datetime-objects"></span><span id="interpretation-of-naive-datetime-objects"></span><span id="naive-datetime-objects"></span><h3><font id="233">Interpretation of naive datetime objects</font><a class="headerlink" href="timezones.html#interpretation-of-naive-datetime-objects" title="Permalink to this headline">¶</a></h3>
+<p><font id="40">When <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span></tt></a> is <tt class="docutils literal"><span class="pre">True</span></tt>, Django still accepts naive datetime objects, in order to preserve backwards-compatibility. </font><font id="41">When the database layer receives one, it attempts to make it aware by interpreting it in the <a class="reference internal" href="timezones.html#default-current-time-zone"><em>default time zone</em></a> and raises a warning.</font></p>
+<p><font id="42">Unfortunately, during DST transitions, some datetimes don’t exist or are ambiguous. </font><font id="43">In such situations, <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> raises an exception. </font><font id="44">Other <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.tzinfo" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">tzinfo</span></tt></a> implementations, such as the local time zone used as a fallback when <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> isn’t installed, may raise an exception or return inaccurate results. </font><font id="45">That’s why you should always create aware datetime objects when time zone support is enabled.</font></p>
+<p><font id="46">In practice, this is rarely an issue. </font><font id="47">Django gives you aware datetime objects in the models and forms, and most often, new datetime objects are created from existing ones through <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt></a> arithmetic. </font><font id="48">The only datetime that’s often created in application code is the current time, and <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.now" title="django.utils.timezone.now"><tt class="xref py py-func docutils literal"><span class="pre">timezone.now()</span></tt></a> automatically does the right thing.</font></p>
+</div>
+<div class="section" id="s-default-time-zone-and-current-time-zone">
+<span id="s-default-current-time-zone"></span><span id="default-time-zone-and-current-time-zone"></span><span id="default-current-time-zone"></span><h3><font id="234">Default time zone and current time zone</font><a class="headerlink" href="timezones.html#default-time-zone-and-current-time-zone" title="Permalink to this headline">¶</a></h3>
+<p><font id="49">The <strong>default time zone</strong> is the time zone defined by the <a class="reference internal" href="../../ref/settings.html#std:setting-TIME_ZONE"><tt class="xref std std-setting docutils literal"><span class="pre">TIME_ZONE</span></tt></a> setting.</font></p>
+<p><font id="50">The <strong>current time zone</strong> is the time zone that’s used for rendering.</font></p>
+<p><font id="51">You should set the current time zone to the end user’s actual time zone with <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.activate" title="django.utils.timezone.activate"><tt class="xref py py-func docutils literal"><span class="pre">activate()</span></tt></a>. </font><font id="52">Otherwise, the default time zone is used.</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="53">Note</font></p>
+<p><font id="54">As explained in the documentation of <a class="reference internal" href="../../ref/settings.html#std:setting-TIME_ZONE"><tt class="xref std std-setting docutils literal"><span class="pre">TIME_ZONE</span></tt></a>, Django sets environment variables so that its process runs in the default time zone. </font><font id="55">This happens regardless of the value of <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span></tt></a> and of the current time zone.</font></p>
+<p class="last"><font id="56">When <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span></tt></a> is <tt class="docutils literal"><span class="pre">True</span></tt>, this is useful to preserve backwards-compatibility with applications that still rely on local time. </font><font id="57">However, <a class="reference internal" href="timezones.html#naive-datetime-objects"><em>as explained above</em></a>, this isn’t entirely reliable, and you should always work with aware datetimes in UTC in your own code. </font><font id="58">For instance, use <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime.utcfromtimestamp" title="(in Python v3.4)"><tt class="xref py py-meth docutils literal"><span class="pre">utcfromtimestamp()</span></tt></a> instead of <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime.fromtimestamp" title="(in Python v3.4)"><tt class="xref py py-meth docutils literal"><span class="pre">fromtimestamp()</span></tt></a> – and don’t forget to set <tt class="docutils literal"><span class="pre">tzinfo</span></tt> to <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.utc" title="django.utils.timezone.utc"><tt class="xref py py-data docutils literal"><span class="pre">utc</span></tt></a>.</font></p>
+</div>
+</div>
+<div class="section" id="s-selecting-the-current-time-zone">
+<span id="selecting-the-current-time-zone"></span><h3><font id="235">Selecting the current time zone</font><a class="headerlink" href="timezones.html#selecting-the-current-time-zone" title="Permalink to this headline">¶</a></h3>
+<p><font id="59">The current time zone is the equivalent of the current <a class="reference internal" href="index.html#term-locale-name"><em class="xref std std-term">locale</em></a> for translations. </font><font id="60">However, there’s no equivalent of the <tt class="docutils literal"><span class="pre">Accept-Language</span></tt> HTTP header that Django could use to determine the user’s time zone automatically. </font><font id="61">Instead, Django provides <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#time-zone-selection-functions"><em>time zone selection functions</em></a>. </font><font id="62">Use them to build the time zone selection logic that makes sense for you.</font></p>
+<p><font id="63">Most Web sites that care about time zones just ask users in which time zone they live and store this information in the user’s profile. </font><font id="64">For anonymous users, they use the time zone of their primary audience or UTC. </font><font id="65"><a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> provides <a class="reference external" href="http://pytz.sourceforge.net/#helpers">helpers</a>, like a list of time zones per country, that you can use to pre-select the most likely choices.</font></p>
+<p><font id="66">Here’s an example that stores the current timezone in the session. </font><font id="67">(It skips error handling entirely for the sake of simplicity.)</font></p>
+<p><font id="68">Add the following middleware to <a class="reference internal" href="../../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytz</span>
+
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+
+<span class="k">class</span> <span class="nc">TimezoneMiddleware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="n">tzname</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'django_timezone'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tzname</span><span class="p">:</span>
+            <span class="n">timezone</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tzname</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">timezone</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="69">Create a view that can set the current timezone:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">render</span>
+
+<span class="k">def</span> <span class="nf">set_timezone</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">'POST'</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s">'django_timezone'</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">'timezone'</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">'/'</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'template.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'timezones'</span><span class="p">:</span> <span class="n">pytz</span><span class="o">.</span><span class="n">common_timezones</span><span class="p">})</span>
+</pre></div>
+</div>
+<p><font id="70">Include a form in <tt class="docutils literal"><span class="pre">template.html</span></tt> that will <tt class="docutils literal"><span class="pre">POST</span></tt> to this view:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">load</span> <span class="nv">tz</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">get_current_timezone</span> <span class="k">as</span> <span class="nv">TIME_ZONE</span> <span class="cp">%}</span>
+<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"</span><span class="cp">{%</span> <span class="k">url</span> <span class="s1">'set_timezone'</span> <span class="cp">%}</span><span class="s">"</span> <span class="na">method=</span><span class="s">"POST"</span><span class="nt">&gt;</span>
+    <span class="cp">{%</span> <span class="k">csrf_token</span> <span class="cp">%}</span>
+    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"timezone"</span><span class="nt">&gt;</span>Time zone:<span class="nt">&lt;/label&gt;</span>
+    <span class="nt">&lt;select</span> <span class="na">name=</span><span class="s">"timezone"</span><span class="nt">&gt;</span>
+        <span class="cp">{%</span> <span class="k">for</span> <span class="nv">tz</span> <span class="k">in</span> <span class="nv">timezones</span> <span class="cp">%}</span>
+        <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"</span><span class="cp">{{</span> <span class="nv">tz</span> <span class="cp">}}</span><span class="s">"</span><span class="cp">{%</span> <span class="k">if</span> <span class="nv">tz</span> <span class="o">==</span> <span class="nv">TIME_ZONE</span> <span class="cp">%}</span> <span class="na">selected=</span><span class="s">"selected"</span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">tz</span> <span class="cp">}}</span><span class="nt">&lt;/option&gt;</span>
+        <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+    <span class="nt">&lt;/select&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Set"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-time-zone-aware-input-in-forms">
+<span id="s-time-zones-in-forms"></span><span id="time-zone-aware-input-in-forms"></span><span id="time-zones-in-forms"></span><h2><font id="228">Time zone aware input in forms</font><a class="headerlink" href="timezones.html#time-zone-aware-input-in-forms" title="Permalink to this headline">¶</a></h2>
+<p><font id="71">When you enable time zone support, Django interprets datetimes entered in forms in the <a class="reference internal" href="timezones.html#default-current-time-zone"><em>current time zone</em></a> and returns aware datetime objects in <tt class="docutils literal"><span class="pre">cleaned_data</span></tt>.</font></p>
+<p><font id="72">If the current time zone raises an exception for datetimes that don’t exist or are ambiguous because they fall in a DST transition (the timezones provided by <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> do this), such datetimes will be reported as invalid values.</font></p>
+</div>
+<div class="section" id="s-time-zone-aware-output-in-templates">
+<span id="s-time-zones-in-templates"></span><span id="time-zone-aware-output-in-templates"></span><span id="time-zones-in-templates"></span><h2><font id="229">Time zone aware output in templates</font><a class="headerlink" href="timezones.html#time-zone-aware-output-in-templates" title="Permalink to this headline">¶</a></h2>
+<p><font id="73">When you enable time zone support, Django converts aware datetime objects to the <a class="reference internal" href="timezones.html#default-current-time-zone"><em>current time zone</em></a> when they’re rendered in templates. </font><font id="74">This behaves very much like <a class="reference internal" href="formatting.html"><em>format localization</em></a>.</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="75">Warning</font></p>
+<p class="last"><font id="76">Django doesn’t convert naive datetime objects, because they could be ambiguous, and because your code should never produce naive datetimes when time zone support is enabled. </font><font id="77">However, you can force conversion with the template filters described below.</font></p>
+</div>
+<p><font id="78">Conversion to local time isn’t always appropriate – you may be generating output for computers rather than for humans. </font><font id="79">The following filters and tags, provided by the <tt class="docutils literal"><span class="pre">tz</span></tt> template tag library, allow you to control the time zone conversions.</font></p>
+<div class="section" id="s-template-tags">
+<span id="template-tags"></span><h3><font id="236">Template tags</font><a class="headerlink" href="timezones.html#template-tags" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="s-localtime">
+<span id="s-std:templatetag-localtime"></span><span id="localtime"></span><span id="std:templatetag-localtime"></span><h4><font id="250">localtime</font><a class="headerlink" href="timezones.html#localtime" title="Permalink to this headline">¶</a></h4>
+<p><font id="80">Enables or disables conversion of aware datetime objects to the current time zone in the contained block.</font></p>
+<p><font id="81">This tag has exactly the same effects as the <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span></tt></a> setting as far as the template engine is concerned. </font><font id="82">It allows a more fine grained control of conversion.</font></p>
+<p><font id="83">To activate or deactivate conversion for a template block, use:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>{% load tz %}
+
+{% localtime on %}
+    {{ value }}
+{% endlocaltime %}
+
+{% localtime off %}
+    {{ value }}
+{% endlocaltime %}
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="84">Note</font></p>
+<p class="last"><font id="85">The value of <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span></tt></a> isn’t respected inside of a <tt class="docutils literal"><span class="pre">{%</span> <span class="pre">localtime</span> <span class="pre">%}</span></tt> block.</font></p>
+</div>
+</div>
+<div class="section" id="s-timezone">
+<span id="s-std:templatetag-timezone"></span><span id="timezone"></span><span id="std:templatetag-timezone"></span><h4><font id="251">timezone</font><a class="headerlink" href="timezones.html#timezone" title="Permalink to this headline">¶</a></h4>
+<p><font id="86">Sets or unsets the current time zone in the contained block. </font><font id="87">When the current time zone is unset, the default time zone applies.</font></p>
+<div class="highlight-python"><div class="highlight"><pre>{% load tz %}
+
+{% timezone "Europe/Paris" %}
+    Paris time: {{ value }}
+{% endtimezone %}
+
+{% timezone None %}
+    Server time: {{ value }}
+{% endtimezone %}
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-get-current-timezone">
+<span id="s-std:templatetag-get_current_timezone"></span><span id="get-current-timezone"></span><span id="std:templatetag-get_current_timezone"></span><h4><font id="252">get_current_timezone</font><a class="headerlink" href="timezones.html#get-current-timezone" title="Permalink to this headline">¶</a></h4>
+<p><font id="88">You can get the name of the current time zone using the <tt class="docutils literal"><span class="pre">get_current_timezone</span></tt> tag:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>{% get_current_timezone as TIME_ZONE %}
+</pre></div>
+</div>
+<p><font id="89">If you enable the <tt class="docutils literal"><span class="pre">django.template.context_processors.tz</span></tt> context processor, each <a class="reference internal" href="../../ref/templates/api.html#django.template.RequestContext" title="django.template.RequestContext"><tt class="xref py py-class docutils literal"><span class="pre">RequestContext</span></tt></a> will contain a <tt class="docutils literal"><span class="pre">TIME_ZONE</span></tt> variable with the value of <tt class="docutils literal"><span class="pre">get_current_timezone()</span></tt>.</font></p>
+</div>
+</div>
+<div class="section" id="s-template-filters">
+<span id="template-filters"></span><h3><font id="237">Template filters</font><a class="headerlink" href="timezones.html#template-filters" title="Permalink to this headline">¶</a></h3>
+<p><font id="90">These filters accept both aware and naive datetimes. </font><font id="91">For conversion purposes, they assume that naive datetimes are in the default time zone. </font><font id="92">They always return aware datetimes.</font></p>
+<div class="section" id="s-std:templatefilter-localtime">
+<span id="s-id2"></span><span id="std:templatefilter-localtime"></span><span id="id2"></span><h4><font id="253">localtime</font><a class="headerlink" href="timezones.html#std:templatefilter-localtime" title="Permalink to this headline">¶</a></h4>
+<p><font id="93">Forces conversion of a single value to the current time zone.</font></p>
+<p><font id="94">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>{% load tz %}
+
+{{ value|localtime }}
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-utc">
+<span id="s-std:templatefilter-utc"></span><span id="utc"></span><span id="std:templatefilter-utc"></span><h4><font id="254">utc</font><a class="headerlink" href="timezones.html#utc" title="Permalink to this headline">¶</a></h4>
+<p><font id="95">Forces conversion of a single value to UTC.</font></p>
+<p><font id="96">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>{% load tz %}
+
+{{ value|utc }}
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-std:templatefilter-timezone">
+<span id="s-id3"></span><span id="std:templatefilter-timezone"></span><span id="id3"></span><h4><font id="255">timezone</font><a class="headerlink" href="timezones.html#std:templatefilter-timezone" title="Permalink to this headline">¶</a></h4>
+<p><font id="97">Forces conversion of a single value to an arbitrary timezone.</font></p>
+<p><font id="98">The argument must be an instance of a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.tzinfo" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">tzinfo</span></tt></a> subclass or a time zone name. </font><font id="99">If it is a time zone name, <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> is required.</font></p>
+<p><font id="100">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>{% load tz %}
+
+{{ value|timezone:"Europe/Paris" }}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="s-migration-guide">
+<span id="s-time-zones-migration-guide"></span><span id="migration-guide"></span><span id="time-zones-migration-guide"></span><h2><font id="230">Migration guide</font><a class="headerlink" href="timezones.html#migration-guide" title="Permalink to this headline">¶</a></h2>
+<p><font id="101">Here’s how to migrate a project that was started before Django supported time zones.</font></p>
+<div class="section" id="s-database">
+<span id="database"></span><h3><font id="238">Database</font><a class="headerlink" href="timezones.html#database" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="s-postgresql">
+<span id="postgresql"></span><h4><font id="256">PostgreSQL</font><a class="headerlink" href="timezones.html#postgresql" title="Permalink to this headline">¶</a></h4>
+<p><font id="102">The PostgreSQL backend stores datetimes as <tt class="docutils literal"><span class="pre">timestamp</span> <span class="pre">with</span> <span class="pre">time</span> <span class="pre">zone</span></tt>. </font><font id="103">In practice, this means it converts datetimes from the connection’s time zone to UTC on storage, and from UTC to the connection’s time zone on retrieval.</font></p>
+<p><font id="104">As a consequence, if you’re using PostgreSQL, you can switch between <tt class="docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">False</span></tt> and <tt class="docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">True</span></tt> freely. </font><font id="105">The database connection’s time zone will be set to <a class="reference internal" href="../../ref/settings.html#std:setting-TIME_ZONE"><tt class="xref std std-setting docutils literal"><span class="pre">TIME_ZONE</span></tt></a> or <tt class="docutils literal"><span class="pre">UTC</span></tt> respectively, so that Django obtains correct datetimes in all cases. </font><font id="106">You don’t need to perform any data conversions.</font></p>
+</div>
+<div class="section" id="s-other-databases">
+<span id="other-databases"></span><h4><font id="257">Other databases</font><a class="headerlink" href="timezones.html#other-databases" title="Permalink to this headline">¶</a></h4>
+<p><font id="107">Other backends store datetimes without time zone information. </font><font id="108">If you switch from <tt class="docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">False</span></tt> to <tt class="docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">True</span></tt>, you must convert your data from local time to UTC – which isn’t deterministic if your local time has DST.</font></p>
+</div>
+</div>
+<div class="section" id="s-code">
+<span id="code"></span><h3><font id="239">Code</font><a class="headerlink" href="timezones.html#code" title="Permalink to this headline">¶</a></h3>
+<p><font id="109">The first step is to add <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">True</span></tt></a> to your settings file and install <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> (if possible). </font><font id="110">At this point, things should mostly work. </font><font id="111">If you create naive datetime objects in your code, Django makes them aware when necessary.</font></p>
+<p><font id="112">However, these conversions may fail around DST transitions, which means you aren’t getting the full benefits of time zone support yet. </font><font id="113">Also, you’re likely to run into a few problems because it’s impossible to compare a naive datetime with an aware datetime. </font><font id="114">Since Django now gives you aware datetimes, you’ll get exceptions wherever you compare a datetime that comes from a model or a form with a naive datetime that you’ve created in your code.</font></p>
+<p><font id="115">So the second step is to refactor your code wherever you instantiate datetime objects to make them aware. </font><font id="116">This can be done incrementally. </font><font id="117"><a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#module-django.utils.timezone" title="django.utils.timezone: Timezone support."><tt class="xref py py-mod docutils literal"><span class="pre">django.utils.timezone</span></tt></a> defines some handy helpers for compatibility code: <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.now" title="django.utils.timezone.now"><tt class="xref py py-func docutils literal"><span class="pre">now()</span></tt></a>, <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.is_aware" title="django.utils.timezone.is_aware"><tt class="xref py py-func docutils literal"><span class="pre">is_aware()</span></tt></a>, <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.is_naive" title="django.utils.timezone.is_naive"><tt class="xref py py-func docutils literal"><span class="pre">is_naive()</span></tt></a>, <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.make_aware" title="django.utils.timezone.make_aware"><tt class="xref py py-func docutils literal"><span class="pre">make_aware()</span></tt></a>, and <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.make_naive" title="django.utils.timezone.make_naive"><tt class="xref py py-func docutils literal"><span class="pre">make_naive()</span></tt></a>.</font></p>
+<p><font id="118">Finally, in order to help you locate code that needs upgrading, Django raises a warning when you attempt to save a naive datetime to the database:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>RuntimeWarning: DateTimeField ModelName.field_name received a naive
+datetime (2012-01-01 00:00:00) while time zone support is active.
+</pre></div>
+</div>
+<p><font id="119">During development, you can turn such warnings into exceptions and get a traceback by adding the following to your settings file:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+        <span class="s">'error'</span><span class="p">,</span> <span class="s">r"DateTimeField .* received a naive datetime"</span><span class="p">,</span>
+        <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="s">r'django\.db\.models\.fields'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-fixtures">
+<span id="fixtures"></span><h3><font id="240">Fixtures</font><a class="headerlink" href="timezones.html#fixtures" title="Permalink to this headline">¶</a></h3>
+<p><font id="120">When serializing an aware datetime, the UTC offset is included, like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">"2011-09-01T13:20:30+03:00"</span>
+</pre></div>
+</div>
+<p><font id="121">For a naive datetime, it obviously isn’t:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">"2011-09-01T13:20:30"</span>
+</pre></div>
+</div>
+<p><font id="122">For models with <a class="reference internal" href="../../ref/models/fields.html#django.db.models.DateTimeField" title="django.db.models.DateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></tt></a>s, this difference makes it impossible to write a fixture that works both with and without time zone support.</font></p>
+<p><font id="123">Fixtures generated with <tt class="docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">False</span></tt>, or before Django 1.4, use the “naive” format. </font><font id="124">If your project contains such fixtures, after you enable time zone support, you’ll see <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeWarning" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">RuntimeWarning</span></tt></a>s when you load them. </font><font id="125">To get rid of the warnings, you must convert your fixtures to the “aware” format.</font></p>
+<p><font id="126">You can regenerate fixtures with <a class="reference internal" href="../../ref/django-admin.html#django-admin-loaddata"><tt class="xref std std-djadmin docutils literal"><span class="pre">loaddata</span></tt></a> then <a class="reference internal" href="../../ref/django-admin.html#django-admin-dumpdata"><tt class="xref std std-djadmin docutils literal"><span class="pre">dumpdata</span></tt></a>. </font><font id="127">Or, if they’re small enough, you can simply edit them to add the UTC offset that matches your <a class="reference internal" href="../../ref/settings.html#std:setting-TIME_ZONE"><tt class="xref std std-setting docutils literal"><span class="pre">TIME_ZONE</span></tt></a> to each serialized datetime.</font></p>
+</div>
+</div>
+<div class="section" id="s-faq">
+<span id="s-time-zones-faq"></span><span id="faq"></span><span id="time-zones-faq"></span><h2><font id="231">FAQ</font><a class="headerlink" href="timezones.html#faq" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-setup">
+<span id="setup"></span><h3><font id="241">Setup</font><a class="headerlink" href="timezones.html#setup" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first"><font id="128"><strong>I don’t need multiple time zones. </strong></font><font id="129">Should I enable time zone support?</font></p>
+<p><font id="130">Yes. </font><font id="131">When time zone support is enabled, Django uses a more accurate model of local time. </font><font id="132">This shields you from subtle and unreproducible bugs around Daylight Saving Time (DST) transitions.</font></p>
+<p><font id="133">In this regard, time zones are comparable to <tt class="docutils literal"><span class="pre">unicode</span></tt> in Python. </font><font id="134">At first it’s hard. </font><font id="135">You get encoding and decoding errors. </font><font id="136">Then you learn the rules. </font><font id="137">And some problems disappear – you never get mangled output again when your application receives non-ASCII input.</font></p>
+<p><font id="138">When you enable time zone support, you’ll encounter some errors because you’re using naive datetimes where Django expects aware datetimes. </font><font id="139">Such errors show up when running tests and they’re easy to fix. </font><font id="140">You’ll quickly learn how to avoid invalid operations.</font></p>
+<p><font id="141">On the other hand, bugs caused by the lack of time zone support are much harder to prevent, diagnose and fix. </font><font id="142">Anything that involves scheduled tasks or datetime arithmetic is a candidate for subtle bugs that will bite you only once or twice a year.</font></p>
+<p><font id="143">For these reasons, time zone support is enabled by default in new projects, and you should keep it unless you have a very good reason not to.</font></p>
+</li>
+<li><p class="first"><font id="144"><strong>I’ve enabled time zone support. </strong></font><font id="145">Am I safe?</font></p>
+<p><font id="146">Maybe. </font><font id="147">You’re better protected from DST-related bugs, but you can still shoot yourself in the foot by carelessly turning naive datetimes into aware datetimes, and vice-versa.</font></p>
+<p><font id="148">If your application connects to other systems – for instance, if it queries a Web service – make sure datetimes are properly specified. </font><font id="149">To transmit datetimes safely, their representation should include the UTC offset, or their values should be in UTC (or both!).</font></p>
+<p><font id="150">Finally, our calendar system contains interesting traps for computers:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">one_year_before</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>       <span class="c"># DON'T DO THAT!</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">one_year_before</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2012</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="go">datetime.datetime(2011, 3, 1, 10, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">one_year_before</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2012</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">day is out of range for month</span>
+</pre></div>
+</div>
+<p><font id="151">(To implement this function, you must decide whether 2012-02-29 minus one year is 2011-02-28 or 2011-03-01, which depends on your business requirements.)</font></p>
+</li>
+<li><p class="first"><font id="152"><strong>Should I install pytz?</strong></font></p>
+<p><font id="153">Yes. </font><font id="154">Django has a policy of not requiring external dependencies, and for this reason <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> is optional. </font><font id="155">However, it’s much safer to install it.</font></p>
+<p><font id="156">As soon as you activate time zone support, Django needs a definition of the default time zone. </font><font id="157">When pytz is available, Django loads this definition from the <a class="reference external" href="http://en.wikipedia.org/wiki/Tz_database">tz database</a>. </font><font id="158">This is the most accurate solution. </font><font id="159">Otherwise, it relies on the difference between local time and UTC, as reported by the operating system, to compute conversions. </font><font id="160">This is less reliable, especially around DST transitions.</font></p>
+<p><font id="161">Furthermore, if you want to support users in more than one time zone, pytz is the reference for time zone definitions.</font></p>
+</li>
+</ol>
+</div>
+<div class="section" id="s-troubleshooting">
+<span id="troubleshooting"></span><h3><font id="242">Troubleshooting</font><a class="headerlink" href="timezones.html#troubleshooting" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first"><font id="162"><strong>My application crashes with</strong> </font><font id="163"><tt class="docutils literal"><span class="pre">TypeError:</span> <span class="pre">can't</span> <span class="pre">compare</span> <span class="pre">offset-naive</span></tt> </font><font id="164"><tt class="docutils literal"><span class="pre">and</span> <span class="pre">offset-aware</span> <span class="pre">datetimes</span></tt> </font><font id="165"><strong>– what’s wrong?</strong></font></p>
+<p><font id="166">Let’s reproduce this error by comparing a naive and an aware datetime:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">naive</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aware</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">naive</span> <span class="o">==</span> <span class="n">aware</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">can't compare offset-naive and offset-aware datetimes</span>
+</pre></div>
+</div>
+<p><font id="167">If you encounter this error, most likely your code is comparing these two things:</font></p>
+<ul class="simple">
+<li><font id="258">a datetime provided by Django – for instance, a value read from a form or a model field. </font><font id="259">Since you enabled time zone support, it’s aware.</font></li>
+<li><font id="260">a datetime generated by your code, which is naive (or you wouldn’t be reading this).</font></li>
+</ul>
+<p><font id="168">Generally, the correct solution is to change your code to use an aware datetime instead.</font></p>
+<p><font id="169">If you’re writing a pluggable application that’s expected to work independently of the value of <a class="reference internal" href="../../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span></tt></a>, you may find <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.now" title="django.utils.timezone.now"><tt class="xref py py-func docutils literal"><span class="pre">django.utils.timezone.now()</span></tt></a> useful. </font><font id="170">This function returns the current date and time as a naive datetime when <tt class="docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">False</span></tt> and as an aware datetime when <tt class="docutils literal"><span class="pre">USE_TZ</span> <span class="pre">=</span> <span class="pre">True</span></tt>. </font><font id="171">You can add or subtract <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">datetime.timedelta</span></tt></a> as needed.</font></p>
+</li>
+<li><p class="first"><font id="172"><strong>I see lots of</strong> </font><font id="173"><tt class="docutils literal"><span class="pre">RuntimeWarning:</span> <span class="pre">DateTimeField</span> <span class="pre">received</span> <span class="pre">a</span> <span class="pre">naive</span> <span class="pre">datetime</span></tt> </font><font id="174"><tt class="docutils literal"><span class="pre">(YYYY-MM-DD</span> <span class="pre">HH:MM:SS)</span></tt> </font><font id="175"><tt class="docutils literal"><span class="pre">while</span> <span class="pre">time</span> <span class="pre">zone</span> <span class="pre">support</span> <span class="pre">is</span> <span class="pre">active</span></tt> </font><font id="176"><strong>– is that bad?</strong></font></p>
+<p><font id="177">When time zone support is enabled, the database layer expects to receive only aware datetimes from your code. </font><font id="178">This warning occurs when it receives a naive datetime. </font><font id="179">This indicates that you haven’t finished porting your code for time zone support. </font><font id="180">Please refer to the <a class="reference internal" href="timezones.html#time-zones-migration-guide"><em>migration guide</em></a> for tips on this process.</font></p>
+<p><font id="181">In the meantime, for backwards compatibility, the datetime is considered to be in the default time zone, which is generally what you expect.</font></p>
+</li>
+<li><p class="first"><font id="182"><tt class="docutils literal"><span class="pre">now.date()</span></tt> </font><font id="183"><strong>is yesterday! </strong></font><font id="184">(or tomorrow)</font></p>
+<p><font id="185">If you’ve always used naive datetimes, you probably believe that you can convert a datetime to a date by calling its <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime.date" title="(in Python v3.4)"><tt class="xref py py-meth docutils literal"><span class="pre">date()</span></tt></a> method. </font><font id="186">You also consider that a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">date</span></tt></a> is a lot like a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt></a>, except that it’s less accurate.</font></p>
+<p><font id="187">None of this is true in a time zone aware environment:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paris_tz</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s">"Europe/Paris"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_york_tz</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s">"America/New_York"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paris</span> <span class="o">=</span> <span class="n">paris_tz</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2012</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+<span class="go"># This is the correct way to convert between time zones with pytz.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_york</span> <span class="o">=</span> <span class="n">new_york_tz</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">paris</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">new_york_tz</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paris</span> <span class="o">==</span> <span class="n">new_york</span><span class="p">,</span> <span class="n">paris</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="o">==</span> <span class="n">new_york</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+<span class="go">(True, False)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paris</span> <span class="o">-</span> <span class="n">new_york</span><span class="p">,</span> <span class="n">paris</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="o">-</span> <span class="n">new_york</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+<span class="go">(datetime.timedelta(0), datetime.timedelta(1))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paris</span>
+<span class="go">datetime.datetime(2012, 3, 3, 1, 30, tzinfo=&lt;DstTzInfo 'Europe/Paris' CET+1:00:00 STD&gt;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_york</span>
+<span class="go">datetime.datetime(2012, 3, 2, 19, 30, tzinfo=&lt;DstTzInfo 'America/New_York' EST-1 day, 19:00:00 STD&gt;)</span>
+</pre></div>
+</div>
+<p><font id="188">As this example shows, the same datetime has a different date, depending on the time zone in which it is represented. </font><font id="189">But the real problem is more fundamental.</font></p>
+<p><font id="190">A datetime represents a <strong>point in time</strong>. </font><font id="191">It’s absolute: it doesn’t depend on anything. </font><font id="192">On the contrary, a date is a <strong>calendaring concept</strong>. </font><font id="193">It’s a period of time whose bounds depend on the time zone in which the date is considered. </font><font id="194">As you can see, these two concepts are fundamentally different, and converting a datetime to a date isn’t a deterministic operation.</font></p>
+<p><font id="195">What does this mean in practice?</font></p>
+<p><font id="196">Generally, you should avoid converting a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt></a> to <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">date</span></tt></a>. </font><font id="197">For instance, you can use the <a class="reference internal" href="../../ref/templates/builtins.html#std:templatefilter-date"><tt class="xref std std-tfilter docutils literal"><span class="pre">date</span></tt></a> template filter to only show the date part of a datetime. </font><font id="198">This filter will convert the datetime into the current time zone before formatting it, ensuring the results appear correctly.</font></p>
+<p><font id="199">If you really need to do the conversion yourself, you must ensure the datetime is converted to the appropriate time zone first. </font><font id="200">Usually, this will be the current timezone:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timezone</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s">"Asia/Singapore"</span><span class="p">))</span>
+<span class="go"># For this example, we just set the time zone to Singapore, but here's how</span>
+<span class="go"># you would obtain the current time zone in the general case.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">current_tz</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">get_current_timezone</span><span class="p">()</span>
+<span class="go"># Again, this is the correct way to convert between time zones with pytz.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local</span> <span class="o">=</span> <span class="n">current_tz</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">paris</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">current_tz</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local</span>
+<span class="go">datetime.datetime(2012, 3, 3, 8, 30, tzinfo=&lt;DstTzInfo 'Asia/Singapore' SGT+8:00:00 STD&gt;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+<span class="go">datetime.date(2012, 3, 3)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="201"><strong>I get an error</strong> </font><font id="202">“<tt class="docutils literal"><span class="pre">Are</span> <span class="pre">time</span> <span class="pre">zone</span> <span class="pre">definitions</span> <span class="pre">for</span> <span class="pre">your</span> <span class="pre">database</span> <span class="pre">and</span> <span class="pre">pytz</span> <span class="pre">installed?</span></tt>” </font><font id="203"><strong>pytz is installed, so I guess the problem is my database?</strong></font></p>
+<p><font id="204">If you are using MySQL, see the <a class="reference internal" href="../../ref/databases.html#mysql-time-zone-definitions"><em>Time zone definitions</em></a> section of the MySQL notes for instructions on loading time zone definitions.</font></p>
+</li>
+</ol>
+</div>
+<div class="section" id="s-usage">
+<span id="usage"></span><h3><font id="243">Usage</font><a class="headerlink" href="timezones.html#usage" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first"><font id="205"><strong>I have a string</strong> <tt class="docutils literal"><span class="pre">"2012-02-21</span> <span class="pre">10:28:45"</span></tt> <strong>and I know it’s in the</strong> <tt class="docutils literal"><span class="pre">"Europe/Helsinki"</span></tt> <strong>time zone. How do I turn that into an aware datetime?</strong></font></p>
+<p><font id="206">This is exactly what <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> is for.</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils.dateparse</span> <span class="kn">import</span> <span class="n">parse_datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">naive</span> <span class="o">=</span> <span class="n">parse_datetime</span><span class="p">(</span><span class="s">"2012-02-21 10:28:45"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s">"Europe/Helsinki"</span><span class="p">)</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">naive</span><span class="p">,</span> <span class="n">is_dst</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="go">datetime.datetime(2012, 2, 21, 10, 28, 45, tzinfo=&lt;DstTzInfo 'Europe/Helsinki' EET+2:00:00 STD&gt;)</span>
+</pre></div>
+</div>
+<p><font id="207">Note that <tt class="docutils literal"><span class="pre">localize</span></tt> is a pytz extension to the <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.tzinfo" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">tzinfo</span></tt></a> API. </font><font id="208">Also, you may want to catch <tt class="docutils literal"><span class="pre">pytz.</span></tt></font><font id="209">InvalidTimeError. </font><font id="210">The documentation of pytz contains <a class="reference external" href="http://pytz.sourceforge.net/#example-usage">more examples</a>. </font><font id="211">You should review it before attempting to manipulate aware datetimes.</font></p>
+</li>
+<li><p class="first"><font id="212"><strong>How can I obtain the local time in the current time zone?</strong></font></p>
+<p><font id="213">Well, the first question is, do you really need to?</font></p>
+<p><font id="214">You should only use local time when you’re interacting with humans, and the template layer provides <a class="reference internal" href="timezones.html#time-zones-in-templates"><em>filters and tags</em></a> to convert datetimes to the time zone of your choice.</font></p>
+<p><font id="215">Furthermore, Python knows how to compare aware datetimes, taking into account UTC offsets when necessary. </font><font id="216">It’s much easier (and possibly faster) to write all your model and view code in UTC. </font><font id="217">So, in most circumstances, the datetime in UTC returned by <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.timezone.now" title="django.utils.timezone.now"><tt class="xref py py-func docutils literal"><span class="pre">django.utils.timezone.now()</span></tt></a> will be sufficient.</font></p>
+<p><font id="218">For the sake of completeness, though, if you really want the local time in the current time zone, here’s how you can obtain it:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timezone</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+<span class="go">datetime.datetime(2012, 3, 3, 20, 10, 53, 873365, tzinfo=&lt;DstTzInfo 'Europe/Paris' CET+1:00:00 STD&gt;)</span>
+</pre></div>
+</div>
+<p><font id="219">In this example, <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> is installed and the current time zone is <tt class="docutils literal"><span class="pre">"Europe/Paris"</span></tt>.</font></p>
+</li>
+<li><p class="first"><font id="220"><strong>How can I see all available time zones?</strong></font></p>
+<p><font id="221"><a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> provides <a class="reference external" href="http://pytz.sourceforge.net/#helpers">helpers</a>, including a list of current time zones and a list of all available time zones – some of which are only of historical interest.</font></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="244">目录表</font></h3>
+<ul>
+<li><a class="reference internal" href="timezones.html#"><font id="261">时区</font></a><ul>
+<li><a class="reference internal" href="timezones.html#overview"><font id="262">概览</font></a></li>
+<li><a class="reference internal" href="timezones.html#concepts"><font id="263">Concepts</font></a><ul>
+<li><a class="reference internal" href="timezones.html#naive-and-aware-datetime-objects"><font id="264">Naive and aware datetime objects</font></a></li>
+<li><a class="reference internal" href="timezones.html#interpretation-of-naive-datetime-objects"><font id="265">Interpretation of naive datetime objects</font></a></li>
+<li><a class="reference internal" href="timezones.html#default-time-zone-and-current-time-zone"><font id="266">Default time zone and current time zone</font></a></li>
+<li><a class="reference internal" href="timezones.html#selecting-the-current-time-zone"><font id="267">Selecting the current time zone</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="timezones.html#time-zone-aware-input-in-forms"><font id="268">Time zone aware input in forms</font></a></li>
+<li><a class="reference internal" href="timezones.html#time-zone-aware-output-in-templates"><font id="269">Time zone aware output in templates</font></a><ul>
+<li><a class="reference internal" href="timezones.html#template-tags"><font id="270">Template tags</font></a><ul>
+<li><a class="reference internal" href="timezones.html#localtime"><font id="271">localtime</font></a></li>
+<li><a class="reference internal" href="timezones.html#timezone"><font id="272">timezone</font></a></li>
+<li><a class="reference internal" href="timezones.html#get-current-timezone"><font id="273">get_current_timezone</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="timezones.html#template-filters"><font id="274">Template filters</font></a><ul>
+<li><a class="reference internal" href="timezones.html#std:templatefilter-localtime"><font id="275">localtime</font></a></li>
+<li><a class="reference internal" href="timezones.html#utc"><font id="276">utc</font></a></li>
+<li><a class="reference internal" href="timezones.html#std:templatefilter-timezone"><font id="277">timezone</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="timezones.html#migration-guide"><font id="278">Migration guide</font></a><ul>
+<li><a class="reference internal" href="timezones.html#database"><font id="279">Database</font></a><ul>
+<li><a class="reference internal" href="timezones.html#postgresql"><font id="280">PostgreSQL</font></a></li>
+<li><a class="reference internal" href="timezones.html#other-databases"><font id="281">Other databases</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="timezones.html#code"><font id="282">Code</font></a></li>
+<li><a class="reference internal" href="timezones.html#fixtures"><font id="283">Fixtures</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="timezones.html#faq"><font id="284">FAQ</font></a><ul>
+<li><a class="reference internal" href="timezones.html#setup"><font id="285">Setup</font></a></li>
+<li><a class="reference internal" href="timezones.html#troubleshooting"><font id="286">Troubleshooting</font></a></li>
+<li><a class="reference internal" href="timezones.html#usage"><font id="287">Usage</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="245">Browse</font></h3>
+<ul>
+<li><font id="288">Prev: <a href="formatting.html">Format localization</a></font></li>
+<li><font id="289">Next: <a href="../localflavor.html">The “local flavor” add-ons</a></font></li>
+</ul>
+<h3><font id="246">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="290">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../index.html"><font id="291">Using Django</font></a>
+<ul><li><a href="index.html"><font id="292">Internationalization and localization</font></a>
+<ul><li><font id="293">Time zones</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="247">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/i18n/timezones.txt" rel="nofollow"><font id="294">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="248">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="222"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="249">Last update:</font></h3>
+<p class="topless"><font id="223">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="formatting.html" title="Format localization">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="../localflavor.html" title="The &amp;#8220;local flavor&amp;#8221; add-ons">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/i18n/timezones';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

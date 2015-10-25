@@ -1,0 +1,581 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Contenttypes 框架 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="contrib packages"/>
+<link href="flatpages.html" rel="next" title="The flatpages app"/>
+<link href="auth.html" rel="prev" title="django.contrib.auth"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/contrib/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/contrib/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="126">Django 1.8.2.dev20150513143415 documentation</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="auth.html" title='&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;django.contrib.auth&lt;/span&gt;&lt;/tt&gt;'>previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="flatpages.html" title="The flatpages app">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-contrib-contenttypes">
+<div class="section" id="s-module-django.contrib.contenttypes">
+<span id="s-the-contenttypes-framework"></span><span id="module-django.contrib.contenttypes"></span><span id="the-contenttypes-framework"></span><h1><font id="127">The contenttypes framework</font><a class="headerlink" href="contenttypes.html#module-django.contrib.contenttypes" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">Django includes a <a class="reference internal" href="contenttypes.html#module-django.contrib.contenttypes" title="django.contrib.contenttypes: Provides generic interface to installed models."><tt class="xref py py-mod docutils literal"><span class="pre">contenttypes</span></tt></a> application that can track all of the models installed in your Django-powered project, providing a high-level, generic interface for working with your models.</font></p>
+<div class="section" id="s-overview">
+<span id="overview"></span><h2><font id="128">Overview</font><a class="headerlink" href="contenttypes.html#overview" title="Permalink to this headline">¶</a></h2>
+<p><font id="2">At the heart of the contenttypes application is the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> model, which lives at <tt class="docutils literal"><span class="pre">django.contrib.contenttypes.models.ContentType</span></tt>. </font><font id="3">Instances of <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> represent and store information about the models installed in your project, and new instances of <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> are automatically created whenever new models are installed.</font></p>
+<p><font id="4">Instances of <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> have methods for returning the model classes they represent and for querying objects from those models. </font><font id="5"><a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> also has a <a class="reference internal" href="../../topics/db/managers.html#custom-managers"><em>custom manager</em></a> that adds methods for working with <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> and for obtaining instances of <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> for a particular model.</font></p>
+<p><font id="6">Relations between your models and <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> can also be used to enable “generic” relationships between an instance of one of your models and instances of any model you have installed.</font></p>
+</div>
+<div class="section" id="s-installing-the-contenttypes-framework">
+<span id="installing-the-contenttypes-framework"></span><h2><font id="129">Installing the contenttypes framework</font><a class="headerlink" href="contenttypes.html#installing-the-contenttypes-framework" title="Permalink to this headline">¶</a></h2>
+<p><font id="7">The contenttypes framework is included in the default <a class="reference internal" href="../settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> list created by <tt class="docutils literal"><span class="pre">django-admin</span> <span class="pre">startproject</span></tt>, but if you’ve removed it or if you manually set up your <a class="reference internal" href="../settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> list, you can enable it by adding <tt class="docutils literal"><span class="pre">'django.contrib.contenttypes'</span></tt> to your <a class="reference internal" href="../settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> setting.</font></p>
+<p><font id="8">It’s generally a good idea to have the contenttypes framework installed; </font><font id="9">several of Django’s other bundled applications require it:</font></p>
+<ul class="simple">
+<li><font id="144">The admin application uses it to log the history of each object added or changed through the admin interface.</font></li>
+<li><font id="145">Django’s <a class="reference internal" href="../../topics/auth/index.html#module-django.contrib.auth" title="django.contrib.auth: Django's authentication framework."><tt class="xref py py-mod docutils literal"><span class="pre">authentication</span> <span class="pre">framework</span></tt></a> uses it to tie user permissions to specific models.</font></li>
+</ul>
+</div>
+<div class="section" id="s-the-contenttype-model">
+<span id="the-contenttype-model"></span><h2><font id="130">The </font><tt class="docutils literal"><span class="pre">ContentType</span></tt></h2>
+<dl class="class">
+<dt id="django.contrib.contenttypes.models.ContentType">
+<em class="property">class </em><tt class="descname">ContentType</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="10">Each instance of <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> has two fields which, taken together, uniquely describe an installed model:</font></p>
+<dl class="attribute">
+<dt id="django.contrib.contenttypes.models.ContentType.app_label">
+<tt class="descname">app_label</tt><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.app_label" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="11">The name of the application the model is part of. </font><font id="12">This is taken from the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.app_label" title="django.contrib.contenttypes.models.ContentType.app_label"><tt class="xref py py-attr docutils literal"><span class="pre">app_label</span></tt></a> attribute of the model, and includes only the <em>last</em> part of the application’s Python import path; </font><font id="13">“django.contrib.contenttypes”, for example, becomes an <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.app_label" title="django.contrib.contenttypes.models.ContentType.app_label"><tt class="xref py py-attr docutils literal"><span class="pre">app_label</span></tt></a> of “contenttypes”.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.contenttypes.models.ContentType.model">
+<tt class="descname">model</tt><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.model" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="14">The name of the model class.</font></p>
+</dd></dl>
+<p><font id="15">Additionally, the following property is available:</font></p>
+<dl class="attribute">
+<dt id="django.contrib.contenttypes.models.ContentType.name">
+<tt class="descname">name</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentType.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="16">The human-readable name of the content type. </font><font id="17">This is taken from the <a class="reference internal" href="../models/fields.html#django.db.models.Field.verbose_name" title="django.db.models.Field.verbose_name"><tt class="xref py py-attr docutils literal"><span class="pre">verbose_name</span></tt></a> attribute of the model.</font></p>
+</dd></dl>
+</dd></dl>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="18">Before Django 1.8, the <tt class="docutils literal"><span class="pre">name</span></tt> property was a real field on the <tt class="docutils literal"><span class="pre">ContentType</span></tt> model.</font></p>
+</div>
+<p><font id="19">Let’s look at an example to see how this works. </font><font id="20">If you already have the <a class="reference internal" href="contenttypes.html#module-django.contrib.contenttypes" title="django.contrib.contenttypes: Provides generic interface to installed models."><tt class="xref py py-mod docutils literal"><span class="pre">contenttypes</span></tt></a> application installed, and then add <a class="reference internal" href="sites.html#module-django.contrib.sites" title="django.contrib.sites: Lets you operate multiple Web sites from the same database and Django project"><tt class="xref py py-mod docutils literal"><span class="pre">the</span> <span class="pre">sites</span> <span class="pre">application</span></tt></a> to your <a class="reference internal" href="../settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> setting and run <tt class="docutils literal"><span class="pre">manage.py</span> <span class="pre">migrate</span></tt> to install it, the model <a class="reference internal" href="sites.html#django.contrib.sites.models.Site" title="django.contrib.sites.models.Site"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.sites.models.Site</span></tt></a> will be installed into your database. </font><font id="21">Along with it a new instance of <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> will be created with the following values:</font></p>
+<ul class="simple">
+<li><font id="146"><a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.app_label" title="django.contrib.contenttypes.models.ContentType.app_label"><tt class="xref py py-attr docutils literal"><span class="pre">app_label</span></tt></a> will be set to <tt class="docutils literal"><span class="pre">'sites'</span></tt> (the last part of the Python path “django.contrib.sites”).</font></li>
+<li><font id="147"><a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.model" title="django.contrib.contenttypes.models.ContentType.model"><tt class="xref py py-attr docutils literal"><span class="pre">model</span></tt></a> will be set to <tt class="docutils literal"><span class="pre">'site'</span></tt>.</font></li>
+</ul>
+</div>
+<div class="section" id="s-methods-on-contenttype-instances">
+<span id="methods-on-contenttype-instances"></span><h2><font id="131">Methods on </font><tt class="docutils literal"><span class="pre">ContentType</span></tt></h2>
+<p><font id="22">Each <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> instance has methods that allow you to get from a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> instance to the model it represents, or to retrieve objects from that model:</font></p>
+<dl class="method">
+<dt id="django.contrib.contenttypes.models.ContentType.get_object_for_this_type">
+<tt class="descclassname">ContentType.</tt><tt class="descname">get_object_for_this_type</tt>(<em>**kwargs</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentType.get_object_for_this_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.get_object_for_this_type" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="23">Takes a set of valid <a class="reference internal" href="../../topics/db/queries.html#field-lookups-intro"><em>lookup arguments</em></a> for the model the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> represents, and does <a class="reference internal" href="../models/querysets.html#django.db.models.query.QuerySet.get" title="django.db.models.query.QuerySet.get"><tt class="xref py py-meth docutils literal"><span class="pre">a</span> <span class="pre">get()</span> <span class="pre">lookup</span></tt></a> on that model, returning the corresponding object.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.contenttypes.models.ContentType.model_class">
+<tt class="descclassname">ContentType.</tt><tt class="descname">model_class</tt>()<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentType.model_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.model_class" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="24">Returns the model class represented by this <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> instance.</font></p>
+</dd></dl>
+<p><font id="25">For example, we could look up the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> for the <a class="reference internal" href="auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> model:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s">"auth"</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">"user"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_type</span>
+<span class="go">&lt;ContentType: user&gt;</span>
+</pre></div>
+</div>
+<p><font id="26">And then use it to query for a particular <a class="reference internal" href="auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a>, or to get access to the <tt class="docutils literal"><span class="pre">User</span></tt> model class:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">user_type</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+<span class="go">&lt;class 'django.contrib.auth.models.User'&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_type</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">'Guido'</span><span class="p">)</span>
+<span class="go">&lt;User: Guido&gt;</span>
+</pre></div>
+</div>
+<p><font id="27">Together, <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.get_object_for_this_type" title="django.contrib.contenttypes.models.ContentType.get_object_for_this_type"><tt class="xref py py-meth docutils literal"><span class="pre">get_object_for_this_type()</span></tt></a> and <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType.model_class" title="django.contrib.contenttypes.models.ContentType.model_class"><tt class="xref py py-meth docutils literal"><span class="pre">model_class()</span></tt></a> enable two extremely important use cases:</font></p>
+<ol class="arabic simple">
+<li><font id="148">Using these methods, you can write high-level generic code that performs queries on any installed model – instead of importing and using a single specific model class, you can pass an <tt class="docutils literal"><span class="pre">app_label</span></tt> and <tt class="docutils literal"><span class="pre">model</span></tt> into a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> lookup at runtime, and then work with the model class or retrieve objects from it.</font></li>
+<li><font id="149">You can relate another model to <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> as a way of tying instances of it to particular model classes, and use these methods to get access to those model classes.</font></li>
+</ol>
+<p><font id="28">Several of Django’s bundled applications make use of the latter technique. </font><font id="29">For example, <a class="reference internal" href="auth.html#django.contrib.auth.models.Permission" title="django.contrib.auth.models.Permission"><tt class="xref py py-class docutils literal"><span class="pre">the</span> <span class="pre">permissions</span> <span class="pre">system</span></tt></a> in Django’s authentication framework uses a <a class="reference internal" href="auth.html#django.contrib.auth.models.Permission" title="django.contrib.auth.models.Permission"><tt class="xref py py-class docutils literal"><span class="pre">Permission</span></tt></a> model with a foreign key to <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a>; </font><font id="30">this lets <a class="reference internal" href="auth.html#django.contrib.auth.models.Permission" title="django.contrib.auth.models.Permission"><tt class="xref py py-class docutils literal"><span class="pre">Permission</span></tt></a> represent concepts like “can add blog entry” or “can delete news story”.</font></p>
+<div class="section" id="s-the-contenttypemanager">
+<span id="the-contenttypemanager"></span><h3><font id="133">The </font><tt class="docutils literal"><span class="pre">ContentTypeManager</span></tt></h3>
+<dl class="class">
+<dt id="django.contrib.contenttypes.models.ContentTypeManager">
+<em class="property">class </em><tt class="descname">ContentTypeManager</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentTypeManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="31"><a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> also has a custom manager, <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager" title="django.contrib.contenttypes.models.ContentTypeManager"><tt class="xref py py-class docutils literal"><span class="pre">ContentTypeManager</span></tt></a>, which adds the following methods:</font></p>
+<dl class="method">
+<dt id="django.contrib.contenttypes.models.ContentTypeManager.clear_cache">
+<tt class="descname">clear_cache</tt>()<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentTypeManager.clear_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager.clear_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="32">Clears an internal cache used by <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> to keep track of models for which it has created <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> instances. </font><font id="33">You probably won’t ever need to call this method yourself; </font><font id="34">Django will call it automatically when it’s needed.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.contenttypes.models.ContentTypeManager.get_for_id">
+<tt class="descname">get_for_id</tt>(<em>id</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentTypeManager.get_for_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager.get_for_id" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="35">Lookup a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> by ID. </font><font id="36">Since this method uses the same shared cache as <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager.get_for_model" title="django.contrib.contenttypes.models.ContentTypeManager.get_for_model"><tt class="xref py py-meth docutils literal"><span class="pre">get_for_model()</span></tt></a>, it’s preferred to use this method over the usual <tt class="docutils literal"><span class="pre">ContentType.objects.get(pk=id)</span></tt></font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.contenttypes.models.ContentTypeManager.get_for_model">
+<tt class="descname">get_for_model</tt>(<em>model</em><span class="optional">[</span>, <em>for_concrete_model=True</em><span class="optional">]</span>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentTypeManager.get_for_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager.get_for_model" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="37">Takes either a model class or an instance of a model, and returns the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> instance representing that model. </font><font id="38"><tt class="docutils literal"><span class="pre">for_concrete_model=False</span></tt> allows fetching the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> of a proxy model.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.contenttypes.models.ContentTypeManager.get_for_models">
+<tt class="descname">get_for_models</tt>(<em>*models</em><span class="optional">[</span>, <em>for_concrete_models=True</em><span class="optional">]</span>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentTypeManager.get_for_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager.get_for_models" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="39">Takes a variadic number of model classes, and returns a dictionary mapping the model classes to the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> instances representing them. </font><font id="40"><tt class="docutils literal"><span class="pre">for_concrete_models=False</span></tt> allows fetching the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> of proxy models.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.contenttypes.models.ContentTypeManager.get_by_natural_key">
+<tt class="descname">get_by_natural_key</tt>(<em>app_label</em>, <em>model</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/models.html#ContentTypeManager.get_by_natural_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager.get_by_natural_key" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="41">Returns the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> instance uniquely identified by the given application label and model name. </font><font id="42">The primary purpose of this method is to allow <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> objects to be referenced via a <a class="reference internal" href="../../topics/serialization.html#topics-serialization-natural-keys"><em>natural key</em></a> during deserialization.</font></p>
+</dd></dl>
+</dd></dl>
+<p><font id="43">The <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager.get_for_model" title="django.contrib.contenttypes.models.ContentTypeManager.get_for_model"><tt class="xref py py-meth docutils literal"><span class="pre">get_for_model()</span></tt></a> method is especially useful when you know you need to work with a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> but don’t want to go to the trouble of obtaining the model’s metadata to perform a manual lookup:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_type</span>
+<span class="go">&lt;ContentType: user&gt;</span>
+</pre></div>
+</div>
+<span class="target" id="module-django.contrib.contenttypes.fields"></span></div>
+</div>
+<div class="section" id="s-generic-relations">
+<span id="s-id1"></span><span id="generic-relations"></span><span id="id1"></span><h2><font id="132">Generic relations</font><a class="headerlink" href="contenttypes.html#generic-relations" title="Permalink to this headline">¶</a></h2>
+<p><font id="44">Adding a foreign key from one of your own models to <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> allows your model to effectively tie itself to another model class, as in the example of the <a class="reference internal" href="auth.html#django.contrib.auth.models.Permission" title="django.contrib.auth.models.Permission"><tt class="xref py py-class docutils literal"><span class="pre">Permission</span></tt></a> model above. </font><font id="45">But it’s possible to go one step further and use <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> to enable truly generic (sometimes called “polymorphic”) relationships between models.</font></p>
+<p><font id="46">A simple example is a tagging system, which might look like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.fields</span> <span class="kn">import</span> <span class="n">GenericForeignKey</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+
+<span class="k">class</span> <span class="nc">TaggedItem</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">SlugField</span><span class="p">()</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ContentType</span><span class="p">)</span>
+    <span class="n">object_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">()</span>
+    <span class="n">content_object</span> <span class="o">=</span> <span class="n">GenericForeignKey</span><span class="p">(</span><span class="s">'content_type'</span><span class="p">,</span> <span class="s">'object_id'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c"># __unicode__ on Python 2</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
+</pre></div>
+</div>
+<p><font id="47">A normal <a class="reference internal" href="../models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a> can only “point to” one other model, which means that if the <tt class="docutils literal"><span class="pre">TaggedItem</span></tt> model used a <a class="reference internal" href="../models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a> it would have to choose one and only one model to store tags for. </font><font id="48">The contenttypes application provides a special field type (<tt class="docutils literal"><span class="pre">GenericForeignKey</span></tt>) which works around this and allows the relationship to be with any model:</font></p>
+<dl class="class">
+<dt id="django.contrib.contenttypes.fields.GenericForeignKey">
+<em class="property">class </em><tt class="descname">GenericForeignKey</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/fields.html#GenericForeignKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="49">There are three parts to setting up a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a>:</font></p>
+<ol class="arabic simple">
+<li><font id="150">Give your model a <a class="reference internal" href="../models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a> to <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a>. </font><font id="151">The usual name for this field is “content_type”.</font></li>
+<li><font id="152">Give your model a field that can store primary key values from the models you’ll be relating to. </font><font id="153">For most models, this means a <a class="reference internal" href="../models/fields.html#django.db.models.PositiveIntegerField" title="django.db.models.PositiveIntegerField"><tt class="xref py py-class docutils literal"><span class="pre">PositiveIntegerField</span></tt></a>. </font><font id="154">The usual name for this field is “object_id”.</font></li>
+<li><font id="155">Give your model a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a>, and pass it the names of the two fields described above. </font><font id="156">If these fields are named “content_type” and “object_id”, you can omit this – those are the default field names <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a> will look for.</font></li>
+</ol>
+<dl class="attribute">
+<dt id="django.contrib.contenttypes.fields.GenericForeignKey.for_concrete_model">
+<tt class="descname">for_concrete_model</tt><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey.for_concrete_model" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="50">If <tt class="docutils literal"><span class="pre">False</span></tt>, the field will be able to reference proxy models. </font><font id="51">Default is <tt class="docutils literal"><span class="pre">True</span></tt>. </font><font id="52">This mirrors the <tt class="docutils literal"><span class="pre">for_concrete_model</span></tt> argument to <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentTypeManager.get_for_model" title="django.contrib.contenttypes.models.ContentTypeManager.get_for_model"><tt class="xref py py-meth docutils literal"><span class="pre">get_for_model()</span></tt></a>.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.contenttypes.fields.GenericForeignKey.allow_unsaved_instance_assignment">
+<tt class="descname">allow_unsaved_instance_assignment</tt><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey.allow_unsaved_instance_assignment" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="53">Works analogously to <a class="reference internal" href="../models/fields.html#django.db.models.ForeignKey.allow_unsaved_instance_assignment" title="django.db.models.ForeignKey.allow_unsaved_instance_assignment"><tt class="xref py py-attr docutils literal"><span class="pre">ForeignKey.allow_unsaved_instance_assignment</span></tt></a>.</font></p>
+</dd></dl>
+<div class="deprecated">
+<p><font id="54"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="55">This class used to be defined in <tt class="docutils literal"><span class="pre">django.contrib.contenttypes.generic</span></tt>. </font><font id="56">Support for importing from this old location will be removed in Django 1.9.</font></p>
+</div>
+</dd></dl>
+<div class="admonition-primary-key-type-compatibility admonition">
+<p class="first admonition-title"><font id="57">Primary key type compatibility</font></p>
+<p><font id="58">The “object_id” field doesn’t have to be the same type as the primary key fields on the related models, but their primary key values must be coercible to the same type as the “object_id” field by its <a class="reference internal" href="../models/fields.html#django.db.models.Field.get_db_prep_value" title="django.db.models.Field.get_db_prep_value"><tt class="xref py py-meth docutils literal"><span class="pre">get_db_prep_value()</span></tt></a> method.</font></p>
+<p><font id="59">For example, if you want to allow generic relations to models with either <a class="reference internal" href="../models/fields.html#django.db.models.IntegerField" title="django.db.models.IntegerField"><tt class="xref py py-class docutils literal"><span class="pre">IntegerField</span></tt></a> or <a class="reference internal" href="../models/fields.html#django.db.models.CharField" title="django.db.models.CharField"><tt class="xref py py-class docutils literal"><span class="pre">CharField</span></tt></a> primary key fields, you can use <a class="reference internal" href="../models/fields.html#django.db.models.CharField" title="django.db.models.CharField"><tt class="xref py py-class docutils literal"><span class="pre">CharField</span></tt></a> for the “object_id” field on your model since integers can be coerced to strings by <a class="reference internal" href="../models/fields.html#django.db.models.Field.get_db_prep_value" title="django.db.models.Field.get_db_prep_value"><tt class="xref py py-meth docutils literal"><span class="pre">get_db_prep_value()</span></tt></a>.</font></p>
+<p><font id="60">For maximum flexibility you can use a <a class="reference internal" href="../models/fields.html#django.db.models.TextField" title="django.db.models.TextField"><tt class="xref py py-class docutils literal"><span class="pre">TextField</span></tt></a> which doesn’t have a maximum length defined, however this may incur significant performance penalties depending on your database backend.</font></p>
+<p class="last"><font id="61">There is no one-size-fits-all solution for which field type is best. </font><font id="62">You should evaluate the models you expect to be pointing to and determine which solution will be most effective for your use case.</font></p>
+</div>
+<div class="admonition-serializing-references-to-contenttype-objects admonition">
+<p class="first admonition-title"><font id="63">Serializing references to <tt class="docutils literal"><span class="pre">ContentType</span></tt> objects</font></p>
+<p class="last"><font id="64">If you’re serializing data (for example, when generating <a class="reference internal" href="../../topics/testing/tools.html#django.test.TransactionTestCase.fixtures" title="django.test.TransactionTestCase.fixtures"><tt class="xref py py-class docutils literal"><span class="pre">fixtures</span></tt></a>) from a model that implements generic relations, you should probably be using a natural key to uniquely identify related <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> objects. </font><font id="65">See <a class="reference internal" href="../../topics/serialization.html#topics-serialization-natural-keys"><em>natural keys</em></a> and <a class="reference internal" href="../django-admin.html#django-admin-option---natural-foreign"><tt class="xref std std-djadminopt docutils literal"><span class="pre">dumpdata</span> <span class="pre">--natural-foreign</span></tt></a> for more information.</font></p>
+</div>
+<p><font id="66">This will enable an API similar to the one used for a normal <a class="reference internal" href="../models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>; </font><font id="67">each <tt class="docutils literal"><span class="pre">TaggedItem</span></tt> will have a <tt class="docutils literal"><span class="pre">content_object</span></tt> field that returns the object it’s related to, and you can also assign to that field or use it when creating a <tt class="docutils literal"><span class="pre">TaggedItem</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guido</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">'Guido'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">TaggedItem</span><span class="p">(</span><span class="n">content_object</span><span class="o">=</span><span class="n">guido</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s">'bdfl'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">content_object</span>
+<span class="go">&lt;User: Guido&gt;</span>
+</pre></div>
+</div>
+<p><font id="68">Due to the way <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a> is implemented, you cannot use such fields directly with filters (<tt class="docutils literal"><span class="pre">filter()</span></tt> and <tt class="docutils literal"><span class="pre">exclude()</span></tt>, for example) via the database API. </font><font id="69">Because a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a> isn’t a normal field object, these examples will <em>not</em> work:</font></p>
+<div class="highlight-python"><div class="highlight"><pre># This will fail
+&gt;&gt;&gt; TaggedItem.objects.filter(content_object=guido)
+# This will also fail
+&gt;&gt;&gt; TaggedItem.objects.get(content_object=guido)
+</pre></div>
+</div>
+<p><font id="70">Likewise, <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a>s does not appear in <a class="reference internal" href="../../topics/forms/modelforms.html#django.forms.ModelForm" title="django.forms.ModelForm"><tt class="xref py py-class docutils literal"><span class="pre">ModelForm</span></tt></a>s.</font></p>
+<div class="section" id="s-reverse-generic-relations">
+<span id="reverse-generic-relations"></span><h3><font id="134">Reverse generic relations</font><a class="headerlink" href="contenttypes.html#reverse-generic-relations" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.contrib.contenttypes.fields.GenericRelation">
+<em class="property">class </em><tt class="descname">GenericRelation</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/fields.html#GenericRelation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="Permalink to this definition">¶</a></dt>
+<dd><div class="deprecated">
+<p><font id="71"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="72">This class used to be defined in <tt class="docutils literal"><span class="pre">django.contrib.contenttypes.generic</span></tt>. </font><font id="73">Support for importing from this old location will be removed in Django 1.9.</font></p>
+</div>
+<dl class="attribute">
+<dt id="django.contrib.contenttypes.fields.GenericRelation.related_query_name">
+<tt class="descname">related_query_name</tt><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation.related_query_name" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="74">The relation on the related object back to this object doesn’t exist by default. </font><font id="75">Setting <tt class="docutils literal"><span class="pre">related_query_name</span></tt> creates a relation from the related object back to this one. </font><font id="76">This allows querying and filtering from the related object.</font></p>
+</dd></dl>
+</dd></dl>
+<p><font id="77">If you know which models you’ll be using most often, you can also add a “reverse” generic relationship to enable an additional API. </font><font id="78">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Bookmark</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">GenericRelation</span><span class="p">(</span><span class="n">TaggedItem</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="79"><tt class="docutils literal"><span class="pre">Bookmark</span></tt> instances will each have a <tt class="docutils literal"><span class="pre">tags</span></tt> attribute, which can be used to retrieve their associated <tt class="docutils literal"><span class="pre">TaggedItems</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Bookmark</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s">'https://www.djangoproject.com/'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t1</span> <span class="o">=</span> <span class="n">TaggedItem</span><span class="p">(</span><span class="n">content_object</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s">'django'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t2</span> <span class="o">=</span> <span class="n">TaggedItem</span><span class="p">(</span><span class="n">content_object</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s">'python'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">[&lt;TaggedItem: django&gt;, &lt;TaggedItem: python&gt;]</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="80">Defining <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a> with <tt class="docutils literal"><span class="pre">related_query_name</span></tt> set allows querying from the related object:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tags</span> <span class="o">=</span> <span class="n">GenericRelation</span><span class="p">(</span><span class="n">TaggedItem</span><span class="p">,</span> <span class="n">related_query_name</span><span class="o">=</span><span class="s">'bookmarks'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="81">This enables filtering, ordering, and other query operations on <tt class="docutils literal"><span class="pre">Bookmark</span></tt> from <tt class="docutils literal"><span class="pre">TaggedItem</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Get all tags belonging to books containing `django` in the url</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">TaggedItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">bookmarks__url__contains</span><span class="o">=</span><span class="s">'django'</span><span class="p">)</span>
+<span class="go">[&lt;TaggedItem: django&gt;, &lt;TaggedItem: python&gt;]</span>
+</pre></div>
+</div>
+<p><font id="82">Just as <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a> accepts the names of the content-type and object-ID fields as arguments, so too does <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a>; </font><font id="83">if the model which has the generic foreign key is using non-default names for those fields, you must pass the names of the fields when setting up a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a> to it. </font><font id="84">For example, if the <tt class="docutils literal"><span class="pre">TaggedItem</span></tt> model referred to above used fields named <tt class="docutils literal"><span class="pre">content_type_fk</span></tt> and <tt class="docutils literal"><span class="pre">object_primary_key</span></tt> to create its generic foreign key, then a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a> back to it would need to be defined like so:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tags</span> <span class="o">=</span> <span class="n">GenericRelation</span><span class="p">(</span><span class="n">TaggedItem</span><span class="p">,</span>
+                       <span class="n">content_type_field</span><span class="o">=</span><span class="s">'content_type_fk'</span><span class="p">,</span>
+                       <span class="n">object_id_field</span><span class="o">=</span><span class="s">'object_primary_key'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="85">Of course, if you don’t add the reverse relationship, you can do the same types of lookups manually:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Bookmark</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s">'https://www.djangoproject.com/'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bookmark_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">TaggedItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">content_type__pk</span><span class="o">=</span><span class="n">bookmark_type</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+<span class="gp">... </span>                          <span class="n">object_id</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="go">[&lt;TaggedItem: django&gt;, &lt;TaggedItem: python&gt;]</span>
+</pre></div>
+</div>
+<p><font id="86">Note that if the model in a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a> uses a non-default value for <tt class="docutils literal"><span class="pre">ct_field</span></tt> or <tt class="docutils literal"><span class="pre">fk_field</span></tt> in its <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a> (for example, if you had a <tt class="docutils literal"><span class="pre">Comment</span></tt> model that uses <tt class="docutils literal"><span class="pre">ct_field="object_pk"</span></tt>), you’ll need to set <tt class="docutils literal"><span class="pre">content_type_field</span></tt> and/or <tt class="docutils literal"><span class="pre">object_id_field</span></tt> in the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a> to match the <tt class="docutils literal"><span class="pre">ct_field</span></tt> and <tt class="docutils literal"><span class="pre">fk_field</span></tt>, respectively, in the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">comments</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">GenericRelation</span><span class="p">(</span><span class="n">Comment</span><span class="p">,</span> <span class="n">object_id_field</span><span class="o">=</span><span class="s">"object_pk"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="87">Note also, that if you delete an object that has a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a>, any objects which have a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a> pointing at it will be deleted as well. </font><font id="88">In the example above, this means that if a <tt class="docutils literal"><span class="pre">Bookmark</span></tt> object were deleted, any <tt class="docutils literal"><span class="pre">TaggedItem</span></tt> objects pointing at it would be deleted at the same time.</font></p>
+<p><font id="89">Unlike <a class="reference internal" href="../models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>, <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a> does not accept an <a class="reference internal" href="../models/fields.html#django.db.models.ForeignKey.on_delete" title="django.db.models.ForeignKey.on_delete"><tt class="xref py py-attr docutils literal"><span class="pre">on_delete</span></tt></a> argument to customize this behavior; </font><font id="90">if desired, you can avoid the cascade-deletion simply by not using <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a>, and alternate behavior can be provided via the <a class="reference internal" href="../signals.html#django.db.models.signals.pre_delete" title="django.db.models.signals.pre_delete"><tt class="xref py py-data docutils literal"><span class="pre">pre_delete</span></tt></a> signal.</font></p>
+</div>
+<div class="section" id="s-generic-relations-and-aggregation">
+<span id="generic-relations-and-aggregation"></span><h3><font id="135">Generic relations and aggregation</font><a class="headerlink" href="contenttypes.html#generic-relations-and-aggregation" title="Permalink to this headline">¶</a></h3>
+<p><font id="91"><a class="reference internal" href="../../topics/db/aggregation.html"><em>Django’s database aggregation API</em></a> doesn’t work with a <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericRelation" title="django.contrib.contenttypes.fields.GenericRelation"><tt class="xref py py-class docutils literal"><span class="pre">GenericRelation</span></tt></a>. </font><font id="92">For example, you might be tempted to try something like:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Bookmark</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">Count</span><span class="p">(</span><span class="s">'tags'</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><font id="93">This will not work correctly, however. </font><font id="94">The generic relation adds extra filters to the queryset to ensure the correct content type, but the <a class="reference internal" href="../models/querysets.html#django.db.models.query.QuerySet.aggregate" title="django.db.models.query.QuerySet.aggregate"><tt class="xref py py-meth docutils literal"><span class="pre">aggregate()</span></tt></a> method doesn’t take them into account. </font><font id="95">For now, if you need aggregates on generic relations, you’ll need to calculate them without using the aggregation API.</font></p>
+<span class="target" id="module-django.contrib.contenttypes.forms"></span></div>
+<div class="section" id="s-generic-relation-in-forms">
+<span id="generic-relation-in-forms"></span><h3><font id="136">Generic relation in forms</font><a class="headerlink" href="contenttypes.html#generic-relation-in-forms" title="Permalink to this headline">¶</a></h3>
+<p><font id="96">The <a class="reference internal" href="contenttypes.html#module-django.contrib.contenttypes.forms" title="django.contrib.contenttypes.forms"><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.contenttypes.forms</span></tt></a> module provides:</font></p>
+<ul class="simple">
+<li><a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.forms.BaseGenericInlineFormSet" title="django.contrib.contenttypes.forms.BaseGenericInlineFormSet"><font id="157">BaseGenericInlineFormSet</font></a></li>
+<li><font id="158">A formset factory, <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.forms.generic_inlineformset_factory" title="django.contrib.contenttypes.forms.generic_inlineformset_factory"><tt class="xref py py-func docutils literal"><span class="pre">generic_inlineformset_factory()</span></tt></a>, for use with <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey" title="django.contrib.contenttypes.fields.GenericForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">GenericForeignKey</span></tt></a>.</font></li>
+</ul>
+<dl class="class">
+<dt id="django.contrib.contenttypes.forms.BaseGenericInlineFormSet">
+<em class="property">class </em><tt class="descname">BaseGenericInlineFormSet</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/forms.html#BaseGenericInlineFormSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.forms.BaseGenericInlineFormSet" title="Permalink to this definition">¶</a></dt>
+<dd><div class="deprecated">
+<p><font id="97"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="98">This class used to be defined in <tt class="docutils literal"><span class="pre">django.contrib.contenttypes.generic</span></tt>. </font><font id="99">Support for importing from this old location will be removed in Django 1.9.</font></p>
+</div>
+</dd></dl>
+<dl class="function">
+<dt id="django.contrib.contenttypes.forms.generic_inlineformset_factory">
+<tt class="descname">generic_inlineformset_factory</tt>(<em>model</em>, <em>form=ModelForm</em>, <em>formset=BaseGenericInlineFormSet</em>, <em>ct_field="content_type"</em>, <em>fk_field="object_id"</em>, <em>fields=None</em>, <em>exclude=None</em>, <em>extra=3</em>, <em>can_order=False</em>, <em>can_delete=True</em>, <em>max_num=None</em>, <em>formfield_callback=None</em>, <em>validate_max=False</em>, <em>for_concrete_model=True</em>, <em>min_num=None</em>, <em>validate_min=False</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/forms.html#generic_inlineformset_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.forms.generic_inlineformset_factory" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="100">Returns a <tt class="docutils literal"><span class="pre">GenericInlineFormSet</span></tt> using <a class="reference internal" href="../forms/models.html#django.forms.models.modelformset_factory" title="django.forms.models.modelformset_factory"><tt class="xref py py-func docutils literal"><span class="pre">modelformset_factory()</span></tt></a>.</font></p>
+<p><font id="101">You must provide <tt class="docutils literal"><span class="pre">ct_field</span></tt> and <tt class="docutils literal"><span class="pre">fk_field</span></tt> if they are different from the defaults, <tt class="docutils literal"><span class="pre">content_type</span></tt> and <tt class="docutils literal"><span class="pre">object_id</span></tt> respectively. </font><font id="102">Other parameters are similar to those documented in <a class="reference internal" href="../forms/models.html#django.forms.models.modelformset_factory" title="django.forms.models.modelformset_factory"><tt class="xref py py-func docutils literal"><span class="pre">modelformset_factory()</span></tt></a> and <a class="reference internal" href="../forms/models.html#django.forms.models.inlineformset_factory" title="django.forms.models.inlineformset_factory"><tt class="xref py py-func docutils literal"><span class="pre">inlineformset_factory()</span></tt></a>.</font></p>
+<p><font id="103">The <tt class="docutils literal"><span class="pre">for_concrete_model</span></tt> argument corresponds to the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.fields.GenericForeignKey.for_concrete_model" title="django.contrib.contenttypes.fields.GenericForeignKey.for_concrete_model"><tt class="xref py py-class docutils literal"><span class="pre">for_concrete_model</span></tt></a> argument on <tt class="docutils literal"><span class="pre">GenericForeignKey</span></tt>.</font></p>
+<div class="deprecated">
+<p><font id="104"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="105">This function used to be defined in <tt class="docutils literal"><span class="pre">django.contrib.contenttypes.generic</span></tt>. </font><font id="106">Support for importing from this old location will be removed in Django 1.9.</font></p>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="107"><tt class="docutils literal"><span class="pre">min_num</span></tt> and <tt class="docutils literal"><span class="pre">validate_min</span></tt> were added.</font></p>
+</div>
+</dd></dl>
+<span class="target" id="module-django.contrib.contenttypes.admin"></span></div>
+<div class="section" id="s-generic-relations-in-admin">
+<span id="generic-relations-in-admin"></span><h3><font id="137">Generic relations in admin</font><a class="headerlink" href="contenttypes.html#generic-relations-in-admin" title="Permalink to this headline">¶</a></h3>
+<p><font id="108">The <a class="reference internal" href="contenttypes.html#module-django.contrib.contenttypes.admin" title="django.contrib.contenttypes.admin"><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.contenttypes.admin</span></tt></a> module provides <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.admin.GenericTabularInline" title="django.contrib.contenttypes.admin.GenericTabularInline"><tt class="xref py py-class docutils literal"><span class="pre">GenericTabularInline</span></tt></a> and <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.admin.GenericStackedInline" title="django.contrib.contenttypes.admin.GenericStackedInline"><tt class="xref py py-class docutils literal"><span class="pre">GenericStackedInline</span></tt></a> (subclasses of <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.admin.GenericInlineModelAdmin" title="django.contrib.contenttypes.admin.GenericInlineModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">GenericInlineModelAdmin</span></tt></a>)</font></p>
+<p><font id="109">These classes and functions enable the use of generic relations in forms and the admin. </font><font id="110">See the <a class="reference internal" href="../../topics/forms/modelforms.html"><em>model formset</em></a> and <a class="reference internal" href="admin/index.html#using-generic-relations-as-an-inline"><em>admin</em></a> documentation for more information.</font></p>
+<dl class="class">
+<dt id="django.contrib.contenttypes.admin.GenericInlineModelAdmin">
+<em class="property">class </em><tt class="descname">GenericInlineModelAdmin</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/admin.html#GenericInlineModelAdmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.admin.GenericInlineModelAdmin" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="111">The <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.admin.GenericInlineModelAdmin" title="django.contrib.contenttypes.admin.GenericInlineModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">GenericInlineModelAdmin</span></tt></a> class inherits all properties from an <a class="reference internal" href="admin/index.html#django.contrib.admin.InlineModelAdmin" title="django.contrib.admin.InlineModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">InlineModelAdmin</span></tt></a> class. </font><font id="112">However, it adds a couple of its own for working with the generic relation:</font></p>
+<dl class="attribute">
+<dt id="django.contrib.contenttypes.admin.GenericInlineModelAdmin.ct_field">
+<tt class="descname">ct_field</tt><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.admin.GenericInlineModelAdmin.ct_field" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="113">The name of the <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.models.ContentType" title="django.contrib.contenttypes.models.ContentType"><tt class="xref py py-class docutils literal"><span class="pre">ContentType</span></tt></a> foreign key field on the model. </font><font id="114">Defaults to <tt class="docutils literal"><span class="pre">content_type</span></tt>.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.contenttypes.admin.GenericInlineModelAdmin.ct_fk_field">
+<tt class="descname">ct_fk_field</tt><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.admin.GenericInlineModelAdmin.ct_fk_field" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="115">The name of the integer field that represents the ID of the related object. </font><font id="116">Defaults to <tt class="docutils literal"><span class="pre">object_id</span></tt>.</font></p>
+</dd></dl>
+<div class="deprecated">
+<p><font id="117"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="118">This class used to be defined in <tt class="docutils literal"><span class="pre">django.contrib.contenttypes.generic</span></tt>. </font><font id="119">Support for importing from this old location will be removed in Django 1.9.</font></p>
+</div>
+</dd></dl>
+<dl class="class">
+<dt id="django.contrib.contenttypes.admin.GenericTabularInline">
+<em class="property">class </em><tt class="descname">GenericTabularInline</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/admin.html#GenericTabularInline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.admin.GenericTabularInline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="class">
+<dt id="django.contrib.contenttypes.admin.GenericStackedInline">
+<em class="property">class </em><tt class="descname">GenericStackedInline</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/contenttypes/admin.html#GenericStackedInline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="contenttypes.html#django.contrib.contenttypes.admin.GenericStackedInline" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="120">Subclasses of <a class="reference internal" href="contenttypes.html#django.contrib.contenttypes.admin.GenericInlineModelAdmin" title="django.contrib.contenttypes.admin.GenericInlineModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">GenericInlineModelAdmin</span></tt></a> with stacked and tabular layouts, respectively.</font></p>
+<div class="deprecated">
+<p><font id="121"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="122">These classes used to be defined in <tt class="docutils literal"><span class="pre">django.contrib.contenttypes.generic</span></tt>. </font><font id="123">Support for importing from this old location will be removed in Django 1.9.</font></p>
+</div>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="138">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="contenttypes.html#"><font id="159">The contenttypes framework</font></a><ul>
+<li><a class="reference internal" href="contenttypes.html#overview"><font id="160">Overview</font></a></li>
+<li><a class="reference internal" href="contenttypes.html#installing-the-contenttypes-framework"><font id="161">Installing the contenttypes framework</font></a></li>
+<li><a class="reference internal" href="contenttypes.html#the-contenttype-model"><font id="162">None</font></a></li>
+<li><a class="reference internal" href="contenttypes.html#methods-on-contenttype-instances"><font id="163">None</font></a><ul>
+<li><a class="reference internal" href="contenttypes.html#the-contenttypemanager"><font id="164">None</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="contenttypes.html#generic-relations"><font id="165">Generic relations</font></a><ul>
+<li><a class="reference internal" href="contenttypes.html#reverse-generic-relations"><font id="166">Reverse generic relations</font></a></li>
+<li><a class="reference internal" href="contenttypes.html#generic-relations-and-aggregation"><font id="167">Generic relations and aggregation</font></a></li>
+<li><a class="reference internal" href="contenttypes.html#generic-relation-in-forms"><font id="168">Generic relation in forms</font></a></li>
+<li><a class="reference internal" href="contenttypes.html#generic-relations-in-admin"><font id="169">Generic relations in admin</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="139">Browse</font></h3>
+<ul>
+<li><font id="170">Prev: <a href="auth.html"><tt class="docutils literal"><span class="pre">django.contrib.auth</span></tt></a></font></li>
+<li><font id="171">Next: <a href="flatpages.html">The flatpages app</a></font></li>
+</ul>
+<h3><font id="140">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="172">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../index.html"><font id="173">API Reference</font></a>
+<ul><li><a href="index.html"><font id="174">None</font></a>
+<ul><li><font id="175">The contenttypes framework</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="141">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/contrib/contenttypes.txt" rel="nofollow"><font id="176">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="142">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="124"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="143">Last update:</font></h3>
+<p class="topless"><font id="125">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="auth.html" title='&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;django.contrib.auth&lt;/span&gt;&lt;/tt&gt;'>previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="flatpages.html" title="The flatpages app">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/contrib/contenttypes';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

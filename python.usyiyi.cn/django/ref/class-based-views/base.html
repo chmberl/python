@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>基础视图 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Built-in Class-based views API"/>
+<link href="generic-display.html" rel="next" title="Generic display views"/>
+<link href="index.html" rel="prev" title="Built-in Class-based views API"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="66">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="index.html" title="Built-in Class-based views API">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="generic-display.html" title="Generic display views">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-class-based-views-base">
+<div class="section" id="s-base-views">
+<span id="base-views"></span><h1><font id="67">基础视图</font><a class="headerlink" href="base.html#base-views" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">下面三个类提供创建Django 视图所需要的大部分功能。</font><font id="2">你认为它们是<em>父</em>视图，它们可以直接使用或者被继承。</font><font id="3">它们不能满足项目中所有的需求，在这种情况下有Mixin 和基于类的通用视图。</font></p>
+<p><font id="4">Django 许多内建的基于类的视图继承自其它基于类的视图或者各种Mixin。</font><font id="5">因为继承链非常重要，它们的祖先类会在标题为<strong>祖先(MRO)</strong> 的小节中显示。</font><font id="6">MRO 是方法解析顺序（Method Resolution Order） 的缩写。</font></p>
+<div class="section" id="s-view">
+<span id="view"></span><h2><font id="68">View</font><a class="headerlink" href="base.html#view" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.views.generic.base.View">
+<em class="property">class </em><tt class="descclassname">django.views.generic.base.</tt><tt class="descname">View</tt><a class="headerlink" href="base.html#django.views.generic.base.View" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="7">基于类的基础视图的核心。</font><font id="8">其它所有的基于类的视图都继承自这个基础类。</font></p>
+<p><font id="9"><strong>方法图谱</strong></font></p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="base.html#django.views.generic.base.View.dispatch" title="django.views.generic.base.View.dispatch"><font id="77">dispatch()</font></a></li>
+<li><a class="reference internal" href="base.html#django.views.generic.base.View.http_method_not_allowed" title="django.views.generic.base.View.http_method_not_allowed"><font id="78">http_method_not_allowed()</font></a></li>
+<li><a class="reference internal" href="base.html#django.views.generic.base.View.options" title="django.views.generic.base.View.options"><font id="79">options()</font></a></li>
+</ol>
+<p><font id="10"><strong>示例views.py</strong>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">View</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s">'Hello, World!'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="11"><strong>示例urls.py</strong>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">myapp.views</span> <span class="kn">import</span> <span class="n">MyView</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^mine/$'</span><span class="p">,</span> <span class="n">MyView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'my-view'</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="12"><strong>属性</strong></font></p>
+<dl class="attribute">
+<dt id="django.views.generic.base.View.http_method_names">
+<tt class="descname">http_method_names</tt><a class="headerlink" href="base.html#django.views.generic.base.View.http_method_names" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="13">该视图接受的HTTP 方法名称。</font></p>
+<p><font id="14">默认：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">'get'</span><span class="p">,</span> <span class="s">'post'</span><span class="p">,</span> <span class="s">'put'</span><span class="p">,</span> <span class="s">'patch'</span><span class="p">,</span> <span class="s">'delete'</span><span class="p">,</span> <span class="s">'head'</span><span class="p">,</span> <span class="s">'options'</span><span class="p">,</span> <span class="s">'trace'</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+<p><font id="15"><strong>方法</strong></font></p>
+<dl class="classmethod">
+<dt id="django.views.generic.base.View.as_view">
+<em class="property">classmethod </em><tt class="descname">as_view</tt>(<em>**initkwargs</em>)<a class="headerlink" href="base.html#django.views.generic.base.View.as_view" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="16">返回一个可调用的视图，它接受一个请求并返回一个响应：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">response</span> <span class="o">=</span> <span class="n">MyView</span><span class="o">.</span><span class="n">as_view</span><span class="p">()(</span><span class="n">request</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="method">
+<dt id="django.views.generic.base.View.dispatch">
+<tt class="descname">dispatch</tt>(<em>request</em>, <em>*args</em>, <em>**kwargs</em>)<a class="headerlink" href="base.html#django.views.generic.base.View.dispatch" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="17">视图的<tt class="docutils literal"><span class="pre">精髓</span></tt>部分 —— 该方法接受一个<tt class="docutils literal"><span class="pre">request</span></tt> 加上其它参数并返回一个HTTP 响应。</font></p>
+<p><font id="18">默认的实现是检查HTTP 的方法，然后委托给一个与之匹配的方法；</font><font id="19"><tt class="docutils literal"><span class="pre">GET</span></tt> 请求将委托给<tt class="docutils literal"><span class="pre">get()</span></tt>， <tt class="docutils literal"><span class="pre">POST</span></tt> 请求给<tt class="docutils literal"><span class="pre">post()</span></tt>，等等。</font></p>
+<p><font id="20">默认情况下，<tt class="docutils literal"><span class="pre">HEAD</span></tt> 将委托给<tt class="docutils literal"><span class="pre">get()</span></tt>。</font><font id="21">如果处理<tt class="docutils literal"><span class="pre">HEAD</span></tt> 请求的方式需要与<tt class="docutils literal"><span class="pre">GET</span></tt> 不同，你可以覆盖<tt class="docutils literal"><span class="pre">head()</span></tt> 方法。</font><font id="22">参见<a class="reference internal" href="../../topics/class-based-views/index.html#supporting-other-http-methods"><em>支持其它HTTP 方法</em></a>中的一个例子。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.views.generic.base.View.http_method_not_allowed">
+<tt class="descname">http_method_not_allowed</tt>(<em>request</em>, <em>*args</em>, <em>**kwargs</em>)<a class="headerlink" href="base.html#django.views.generic.base.View.http_method_not_allowed" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="23">如果视图以一个不支持的HTTP 方法调用，将会调用这个方法。</font></p>
+<p><font id="24">默认的实现是返回<tt class="docutils literal"><span class="pre">HttpResponseNotAllowed</span></tt>，并带有一个纯文本格式的允许的方法列表。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.views.generic.base.View.options">
+<tt class="descname">options</tt>(<em>request</em>, <em>*args</em>, <em>**kwargs</em>)<a class="headerlink" href="base.html#django.views.generic.base.View.options" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="25">响应OPTIONS HTTP 请求。</font><font id="26">返回允许的HTTP 方法列表。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-templateview">
+<span id="templateview"></span><h2><font id="69">TemplateView</font><a class="headerlink" href="base.html#templateview" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.views.generic.base.TemplateView">
+<em class="property">class </em><tt class="descclassname">django.views.generic.base.</tt><tt class="descname">TemplateView</tt><a class="headerlink" href="base.html#django.views.generic.base.TemplateView" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="27">渲染一个给定的模板，其上下文包含从URL 捕获的参数。</font></p>
+<p><font id="28"><strong>祖先(MRO)</strong></font></p>
+<p><font id="29">该视图从以下视图继承方法和属性：</font></p>
+<ul class="simple">
+<li><a class="reference internal" href="mixins-simple.html#django.views.generic.base.TemplateResponseMixin" title="django.views.generic.base.TemplateResponseMixin"><font id="80">django.views.generic.base.TemplateResponseMixin</font></a></li>
+<li><a class="reference internal" href="mixins-simple.html#django.views.generic.base.ContextMixin" title="django.views.generic.base.ContextMixin"><font id="81">django.views.generic.base.ContextMixin</font></a></li>
+<li><a class="reference internal" href="base.html#django.views.generic.base.View" title="django.views.generic.base.View"><font id="82">django.views.generic.base.View</font></a></li>
+</ul>
+<p><font id="30"><strong>方法图谱</strong></font></p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="base.html#django.views.generic.base.View.dispatch" title="django.views.generic.base.View.dispatch"><font id="83">dispatch()</font></a></li>
+<li><a class="reference internal" href="base.html#django.views.generic.base.View.http_method_not_allowed" title="django.views.generic.base.View.http_method_not_allowed"><font id="84">http_method_not_allowed()</font></a></li>
+<li><a class="reference internal" href="mixins-simple.html#django.views.generic.base.ContextMixin.get_context_data" title="django.views.generic.base.ContextMixin.get_context_data"><font id="85">get_context_data()</font></a></li>
+</ol>
+<p><font id="31"><strong>示例views.py</strong>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.generic.base</span> <span class="kn">import</span> <span class="n">TemplateView</span>
+
+<span class="kn">from</span> <span class="nn">articles.models</span> <span class="kn">import</span> <span class="n">Article</span>
+
+<span class="k">class</span> <span class="nc">HomePageView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s">"home.html"</span>
+
+    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">HomePageView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s">'latest_articles'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Article</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()[:</span><span class="mi">5</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">context</span>
+</pre></div>
+</div>
+<p><font id="32"><strong>示例urls.py</strong>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">myapp.views</span> <span class="kn">import</span> <span class="n">HomePageView</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">HomePageView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'home'</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="33"><strong>上下文</strong></font></p>
+<ul class="simple">
+<li><font id="86">以URL 中捕获的关键字参数填充（通过<a class="reference internal" href="mixins-simple.html#django.views.generic.base.ContextMixin" title="django.views.generic.base.ContextMixin"><tt class="xref py py-class docutils literal"><span class="pre">ContextMixin</span></tt></a>）。</font></li>
+</ul>
+</dd></dl>
+</div>
+<div class="section" id="s-redirectview">
+<span id="redirectview"></span><h2><font id="70">RedirectView</font><a class="headerlink" href="base.html#redirectview" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.views.generic.base.RedirectView">
+<em class="property">class </em><tt class="descclassname">django.views.generic.base.</tt><tt class="descname">RedirectView</tt><a class="headerlink" href="base.html#django.views.generic.base.RedirectView" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="34">重定向到一个给定的URL。</font></p>
+<p><font id="35">给定的URL 可以包含字典形式的字符串格式化形式，它将用URL 中捕获的参数替换。</font><font id="102">因为<em>始终</em> 执行关键字形式的替换（即使没有传递参数），URL 中的任何<tt class="docutils literal"><span class="pre">"%"</span></tt> 字符必须写成<tt class="docutils literal"><span class="pre">"%%"</span></tt>，这样Python 才会在输出中将它们转换成单个百分号。</font></p>
+<p><font id="36">如果给定的URL 为<tt class="docutils literal"><span class="pre">None</span></tt>，Django 将返回一个<tt class="docutils literal"><span class="pre">HttpResponseGone</span></tt> (410)。</font></p>
+<p><font id="37"><strong>祖先(MRO)</strong></font></p>
+<p><font id="38">该视图从以下视图继承方法和属性：</font></p>
+<ul class="simple">
+<li><a class="reference internal" href="base.html#django.views.generic.base.View" title="django.views.generic.base.View"><font id="87">django.views.generic.base.View</font></a></li>
+</ul>
+<p><font id="39"><strong>方法图谱</strong></font></p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="base.html#django.views.generic.base.View.dispatch" title="django.views.generic.base.View.dispatch"><font id="88">dispatch()</font></a></li>
+<li><a class="reference internal" href="base.html#django.views.generic.base.View.http_method_not_allowed" title="django.views.generic.base.View.http_method_not_allowed"><font id="89">http_method_not_allowed()</font></a></li>
+<li><a class="reference internal" href="base.html#django.views.generic.base.RedirectView.get_redirect_url" title="django.views.generic.base.RedirectView.get_redirect_url"><font id="90">get_redirect_url()</font></a></li>
+</ol>
+<p><font id="40"><strong>示例views.py</strong>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span> <span class="nn">django.views.generic.base</span> <span class="kn">import</span> <span class="n">RedirectView</span>
+
+<span class="kn">from</span> <span class="nn">articles.models</span> <span class="kn">import</span> <span class="n">Article</span>
+
+<span class="k">class</span> <span class="nc">ArticleCounterRedirectView</span><span class="p">(</span><span class="n">RedirectView</span><span class="p">):</span>
+
+    <span class="n">permanent</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">query_string</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">pattern_name</span> <span class="o">=</span> <span class="s">'article-detail'</span>
+
+    <span class="k">def</span> <span class="nf">get_redirect_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">article</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Article</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s">'pk'</span><span class="p">])</span>
+        <span class="n">article</span><span class="o">.</span><span class="n">update_counter</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ArticleCounterRedirectView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_redirect_url</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="41"><strong>示例urls.py</strong>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.views.generic.base</span> <span class="kn">import</span> <span class="n">RedirectView</span>
+
+<span class="kn">from</span> <span class="nn">article.views</span> <span class="kn">import</span> <span class="n">ArticleCounterRedirectView</span><span class="p">,</span> <span class="n">ArticleDetail</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^counter/(?P&lt;pk&gt;[0-9]+)/$'</span><span class="p">,</span> <span class="n">ArticleCounterRedirectView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'article-counter'</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^details/(?P&lt;pk&gt;[0-9]+)/$'</span><span class="p">,</span> <span class="n">ArticleDetail</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'article-detail'</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^go-to-django/$'</span><span class="p">,</span> <span class="n">RedirectView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s">'http://djangoproject.com'</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s">'go-to-django'</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="42"><strong>属性</strong></font></p>
+<dl class="attribute">
+<dt id="django.views.generic.base.RedirectView.url">
+<tt class="descname">url</tt><a class="headerlink" href="base.html#django.views.generic.base.RedirectView.url" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="43">字符串形式的重定向URL。</font><font id="44">如果为<tt class="docutils literal"><span class="pre">None</span></tt>，则引发一个410 (Gone) HTTP 错误。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.views.generic.base.RedirectView.pattern_name">
+<tt class="descname">pattern_name</tt><a class="headerlink" href="base.html#django.views.generic.base.RedirectView.pattern_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="45">重定向的目标URL 模式的名称。</font><font id="46">将使用与传递给视图的相同位置参数和关键字参数做反查。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.views.generic.base.RedirectView.permanent">
+<tt class="descname">permanent</tt><a class="headerlink" href="base.html#django.views.generic.base.RedirectView.permanent" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="47">重定是否应该是永久的。</font><font id="48">唯一的区别是返回的HTTP 状态码。</font><font id="49">如果为<tt class="docutils literal"><span class="pre">True</span></tt>，那么重定向将使用状态码301。</font><font id="50">如果为<tt class="docutils literal"><span class="pre">False</span></tt>，那么重定向将使用状态码302。</font><font id="51"><tt class="docutils literal"><span class="pre">permanent</span></tt> 默认为<tt class="docutils literal"><span class="pre">True</span></tt>。</font></p>
+<div class="deprecated">
+<p><font id="52"><span class="versionmodified">Deprecated since version 1.8: </span></font><font id="53">在Django 1.9 中<tt class="docutils literal"><span class="pre">permanent</span></tt> 属性的默认值将从<tt class="docutils literal"><span class="pre">True</span></tt> 改为<tt class="docutils literal"><span class="pre">False</span></tt>。</font></p>
+</div>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.views.generic.base.RedirectView.query_string">
+<tt class="descname">query_string</tt><a class="headerlink" href="base.html#django.views.generic.base.RedirectView.query_string" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="54">是否将GET 的查询字符串一起传递给新的地址。</font><font id="55">如果为<tt class="docutils literal"><span class="pre">True</span></tt>，那么查询字符串将附加到URL 的后面。</font><font id="56">如果为<tt class="docutils literal"><span class="pre">False</span></tt>，那么查询字符串将被丢弃。</font><font id="57"><tt class="docutils literal"><span class="pre">query_string</span></tt> 默认为<tt class="docutils literal"><span class="pre">False</span></tt>。</font></p>
+</dd></dl>
+<p><font id="58"><strong>方法</strong></font></p>
+<dl class="method">
+<dt id="django.views.generic.base.RedirectView.get_redirect_url">
+<tt class="descname">get_redirect_url</tt>(<em>*args</em>, <em>**kwargs</em>)<a class="headerlink" href="base.html#django.views.generic.base.RedirectView.get_redirect_url" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="59">构造重定向的目标URL。</font></p>
+<p><font id="60">默认的实现使用<a class="reference internal" href="base.html#django.views.generic.base.RedirectView.url" title="django.views.generic.base.RedirectView.url"><tt class="xref py py-attr docutils literal"><span class="pre">url</span></tt></a> 作为开始的字符串并使用<tt class="docutils literal"><span class="pre">%</span></tt> 操作符将URL 中捕获的命名参数替换到字符串中。</font></p>
+<p><font id="61">如果没有设置<a class="reference internal" href="base.html#django.views.generic.base.RedirectView.url" title="django.views.generic.base.RedirectView.url"><tt class="xref py py-attr docutils literal"><span class="pre">url</span></tt></a>，<tt class="docutils literal"><span class="pre">get_redirect_url()</span></tt> 将反查使用URL 中捕获的参数和命名参数反查<a class="reference internal" href="base.html#django.views.generic.base.RedirectView.pattern_name" title="django.views.generic.base.RedirectView.pattern_name"><tt class="xref py py-attr docutils literal"><span class="pre">pattern_name</span></tt></a> 。</font></p>
+<p><font id="62">如果有查询字符串且<a class="reference internal" href="base.html#django.views.generic.base.RedirectView.query_string" title="django.views.generic.base.RedirectView.query_string"><tt class="xref py py-attr docutils literal"><span class="pre">query_string</span></tt></a> 为真，它还会将查询字符串添加到生成的URL 的后面。</font><font id="63">子类可以实现任意行为，只要改方法返回一个可以重定向的URL 字符串。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="71">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="base.html#"><font id="91">基础视图</font></a><ul>
+<li><a class="reference internal" href="base.html#view"><font id="92">View</font></a></li>
+<li><a class="reference internal" href="base.html#templateview"><font id="93">TemplateView</font></a></li>
+<li><a class="reference internal" href="base.html#redirectview"><font id="94">RedirectView</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="72">浏览</font></h3>
+<ul>
+<li><font id="95">上一页：<a href="index.html">内建的基于类的视图的API</a></font></li>
+<li><font id="96">下一页：<a href="generic-display.html">通用的显示视图</a></font></li>
+</ul>
+<h3><font id="73">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="97">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="98">API 参考</font></a>
+<ul><li><a href="index.html"><font id="99">内建的基于类的视图的API</font></a>
+<ul><li><font id="100">基础视图</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="74">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/class-based-views/base.txt" rel="nofollow"><font id="101">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="75">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="64"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="76">最后更新：</font></h3>
+<p class="topless"><font id="65">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="index.html" title="Built-in Class-based views API">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="generic-display.html" title="Generic display views">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/class-based-views/base.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

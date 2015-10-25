@@ -1,0 +1,531 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>中间件 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="API Reference"/>
+<link href="migration-operations.html" rel="next" title="Migration Operations"/>
+<link href="forms/validation.html" rel="prev" title="Form and field validation"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="137">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="forms/validation.html" title="Form and field validation">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="migration-operations.html" title="Migration Operations">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-middleware">
+<div class="section" id="s-module-django.middleware">
+<span id="s-middleware"></span><span id="module-django.middleware"></span><span id="middleware"></span><h1><font id="138">中间件</font><a class="headerlink" href="middleware.html#module-django.middleware" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">这篇文档介绍了Django自带的所有中间件组件。 </font><font id="2">要查看关于如何使用它们以及如何编写自己的中间件，请见<a class="reference internal" href="../topics/http/middleware.html"><em>中间件使用指导</em></a>。</font></p>
+<div class="section" id="s-available-middleware">
+<span id="available-middleware"></span><h2><font id="139">可用的中间件</font><a class="headerlink" href="middleware.html#available-middleware" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-module-django.middleware.cache">
+<span id="s-cache-middleware"></span><span id="module-django.middleware.cache"></span><span id="cache-middleware"></span><h3><font id="141">缓存中间件</font><a class="headerlink" href="middleware.html#module-django.middleware.cache" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.middleware.cache.UpdateCacheMiddleware">
+<em class="property">class </em><tt class="descname">UpdateCacheMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/cache.html#UpdateCacheMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.cache.UpdateCacheMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="class">
+<dt id="django.middleware.cache.FetchFromCacheMiddleware">
+<em class="property">class </em><tt class="descname">FetchFromCacheMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/cache.html#FetchFromCacheMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.cache.FetchFromCacheMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="3">开启全站范围的缓存。 </font><font id="4">如果开启了这些缓存，任何一个由Django提供的页面将会被缓存，缓存时长是由你在<a class="reference internal" href="settings.html#std:setting-CACHE_MIDDLEWARE_SECONDS"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_SECONDS</span></tt></a>配置中定义的。</font><font id="5">详见<a class="reference internal" href="../topics/cache.html"><em>缓存文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-module-django.middleware.common">
+<span id="s-common-middleware"></span><span id="module-django.middleware.common"></span><span id="common-middleware"></span><h3><font id="197">“通用”的中间件</font><a class="headerlink" href="middleware.html#module-django.middleware.common" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.middleware.common.CommonMiddleware">
+<em class="property">class </em><tt class="descname">CommonMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/common.html#CommonMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.common.CommonMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="6">给完美主义者增加一些便利条件：</font></p>
+<ul>
+<li><p class="first"><font id="7">禁止访问<a class="reference internal" href="settings.html#std:setting-DISALLOWED_USER_AGENTS"><tt class="xref std std-setting docutils literal"><span class="pre">DISALLOWED_USER_AGENTS</span></tt></a>中设置的用户代理，这项配置应该是一个已编译的正则表达式对象的列表。</font></p>
+</li>
+<li><p class="first"><font id="8">基于<a class="reference internal" href="settings.html#std:setting-APPEND_SLASH"><tt class="xref std std-setting docutils literal"><span class="pre">APPEND_SLASH</span></tt></a>和<a class="reference internal" href="settings.html#std:setting-PREPEND_WWW"><tt class="xref std std-setting docutils literal"><span class="pre">PREPEND_WWW</span></tt></a>的设置来重写URL。</font></p>
+<p><font id="9">如果<a class="reference internal" href="settings.html#std:setting-APPEND_SLASH"><tt class="xref std std-setting docutils literal"><span class="pre">APPEND_SLASH</span></tt></a>设为<tt class="docutils literal"><span class="pre">True</span></tt>，并且初始URL 没有以斜线结尾以及在URLconf 中没找到对应定义，这时形成一个斜线结尾的新URL。</font><font id="10">如果这个新的URL存在于URLconf，那么Django 重定向请求到这个新URL上。</font><font id="11">否则，按正常情况处理初始的URL。</font></p>
+<p><font id="12">比如，<tt class="docutils literal"><span class="pre">foo.com/bar</span></tt>将会被重定向到<tt class="docutils literal"><span class="pre">foo.com/bar/</span></tt>，如果你没有为<tt class="docutils literal"><span class="pre">foo.com/bar</span></tt>定义有效的正则，但是<em>为</em><tt class="docutils literal"><span class="pre">foo.com/bar/</span></tt>定义了有效的正则。</font></p>
+<p><font id="13">如果<a class="reference internal" href="settings.html#std:setting-PREPEND_WWW"><tt class="xref std std-setting docutils literal"><span class="pre">PREPEND_WWW</span></tt></a>设为<tt class="docutils literal"><span class="pre">True</span></tt>，前面缺少 "www."的url将会被重定向到相同但是以一个"www."开头的url。</font></p>
+<p><font id="14">两种选项都是为了规范化url。</font><font id="15">其中的哲学就是，任何一个url应该在一个地方仅存在一个。</font><font id="16">技术上来讲，URL <tt class="docutils literal"><span class="pre">foo.com/bar</span></tt> 区别于<tt class="docutils literal"><span class="pre">foo.com/bar/</span></tt> —— 搜索引擎索引会把这里分开处理 —— 因此最佳实践就是规范化URL。</font></p>
+</li>
+<li><p class="first"><font id="17">基于<a class="reference internal" href="settings.html#std:setting-USE_ETAGS"><tt class="xref std std-setting docutils literal"><span class="pre">USE_ETAGS</span></tt></a> 设置来处理ETag。</font><font id="18">如果设置<a class="reference internal" href="settings.html#std:setting-USE_ETAGS"><tt class="xref std std-setting docutils literal"><span class="pre">USE_ETAGS</span></tt></a>为<tt class="docutils literal"><span class="pre">True</span></tt>，Django会通过MD5-hashing处理页面的内容来为每一个页面请求计算Etag，并且如果合适的话，它将会发送携带<tt class="docutils literal"><span class="pre">Not</span> <span class="pre">Modified</span></tt>的响应。</font></p>
+</li>
+</ul>
+<dl class="attribute">
+<dt id="django.middleware.common.CommonMiddleware.response_redirect_class">
+<tt class="descclassname">CommonMiddleware.</tt><tt class="descname">response_redirect_class</tt><a class="headerlink" href="middleware.html#django.middleware.common.CommonMiddleware.response_redirect_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="19">默认为<a class="reference internal" href="request-response.html#django.http.HttpResponsePermanentRedirect" title="django.http.HttpResponsePermanentRedirect"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponsePermanentRedirect</span></tt></a>。</font><font id="20">它继承了<tt class="docutils literal"><span class="pre">CommonMiddleware</span></tt>，并覆写了属性来自定义中间件发出的重定向。</font></p>
+<dl class="class">
+<dt id="django.middleware.common.BrokenLinkEmailsMiddleware">
+<em class="property">class </em><tt class="descname">BrokenLinkEmailsMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/common.html#BrokenLinkEmailsMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.common.BrokenLinkEmailsMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<ul class="simple">
+<li><font id="162">向<a class="reference internal" href="settings.html#std:setting-MANAGERS"><tt class="xref std std-setting docutils literal"><span class="pre">MANAGERS</span></tt></a>发送死链提醒邮件（详见<a class="reference internal" href="../howto/error-reporting.html"><em>错误报告</em></a>）。</font></li>
+</ul>
+</div>
+<div class="section" id="s-module-django.middleware.gzip">
+<span id="s-gzip-middleware"></span><span id="module-django.middleware.gzip"></span><span id="gzip-middleware"></span><h3><font id="142">GZip中间件</font><a class="headerlink" href="middleware.html#module-django.middleware.gzip" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.middleware.gzip.GZipMiddleware">
+<em class="property">class </em><tt class="descname">GZipMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/gzip.html#GZipMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.gzip.GZipMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="21">警告</font></p>
+<p class="last"><font id="22">安全研究员最近发现，当压缩技术（包括<tt class="docutils literal"><span class="pre">GZipMiddleware</span></tt>）用于一个网站的时候，网站会受到一些可能的攻击。</font><font id="23">此外，这些方法可以用于破坏Django的CSRF保护。</font><font id="24">在你的站点使用<tt class="docutils literal"><span class="pre">GZipMiddleware</span></tt>之前，你应该先仔细考虑一下你的站点是否容易受到这些攻击。
+</font><font id="25">如果你<em></em>不确定是否会受到这些影响，应该避免使用&nbsp;<tt class="docutils literal"><span class="pre">GZipMiddleware</span></tt>。</font><font id="26">详见<a class="reference external" href="http://breachattack.com/resources/BREACH%20-%20SSL,%20gone%20in%2030%20seconds.pdf">the BREACH paper (PDF)</a>和<a class="reference external" href="http://breachattack.com">breachattack.com</a>。</font></p>
+</div>
+<p><font id="27">为支持GZip压缩的浏览器（一些现代的浏览器）压缩内容。</font></p>
+<p><font id="28">建议把这个中间件放到中间件配置列表的第一个，这样压缩响应内容的处理会到最后才
+发生。</font></p>
+<p><font id="29">如果满足下面条件的话，内容不会被压缩：</font></p>
+<ul class="simple">
+<li><font id="163">消息体的长度小于200个字节。</font></li>
+<li><font id="164">响应已经设置了<tt class="docutils literal"><span class="pre">Content-Encoding</span></tt>协议头。</font></li>
+<li><font id="165">请求（浏览器）没有发送包含<tt class="docutils literal"><span class="pre">gzip</span></tt>的<tt class="docutils literal"><span class="pre">Accept-Encoding</span></tt>协议头。</font></li>
+</ul>
+<p><font id="30">你可以通过这个<a class="reference internal" href="../topics/http/decorators.html#django.views.decorators.gzip.gzip_page" title="django.views.decorators.gzip.gzip_page"><tt class="xref py py-func docutils literal"><span class="pre">gzip_page()</span></tt></a>装饰器使用独立的GZip压缩。</font></p>
+</div>
+<div class="section" id="s-module-django.middleware.http">
+<span id="s-conditional-get-middleware"></span><span id="module-django.middleware.http"></span><span id="conditional-get-middleware"></span><h3><font id="143">带条件判断的GET中间件</font><a class="headerlink" href="middleware.html#module-django.middleware.http" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.middleware.http.ConditionalGetMiddleware">
+<em class="property">class </em><tt class="descname">ConditionalGetMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/http.html#ConditionalGetMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.http.ConditionalGetMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="31">处理带有条件判断状态GET操作。 </font><font id="32">如果一个请求包含 <tt class="docutils literal"><span class="pre">ETag</span></tt>&nbsp;或者<tt class="docutils literal"><span class="pre">Last-Modified</span></tt>协议头，并且请求包含<tt class="docutils literal"><span class="pre">If-None-Match</span></tt>或<tt class="docutils literal"><span class="pre">If-Modified-Since</span></tt>，这时响应会被
+替换为<a class="reference internal" href="request-response.html#django.http.HttpResponseNotModified" title="django.http.HttpResponseNotModified"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponseNotModified</span></tt></a>。</font></p>
+<p><font id="33">另外，它会设置<tt class="docutils literal"><span class="pre">Date</span></tt>和<tt class="docutils literal"><span class="pre">Content-Length</span></tt>响应头。</font></p>
+</div>
+<div class="section" id="s-module-django.middleware.locale">
+<span id="s-locale-middleware"></span><span id="module-django.middleware.locale"></span><span id="locale-middleware"></span><h3><font id="144">本地中间件</font><a class="headerlink" href="middleware.html#module-django.middleware.locale" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.middleware.locale.LocaleMiddleware">
+<em class="property">class </em><tt class="descname">LocaleMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/locale.html#LocaleMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.locale.LocaleMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="34">基于请求中的数据开启语言选择。 </font><font id="35">它可以为每个用户进行定制。 </font><font id="36">详见<a class="reference internal" href="../topics/i18n/translation.html"><em>国际化文档</em></a>。</font></p>
+<dl class="attribute">
+<dt id="django.middleware.locale.LocaleMiddleware.response_redirect_class">
+<tt class="descclassname">LocaleMiddleware.</tt><tt class="descname">response_redirect_class</tt><a class="headerlink" href="middleware.html#django.middleware.locale.LocaleMiddleware.response_redirect_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="37">默认为<a class="reference internal" href="request-response.html#django.http.HttpResponseRedirect" title="django.http.HttpResponseRedirect"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponseRedirect</span></tt></a>。</font><font id="38">继承自<tt class="docutils literal"><span class="pre">LocaleMiddleware</span></tt>并覆写了属性来自定义中间件发出的重定向。</font></p>
+</div>
+<div class="section" id="s-module-django.contrib.messages.middleware">
+<span id="s-message-middleware"></span><span id="module-django.contrib.messages.middleware"></span><span id="message-middleware"></span><h3><font id="145">消息中间件</font><a class="headerlink" href="middleware.html#module-django.contrib.messages.middleware" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.contrib.messages.middleware.MessageMiddleware">
+<em class="property">class </em><tt class="descname">MessageMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/messages/middleware.html#MessageMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.contrib.messages.middleware.MessageMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="39">开启基于Cookie和会话的消息支持。</font><font id="40">详见<a class="reference internal" href="contrib/messages.html"><em>消息文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-module-django.middleware.security">
+<span id="s-id1"></span><span id="s-security-middleware"></span><span id="module-django.middleware.security"></span><span id="id1"></span><span id="security-middleware"></span><h3><font id="146">安全中间件</font><a class="headerlink" href="middleware.html#module-django.middleware.security" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="41">警告</font></p>
+<p class="last"><font id="42">如果你的部署环境允许的话，让你的前端web服务器展示<tt class="docutils literal"><span class="pre">SecurityMiddleware</span></tt>提供的功能是个好主意。</font><font id="43">这样一来，如果有任何请求没有被Django处理（比如静态媒体或用户上传的文件），它们会拥有和向Django 应用的请求相同的保护。</font></p>
+</div>
+<dl class="class">
+<dt id="django.middleware.security.SecurityMiddleware">
+<em class="property">class </em><tt class="descname">SecurityMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/security.html#SecurityMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.security.SecurityMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="44"><tt class="docutils literal"><span class="pre">django.middleware.security.SecurityMiddleware</span></tt>为请求/响应循环提供了几种安全改进。</font><font id="45">每一种可以通过一个选项独立开启或关闭。</font></p>
+<ul class="simple">
+<li><a class="reference internal" href="settings.html#std:setting-SECURE_BROWSER_XSS_FILTER"><font id="166">SECURE_BROWSER_XSS_FILTER</font></a></li>
+<li><a class="reference internal" href="settings.html#std:setting-SECURE_CONTENT_TYPE_NOSNIFF"><font id="167">SECURE_CONTENT_TYPE_NOSNIFF</font></a></li>
+<li><a class="reference internal" href="settings.html#std:setting-SECURE_HSTS_INCLUDE_SUBDOMAINS"><font id="168">SECURE_HSTS_INCLUDE_SUBDOMAINS</font></a></li>
+<li><a class="reference internal" href="settings.html#std:setting-SECURE_HSTS_SECONDS"><font id="169">SECURE_HSTS_SECONDS</font></a></li>
+<li><a class="reference internal" href="settings.html#std:setting-SECURE_REDIRECT_EXEMPT"><font id="170">SECURE_REDIRECT_EXEMPT</font></a></li>
+<li><a class="reference internal" href="settings.html#std:setting-SECURE_SSL_HOST"><font id="171">SECURE_SSL_HOST</font></a></li>
+<li><a class="reference internal" href="settings.html#std:setting-SECURE_SSL_REDIRECT"><font id="172">SECURE_SSL_REDIRECT</font></a></li>
+</ul>
+<div class="section" id="s-http-strict-transport-security">
+<span id="s-id2"></span><span id="http-strict-transport-security"></span><span id="id2"></span><h4><font id="158">HTTP Strict Transport Security (HSTS)</font><a class="headerlink" href="middleware.html#http-strict-transport-security" title="Permalink to this headline">¶</a></h4>
+<p><font id="46">对于那些应该只能通过HTTPS访问的站点，你可以通过设置<a class="reference external" href="http://en.wikipedia.org/wiki/Strict_Transport_Security">HSTS协议头</a>，通知现代的浏览器，拒绝用不安全的连接来连接你的域名。</font><font id="47">这会降低你受到SSL-stripping的中间人（MITM）攻击的风险。</font></p>
+<p><font id="48">如果你将<a class="reference internal" href="settings.html#std:setting-SECURE_HSTS_SECONDS"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_HSTS_SECONDS</span></tt></a>设置为一个非零值，<tt class="docutils literal"><span class="pre">SecurityMiddleware</span></tt>会在所有的HTTPS响应中设置这个协议头。</font></p>
+<p><font id="49">开启HSTS的时候，首先使用一个小的值来测试它是个好主意，例如，让<a class="reference internal" href="settings.html#std:setting-SECURE_HSTS_SECONDS"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_HSTS_SECONDS</span> <span class="pre">=</span> <span class="pre">3600</span></tt></a>为一个小时。</font><font id="50">每当浏览器在你的站点看到HSTS协议头，都会在提供的时间段内绝对使用不安全（HTTP）的方式连接到你的域名。</font><font id="51">一旦你确认你站点上的所有东西都以安全的方式提供（例如，HSTS并不会干扰任何事情），建议你增加这个值，这样不常访问你站点的游客也会被保护（比如，一般设置为31536000秒，一年）。</font></p>
+<p><font id="52">另外，如果你将&nbsp;<a class="reference internal" href="settings.html#std:setting-SECURE_HSTS_INCLUDE_SUBDOMAINS"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_HSTS_INCLUDE_SUBDOMAINS</span></tt></a>设置为<tt class="docutils literal"><span class="pre">True</span></tt>,，<tt class="docutils literal"><span class="pre">SecurityMiddleware</span></tt>会将<tt class="docutils literal"><span class="pre">includeSubDomains</span></tt>标签添加到<tt class="docutils literal"><span class="pre">Strict-Transport-Security</span></tt>协议头中。</font><font id="53">强烈推荐这样做（假设所有子域完全使用HTTPS），否则你的站点仍旧有可能由于子域的不安全连接而受到攻击。</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="54">警告</font></p>
+<p><font id="55">HSTS策略在你的整个域中都被应用，不仅仅是你所设置协议头的响应中的url。</font><font id="56">所以，如果你的整个域都设置为HTTPS only，你应该只使用HSTS策略。</font></p>
+<p class="last"><font id="57">适当遵循HSTS协议头的浏览器，会通过显示警告的方式，拒绝让用户连接到证书过期的、自行签署的、或者其他SSL证书无效的站点。</font><font id="58">如果你使用了HSTS，确保你的证书处于一直有效的状态！</font></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="59">注意</font></p>
+<p class="last"><font id="60">如果你的站点部署在负载均衡器或者反向代理之后，并且<tt class="docutils literal"><span class="pre">Strict-Transport-Security</span></tt>协议头没有添加到你的响应中，原因是Django有可能意识不到这是一个安全连接。</font><font id="61">你可能需要设置<a class="reference internal" href="settings.html#std:setting-SECURE_PROXY_SSL_HEADER"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_PROXY_SSL_HEADER</span></tt></a>。</font></p>
+</div>
+</div>
+<div class="section" id="s-x-content-type-options-nosniff">
+<span id="s-x-content-type-options"></span><span id="x-content-type-options-nosniff"></span><span id="x-content-type-options"></span><h4><font id="159">X-Content-Type-Options: nosniff</font><a class="headerlink" href="middleware.html#x-content-type-options-nosniff" title="Permalink to this headline">¶</a></h4>
+<p><font id="62">一些浏览器会尝试猜测他们所得内容的类型，而不是读取<tt class="docutils literal"><span class="pre">Content-Type</span></tt>协议头。</font><font id="63">虽然这样有助于配置不当的服务器正常显示内容，但也会导致安全问题。</font></p>
+<p><font id="64">如果你的站点允许用户上传文件，一些恶意的用户可能会上传一个精心构造的文件，当你觉得它无害的时候，文件会被浏览器解释成HTML或者Javascript。</font></p>
+<p><font id="65">欲知更多有关这个协议头和浏览器如何处理它的内容，你可以在<a class="reference external" href="http://blogs.msdn.com/b/ie/archive/2008/09/02/ie8-security-part-vi-beta-2-update.aspx">IE安全博客</a>中读到它。</font></p>
+<p><font id="66">要防止浏览器猜测内容类型，并且强制它一直使用&nbsp;<tt class="docutils literal"><span class="pre">Content-Type</span></tt>协议头中提供的类型，你可以传递<tt class="docutils literal"><span class="pre">X-Content-Type-Options:</span> <span class="pre">nosniff</span></tt>协议头。</font><font id="67"><tt class="docutils literal"><span class="pre">SecurityMiddleware</span></tt>将会对所有响应这样做，如果<a class="reference internal" href="settings.html#std:setting-SECURE_CONTENT_TYPE_NOSNIFF"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_CONTENT_TYPE_NOSNIFF</span></tt></a> 设置为<tt class="docutils literal"><span class="pre">True</span></tt>。</font></p>
+<p><font id="68">注意在大多数Django不涉及处理上传文件的部署环境中，这个设置不会有任何帮助。</font><font id="69">例如，如果你的<a class="reference internal" href="settings.html#std:setting-MEDIA_URL"><tt class="xref std std-setting docutils literal"><span class="pre">MEDIA_URL</span></tt></a>被前端web服务器直接处理（例如nginx和Apache），你可能想要在那里设置这个协议头。</font><font id="70">而在另一方面，如果你使用Django执行为了下载文件而请求授权之类的事情，并且你不能使用你的web服务器设置协议头，这个设置会很有用。</font></p>
+</div>
+<div class="section" id="s-x-xss-protection-1-mode-block">
+<span id="s-x-xss-protection"></span><span id="x-xss-protection-1-mode-block"></span><span id="x-xss-protection"></span><h4><font id="160">X-XSS-Protection: 1; mode=block</font><a class="headerlink" href="middleware.html#x-xss-protection-1-mode-block" title="Permalink to this headline">¶</a></h4>
+<p><font id="71">一些浏览器能够屏蔽掉出现<a class="reference external" href="http://en.wikipedia.org/wiki/Cross-site_scripting">XSS攻击</a>的内容。</font><font id="72">通过寻找页面中GET或者POST参数中的JavaScript内容来实现。</font><font id="73">如果JavaScript在服务器的响应中被重放，页面就会停止渲染，并展示一个错误页来取代。</font></p>
+<p><font id="74"><a class="reference external" href="http://blogs.msdn.com/b/ie/archive/2008/07/02/ie8-security-part-iv-the-xss-filter.aspx">X-XSS-Protection协议头</a>用来控制XSS过滤器的操作。</font></p>
+<p><font id="75">要在浏览器中启用XSS过滤器，并且强制它一直屏蔽可疑的XSS攻击，你可以在协议头中传递<tt class="docutils literal"><span class="pre">X-XSS-Protection:</span> <span class="pre">1;</span> mode=block</tt>。</font><font id="76"><span class="pre"></span> </font><font id="77">&nbsp;</font><font id="78">如果<a class="reference internal" href="settings.html#std:setting-SECURE_BROWSER_XSS_FILTER"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_BROWSER_XSS_FILTER</span></tt></a>设置为<tt class="docutils literal"><span class="pre">True</span></tt>，<tt class="docutils literal"><span class="pre">SecurityMiddleware</span></tt>会在所有响应中这样做。</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="79">警告</font></p>
+<p class="last"><font id="80">浏览器的XSS过滤器是一个十分有效的手段，但是不要过度依赖它。</font><font id="81">它并不能检测到所有的XSS攻击，也不是所有浏览器都支持这一协议头。</font><font id="82">确保你<a class="reference internal" href="../topics/security.html#cross-site-scripting"><em>校验和过滤</em></a>了所有的输入来防止XSS攻击。</font></p>
+</div>
+</div>
+<div class="section" id="s-ssl-redirect">
+<span id="s-id3"></span><span id="ssl-redirect"></span><span id="id3"></span><h4><font id="161">SSL重定向</font><a class="headerlink" href="middleware.html#ssl-redirect" title="Permalink to this headline">¶</a></h4>
+<p><font id="83">如果你同时提供HTTP和HTTPS连接，大多数用户会默认使用不安全的（HTTP）链接。</font><font id="84">为了更高的安全性，你应该重定向所有的HTTP 连接到HTTPS。</font></p>
+<p><font id="85">如果你将<a class="reference internal" href="settings.html#std:setting-SECURE_SSL_REDIRECT"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_SSL_REDIRECT</span></tt></a>设置为True，<tt class="docutils literal"><span class="pre">SecurityMiddleware</span></tt>会将HTTP链接永久地（HTTP 301，permanently）重定向到HTTPS连接。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="86">注意</font></p>
+<p class="last"><font id="87">由于性能因素，最好在Django外面执行这些重定向，在<a class="reference external" href="http://nginx.org">nginx</a>这种前端负载均衡器或者反向代理服务器中执行。</font><font id="88"><a class="reference internal" href="settings.html#std:setting-SECURE_SSL_REDIRECT"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_SSL_REDIRECT</span></tt></a>专门为这种部署情况而设计，当这不可选择的时候。</font></p>
+</div>
+<p><font id="89">如果<a class="reference internal" href="settings.html#std:setting-SECURE_SSL_HOST"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_SSL_HOST</span></tt></a>设置有一个值，所有重定向都会发到值中的主机，而不是原始的请求主机。</font></p>
+<p><font id="90">如果你站点上的一些页面应该以HTTP方式提供，并且不需要重定向到HTTPS，你可以<a class="reference internal" href="settings.html#std:setting-SECURE_REDIRECT_EXEMPT"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_REDIRECT_EXEMPT</span></tt></a>设置中列出匹配那些url的正则表达式。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="91">注意</font></p>
+<p class="last"><font id="92">如果你在负载均衡器或者反向代理服务器后面部署应用，而且Django不能辨别出什么时候一个请求是安全的，你可能需要设置<a class="reference internal" href="settings.html#std:setting-SECURE_PROXY_SSL_HEADER"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_PROXY_SSL_HEADER</span></tt></a>。</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-module-django.contrib.sessions.middleware">
+<span id="s-session-middleware"></span><span id="module-django.contrib.sessions.middleware"></span><span id="session-middleware"></span><h3><font id="147">会话中间件</font><a class="headerlink" href="middleware.html#module-django.contrib.sessions.middleware" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.contrib.sessions.middleware.SessionMiddleware">
+<em class="property">class </em><tt class="descname">SessionMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/sessions/middleware.html#SessionMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.contrib.sessions.middleware.SessionMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="93">开启会话支持。</font><font id="94">详见<a class="reference internal" href="../topics/http/sessions.html"><em>会话文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-module-django.contrib.sites.middleware">
+<span id="s-site-middleware"></span><span id="module-django.contrib.sites.middleware"></span><span id="site-middleware"></span><h3><font id="148">站点中间件</font><a class="headerlink" href="middleware.html#module-django.contrib.sites.middleware" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.contrib.sites.middleware.CurrentSiteMiddleware">
+<em class="property">class </em><tt class="descname">CurrentSiteMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/sites/middleware.html#CurrentSiteMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.contrib.sites.middleware.CurrentSiteMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="95">向每个接收到的<tt class="docutils literal"><span class="pre">HttpRequest</span></tt>对象添加一个<tt class="docutils literal"><span class="pre">site</span></tt>属性，表示当前的站点。</font><font id="96">详见<a class="reference internal" href="contrib/sites.html#site-middleware"><em>站点文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-module-django.contrib.auth.middleware">
+<span id="s-authentication-middleware"></span><span id="module-django.contrib.auth.middleware"></span><span id="authentication-middleware"></span><h3><font id="149">认证中间件</font><a class="headerlink" href="middleware.html#module-django.contrib.auth.middleware" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.contrib.auth.middleware.AuthenticationMiddleware">
+<em class="property">class </em><tt class="descname">AuthenticationMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/auth/middleware.html#AuthenticationMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.contrib.auth.middleware.AuthenticationMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="97">向每个接收到的<tt class="docutils literal"><span class="pre">HttpRequest</span></tt>对象添加<tt class="docutils literal"><span class="pre">user</span></tt>属性，表示当前登录的用户。</font><font id="98">详见<a class="reference internal" href="../topics/auth/default.html#auth-web-requests"><em>web请求中的认证</em></a>。</font></p>
+<dl class="class">
+<dt id="django.contrib.auth.middleware.RemoteUserMiddleware">
+<em class="property">class </em><tt class="descname">RemoteUserMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/auth/middleware.html#RemoteUserMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.contrib.auth.middleware.RemoteUserMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="99">使用web服务器提供认证的中间件。</font><font id="100">详见<a class="reference internal" href="http://python.usyiyi.cn/django/howto/auth-remote-user.html"><em>使用REMOTE_USER进行认证</em></a>。</font></p>
+<dl class="class">
+<dt id="django.contrib.auth.middleware.SessionAuthenticationMiddleware">
+<em class="property">class </em><tt class="descname">SessionAuthenticationMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/auth/middleware.html#SessionAuthenticationMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.contrib.auth.middleware.SessionAuthenticationMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="101">当用户修改密码的时候使用户的会话失效。</font><font id="102">详见<a class="reference internal" href="../topics/auth/default.html#session-invalidation-on-password-change"><em>密码更改时的会话失效</em></a>。</font><font id="103">在<a class="reference internal" href="settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>中，这个中间件必须出现在<a class="reference internal" href="middleware.html#django.contrib.auth.middleware.AuthenticationMiddleware" title="django.contrib.auth.middleware.AuthenticationMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.middleware.AuthenticationMiddleware</span></tt></a>之后。</font></p>
+</div>
+<div class="section" id="s-module-django.middleware.csrf">
+<span id="s-csrf-protection-middleware"></span><span id="module-django.middleware.csrf"></span><span id="csrf-protection-middleware"></span><h3><font id="150">CSRF保护中间件</font><a class="headerlink" href="middleware.html#module-django.middleware.csrf" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.middleware.csrf.CsrfViewMiddleware">
+<em class="property">class </em><tt class="descname">CsrfViewMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/csrf.html#CsrfViewMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.csrf.CsrfViewMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="104">添加跨站点请求伪造的保护，通过向POST表单添加一个隐藏的表单字段，并检查请求中是否有正确的值。</font><font id="105">详见<a class="reference internal" href="csrf.html"><em>CSRF保护文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-module-django.middleware.clickjacking">
+<span id="s-x-frame-options-middleware"></span><span id="module-django.middleware.clickjacking"></span><span id="x-frame-options-middleware"></span><h3><font id="151">X-Frame-Options中间件</font><a class="headerlink" href="middleware.html#module-django.middleware.clickjacking" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.middleware.clickjacking.XFrameOptionsMiddleware">
+<em class="property">class </em><tt class="descname">XFrameOptionsMiddleware</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/middleware/clickjacking.html#XFrameOptionsMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="middleware.html#django.middleware.clickjacking.XFrameOptionsMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="106"><a class="reference internal" href="clickjacking.html"><em>通过X-Frame-Options协议头进行简单的点击劫持保护</em></a>。</font></p>
+</div>
+</div>
+<div class="section" id="s-middleware-ordering">
+<span id="s-id4"></span><span id="middleware-ordering"></span><span id="id4"></span><h2><font id="140">中间件的排序</font><a class="headerlink" href="middleware.html#middleware-ordering" title="Permalink to this headline">¶</a></h2>
+<p><font id="107">下面是一些关于Django中间件排序的提示。</font></p>
+<ol class="arabic">
+<li><p class="first"><font id="108"><a class="reference internal" href="middleware.html#django.middleware.cache.UpdateCacheMiddleware" title="django.middleware.cache.UpdateCacheMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">UpdateCacheMiddleware</span></tt></a></font></p>
+<p><font id="109">放在修改<tt class="docutils literal"><span class="pre">大量</span></tt>协议头的中间件(<tt class="docutils literal"><span class="pre">SessionMiddleware</span></tt>, <tt class="docutils literal"><span class="pre">GZipMiddleware</span></tt>, <tt class="docutils literal"><span class="pre">LocaleMiddleware</span></tt>)之前。</font></p>
+</li>
+<li><p class="first"><font id="110"><a class="reference internal" href="middleware.html#django.middleware.gzip.GZipMiddleware" title="django.middleware.gzip.GZipMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">GZipMiddleware</span></tt></a></font></p>
+<p><font id="111">放在任何可能修改或使用响应消息体的中间件之前。</font></p>
+<p><font id="112">放在<tt class="docutils literal"><span class="pre">UpdateCacheMiddleware</span></tt>之后：会修改<tt class="docutils literal"><span class="pre">大量</span></tt>的协议头。</font></p>
+</li>
+<li><p class="first"><font id="113"><a class="reference internal" href="middleware.html#django.middleware.http.ConditionalGetMiddleware" title="django.middleware.http.ConditionalGetMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">ConditionalGetMiddleware</span></tt></a></font></p>
+<p><font id="114">放在<tt class="docutils literal"><span class="pre">CommonMiddleware</span></tt>之前：当<a class="reference internal" href="settings.html#std:setting-USE_ETAGS"><tt class="xref std std-setting docutils literal"><span class="pre">USE_ETAGS</span></tt></a> = <tt class="docutils literal"><span class="pre">True</span></tt>时会使用它的<tt class="docutils literal"><span class="pre">Etag</span></tt> 协议头。</font></p>
+</li>
+<li><p class="first"><font id="115"><a class="reference internal" href="middleware.html#django.contrib.sessions.middleware.SessionMiddleware" title="django.contrib.sessions.middleware.SessionMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">SessionMiddleware</span></tt></a></font></p>
+<p><font id="116">放在<tt class="docutils literal"><span class="pre">UpdateCacheMiddleware</span></tt>之后：会修改 <tt class="docutils literal"><span class="pre">大量</span></tt>协议头。</font></p>
+</li>
+<li><p class="first"><font id="117"><a class="reference internal" href="middleware.html#django.middleware.locale.LocaleMiddleware" title="django.middleware.locale.LocaleMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">LocaleMiddleware</span></tt></a></font></p>
+<p><font id="118">放在<tt class="docutils literal"><span class="pre">SessionMiddleware</span></tt>（由于使用会话数据）和&nbsp;<tt class="docutils literal"><span class="pre">CacheMiddleware</span></tt>（由于要修改<tt class="docutils literal"><span class="pre">大量</span></tt>协议头）之后的最上面。
+</font></p>
+</li>
+<li><p class="first"><font id="119"><a class="reference internal" href="middleware.html#django.middleware.common.CommonMiddleware" title="django.middleware.common.CommonMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">CommonMiddleware</span></tt></a></font></p>
+<p><font id="120">放在任何可能修改相应的中间件之前（因为它会生成<tt class="docutils literal"><span class="pre">ETags</span></tt>）。</font></p>
+<p><font id="121">在<tt class="docutils literal"><span class="pre">GZipMiddleware</span></tt>之后，不会在压缩后的内容上再去生成<tt class="docutils literal"><span class="pre">ETag</span></tt>。</font></p>
+<p><font id="122">尽可能放在靠上面的位置，因为<a class="reference internal" href="settings.html#std:setting-APPEND_SLASH"><tt class="xref std std-setting docutils literal"><span class="pre">APPEND_SLASH</span></tt></a>或者<a class="reference internal" href="settings.html#std:setting-PREPEND_WWW"><tt class="xref std std-setting docutils literal"><span class="pre">PREPEND_WWW</span></tt></a>设置为&nbsp;<tt class="docutils literal"><span class="pre">True</span></tt>时会被重定向。</font></p>
+</li>
+<li><p class="first"><font id="123"><a class="reference internal" href="middleware.html#django.middleware.csrf.CsrfViewMiddleware" title="django.middleware.csrf.CsrfViewMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">CsrfViewMiddleware</span></tt></a></font></p>
+<p><font id="124">放在任何假设CSRF攻击被处理的视图中间件之前。</font></p>
+</li>
+<li><p class="first"><font id="125"><a class="reference internal" href="middleware.html#django.contrib.auth.middleware.AuthenticationMiddleware" title="django.contrib.auth.middleware.AuthenticationMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">AuthenticationMiddleware</span></tt></a></font></p>
+<p><font id="126">放在<tt class="docutils literal"><span class="pre">SessionMiddleware</span></tt>之后：因为它使用会话存储。</font></p>
+</li>
+<li><p class="first"><font id="127"><a class="reference internal" href="middleware.html#django.contrib.messages.middleware.MessageMiddleware" title="django.contrib.messages.middleware.MessageMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">MessageMiddleware</span></tt></a></font></p>
+<p><font id="128">放在<tt class="docutils literal"><span class="pre">SessionMiddleware</span></tt>之后：会使用基于会话的存储。</font></p>
+</li>
+<li><p class="first"><font id="129"><a class="reference internal" href="middleware.html#django.middleware.cache.FetchFromCacheMiddleware" title="django.middleware.cache.FetchFromCacheMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">FetchFromCacheMiddleware</span></tt></a></font></p>
+<p><font id="130">放在任何修改<tt class="docutils literal"><span class="pre">大量</span></tt>协议头的中间件之后：协议头被用来从缓存的哈希表中获取值。</font></p>
+</li>
+<li><p class="first"><font id="131"><a class="reference internal" href="contrib/flatpages.html#django.contrib.flatpages.middleware.FlatpageFallbackMiddleware" title="django.contrib.flatpages.middleware.FlatpageFallbackMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">FlatpageFallbackMiddleware</span></tt></a></font></p>
+<p><font id="132">应该放在最底下，因为它是中间件中的最后一手。</font></p>
+</li>
+<li><p class="first"><font id="133"><a class="reference internal" href="contrib/redirects.html#django.contrib.redirects.middleware.RedirectFallbackMiddleware" title="django.contrib.redirects.middleware.RedirectFallbackMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">RedirectFallbackMiddleware</span></tt></a></font></p>
+<p><font id="134">应该放在最底下，因为它是中间件中的最后一手。</font></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="152">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="middleware.html#"><font id="173">中间件</font></a><ul>
+<li><a class="reference internal" href="middleware.html#available-middleware"><font id="174">可用的中间件</font></a><ul>
+<li><a class="reference internal" href="middleware.html#module-django.middleware.cache"><font id="175">缓存中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.middleware.common"><font id="198">“通用”的中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.middleware.gzip"><font id="176">GZip 中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.middleware.http"><font id="177">带条件判断的GET中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.middleware.locale"><font id="178">区域设置中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.contrib.messages.middleware"><font id="179">消息中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.middleware.security"><font id="180">安全中间件</font></a><ul>
+<li><a class="reference internal" href="middleware.html#http-strict-transport-security"><font id="181">HTTP Strict Transport Security</font></a></li>
+<li><a class="reference internal" href="middleware.html#x-content-type-options-nosniff"><font id="182"><tt class="docutils literal"><span class="pre">X-Content-Type-Options:</span> <span class="pre">nosniff</span></tt></font></a></li>
+<li><a class="reference internal" href="middleware.html#x-xss-protection-1-mode-block"><font id="183"><tt class="docutils literal"><span class="pre">X-XSS-Protection:</span> <span class="pre">1;</span> <span class="pre">mode=block</span></tt></font></a></li>
+<li><a class="reference internal" href="middleware.html#ssl-redirect"><font id="184">SSL 重定向</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="middleware.html#module-django.contrib.sessions.middleware"><font id="185">会话中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.contrib.sites.middleware"><font id="186">站点中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.contrib.auth.middleware"><font id="187">认证中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.middleware.csrf"><font id="188">CSRF 保护中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#module-django.middleware.clickjacking"><font id="189">X-Frame-Options 中间件</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="middleware.html#middleware-ordering"><font id="190">中间件排序</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="153">浏览</font></h3>
+<ul>
+<li><font id="191">上一页：<a href="forms/validation.html">表单和字段的认证</a></font></li>
+<li><font id="192">下一页：<a href="migration-operations.html">迁移操作</a></font></li>
+</ul>
+<h3><font id="154">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="193">Django 1.8.2 文档</font></a>
+<ul><li><a href="index.html"><font id="194">API 参考</font></a>
+<ul><li><font id="195">中间件</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="155">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/middleware.txt" rel="nofollow"><font id="196">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="156">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="135"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="157">最后更新：</font></h3>
+<p class="topless"><font id="136">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="forms/validation.html" title="Form and field validation">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="migration-operations.html" title="Migration Operations">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/middleware.html
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

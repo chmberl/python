@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>使用基于类的视图处理表单 — Django 1.8.2  中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Class-based views"/>
+<link href="mixins.html" rel="next" title="Using mixins with class-based views"/>
+<link href="generic-display.html" rel="prev" title="Built-in Class-based generic views"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="39">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="generic-display.html" title="Built-in Class-based generic views">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="mixins.html" title="Using mixins with class-based views">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-class-based-views-generic-editing">
+<div class="section" id="s-form-handling-with-class-based-views">
+<span id="form-handling-with-class-based-views"></span><h1><font id="40">使用基于类的视图处理表单</font><a class="headerlink" href="generic-editing.html#form-handling-with-class-based-views" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">表单的处理通常有3 个步骤：</font></p>
+<ul class="simple">
+<li><font id="51">初始的GET （空白或预填充的表单）</font></li>
+<li><font id="52">带有非法数据的POST（通常重新显示表单和错误信息）</font></li>
+<li><font id="53">带有合法数据的POST（处理数据并重定向）</font></li>
+</ul>
+<p><font id="2">你自己实现这些功能经常导致许多重复的样本代码（参见<a class="reference internal" href="../forms/index.html#using-a-form-in-a-view"><em>在视图中使用表单</em></a>）。</font><font id="3">为了避免这点，Django 提供一系列的通用的基于类的视图用于表单的处理。</font></p>
+<div class="section" id="s-basic-forms">
+<span id="basic-forms"></span><h2><font id="41">基本的表单</font><a class="headerlink" href="generic-editing.html#basic-forms" title="Permalink to this headline">¶</a></h2>
+<p><font id="4">根据一个简单的联系人表单：</font></p>
+<div class="highlight-python"><div class="snippet-filename">forms.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+
+<span class="k">class</span> <span class="nc">ContactForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># send email using the self.cleaned_data dictionary</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p><font id="5">可以使用<tt class="docutils literal"><span class="pre">FormView</span></tt> 来构造其视图：</font></p>
+<div class="highlight-python"><div class="snippet-filename">views.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">myapp.forms</span> <span class="kn">import</span> <span class="n">ContactForm</span>
+<span class="kn">from</span> <span class="nn">django.views.generic.edit</span> <span class="kn">import</span> <span class="n">FormView</span>
+
+<span class="k">class</span> <span class="nc">ContactView</span><span class="p">(</span><span class="n">FormView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s">'contact.html'</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">ContactForm</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="s">'/thanks/'</span>
+
+    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="c"># This method is called when valid form data has been POSTed.</span>
+        <span class="c"># It should return an HttpResponse.</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">send_email</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ContactView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="6">注：</font></p>
+<ul class="simple">
+<li><font id="54">FormView 继承<a class="reference internal" href="../../ref/class-based-views/mixins-simple.html#django.views.generic.base.TemplateResponseMixin" title="django.views.generic.base.TemplateResponseMixin"><tt class="xref py py-class docutils literal"><span class="pre">TemplateResponseMixin</span></tt></a> 所以这里可以使用<a class="reference internal" href="../../ref/class-based-views/mixins-simple.html#django.views.generic.base.TemplateResponseMixin.template_name" title="django.views.generic.base.TemplateResponseMixin.template_name"><tt class="xref py py-attr docutils literal"><span class="pre">template_name</span></tt></a>。</font></li>
+<li><font id="55"><a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.FormMixin.form_valid" title="django.views.generic.edit.FormMixin.form_valid"><tt class="xref py py-meth docutils literal"><span class="pre">form_valid()</span></tt></a> 的默认实现只是简单地重定向到<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.FormMixin.success_url" title="django.views.generic.edit.FormMixin.success_url"><tt class="xref py py-attr docutils literal"><span class="pre">success_url</span></tt></a>。</font></li>
+</ul>
+</div>
+<div class="section" id="s-model-forms">
+<span id="model-forms"></span><h2><font id="42">模型的表单</font><a class="headerlink" href="generic-editing.html#model-forms" title="Permalink to this headline">¶</a></h2>
+<p><font id="7">通用视图在与模型一起工作时会真正光芒四射。</font><font id="8">这些通用的视图将自动创建一个<a class="reference internal" href="../forms/modelforms.html#django.forms.ModelForm" title="django.forms.ModelForm"><tt class="xref py py-class docutils literal"><span class="pre">ModelForm</span></tt></a>，只要它们能知道使用哪一个模型类：</font></p>
+<ul class="simple">
+<li><font id="56">如果给出<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.ModelFormMixin.model" title="django.views.generic.edit.ModelFormMixin.model"><tt class="xref py py-attr docutils literal"><span class="pre">model</span></tt></a> 属性，则使用该模型类。</font></li>
+<li><font id="57">如果<a class="reference internal" href="../../ref/class-based-views/mixins-single-object.html#django.views.generic.detail.SingleObjectMixin.get_object" title="django.views.generic.detail.SingleObjectMixin.get_object"><tt class="xref py py-meth docutils literal"><span class="pre">get_object()</span></tt></a> 返回一个对象，则使用该对象的类。</font></li>
+<li><font id="58">如果给出<a class="reference internal" href="../../ref/class-based-views/mixins-single-object.html#django.views.generic.detail.SingleObjectMixin.queryset" title="django.views.generic.detail.SingleObjectMixin.queryset"><tt class="xref py py-attr docutils literal"><span class="pre">queryset</span></tt></a>，则使用该查询集的模型。</font></li>
+</ul>
+<p><font id="9">模型表单提供一个<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.ModelFormMixin.form_valid" title="django.views.generic.edit.ModelFormMixin.form_valid"><tt class="xref py py-meth docutils literal"><span class="pre">form_valid()</span></tt></a> 的实现，它自动保存模型。</font><font id="10">如果你有特殊的需求，可以覆盖它；</font><font id="11">参见下面的例子。</font></p>
+<p><font id="12">你甚至不需要为<a class="reference internal" href="../../ref/class-based-views/generic-editing.html#django.views.generic.edit.CreateView" title="django.views.generic.edit.CreateView"><tt class="xref py py-class docutils literal"><span class="pre">CreateView</span></tt></a> 和<a class="reference internal" href="../../ref/class-based-views/generic-editing.html#django.views.generic.edit.UpdateView" title="django.views.generic.edit.UpdateView"><tt class="xref py py-class docutils literal"><span class="pre">UpdateView</span></tt></a>提供<tt class="docutils literal"><span class="pre">success_url</span></tt> —— 如果存在它们将使用模型对象的<a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model.get_absolute_url" title="django.db.models.Model.get_absolute_url"><tt class="xref py py-meth docutils literal"><span class="pre">get_absolute_url()</span></tt></a>。</font></p>
+<p><font id="13">如果你想使用一个自定义的<a class="reference internal" href="../forms/modelforms.html#django.forms.ModelForm" title="django.forms.ModelForm"><tt class="xref py py-class docutils literal"><span class="pre">ModelForm</span></tt></a>（例如添加额外的验证），只需简单地在你的视图上设置<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.FormMixin.form_class" title="django.views.generic.edit.FormMixin.form_class"><tt class="xref py py-attr docutils literal"><span class="pre">form_class</span></tt></a>。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="14">注</font></p>
+<p class="last"><font id="15">当指定一个自定义的表单类时，你必须指定模型，即使<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.FormMixin.form_class" title="django.views.generic.edit.FormMixin.form_class"><tt class="xref py py-attr docutils literal"><span class="pre">form_class</span></tt></a> 可能是一个<a class="reference internal" href="../forms/modelforms.html#django.forms.ModelForm" title="django.forms.ModelForm"><tt class="xref py py-class docutils literal"><span class="pre">ModelForm</span></tt></a>。</font></p>
+</div>
+<p><font id="16">首先我们需要添加<a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model.get_absolute_url" title="django.db.models.Model.get_absolute_url"><tt class="xref py py-meth docutils literal"><span class="pre">get_absolute_url()</span></tt></a> 到我们的<tt class="docutils literal"><span class="pre">Author</span></tt> 类中：</font></p>
+<div class="highlight-python"><div class="snippet-filename">models.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'author-detail'</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">'pk'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+</pre></div>
+</div>
+<p><font id="17">然后我们可以使用<a class="reference internal" href="../../ref/class-based-views/flattened-index.html#CreateView" title="CreateView"><tt class="xref py py-class docutils literal"><span class="pre">CreateView</span></tt></a> 机器伙伴来做实际的工作。</font><font id="18">注意这里我们是如何配置通用的基于类的视图的；</font><font id="19">我们自己没有写任何逻辑：</font></p>
+<div class="highlight-python"><div class="snippet-filename">views.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.generic.edit</span> <span class="kn">import</span> <span class="n">CreateView</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">,</span> <span class="n">DeleteView</span>
+<span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">Author</span>
+
+<span class="k">class</span> <span class="nc">AuthorCreate</span><span class="p">(</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Author</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">AuthorUpdate</span><span class="p">(</span><span class="n">UpdateView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Author</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">AuthorDelete</span><span class="p">(</span><span class="n">DeleteView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Author</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s">'author-list'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="20">注</font></p>
+<p class="last"><font id="21">这里我们必须使用<a class="reference internal" href="../../ref/urlresolvers.html#django.core.urlresolvers.reverse_lazy" title="django.core.urlresolvers.reverse_lazy"><tt class="xref py py-func docutils literal"><span class="pre">reverse_lazy()</span></tt></a> 而不是<tt class="docutils literal"><span class="pre">reverse</span></tt>，因为在该文件导入时URL 还没有加载。</font></p>
+</div>
+<p><font id="22"><tt class="docutils literal"><span class="pre">fields</span></tt> 属性的工作方式与<a class="reference internal" href="../forms/modelforms.html#django.forms.ModelForm" title="django.forms.ModelForm"><tt class="xref py py-class docutils literal"><span class="pre">ModelForm</span></tt></a> 的内部<tt class="docutils literal"><span class="pre">Meta</span></tt>类的<tt class="docutils literal"><span class="pre">fields</span></tt> 属性相同。</font><font id="23">除非你用另外一种方式定义表单类，该属性是必须的，如果没有将引发一个<a class="reference internal" href="../../ref/exceptions.html#django.core.exceptions.ImproperlyConfigured" title="django.core.exceptions.ImproperlyConfigured"><tt class="xref py py-exc docutils literal"><span class="pre">ImproperlyConfigured</span></tt></a> 异常。</font></p>
+<p><font id="24">如果你同时指定<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.ModelFormMixin.fields" title="django.views.generic.edit.ModelFormMixin.fields"><tt class="xref py py-attr docutils literal"><span class="pre">fields</span></tt></a> 和<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.FormMixin.form_class" title="django.views.generic.edit.FormMixin.form_class"><tt class="xref py py-attr docutils literal"><span class="pre">form_class</span></tt></a> 属性，将引发一个<a class="reference internal" href="../../ref/exceptions.html#django.core.exceptions.ImproperlyConfigured" title="django.core.exceptions.ImproperlyConfigured"><tt class="xref py py-exc docutils literal"><span class="pre">ImproperlyConfigured</span></tt></a> 异常。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="25">省略<tt class="docutils literal"><span class="pre">fields</span></tt> 属性在以前是允许的，但是导致表单带有模型的所有字段。</font></p>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="26">以前，如果<tt class="docutils literal"><span class="pre">fields</span></tt> 和<tt class="docutils literal"><span class="pre">form_class</span></tt> 两个都指定，会默默地忽略 <tt class="docutils literal"><span class="pre">fields</span></tt>。</font></p>
+</div>
+<p><font id="27">最后，我我们来将这些新的视图放到URLconf 中：</font></p>
+<div class="highlight-python"><div class="snippet-filename">urls.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">myapp.views</span> <span class="kn">import</span> <span class="n">AuthorCreate</span><span class="p">,</span> <span class="n">AuthorUpdate</span><span class="p">,</span> <span class="n">AuthorDelete</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c"># ...</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'author/add/$'</span><span class="p">,</span> <span class="n">AuthorCreate</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'author_add'</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'author/(?P&lt;pk&gt;[0-9]+)/$'</span><span class="p">,</span> <span class="n">AuthorUpdate</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'author_update'</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'author/(?P&lt;pk&gt;[0-9]+)/delete/$'</span><span class="p">,</span> <span class="n">AuthorDelete</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'author_delete'</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="28">注</font></p>
+<p><font id="29">这些表单继承<a class="reference internal" href="../../ref/class-based-views/mixins-single-object.html#django.views.generic.detail.SingleObjectTemplateResponseMixin" title="django.views.generic.detail.SingleObjectTemplateResponseMixin"><tt class="xref py py-class docutils literal"><span class="pre">SingleObjectTemplateResponseMixin</span></tt></a>，它使用<a class="reference internal" href="../../ref/class-based-views/mixins-single-object.html#django.views.generic.detail.SingleObjectTemplateResponseMixin.template_name_suffix" title="django.views.generic.detail.SingleObjectTemplateResponseMixin.template_name_suffix"><tt class="xref py py-attr docutils literal"><span class="pre">template_name_suffix</span></tt></a> 并基于模型来构造<a class="reference internal" href="../../ref/class-based-views/mixins-simple.html#django.views.generic.base.TemplateResponseMixin.template_name" title="django.views.generic.base.TemplateResponseMixin.template_name"><tt class="xref py py-attr docutils literal"><span class="pre">template_name</span></tt></a>。</font></p>
+<p><font id="30">在这个例子中：</font></p>
+<ul class="simple">
+<li><font id="59"><a class="reference internal" href="../../ref/class-based-views/flattened-index.html#CreateView" title="CreateView"><tt class="xref py py-class docutils literal"><span class="pre">CreateView</span></tt></a> 和<a class="reference internal" href="../../ref/class-based-views/flattened-index.html#UpdateView" title="UpdateView"><tt class="xref py py-class docutils literal"><span class="pre">UpdateView</span></tt></a> 使用 <tt class="docutils literal"><span class="pre">myapp/author_form.html</span></tt></font></li>
+<li><font id="60"><a class="reference internal" href="../../ref/class-based-views/flattened-index.html#DeleteView" title="DeleteView"><tt class="xref py py-class docutils literal"><span class="pre">DeleteView</span></tt></a> 使用 <tt class="docutils literal"><span class="pre">myapp/author_confirm_delete.html</span></tt></font></li>
+</ul>
+<p class="last"><font id="31">如果你希望分开<a class="reference internal" href="../../ref/class-based-views/flattened-index.html#CreateView" title="CreateView"><tt class="xref py py-class docutils literal"><span class="pre">CreateView</span></tt></a> 和<a class="reference internal" href="../../ref/class-based-views/flattened-index.html#UpdateView" title="UpdateView"><tt class="xref py py-class docutils literal"><span class="pre">UpdateView</span></tt></a> 的模板，你可以设置你的视图类的<a class="reference internal" href="../../ref/class-based-views/mixins-simple.html#django.views.generic.base.TemplateResponseMixin.template_name" title="django.views.generic.base.TemplateResponseMixin.template_name"><tt class="xref py py-attr docutils literal"><span class="pre">template_name</span></tt></a> 或<a class="reference internal" href="../../ref/class-based-views/mixins-single-object.html#django.views.generic.detail.SingleObjectTemplateResponseMixin.template_name_suffix" title="django.views.generic.detail.SingleObjectTemplateResponseMixin.template_name_suffix"><tt class="xref py py-attr docutils literal"><span class="pre">template_name_suffix</span></tt></a>。</font></p>
+</div>
+</div>
+<div class="section" id="s-models-and-request-user">
+<span id="models-and-request-user"></span><h2><font id="43">模型和request.user</font><a class="headerlink" href="generic-editing.html#models-and-request-user" title="Permalink to this headline">¶</a></h2>
+<p><font id="32">为了跟踪使用<a class="reference internal" href="../../ref/class-based-views/flattened-index.html#CreateView" title="CreateView"><tt class="xref py py-class docutils literal"><span class="pre">CreateView</span></tt></a> 创建一个对象的用户，你可以使用一个自定义的<a class="reference internal" href="../forms/modelforms.html#django.forms.ModelForm" title="django.forms.ModelForm"><tt class="xref py py-class docutils literal"><span class="pre">ModelForm</span></tt></a> 来实现这点。</font><font id="33">首先，向模型添加外键关联：</font></p>
+<div class="highlight-python"><div class="snippet-filename">models.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">created_by</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+
+    <span class="c"># ...</span>
+</pre></div>
+</div>
+<p><font id="34">在这个视图中，请确保你没有将<tt class="docutils literal"><span class="pre">created_by</span></tt> 包含进要编辑的字段列表，并覆盖<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.ModelFormMixin.form_valid" title="django.views.generic.edit.ModelFormMixin.form_valid"><tt class="xref py py-meth docutils literal"><span class="pre">form_valid()</span></tt></a> 来添加这个用户：</font></p>
+<div class="highlight-python"><div class="snippet-filename">views.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.generic.edit</span> <span class="kn">import</span> <span class="n">CreateView</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">Author</span>
+
+<span class="k">class</span> <span class="nc">AuthorCreate</span><span class="p">(</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Author</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">created_by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">AuthorCreate</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="35">注意，你需要使用<a class="reference internal" href="../auth/default.html#django.contrib.auth.decorators.login_required" title="django.contrib.auth.decorators.login_required"><tt class="xref py py-func docutils literal"><span class="pre">login_required()</span></tt></a> 来<a class="reference internal" href="intro.html#id2"><em>装饰这个视图</em></a>，或者在<a class="reference internal" href="../../ref/class-based-views/mixins-editing.html#django.views.generic.edit.ModelFormMixin.form_valid" title="django.views.generic.edit.ModelFormMixin.form_valid"><tt class="xref py py-meth docutils literal"><span class="pre">form_valid()</span></tt></a> 中处理未认证的用户。</font></p>
+</div>
+<div class="section" id="s-ajax-example">
+<span id="ajax-example"></span><h2><font id="44">AJAX 示例</font><a class="headerlink" href="generic-editing.html#ajax-example" title="Permalink to this headline">¶</a></h2>
+<p><font id="36">下面是一个简单的实例，展示你可以如何实现一个表单，使它可以同时为AJAX 请求和‘普通的’表单POST 工作：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">JsonResponse</span>
+<span class="kn">from</span> <span class="nn">django.views.generic.edit</span> <span class="kn">import</span> <span class="n">CreateView</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">Author</span>
+
+<span class="k">class</span> <span class="nc">AjaxableResponseMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Mixin to add AJAX support to a form.</span>
+<span class="sd">    Must be used with an object-based FormView (e.g. CreateView)</span>
+<span class="sd">    """</span>
+    <span class="k">def</span> <span class="nf">form_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AjaxableResponseMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">form_invalid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">is_ajax</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="c"># We make sure to call the parent's form_valid() method because</span>
+        <span class="c"># it might do some processing (in the case of CreateView, it will</span>
+        <span class="c"># call form.save() for example).</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AjaxableResponseMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">is_ajax</span><span class="p">():</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">'pk'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span>
+
+<span class="k">class</span> <span class="nc">AuthorCreate</span><span class="p">(</span><span class="n">AjaxableResponseMixin</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Author</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="45">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="generic-editing.html#"><font id="61">使用基于类的视图处理表单</font></a><ul>
+<li><a class="reference internal" href="generic-editing.html#basic-forms"><font id="62">基本的表单</font></a></li>
+<li><a class="reference internal" href="generic-editing.html#model-forms"><font id="63">模型表单</font></a></li>
+<li><a class="reference internal" href="generic-editing.html#models-and-request-user"><font id="64">模型和request.user</font></a></li>
+<li><a class="reference internal" href="generic-editing.html#ajax-example"><font id="65">AJAX 示例</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="46">浏览</font></h3>
+<ul>
+<li><font id="66">上一页：<a href="generic-display.html">内建的基于类的通用视图</a></font></li>
+<li><font id="67">下一页：<a href="mixins.html">Using mixins with class-based views</a></font></li>
+</ul>
+<h3><font id="47">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="68">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="69">使用 Django</font></a>
+<ul><li><a href="index.html"><font id="70">基于类的视图</font></a>
+<ul><li><font id="71">使用基于类的视图处理表单</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="48">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/class-based-views/generic-editing.txt" rel="nofollow"><font id="72">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="49">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="37"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="50">最后更新：</font></h3>
+<p class="topless"><font id="38">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="generic-display.html" title="Built-in Class-based generic views">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="mixins.html" title="Using mixins with class-based views">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/class-based-views/generic-editing.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

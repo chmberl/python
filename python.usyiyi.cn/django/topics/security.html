@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Security in Django — Django 1.8.2.dev20150513143415 documentation</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Using Django"/>
+<link href="http://python.usyiyi.cn/django/topics/performance.html" rel="next" title="Performance and optimization"/>
+<link href="python3.html" rel="prev" title="Porting to Python 3"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="86">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="python3.html" title="Porting to Python 3">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="http://python.usyiyi.cn/django/topics/performance.html" title="Performance and optimization">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-security">
+<div class="section" id="s-security-in-django">
+<span id="security-in-django"></span><h1><font id="87">Django安全</font><a class="headerlink" href="security.html#security-in-django" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">这份文档是 Django 的安全功能的概述。 </font><font id="2">它包括给 Django 驱动的网站一些加固建议。</font></p>
+<div class="section" id="s-cross-site-scripting-xss-protection">
+<span id="s-cross-site-scripting"></span><span id="cross-site-scripting-xss-protection"></span><span id="cross-site-scripting"></span><h2><font id="88">跨站脚本&nbsp;(XSS) 防护</font><a class="headerlink" href="security.html#cross-site-scripting-xss-protection" title="Permalink to this headline">¶</a></h2>
+<p><font id="3">XSS攻击允许用户注入客户端脚本到其他用户的浏览器里。 </font><font id="4">这通常是通过存储在数据库中的恶意脚本，它将检索并显示给其他用户，或者通过让用户点击一个链接，这将导致攻击者的 JavaScript 被用户的浏览器执行。 </font><font id="5">然而，XSS 攻击可以来自任何不受信任的源数据，如 Cookie 或 Web 服务，任何没有经过充分处理就包含在网页中的数据。</font></p>
+<p><font id="6">使用 Django 模板保护你免受多数 XSS 攻击。 </font><font id="7">然而，重要的是要了解它提供了什么保护及其局限性。</font></p>
+<p><font id="8">Django 模板会<a class="reference internal" href="../ref/templates/language.html#automatic-html-escaping"><em> 编码特殊字符 </em></a> ，这些字符在 HTML 中都是特别危险的。 </font><font id="9">虽然这可以防止大多数恶意输入的用户，但它不能完全保证万无一失。 </font><font id="10">例如，它不会防护以下内容：</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre>&lt;style class=&gt;...&lt;/style&gt;
+</pre></div>
+</div>
+<p><font id="11">如果 <tt class="docutils literal"><span class="pre">var</span></tt> 设置为 <tt class="docutils literal"><span class="pre">'class1</span> <span class="pre">onmouseover=javascript:func()'</span></tt>, 这可能会导致在未经授权的 JavaScript 的执行，取决于浏览器如何呈现不完整的 HTML。 </font><font id="12">（对属性值使用引号可以修复这种情况。）</font></p>
+<p><font id="13">同样重要的是<tt class="docutils literal"><span class="pre">is_safe</span></tt>要特别小心的用在 自定义模板标签，<a class="reference internal" href="../ref/templates/builtins.html#std:templatefilter-safe"><tt class="xref std std-tfilter docutils literal"><span class="pre">safe</span></tt></a> 模板标签，<a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#module-django.utils.safestring" title="django.utils.safestring: Functions and classes for working with strings that can be displayed safely without further escaping in HTML."><tt class="xref py py-mod docutils literal"><span class="pre">mark_safe</span></tt></a> ，还有 autoescape 被关闭的时候。</font></p>
+<p><font id="14">此外，如果您使用的是模板系统输出 HTML 以外的东西，可能会有完全不同的字符和单词需要编码。</font></p>
+<p><font id="15">你也应该在数据库中存储 HTML 的时候要非常小心，尤其是当 HTML 被检索然后展示出来。</font></p>
+</div>
+<div class="section" id="s-cross-site-request-forgery-csrf-protection">
+<span id="cross-site-request-forgery-csrf-protection"></span><h2><font id="89">跨站请求伪造&nbsp;(CSRF) 防护</font><a class="headerlink" href="security.html#cross-site-request-forgery-csrf-protection" title="Permalink to this headline">¶</a></h2>
+<p><font id="16">CSRF 攻击允许恶意用户在另一个用户不知情或者未同意的情况下，以他的身份执行操作。</font></p>
+<p><font id="17">Django 对大多数类型的 CSRF 攻击有内置的保护，在适当情况下你可以<a class="reference internal" href="../ref/csrf.html#using-csrf"><em>开启并使用它</em></a> 。 </font><font id="18">然而，对于任何解决技术，都有它的局限性。 </font><font id="19">例如，CSRF 模块可以在全局范围内或为特定视图被禁用 。 </font><font id="20">您应该只在您知道在做什么的情况下操作。 </font><font id="21">还有其他 <a class="reference internal" href="../ref/csrf.html#csrf-limitations"><em>限制</em></a> 如果你的网站有子域名并且在你的控制之外。</font></p>
+<p><font id="22"><a class="reference internal" href="../ref/csrf.html#how-csrf-works"><em>CSRF 防护</em></a> 是通过检查每个 POST 请求的一个随机数（nonce）来工作。 </font><font id="23">这确保了恶意用户不能简单“回放”你网站上面表单的POST，以及让另一个登录的用户无意中提交表单。</font><font id="24">恶意用户必须知道这个随机数，它是用户特定的（存在cookie里）。</font></p>
+<p><font id="25">使用&nbsp;<a class="reference internal" href="security.html#security-recommendation-ssl"><em>HTTPS</em></a>来部署的时候，<tt class="docutils literal"><span class="pre">CsrfViewMiddleware</span></tt>会检查HTTP referer协议头是否设置为同源的URL（包括子域和端口）。</font><font id="26">因为HTTPS提供了附加的安全保护，转发不安全的连接请求时，必须确保链接使用 HTTPS，并使用HSTS支持的浏览器。</font></p>
+<p><font id="27">使用<tt class="docutils literal"><span class="pre">csrf_exempt</span></tt>装饰器来标记视图时，要非常小心，除非这是极其必要的。</font></p>
+</div>
+<div class="section" id="s-sql-injection-protection">
+<span id="s-id1"></span><span id="sql-injection-protection"></span><span id="id1"></span><h2><font id="90">SQL 注入保护</font><a class="headerlink" href="security.html#sql-injection-protection" title="Permalink to this headline">¶</a></h2>
+<p><font id="28">SQl注入是一种攻击类型，恶意用户可以在系统数据库中执行任意SQL代码。</font><font id="29">这可能会导致记录删除或者数据泄露。</font></p>
+<p><font id="30">通过使用Django的查询集，产生的SQL会由底层数据库驱动正确地转义。</font><font id="31">然而，Django也允许开发者编写<a class="reference internal" href="db/sql.html#executing-raw-queries"><em>原始查询</em></a>或者执行<a class="reference internal" href="db/sql.html#executing-custom-sql"><em>自定义sql</em></a>。</font><font id="32">这些功能应该谨慎使用，并且你应该时刻小心正确转义任何用户可以控制的参数。</font><font id="33">另外，你在使用<a class="reference internal" href="../ref/models/querysets.html#django.db.models.query.QuerySet.extra" title="django.db.models.query.QuerySet.extra"><tt class="xref py py-meth docutils literal"><span class="pre">extra()</span></tt></a>的时候应该谨慎行事。</font></p>
+</div>
+<div class="section" id="s-clickjacking-protection">
+<span id="clickjacking-protection"></span><h2><font id="91">点击劫持保护</font><a class="headerlink" href="security.html#clickjacking-protection" title="Permalink to this headline">¶</a></h2>
+<p><font id="34">点击劫持是一类攻击，恶意站点在一个frame中包裹了另一个站点。</font><font id="35">这类攻击可能导致用户被诱导在目标站点做出一些无意识的行为。</font></p>
+<p><font id="36">Django在<a class="reference internal" href="../ref/middleware.html#django.middleware.clickjacking.XFrameOptionsMiddleware" title="django.middleware.clickjacking.XFrameOptionsMiddleware"><tt class="xref py py-mod docutils literal"><span class="pre">X-Frame-Options</span> <span class="pre">中间件</span></tt></a>的表单中中含有&nbsp;<a class="reference internal" href="../ref/clickjacking.html#clickjacking-prevention"><em>点击劫持保护 </em></a>，它在支持的浏览器中可以保护站点免于在frame中渲染。</font><font id="37">也可以在每个视图中禁止这一保护，或者配置要发送的额外的协议头。</font></p>
+<p><font id="38">对于任何不需要将页面包装在三方站点的frame中，或者只需要包含它的一部分的站点，都强烈推荐启用这一中间件。</font></p>
+</div>
+<div class="section" id="s-ssl-https">
+<span id="s-security-recommendation-ssl"></span><span id="ssl-https"></span><span id="security-recommendation-ssl"></span><h2><font id="92">SSL/HTTPS</font><a class="headerlink" href="security.html#ssl-https" title="Permalink to this headline">¶</a></h2>
+<p><font id="39">把你的站点部署在HTTPS下总是更安全的，尽管在所有情况下不都有效。</font><font id="40">如果不这样，恶意的网络用户可能会嗅探授权证书，或者其他在客户端和服务端之间传输的信息，或者一些情况下 --&nbsp;<strong>活跃的</strong>网络攻击者 -- 会修改在两边传输的数据。</font></p>
+<p><font id="41">如果你想要使用HTTPS提供的保护，并且在你的服务器上开启它，你需要遵循一些额外的步骤：</font></p>
+<ul>
+<li><p class="first"><font id="42">如果必要的话，设置 <a class="reference internal" href="../ref/settings.html#std:setting-SECURE_PROXY_SSL_HEADER"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_PROXY_SSL_HEADER</span></tt></a>，确保你已经彻底了解警告。</font><font id="43">未能实现它会导致CSRF方面的缺陷，也是很危险的！</font></p>
+</li>
+<li><p class="first"><font id="44">设置重定向，以便HTTP下的请求可以重定向到HTTPS。</font></p>
+<p><font id="45">这可以通过自定义的中间件来实现。</font><font id="46">请注意<a class="reference internal" href="../ref/settings.html#std:setting-SECURE_PROXY_SSL_HEADER"><tt class="xref std std-setting docutils literal"><span class="pre">SECURE_PROXY_SSL_HEADER</span></tt></a>下的警告。</font><font id="47">对于反向代理的情况，配置web主服务器来重定向到HTTPS或许是最简单也许是最安全的做法。</font></p>
+</li>
+<li><p class="first"><font id="48">使用“安全的”cookie。</font></p>
+<p><font id="49">如果浏览器的连接一开始通过HTTP，这是大多数浏览器的通常情况，已存在的cookie可能会被泄露。</font><font id="50">因此，你应该将<a class="reference internal" href="../ref/settings.html#std:setting-SESSION_COOKIE_SECURE"><tt class="xref std std-setting docutils literal"><span class="pre">SESSION_COOKIE_SECURE</span></tt></a> 和<a class="reference internal" href="../ref/settings.html#std:setting-CSRF_COOKIE_SECURE"><tt class="xref std std-setting docutils literal"><span class="pre">CSRF_COOKIE_SECURE</span></tt></a>设置为<tt class="docutils literal"><span class="pre">True</span></tt>。</font><font id="51">这会使浏览器只在HTTPS连接中发送这些cookie。</font><font id="52">要注意这意味着会话在HTTP下不能工作，并且CSRF保护功能会在HTTP下阻止接受任何POST数据（如果你把所有HTTP请求都重定向到HTTPS之后就没问题了）。</font></p>
+</li>
+<li><p class="first"><font id="53">使用 HTTP 强制安全传输 (HSTS)</font></p>
+<p><font id="54">HSTS 是一个HTTP协议头，它通知浏览器，到特定站点的所有链接都一直使用HTTPS。</font><font id="55">通过和重定向HTTP请求到HTTPS一起使用，确保连接总是享有附加的SSL安全保障，由一个已存在的成功的连接提供。</font><font id="56">HSTS通常在web服务器上面配置。</font></p>
+</li>
+</ul>
+</div>
+<div class="section" id="s-host-header-validation">
+<span id="s-host-headers-virtual-hosting"></span><span id="host-header-validation"></span><span id="host-headers-virtual-hosting"></span><h2><font id="93">Host 协议头验证</font><a class="headerlink" href="security.html#host-header-validation" title="Permalink to this headline">¶</a></h2>
+<p><font id="57">在某些情况下，Django使用客户端提供的<tt class="docutils literal"><span class="pre">Host</span></tt> 协议头来构造URL。</font><font id="58">虽然这些值可以被审查，来防止跨站脚本攻击（XSS），但是一个假的<tt class="docutils literal"><span class="pre">Host</span></tt>值可以用于跨站请求伪造（CSRF），有害的缓存攻击，以及email中的有害链接。</font></p>
+<p><font id="59">Because even seemingly-secure web server configurations are susceptible to fake <tt class="docutils literal"><span class="pre">Host</span></tt> headers, Django validates <tt class="docutils literal"><span class="pre">Host</span></tt> headers against the <a class="reference internal" href="../ref/settings.html#std:setting-ALLOWED_HOSTS"><tt class="xref std std-setting docutils literal"><span class="pre">ALLOWED_HOSTS</span></tt></a> setting in the <a class="reference internal" href="../ref/request-response.html#django.http.HttpRequest.get_host" title="django.http.HttpRequest.get_host"><tt class="xref py py-meth docutils literal"><span class="pre">django.http.HttpRequest.get_host()</span></tt></a> method.</font></p>
+<p><font id="60">验证只通过<a class="reference internal" href="../ref/request-response.html#django.http.HttpRequest.get_host" title="django.http.HttpRequest.get_host"><tt class="xref py py-meth docutils literal"><span class="pre">get_host()</span></tt></a>来应用；</font><font id="61">如果你的代码从<tt class="docutils literal"><span class="pre">request.META</span></tt>中直接访问<tt class="docutils literal"><span class="pre">Host</span></tt>协议头，</font><font id="62">就会绕开这一安全防护。</font></p>
+<p><font id="63">详见完整的<a class="reference internal" href="../ref/settings.html#std:setting-ALLOWED_HOSTS"><tt class="xref std std-setting docutils literal"><span class="pre">ALLOWED_HOSTS</span></tt></a>文档。</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="64">警告</font></p>
+<p class="last"><font id="65">Previous versions of this document recommended configuring your web server to ensure it validates incoming HTTP <tt class="docutils literal"><span class="pre">Host</span></tt> headers. </font><font id="66">While this is still recommended, in many common web servers a configuration that seems to validate the <tt class="docutils literal"><span class="pre">Host</span></tt> header may not in fact do so. </font><font id="67">For instance, even if Apache is configured such that your Django site is served from a non-default virtual host with the <tt class="docutils literal"><span class="pre">ServerName</span></tt> set, it is still possible for an HTTP request to match this virtual host and supply a fake <tt class="docutils literal"><span class="pre">Host</span></tt> header. </font><font id="68">Thus, Django now requires that you set <a class="reference internal" href="../ref/settings.html#std:setting-ALLOWED_HOSTS"><tt class="xref std std-setting docutils literal"><span class="pre">ALLOWED_HOSTS</span></tt></a> explicitly rather than relying on web server configuration.</font></p>
+</div>
+<p><font id="69">另外，就像1.3.1，如果你的配置需要它的话，Django 需要你显式开启对<tt class="docutils literal"><span class="pre">X-Forwarded-Host</span></tt> 协议头的支持(通过 <a class="reference internal" href="../ref/settings.html#std:setting-USE_X_FORWARDED_HOST"><tt class="xref std std-setting docutils literal"><span class="pre">USE_X_FORWARDED_HOST</span></tt></a> 这只)。</font></p>
+</div>
+<div class="section" id="s-session-security">
+<span id="session-security"></span><h2><font id="94">Session 会话安全</font><a class="headerlink" href="security.html#session-security" title="Permalink to this headline">¶</a></h2>
+<p><font id="70">类似于部署在站点上的<a class="reference internal" href="../ref/csrf.html#csrf-limitations"><em>CSRF 限制</em></a> 使不受信任的用户不能访问任何子域，<a class="reference internal" href="http/sessions.html#module-django.contrib.sessions" title="django.contrib.sessions: Provides session management for Django projects."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.sessions</span></tt></a>也有一些限制。</font><font id="71">详见<a class="reference internal" href="http/sessions.html#topics-session-security"><em>安全中会话的话题指南</em></a>。</font></p>
+</div>
+<div class="section" id="s-user-uploaded-content">
+<span id="s-user-uploaded-content-security"></span><span id="user-uploaded-content"></span><span id="user-uploaded-content-security"></span><h2><font id="95">用户上传的内容</font><a class="headerlink" href="security.html#user-uploaded-content" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title"><font id="72">注意</font></p>
+<p class="last"><font id="73">考虑<a class="reference internal" href="../howto/static-files/deployment.html#staticfiles-from-cdn"><em>在云服务器或CDN上面部署静态文件</em></a>来避免一些此类问题。</font></p>
+</div>
+<ul>
+<li><p class="first"><font id="74">如果你的站点接受上传文件，强烈推荐你在web服务器配置中，将这些上传限制为合理的大小，来避免拒绝服务（DOS）攻击。</font><font id="75">在Apache中，这可以简单地使用<a class="reference external" href="http://httpd.apache.org/docs/2.2/mod/core.html#limitrequestbody">LimitRequestBody</a>指令。</font></p>
+</li>
+<li><p class="first"><font id="76">如果你自己处理静态文件，确保像Apache的<tt class="docutils literal"><span class="pre">mod_php</span></tt>的处理器已关闭，它会将静态文件执行为代码。</font><font id="77">你并不希望用户能够通过上传和请求一个精心构造的文件来执行任意代码。</font></p>
+</li>
+<li><p class="first"><font id="78">Django’s media upload handling poses some vulnerabilities when that media is served in ways that do not follow security best practices. </font><font id="79">Specifically, an HTML file can be uploaded as an image if that file contains a valid PNG header followed by malicious HTML. </font><font id="80">This file will pass verification of the library that Django uses for <a class="reference internal" href="../ref/models/fields.html#django.db.models.ImageField" title="django.db.models.ImageField"><tt class="xref py py-class docutils literal"><span class="pre">ImageField</span></tt></a> image processing (Pillow). </font><font id="81">When this file is subsequently displayed to a user, it may be displayed as HTML depending on the type and configuration of your web server.</font></p>
+<p><font id="82">No bulletproof technical solution exists at the framework level to safely validate all user uploaded file content, however, there are some other steps you can take to mitigate these attacks:</font></p>
+<ol class="arabic simple">
+<li><font id="103">One class of attacks can be prevented by always serving user uploaded content from a distinct top-level or second-level domain. </font><font id="104">This prevents any exploit blocked by <a class="reference external" href="http://en.wikipedia.org/wiki/Same-origin_policy">same-origin policy</a> protections such as cross site scripting. </font><font id="105">For example, if your site runs on <tt class="docutils literal"><span class="pre">example.com</span></tt>, you would want to serve uploaded content (the <a class="reference internal" href="../ref/settings.html#std:setting-MEDIA_URL"><tt class="xref std std-setting docutils literal"><span class="pre">MEDIA_URL</span></tt></a> setting) from something like <tt class="docutils literal"><span class="pre">usercontent-example.com</span></tt>. </font><font id="106">It’s <em>not</em> sufficient to serve content from a subdomain like <tt class="docutils literal"><span class="pre">usercontent.example.com</span></tt>.</font></li>
+<li><font id="107">除此之外，应用可以选择为用户上传的文件定义一个允许的文件扩展名的白名单，并且配置web服务器直处理这些文件。</font></li>
+</ol>
+</li>
+</ul>
+</div>
+<div class="section" id="s-additional-security-topics">
+<span id="s-id2"></span><span id="additional-security-topics"></span><span id="id2"></span><h2><font id="96">额外的安全话题</font><a class="headerlink" href="security.html#additional-security-topics" title="Permalink to this headline">¶</a></h2>
+<p><font id="83">虽然Django提供了开箱即用的，良好的安全保护，但是合理地部署你的应用，以及利用web服务器、操作系统和其他组件的安全保护仍然很重要。</font></p>
+<ul class="simple">
+<li><font id="108">确保你的Python代码在web服务器的根目录外。</font><font id="109">这会确保你的Python代码不会意外被解析为纯文本（或者意外被执行）。</font></li>
+<li><font id="110">小心处理任何<a class="reference internal" href="../ref/models/fields.html#file-upload-security"><em>用户上传的文件</em></a>。</font></li>
+<li><font id="111">Django并不限制验证用户的请求。</font><font id="112">要保护对验证系统的暴力破解攻击，你可以考虑部署一个DJango的插件或者web服务器模块来限制这些请求。</font></li>
+<li><font id="113">秘密保存<a class="reference internal" href="../ref/settings.html#std:setting-SECRET_KEY"><tt class="xref std std-setting docutils literal"><span class="pre">SECRET_KEY</span></tt></a>。</font></li>
+<li><font id="114">使用防火墙来限制缓存系统和数据库的访问是个好主意。</font></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="97">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="security.html#"><font id="115">Security in Django</font></a><ul>
+<li><a class="reference internal" href="security.html#cross-site-scripting-xss-protection"><font id="116">Cross site scripting (XSS) protection</font></a></li>
+<li><a class="reference internal" href="security.html#cross-site-request-forgery-csrf-protection"><font id="117">Cross site request forgery (CSRF) protection</font></a></li>
+<li><a class="reference internal" href="security.html#sql-injection-protection"><font id="118">SQL injection protection</font></a></li>
+<li><a class="reference internal" href="security.html#clickjacking-protection"><font id="119">Clickjacking protection</font></a></li>
+<li><a class="reference internal" href="security.html#ssl-https"><font id="120">SSL/HTTPS</font></a></li>
+<li><a class="reference internal" href="security.html#host-header-validation"><font id="121">Host header validation</font></a></li>
+<li><a class="reference internal" href="security.html#session-security"><font id="122">Session security</font></a></li>
+<li><a class="reference internal" href="security.html#user-uploaded-content"><font id="123">User-uploaded content</font></a></li>
+<li><a class="reference internal" href="security.html#additional-security-topics"><font id="124">Additional security topics</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="98">Browse</font></h3>
+<ul>
+<li><font id="125">Prev: <a href="python3.html">Porting to Python 3</a></font></li>
+<li><font id="126">Next: <a href="http://python.usyiyi.cn/django/topics/performance.html">Performance and optimization</a></font></li>
+</ul>
+<h3><font id="99">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="127">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="index.html"><font id="128">Using Django</font></a>
+<ul><li><font id="129">Security in Django</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="100">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/security.txt" rel="nofollow"><font id="130">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="101">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="84"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="102">Last update:</font></h3>
+<p class="topless"><font id="85">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="python3.html" title="Porting to Python 3">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="http://python.usyiyi.cn/django/topics/performance.html" title="Performance and optimization">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/security';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

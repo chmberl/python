@@ -1,0 +1,561 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>编写自定义的django-admin命令 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="http://python.usyiyi.cn/django/howto/index.html" rel="up" title="“How-to” guides"/>
+<link href="custom-model-fields.html" rel="next" title="Writing custom model fields"/>
+<link href="http://python.usyiyi.cn/django/howto/auth-remote-user.html" rel="prev" title="Authentication using REMOTE_USER"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="124">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="http://python.usyiyi.cn/django/howto/auth-remote-user.html" title='Authentication using &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;REMOTE_USER&lt;/span&gt;&lt;/tt&gt;'>previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="custom-model-fields.html" title="Writing custom model fields">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="howto-custom-management-commands">
+<div class="section" id="s-module-django.core.management">
+<span id="s-writing-custom-django-admin-commands"></span><span id="module-django.core.management"></span><span id="writing-custom-django-admin-commands"></span><h1><font id="125">编写自定义的django-admin命令</font><a class="headerlink" href="custom-management-commands.html#module-django.core.management" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">应用可以通过<tt class="docutils literal"><span class="pre">manage.py</span></tt>注册它们自己的动作。</font><font id="2">例如，你可能想为你正在发布的Django应用添加一个<tt class="docutils literal"><span class="pre">manage.py</span></tt>动作。</font><font id="3">在本页文档中，我们将为<a class="reference internal" href="../intro/tutorial01.html"><em>教程</em></a>中的&nbsp;<tt class="docutils literal"><span class="pre">polls</span></tt>应用构建一个自定义的 <tt class="docutils literal"><span class="pre">closepoll</span></tt>命令。</font></p>
+<p><font id="4">要做到这点，只需向该应用添加一个<tt class="docutils literal"><span class="pre">management/commands</span></tt>目录。</font><font id="5">Django将为该目录中名字没有以下划线开始的每个Python模块注册一个<tt class="docutils literal"><span class="pre">manage.py</span></tt>命令。</font><font id="6">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>polls/
+    __init__.py
+    models.py
+    management/
+        __init__.py
+        commands/
+            __init__.py
+            _private.py
+            closepoll.py
+    tests.py
+    views.py
+</pre></div>
+</div>
+<p><font id="7">在Python 2上，请确保<tt class="docutils literal"><span class="pre">management</span></tt>和<tt class="docutils literal"><span class="pre">management/commands</span></tt>两个目录都包含<tt class="docutils literal"><span class="pre">__init__.py</span></tt> 文件，否则将检测不到你的命令。</font></p>
+<p><font id="8">在这个例子中，<tt class="docutils literal"><span class="pre">closepoll</span></tt>命令对任何项目都可使用，只要它们在<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>里包含<tt class="docutils literal"><span class="pre">polls</span></tt>应用。</font></p>
+<p><font id="9"><tt class="docutils literal"><span class="pre">_private.py</span></tt>将不可以作为一个管理命令使用。</font></p>
+<p><font id="10"><tt class="docutils literal"><span class="pre">closepoll.py</span></tt>模块只有一个要求 – 它必须定义一个<tt class="docutils literal"><span class="pre">Command</span></tt>类并扩展自<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand" title="django.core.management.BaseCommand"><tt class="xref py py-class docutils literal"><span class="pre">BaseCommand</span></tt></a>或其 <a class="reference internal" href="custom-management-commands.html#ref-basecommand-subclasses"><em>子类</em></a>。</font></p>
+<div class="admonition-standalone-scripts admonition">
+<p class="first admonition-title"><font id="11">独立的脚本</font></p>
+<p class="last"><font id="12">自定义的管理命令主要用于运行独立的脚本或者UNIX crontab和Windows周期任务控制面板周期性执行的脚本。</font></p>
+</div>
+<p><font id="13">要实现这个命令，需将<tt class="docutils literal"><span class="pre">polls/management/commands/closepoll.py</span></tt>编辑成这样：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span><span class="p">,</span> <span class="n">CommandError</span>
+<span class="kn">from</span> <span class="nn">polls.models</span> <span class="kn">import</span> <span class="n">Poll</span>
+
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s">'Closes the specified poll for voting'</span>
+
+    <span class="k">def</span> <span class="nf">add_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'poll_id'</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">'+'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">poll_id</span> <span class="ow">in</span> <span class="n">options</span><span class="p">[</span><span class="s">'poll_id'</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">poll</span> <span class="o">=</span> <span class="n">Poll</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">poll_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">Poll</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CommandError</span><span class="p">(</span><span class="s">'Poll "</span><span class="si">%s</span><span class="s">" does not exist'</span> <span class="o">%</span> <span class="n">poll_id</span><span class="p">)</span>
+
+            <span class="n">poll</span><span class="o">.</span><span class="n">opened</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">poll</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">'Successfully closed poll "</span><span class="si">%s</span><span class="s">"'</span> <span class="o">%</span> <span class="n">poll_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="14">在Django 1.8之前，管理命令基于<a class="reference external" href="https://docs.python.org/3/library/optparse.html#module-optparse" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a>模块，位置参数传递给<tt class="docutils literal"><span class="pre">*args</span></tt>，可选参数传递给<tt class="docutils literal"><span class="pre">**options</span></tt>。</font><font id="15">现在，管理命令使用<a class="reference external" href="https://docs.python.org/3/library/argparse.html#module-argparse" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">argparse</span></tt></a>解析参数，默认所有的参数都传递给<tt class="docutils literal"><span class="pre">**options</span></tt>，除非你命名你的位置参数为<tt class="docutils literal"><span class="pre">args</span></tt>（兼容模式）。</font><font id="16">对于新的命令，鼓励你仅仅使用<tt class="docutils literal"><span class="pre">**options</span></tt>。</font></p>
+</div>
+<div class="admonition note" id="management-commands-output">
+<p class="first admonition-title"><font id="17">注</font></p>
+<p><font id="18">当你使用管理命令并希望提供控制台输出时，你应该写到<tt class="docutils literal"><span class="pre">self.stdout</span></tt>和<tt class="docutils literal"><span class="pre">self.stderr</span></tt>，而不能直接打印到 <tt class="docutils literal"><span class="pre">stdout</span></tt>和<tt class="docutils literal"><span class="pre">stderr</span></tt>。</font><font id="19">通过使用这些代理方法，测试你自定义的命令将变得非常容易。</font><font id="20">还请注意，你不需要在消息的末尾加上一个换行符，它将被自动添加，除非你指定<tt class="docutils literal"><span class="pre">ending</span></tt>参数：</font></p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Unterminated line"</span><span class="p">,</span> <span class="n">ending</span><span class="o">=</span><span class="s">''</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><font id="21">新的自定义命令可以使用<tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">closepoll</span> <span class="pre">&lt;poll_id&gt;</span></tt>调用。</font></p>
+<p><font id="22"><tt class="docutils literal"><span class="pre">handle()</span></tt>接收一个或多个<tt class="docutils literal"><span class="pre">poll_ids</span></tt>并为他们中的每个设置 <tt class="docutils literal"><span class="pre">poll.opened</span></tt>为<tt class="docutils literal"><span class="pre">False</span></tt>。</font><font id="23">如果用户访问任何不存在的polls，将引发一个<a class="reference internal" href="custom-management-commands.html#django.core.management.CommandError" title="django.core.management.CommandError"><tt class="xref py py-class docutils literal"><span class="pre">CommandError</span></tt></a>。</font><font id="24"><tt class="docutils literal"><span class="pre">poll.opened</span></tt>属性在<a class="reference internal" href="../intro/tutorial01.html"><em>教程</em></a>中并不存在，只是为了这个例子将它添加到<tt class="docutils literal"><span class="pre">polls.models.Poll</span></tt>中。</font></p>
+<div class="section" id="s-accepting-optional-arguments">
+<span id="s-custom-commands-options"></span><span id="accepting-optional-arguments"></span><span id="custom-commands-options"></span><h2><font id="126">接收可选参数</font><a class="headerlink" href="custom-management-commands.html#accepting-optional-arguments" title="Permalink to this headline">¶</a></h2>
+<p><font id="25">通过接收额外的命令行选项，可以简单地修改<tt class="docutils literal"><span class="pre">closepoll</span></tt>来删除一个给定的poll而不是关闭它。</font><font id="26">这些自定义的选项可以像下面这样添加到 <a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.add_arguments" title="django.core.management.BaseCommand.add_arguments"><tt class="xref py py-meth docutils literal"><span class="pre">add_arguments()</span></tt></a>方法中：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+        <span class="c"># Positional arguments</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'poll_id'</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">'+'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c"># Named (optional) arguments</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--delete'</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s">'store_true'</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s">'delete'</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">'Delete poll instead of closing it'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="c"># ...</span>
+        <span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s">'delete'</span><span class="p">]:</span>
+            <span class="n">poll</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="c"># ...</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="27">之前，只支持标准的<a class="reference external" href="https://docs.python.org/3/library/optparse.html#module-optparse" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a>库，你必须利用<tt class="docutils literal"><span class="pre">optparse.make_option()</span></tt>扩展命令<tt class="docutils literal"><span class="pre">option_list</span></tt>变量。</font></p>
+</div>
+<p><font id="28">选项（在我们的例子中为<tt class="docutils literal"><span class="pre">delete</span></tt>）在handle方法的options字典参数中可以访问到。</font><font id="29">更多关于<tt class="docutils literal"><span class="pre">add_argument</span></tt>用法的信息，请参考<a class="reference external" href="https://docs.python.org/3/library/argparse.html#module-argparse" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">argparse</span></tt></a>的Python 文档。</font></p>
+<p><font id="30">除了可以添加自定义的命令行选项， <a class="reference internal" href="../ref/django-admin.html"><em>管理命令</em></a>还可以接收一些默认的选项，例如<a class="reference internal" href="../ref/django-admin.html#django-admin-option---verbosity"><tt class="xref std std-djadminopt docutils literal"><span class="pre">--verbosity</span></tt></a>和<a class="reference internal" href="../ref/django-admin.html#django-admin-option---traceback"><tt class="xref std std-djadminopt docutils literal"><span class="pre">--traceback</span></tt></a>。</font></p>
+</div>
+<div class="section" id="s-management-commands-and-locales">
+<span id="s-id1"></span><span id="management-commands-and-locales"></span><span id="id1"></span><h2><font id="127">管理命令和区域设置</font><a class="headerlink" href="custom-management-commands.html#management-commands-and-locales" title="Permalink to this headline">¶</a></h2>
+<p><font id="31">默认情况下，<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.execute" title="django.core.management.BaseCommand.execute"><tt class="xref py py-meth docutils literal"><span class="pre">BaseCommand.execute()</span></tt></a>方法使转换失效，因为某些与Django一起的命令完成的任务要求一个与项目无关的语言字符串（例如，面向用户的内容渲染和数据库填入）。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="32">在之前的版本中，Django强制使用"en-us"区域设置而不是使转换失效。</font></p>
+</div>
+<p><font id="33">如果，出于某些原因，你的自定义的管理命令需要使用一个固定的区域设置，你需要在你的<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="django.core.management.BaseCommand.handle"><tt class="xref py py-meth docutils literal"><span class="pre">handle()</span></tt></a>方法中利用I18N支持代码提供的函数手工地启用和停用它：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span><span class="p">,</span> <span class="n">CommandError</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">translation</span>
+
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">can_import_settings</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+
+        <span class="c"># Activate a fixed locale, e.g. Russian</span>
+        <span class="n">translation</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="s">'ru'</span><span class="p">)</span>
+
+        <span class="c"># Or you can activate the LANGUAGE_CODE # chosen in the settings:</span>
+        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+        <span class="n">translation</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">LANGUAGE_CODE</span><span class="p">)</span>
+
+        <span class="c"># Your command logic here</span>
+        <span class="o">...</span>
+
+        <span class="n">translation</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="34">另一个需要可能是你的命令只是简单地应该使用设置中设置的区域设置且Django应该保持不让它停用。</font><font id="35">你可以使用<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.leave_locale_alone" title="django.core.management.BaseCommand.leave_locale_alone"><tt class="xref py py-data docutils literal"><span class="pre">BaseCommand.leave_locale_alone</span></tt></a>选项实现这个功能。</font></p>
+<p><font id="36">虽然上面描述的场景可以工作，但是考虑到系统管理命令对于运行非统一的区域设置通常必须非常小心，所以你可能需要：</font></p>
+<ul class="simple">
+<li><font id="140">确保运行命令时<a class="reference internal" href="../ref/settings.html#std:setting-USE_I18N"><tt class="xref std std-setting docutils literal"><span class="pre">USE_I18N</span></tt></a>设置永远为<tt class="docutils literal"><span class="pre">True</span></tt>（this is a good example of the potential problems stemming from a dynamic runtime environment that Django commands avoid offhand by deactivating translations）。</font></li>
+<li><font id="141">Review the code of your command and the code it calls for behavioral differences when locales are changed and evaluate its impact on predictable behavior of your command.</font></li>
+</ul>
+</div>
+<div class="section" id="s-testing">
+<span id="testing"></span><h2><font id="128">测试</font><a class="headerlink" href="custom-management-commands.html#testing" title="Permalink to this headline">¶</a></h2>
+<p><font id="37">关于如何测试自定义管理命令的信息可以在<a class="reference internal" href="../topics/testing/tools.html#topics-testing-management-commands"><em>测试文档</em></a>中找到。</font></p>
+</div>
+<div class="section" id="s-command-objects">
+<span id="command-objects"></span><h2><font id="129">Command 对象</font><a class="headerlink" href="custom-management-commands.html#command-objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.core.management.BaseCommand">
+<em class="property">class </em><tt class="descname">BaseCommand</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="38">所有管理命令最终继承的基类。</font></p>
+<p><font id="39">如果你想获得解析命令行参数并在响应中如何调用代码的所有机制，可以使用这个类；</font><font id="40">如果你不需要改变这个行为，请考虑使用它的<a class="reference internal" href="custom-management-commands.html#ref-basecommand-subclasses"><em>子类</em></a>。</font></p>
+<p><font id="41">继承<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand" title="django.core.management.BaseCommand"><tt class="xref py py-class docutils literal"><span class="pre">BaseCommand</span></tt></a>类要求你实现<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="django.core.management.BaseCommand.handle"><tt class="xref py py-meth docutils literal"><span class="pre">handle()</span></tt></a>方法。</font></p>
+<div class="section" id="s-attributes">
+<span id="attributes"></span><h3><font id="130">属性</font><a class="headerlink" href="custom-management-commands.html#attributes" title="Permalink to this headline">¶</a></h3>
+<p><font id="42">所有的属性都可以在你派生的类中设置，并在<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand" title="django.core.management.BaseCommand"><tt class="xref py py-class docutils literal"><span class="pre">BaseCommand</span></tt></a>的<a class="reference internal" href="custom-management-commands.html#ref-basecommand-subclasses"><em>子类</em></a>中使用。</font></p>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.args">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">args</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.args" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="43">一个字符串，列出命令接收的参数，适合用于帮助信息；</font><font id="44">例如，接收一个应用名称列表的命令可以设置它为‘&lt;app_label app_label ...&gt;’。</font></p>
+<div class="deprecated">
+<p><font id="45"><span class="versionmodified">Deprecated since version 1.8: </span></font><font id="46">现在，应该在<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.add_arguments" title="django.core.management.BaseCommand.add_arguments"><tt class="xref py py-meth docutils literal"><span class="pre">add_arguments()</span></tt></a>方法中完成，通过调用<tt class="docutils literal"><span class="pre">parser.add_argument()</span></tt>方法。</font><font id="47">参见上面的<tt class="docutils literal"><span class="pre">closepoll</span></tt>例子。</font></p>
+</div>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.can_import_settings">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">can_import_settings</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.can_import_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="48">一个布尔值，指示该命令是否需要导入Django的设置的能力；</font><font id="49">如果为<tt class="docutils literal"><span class="pre">True</span></tt>，<tt class="docutils literal"><span class="pre">execute()</span></tt>将在继续之前验证这是否可能。</font><font id="50">默认值为<tt class="docutils literal"><span class="pre">True</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.help">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">help</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.help" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="51">命令的简短描述，当用户运行<tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">help</span> <span class="pre">&lt;command&gt;</span></tt>命令时将在帮助信息中打印出来。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.missing_args_message">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">missing_args_message</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.missing_args_message" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="52">如果你的命令定义了必需的位置参数，你可以自定义参数缺失时返回的错误信息。</font><font id="53">默认是由<a class="reference external" href="https://docs.python.org/3/library/argparse.html#module-argparse" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">argparse</span></tt></a>输出的 (“too few arguments”)。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.option_list">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">option_list</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.option_list" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="54">这是<tt class="docutils literal"><span class="pre">optparse</span></tt>选项列表，将赋值给命令的<tt class="docutils literal"><span class="pre">OptionParser</span></tt>用于解析命令。</font></p>
+<div class="deprecated">
+<p><font id="55"><span class="versionmodified">Deprecated since version 1.8: </span></font><font id="56">现在，你应该覆盖<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.add_arguments" title="django.core.management.BaseCommand.add_arguments"><tt class="xref py py-meth docutils literal"><span class="pre">add_arguments()</span></tt></a>方法来添加命令行接收的自定义参数。</font><font id="57">参见<a class="reference internal" href="custom-management-commands.html#custom-commands-options"><em>上面的例子</em></a>。</font></p>
+</div>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.output_transaction">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">output_transaction</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.output_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="58">一个布尔值，指示命令是否输出SQL语句；</font><font id="59">如果为<tt class="docutils literal"><span class="pre">True</span></tt>，输出将被自动用<tt class="docutils literal"><span class="pre">BEGIN;</span></tt>和<tt class="docutils literal"><span class="pre">COMMIT;</span></tt>封装。</font><font id="60">默认为<tt class="docutils literal"><span class="pre">False</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.requires_system_checks">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">requires_system_checks</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.requires_system_checks" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="61">一个布尔值；</font><font id="62">如果为<tt class="docutils literal"><span class="pre">True</span></tt>，在执行该命令之前将检查整个Django项目是否有潜在的问题。</font><font id="63">如果<tt class="docutils literal"><span class="pre">requires_system_checks</span></tt>缺失，则使用<tt class="docutils literal"><span class="pre">requires_model_validation</span></tt>的值。</font><font id="64">如果后者的值也缺失，则使用默认值（<tt class="docutils literal"><span class="pre">True</span></tt>）。</font><font id="65">同时定义<tt class="docutils literal"><span class="pre">requires_system_checks</span></tt>和<tt class="docutils literal"><span class="pre">requires_model_validation</span></tt>将导致错误。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.requires_model_validation">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">requires_model_validation</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.requires_model_validation" title="Permalink to this definition">¶</a></dt>
+<dd><div class="deprecated">
+<p><font id="66"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="67">被<tt class="docutils literal"><span class="pre">requires_system_checks</span></tt>代替</font></p>
+</div>
+<p><font id="68">一个布尔值；</font><font id="69">如果为<tt class="docutils literal"><span class="pre">True</span></tt>，将在执行命令之前作安装的模型的验证。</font><font id="70">默认为<tt class="docutils literal"><span class="pre">True</span></tt>。</font><font id="71">若要验证一个单独应用的模型而不是全部应用的模型，可以调用在<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="django.core.management.BaseCommand.handle"><tt class="xref py py-meth docutils literal"><span class="pre">handle()</span></tt></a>中调用<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.validate" title="django.core.management.BaseCommand.validate"><tt class="xref py py-meth docutils literal"><span class="pre">validate()</span></tt></a>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.management.BaseCommand.leave_locale_alone">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">leave_locale_alone</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.leave_locale_alone" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="72">一个布尔值，指示设置中的区域设置在执行命令过程中是否应该保持而不是强制设成‘en-us’。</font></p>
+<p><font id="73">默认值为<tt class="docutils literal"><span class="pre">False</span></tt>。</font></p>
+<p><font id="74">如果你决定在你自定义的命令中修改该选项的值，请确保你知道你正在做什么。 如果它创建对区域设置敏感的数据库内容，这种内容不应该包含任何转换（比如django.contrib.auth权限发生的情况），因为将区域设置变成与实际上默认的‘en-us’ 不同可能导致意外的效果。</font><font id="75">更进一步的细节参见上面的<a class="reference internal" href="custom-management-commands.html#id1">管理命令和区域设置</a>一节。</font></p>
+<p><font id="76">当<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.can_import_settings" title="django.core.management.BaseCommand.can_import_settings"><tt class="xref py py-data docutils literal"><span class="pre">can_import_settings</span></tt></a>选项设置为<tt class="docutils literal"><span class="pre">False</span></tt>时，该选项不可以也为<tt class="docutils literal"><span class="pre">False</span></tt>，因为尝试设置区域设置需要访问settings。</font><font id="77">这种情况将产生一个<a class="reference internal" href="custom-management-commands.html#django.core.management.CommandError" title="django.core.management.CommandError"><tt class="xref py py-class docutils literal"><span class="pre">CommandError</span></tt></a>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-methods">
+<span id="methods"></span><h3><font id="131">方法</font><a class="headerlink" href="custom-management-commands.html#methods" title="Permalink to this headline">¶</a></h3>
+<p><font id="78"><a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand" title="django.core.management.BaseCommand"><tt class="xref py py-class docutils literal"><span class="pre">BaseCommand</span></tt></a>有几个方法可以被覆盖，但是只有<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="django.core.management.BaseCommand.handle"><tt class="xref py py-meth docutils literal"><span class="pre">handle()</span></tt></a>是必须实现的。</font></p>
+<div class="admonition-implementing-a-constructor-in-a-subclass admonition">
+<p class="first admonition-title"><font id="79">在子类中实现构造函数</font></p>
+<p><font id="80">如果你在<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand" title="django.core.management.BaseCommand"><tt class="xref py py-class docutils literal"><span class="pre">BaseCommand</span></tt></a>的子类中实现<tt class="docutils literal"><span class="pre">__init__</span></tt>，你必须调用<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand" title="django.core.management.BaseCommand"><tt class="xref py py-class docutils literal"><span class="pre">BaseCommand</span></tt></a>的<tt class="docutils literal"><span class="pre">__init__</span></tt>：</font></p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Command</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c"># ...</span>
+</pre></div>
+</div>
+</div>
+<dl class="method">
+<dt id="django.core.management.BaseCommand.add_arguments">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">add_arguments</tt>(<em>parser</em>)<a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.add_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="81">添加解析器参数的入口，以处理传递给命令的命令行参数。</font><font id="82">自定义的命令应该覆盖这个方法以添加命令行接收的位置参数和可选参数。</font><font id="83">当直接继承<tt class="docutils literal"><span class="pre">BaseCommand</span></tt>时不需要调用<tt class="docutils literal"><span class="pre">super()</span></tt>。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.management.BaseCommand.get_version">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">get_version</tt>()<a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.get_version" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="84">返回Django的版本，对于所有内建的Django命令应该都是正确的。</font><font id="85">用户提供的命令可以覆盖这个方法以返回它们自己的版本。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.management.BaseCommand.execute">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">execute</tt>(<em>*args</em>, <em>**options</em>)<a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="86">执行这个命令，如果需要则作系统检查（通过 <a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.requires_system_checks" title="django.core.management.BaseCommand.requires_system_checks"><tt class="xref py py-attr docutils literal"><span class="pre">requires_system_checks</span></tt></a>属性控制）。</font><font id="87">如果该命令引发一个<a class="reference internal" href="custom-management-commands.html#django.core.management.CommandError" title="django.core.management.CommandError"><tt class="xref py py-class docutils literal"><span class="pre">CommandError</span></tt></a>，它将被截断并打印到标准错误输出。</font></p>
+</dd></dl>
+<div class="admonition-calling-a-management-command-in-your-code admonition">
+<p class="first admonition-title"><font id="88">在你的代码中调用管理命令</font></p>
+<p class="last"><font id="89">不应该在你的代码中直接调用<tt class="docutils literal"><span class="pre">execute()</span></tt>来执行一个命令。</font><font id="90">请使用<a class="reference internal" href="../ref/django-admin.html#call-command"><em>call_command</em></a>。</font></p>
+</div>
+<dl class="method">
+<dt id="django.core.management.BaseCommand.handle">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">handle</tt>(<em>*args</em>, <em>**options</em>)<a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="91">命令的真正逻辑。</font><font id="92">子类必须实现这个方法。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.management.BaseCommand.check">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">check</tt>(<em>app_configs=None</em>, <em>tags=None</em>, <em>display_num_errors=False</em>)<a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.check" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="93">利用系统的检测框架检测全部Django项目的潜在问题。</font><font id="94">严重的问题将引发<a class="reference internal" href="custom-management-commands.html#django.core.management.CommandError" title="django.core.management.CommandError"><tt class="xref py py-class docutils literal"><span class="pre">CommandError</span></tt></a>；</font><font id="95">警告会输出到标准错误输出；</font><font id="96">次要的通知会输出到标准输出。</font></p>
+<p><font id="97">如果<tt class="docutils literal"><span class="pre">app_configs</span></tt>和<tt class="docutils literal"><span class="pre">tags</span></tt>都为<tt class="docutils literal"><span class="pre">None</span></tt>，将进行所有的系统检查。</font><font id="98"><tt class="docutils literal"><span class="pre">tags</span></tt>可以是一个要检查的标签列表，比如<tt class="docutils literal"><span class="pre">compatibility</span></tt>或<tt class="docutils literal"><span class="pre">models</span></tt>。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.management.BaseCommand.validate">
+<tt class="descclassname">BaseCommand.</tt><tt class="descname">validate</tt>(<em>app=None</em>, <em>display_num_errors=False</em>)<a class="headerlink" href="custom-management-commands.html#django.core.management.BaseCommand.validate" title="Permalink to this definition">¶</a></dt>
+<dd><div class="deprecated">
+<p><font id="99"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="100">被<a class="reference internal" href="../ref/django-admin.html#django-admin-check"><tt class="xref std std-djadmin docutils literal"><span class="pre">check</span></tt></a>命令代替</font></p>
+</div>
+<p><font id="101">如果<tt class="docutils literal"><span class="pre">app</span></tt>为None，那么将检查安装的所有应用的错误。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-basecommand-subclasses">
+<span id="s-ref-basecommand-subclasses"></span><span id="basecommand-subclasses"></span><span id="ref-basecommand-subclasses"></span><h3><font id="132">BaseCommand 的子类</font><a class="headerlink" href="custom-management-commands.html#basecommand-subclasses" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.management.AppCommand">
+<em class="property">class </em><tt class="descname">AppCommand</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.AppCommand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="102">这个管理命令接收一个或多个安装的应用标签作为参数，并对它们每一个都做一些动作。</font></p>
+<p><font id="103">子类不用实现<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="django.core.management.BaseCommand.handle"><tt class="xref py py-meth docutils literal"><span class="pre">handle()</span></tt></a>，但必须实现<a class="reference internal" href="custom-management-commands.html#django.core.management.AppCommand.handle_app_config" title="django.core.management.AppCommand.handle_app_config"><tt class="xref py py-meth docutils literal"><span class="pre">handle_app_config()</span></tt></a>，它将会为每个应用调用一次。</font></p>
+<dl class="method">
+<dt id="django.core.management.AppCommand.handle_app_config">
+<tt class="descclassname">AppCommand.</tt><tt class="descname">handle_app_config</tt>(<em>app_config</em>, <em>**options</em>)<a class="headerlink" href="custom-management-commands.html#django.core.management.AppCommand.handle_app_config" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="104">对<tt class="docutils literal"><span class="pre">app_config</span></tt>完成命令行的动作，其中app_config是<a class="reference internal" href="../ref/applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a>的实例，对应于在命令行上给出的应用标签。</font></p>
+</dd></dl>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="105">以前，<a class="reference internal" href="custom-management-commands.html#django.core.management.AppCommand" title="django.core.management.AppCommand"><tt class="xref py py-class docutils literal"><span class="pre">AppCommand</span></tt></a>子类必须实现<tt class="docutils literal"><span class="pre">handle_app(app,</span> <span class="pre">**options)</span></tt>，其中<tt class="docutils literal"><span class="pre">app</span></tt>是一个模型模块。</font><font id="106">新的API可以不需要模型模块来处理应用。</font><font id="107">迁移的最快的方法如下：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">handle_app_config</span><span class="p">(</span><span class="n">app_config</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">app_config</span><span class="o">.</span><span class="n">models_module</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span>                                  <span class="c"># Or raise an exception.</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">app_config</span><span class="o">.</span><span class="n">models_module</span>
+    <span class="c"># Copy the implementation of handle_app(app_config, **options) here.</span>
+</pre></div>
+</div>
+<p><font id="108">然而，你可以通过直接使用<tt class="docutils literal"><span class="pre">app_config</span></tt>的属性来简化实现。</font></p>
+</div>
+<dl class="class">
+<dt id="django.core.management.LabelCommand">
+<em class="property">class </em><tt class="descname">LabelCommand</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.LabelCommand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="109">这个管理命令接收命令行上的一个或多个参数（标签），并对它们每一个都做一些动作。</font></p>
+<p><font id="110">子类不用实现<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="django.core.management.BaseCommand.handle"><tt class="xref py py-meth docutils literal"><span class="pre">handle()</span></tt></a>，但必须实现<a class="reference internal" href="custom-management-commands.html#django.core.management.LabelCommand.handle_label" title="django.core.management.LabelCommand.handle_label"><tt class="xref py py-meth docutils literal"><span class="pre">handle_label()</span></tt></a>，它将会为每个标签调用一次。</font></p>
+<dl class="method">
+<dt id="django.core.management.LabelCommand.handle_label">
+<tt class="descclassname">LabelCommand.</tt><tt class="descname">handle_label</tt>(<em>label</em>, <em>**options</em>)<a class="headerlink" href="custom-management-commands.html#django.core.management.LabelCommand.handle_label" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="111">对<tt class="docutils literal"><span class="pre">label</span></tt>完成命令行的动作，label是命令行给出的字符串。</font></p>
+</dd></dl>
+<dl class="class">
+<dt id="django.core.management.NoArgsCommand">
+<em class="property">class </em><tt class="descname">NoArgsCommand</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.NoArgsCommand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="deprecated">
+<p><font id="112"><span class="versionmodified">Deprecated since version 1.8: </span></font><font id="113">使用<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand" title="django.core.management.BaseCommand"><tt class="xref py py-class docutils literal"><span class="pre">BaseCommand</span></tt></a>代替，它默认也不需要参数。</font></p>
+</div>
+<p><font id="114">这个命令不接收命令行上的参数。</font></p>
+<p><font id="115">子类不需要实现<a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="django.core.management.BaseCommand.handle"><tt class="xref py py-meth docutils literal"><span class="pre">handle()</span></tt></a>，但必须实现<a class="reference internal" href="custom-management-commands.html#django.core.management.NoArgsCommand.handle_noargs" title="django.core.management.NoArgsCommand.handle_noargs"><tt class="xref py py-meth docutils literal"><span class="pre">handle_noargs()</span></tt></a>；</font><font id="116"><a class="reference internal" href="custom-management-commands.html#django.core.management.BaseCommand.handle" title="django.core.management.BaseCommand.handle"><tt class="xref py py-meth docutils literal"><span class="pre">handle()</span></tt></a>本身已经被覆盖以保证不会有参数传递给命令。</font></p>
+<dl class="method">
+<dt id="django.core.management.NoArgsCommand.handle_noargs">
+<tt class="descclassname">NoArgsCommand.</tt><tt class="descname">handle_noargs</tt>(<em>**options</em>)<a class="headerlink" href="custom-management-commands.html#django.core.management.NoArgsCommand.handle_noargs" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="117">完成这个命令的动作</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-command-exceptions">
+<span id="s-ref-command-exceptions"></span><span id="command-exceptions"></span><span id="ref-command-exceptions"></span><h3><font id="133">Command 的异常</font><a class="headerlink" href="custom-management-commands.html#command-exceptions" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.management.CommandError">
+<em class="property">class </em><tt class="descname">CommandError</tt><a class="headerlink" href="custom-management-commands.html#django.core.management.CommandError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="118">异常类，表示执行一个管理命令时出现问题。</font></p>
+<p><font id="119">如果这个异常是在执行一个来自命令行控制台的管理命令时引发，它将被捕获并转换成一个友好的错误信息到合适的输出流（例如，标准错误输出）；</font><font id="120">因此，引发这个异常（并带有一个合理的错误描述）是首选的方式来指示在执行一个命令时某些东西出现错误。</font></p>
+<p><font id="121">如果管理命令从代码中通过<a class="reference internal" href="../ref/django-admin.html#call-command"><em>call_command</em></a>调用，那么需要时捕获这个异常由你决定。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="134">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="custom-management-commands.html#"><font id="142">编写自定义的django-admin命令</font></a><ul>
+<li><a class="reference internal" href="custom-management-commands.html#accepting-optional-arguments"><font id="143">接收可选参数</font></a></li>
+<li><a class="reference internal" href="custom-management-commands.html#management-commands-and-locales"><font id="144">管理命令和区域设置</font></a></li>
+<li><a class="reference internal" href="custom-management-commands.html#testing"><font id="145">测试</font></a></li>
+<li><a class="reference internal" href="custom-management-commands.html#command-objects"><font id="146">Command 对象</font></a><ul>
+<li><a class="reference internal" href="custom-management-commands.html#attributes"><font id="147">属性</font></a></li>
+<li><a class="reference internal" href="custom-management-commands.html#methods"><font id="148">方法</font></a></li>
+<li><a class="reference internal" href="custom-management-commands.html#basecommand-subclasses"><font id="149">BaseCommand 子类</font></a></li>
+<li><a class="reference internal" href="custom-management-commands.html#command-exceptions"><font id="150">Command 异常</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="135">浏览</font></h3>
+<ul>
+<li><font id="151">Prev: <a href="http://python.usyiyi.cn/django/howto/auth-remote-user.html">Authentication using <tt class="docutils literal"><span class="pre">REMOTE_USER</span></tt></a></font></li>
+<li><font id="152">Next: <a href="custom-model-fields.html">Writing custom model fields</a></font></li>
+</ul>
+<h3><font id="136">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="153">Django 1.8.2 文档</font></a>
+<ul><li><a href="http://python.usyiyi.cn/django/howto/index.html">“How-to” guides</a>
+<ul><li><font id="154">编写自定义的django-admin命令</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="137">当前页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/howto/custom-management-commands.txt" rel="nofollow"><font id="155">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="138">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="122"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="139">最后更新：</font></h3>
+<p class="topless"><font id="123">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="http://python.usyiyi.cn/django/howto/auth-remote-user.html" title='Authentication using &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;REMOTE_USER&lt;/span&gt;&lt;/tt&gt;'>previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="custom-model-fields.html" title="Writing custom model fields">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/howto/custom-management-commands';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

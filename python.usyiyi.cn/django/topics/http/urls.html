@@ -1,0 +1,760 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>URL 调度器 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Handling HTTP requests"/>
+<link href="views.html" rel="next" title="Writing views"/>
+<link href="index.html" rel="prev" title="Handling HTTP requests"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/http/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/http/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="172">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="index.html" title="Handling HTTP requests">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="views.html" title="Writing views">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-http-urls">
+<div class="section" id="s-url-dispatcher">
+<span id="url-dispatcher"></span><h1><font id="173">URL调度器</font><a class="headerlink" href="urls.html#url-dispatcher" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">简洁、优雅的URL 模式在高质量的Web 应用中是一个非常重要的细节。</font><font id="2">Django 允许你任意设计你的URL，不受框架束缚。</font></p>
+<p><font id="3">不要求有<tt class="docutils literal"><span class="pre">.php</span></tt> 或<tt class="docutils literal"><span class="pre">.cgi</span></tt>，更不会要求类似<tt class="docutils literal"><span class="pre">0,2097,1-1-1928,00</span></tt> 这样无意义的东西。</font></p>
+<p><font id="4">参见万维网的发明者Berners-Lee 的<a class="reference external" href="http://www.w3.org/Provider/Style/URI">Cool URIs don’t change</a>，里面有关于为什么URL 应该保持整洁和有意义的卓越的论证。</font></p>
+<div class="section" id="s-overview">
+<span id="overview"></span><h2><font id="174">概览</font><a class="headerlink" href="urls.html#overview" title="Permalink to this headline">¶</a></h2>
+<p><font id="5">为了给一个应用设计URL，你需要创建一个Python 模块，通常称为<strong>URLconf</strong>（URL configuration）。</font><font id="6">这个模块是纯粹的Python 代码，包含URL 模式（简单的正则表达式）到Python 函数（你的视图）的简单映射。</font></p>
+<p><font id="7">映射可短可长，随便你。</font><font id="8">它可以引用其它的映射。</font><font id="9">而且，因为它是纯粹的Python 代码，它可以动态构造。</font></p>
+<p><font id="10">Django 还提供根据当前语言翻译URL 的一种方法。</font><font id="11">更多信息参见<a class="reference internal" href="../i18n/translation.html#url-internationalization"><em>国际化文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-how-django-processes-a-request">
+<span id="s-id1"></span><span id="how-django-processes-a-request"></span><span id="id1"></span><h2><font id="175">Django 如何处理一个请求</font><a class="headerlink" href="urls.html#how-django-processes-a-request" title="Permalink to this headline">¶</a></h2>
+<p><font id="12">当一个用户请求Django 站点的一个页面，下面是Django 系统决定执行哪个Python 代码使用的算法：</font></p>
+<ol class="arabic simple">
+<li><font id="204">Django 决定要使用的根URLconf 模块。</font><font id="205">通常，这个值就是<a class="reference internal" href="../../ref/settings.html#std:setting-ROOT_URLCONF"><tt class="xref std std-setting docutils literal"><span class="pre">ROOT_URLCONF</span></tt></a> 的设置，但是如果进来的<tt class="docutils literal"><span class="pre">HttpRequest</span></tt> 对象具有一个<tt class="docutils literal"><span class="pre">urlconf</span></tt> 属性（通过中间件<a class="reference internal" href="middleware.html#request-middleware"><em>request processing</em></a> 设置），则使用这个值来替换<a class="reference internal" href="../../ref/settings.html#std:setting-ROOT_URLCONF"><tt class="xref std std-setting docutils literal"><span class="pre">ROOT_URLCONF</span></tt></a> 设置。</font></li>
+<li><font id="206">Django 加载该Python 模块并寻找可用的<tt class="docutils literal"><span class="pre">urlpatterns</span></tt>。</font><font id="207">它是<a class="reference internal" href="../../ref/urls.html#django.conf.urls.url" title="django.conf.urls.url"><tt class="xref py py-func docutils literal"><span class="pre">django.conf.urls.url()</span></tt></a> 实例的一个Python 列表。</font></li>
+<li><font id="208">Django 依次匹配每个URL 模式，在与请求的URL 匹配的第一个模式停下来。</font></li>
+<li><font id="277">一旦其中的一个正则表达式匹配上，Django 将导入并调用给出的视图，它是一个简单的Python 函数（或者一个<a class="reference internal" href="../class-based-views/index.html">基于类的视图</a>）。</font><font id="278">视图将获得如下参数:</font><ul>
+<li><font id="210">一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a> 实例。</font></li>
+<li><font id="211">如果匹配的正则表达式没有返回命名的组，那么正则表达式匹配的内容将作为位置参数提供给视图。</font></li>
+<li><font id="212">关键字参数由正则表达式匹配的命名组组成，但是可以被<a class="reference internal" href="../../ref/urls.html#django.conf.urls.url" title="django.conf.urls.url"><tt class="xref py py-func docutils literal"><span class="pre">django.conf.urls.url()</span></tt></a>的可选参数<tt class="docutils literal"><span class="pre">kwargs</span></tt>覆盖。</font></li>
+</ul>
+</li>
+<li><font id="213">如果没有匹配到正则表达式，或者如果过程中抛出一个异常，Django 将调用一个适当的错误处理视图。</font><font id="214">请参见下面的<a class="reference internal" href="urls.html#error-handling">错误处理</a>。</font></li>
+</ol>
+</div>
+<div class="section" id="s-example">
+<span id="example"></span><h2><font id="176">例子</font><a class="headerlink" href="urls.html#example" title="Permalink to this headline">¶</a></h2>
+<p><font id="13">下面是一个简单的 URLconf：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/2003/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">special_case_2003</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/([0-9]{4})/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">year_archive</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/([0-9]{4})/([0-9]{2})/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">month_archive</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/([0-9]{4})/([0-9]{2})/([0-9]+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">article_detail</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="14">注：</font></p>
+<ul class="simple">
+<li><font id="215">若要从URL 中捕获一个值，只需要在它周围放置一对圆括号。</font></li>
+<li><font id="216">不需要添加一个前导的反斜杠，因为每个URL 都有。</font><font id="217">例如，应该是<tt class="docutils literal"><span class="pre">^articles</span></tt> 而不是 <tt class="docutils literal"><span class="pre">^/articles</span></tt>。</font></li>
+<li><font id="218">每个正则表达式前面的<tt class="docutils literal"><span class="pre">'r'</span></tt> 是可选的但是建议加上。</font><font id="219">它告诉Python 这个字符串是“原始的” —— 字符串中任何字符都不应该转义。</font><font id="220">参见<a class="reference external" href="http://www.diveintopython.net/regular_expressions/street_addresses.html#re.matching.2.3">Dive Into Python 中的解释</a>。</font></li>
+</ul>
+<p><font id="15">一些请求的例子：</font></p>
+<ul class="simple">
+<li><font id="221"><tt class="docutils literal"><span class="pre">/articles/2005/03/</span></tt> 请求将匹配列表中的第三个模式。</font><font id="222">Django 将调用函数<tt class="docutils literal"><span class="pre">views.month_archive(request,</span> <span class="pre">'2005',</span> <span class="pre">'03')</span></tt>。</font></li>
+<li><font id="223"><tt class="docutils literal"><span class="pre">/articles/2005/3/</span></tt> 不匹配任何URL 模式，因为列表中的第三个模式要求月份应该是两个数字。</font></li>
+<li><font id="224"><tt class="docutils literal"><span class="pre">/articles/2003/</span></tt> 将匹配列表中的第一个模式不是第二个，因为模式按顺序匹配，第一个会首先测试是否匹配。</font><font id="225">请像这样自由插入一些特殊的情况来探测匹配的次序。</font></li>
+<li><font id="226"><tt class="docutils literal"><span class="pre">/articles/2003</span></tt> 不匹配任何一个模式，因为每个模式要求URL 以一个反斜线结尾。</font></li>
+<li><font id="227"><tt class="docutils literal"><span class="pre">/articles/2003/03/03/</span></tt> 将匹配最后一个模式。</font><font id="228">Django 将调用函数<tt class="docutils literal"><span class="pre">views.article_detail(request,</span> <span class="pre">'2003',</span> <span class="pre">'03',</span> <span class="pre">'03')</span></tt>。</font></li>
+</ul>
+</div>
+<div class="section" id="s-named-groups">
+<span id="named-groups"></span><h2><font id="177">命名组</font><a class="headerlink" href="urls.html#named-groups" title="Permalink to this headline">¶</a></h2>
+<p><font id="16">上面的示例使用简单的、<em>没有命名</em>的正则表达式组（通过圆括号）来捕获URL 中的值并以<em>位置</em> 参数传递给视图。</font><font id="17">在更高级的用法中，可以使用<em>命名的</em>正则表达式组来捕获URL
+&nbsp;中的值并以<em>关键字</em> 参数传递给视图。</font></p>
+<p><font id="18">在Python 正则表达式中，命名正则表达式组的语法是<tt class="docutils literal"><span class="pre">(?P&lt;name&gt;pattern)</span></tt>，其中<tt class="docutils literal"><span class="pre">name</span></tt> 是组的名称，<tt class="docutils literal"><span class="pre">pattern</span></tt> 是要匹配的模式。</font></p>
+<p><font id="20">下面是以上URLconf &nbsp;使用命名组的重写：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/2003/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">special_case_2003</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/(?P&lt;year&gt;[0-9]{4})/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">year_archive</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/(?P&lt;year&gt;[0-9]{4})/(?P&lt;month&gt;[0-9]{2})/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">month_archive</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/(?P&lt;year&gt;[0-9]{4})/(?P&lt;month&gt;[0-9]{2})/(?P&lt;day&gt;[0-9]{2})/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">article_detail</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="21">这个实现与前面的示例完全相同，只有一个细微的差别：捕获的值作为关键字参数而不是位置参数传递给视图函数。</font><font id="22">例如：</font></p>
+<ul class="simple">
+<li><font id="229"><tt class="docutils literal"><span class="pre">/articles/2005/03/</span></tt> 请求将调用<tt class="docutils literal"><span class="pre">views.month_archive(request,</span> <span class="pre">year='2005',</span> <span class="pre">month='03')</span></tt>函数，而不是<tt class="docutils literal"><span class="pre">views.month_archive(request,</span> <span class="pre">'2005',</span> <span class="pre">'03')</span></tt>。</font></li>
+<li><font id="230"><tt class="docutils literal"><span class="pre">/articles/2003/03/03/</span></tt> 请求将调用函数<tt class="docutils literal"><span class="pre">views.article_detail(request,</span> <span class="pre">year='2003',</span> <span class="pre">month='03',</span> <span class="pre">day='03')</span></tt>。</font></li>
+</ul>
+<p><font id="23">在实际应用中，这意味你的URLconf 会更加明晰且不容易产生参数顺序问题的错误 —— 你可以在你的视图函数定义中重新安排参数的顺序。</font><font id="24">当然，这些好处是以简洁为代价；</font><font id="25">有些开发人员认为命名组语法丑陋而繁琐。</font></p>
+<div class="section" id="s-the-matching-grouping-algorithm">
+<span id="the-matching-grouping-algorithm"></span><h3><font id="190">匹配/分组算法</font><a class="headerlink" href="urls.html#the-matching-grouping-algorithm" title="Permalink to this headline">¶</a></h3>
+<p><font id="26">下面是URLconf 解析器使用的算法，针对正则表达式中的命名组和非命名组：</font></p>
+<ol class="arabic simple">
+<li><font id="231">如果有命名参数，则使用这些命名参数，忽略非命名参数。</font></li>
+<li><font id="232">否则，它将以位置参数传递所有的非命名参数。</font></li>
+</ol>
+<p><font id="27">根据<a class="reference internal" href="urls.html#passing-extra-options-to-view-functions">传递额外的选项给视图函数</a>（下文），这两种情况下，多余的关键字参数也将传递给视图。</font></p>
+</div>
+</div>
+<div class="section" id="s-what-the-urlconf-searches-against">
+<span id="what-the-urlconf-searches-against"></span><h2><font id="178">URLconf 在什么上查找</font><a class="headerlink" href="urls.html#what-the-urlconf-searches-against" title="Permalink to this headline">¶</a></h2>
+<p><font id="28">URLconf 在请求的URL 上查找，将它当做一个普通的Python 字符串。</font><font id="29">不包括GET和POST参数以及域名。</font></p>
+<p><font id="30">例如，<tt class="docutils literal"><span class="pre">http://www.example.com/myapp/</span></tt>请求中，URLconf 将查找<tt class="docutils literal"><span class="pre">myapp/</span></tt>。</font></p>
+<p><font id="31">在<tt class="docutils literal"><span class="pre">http://www.example.com/myapp/?page=3</span></tt> 请求中，URLconf 仍将查找<tt class="docutils literal"><span class="pre">myapp/</span></tt>。</font></p>
+<p><font id="32">URLconf 不检查请求的方法。</font><font id="33">换句话讲，所有的请求方法 —— 同一个URL的<tt class="docutils literal"><span class="pre">POST</span></tt>、<tt class="docutils literal"><span class="pre">GET</span></tt>、<tt class="docutils literal"><span class="pre">HEAD</span></tt>等等 —— 都将路由到相同的函数。</font></p>
+</div>
+<div class="section" id="s-captured-arguments-are-always-strings">
+<span id="captured-arguments-are-always-strings"></span><h2><font id="179">捕获的参数永远是字符串</font><a class="headerlink" href="urls.html#captured-arguments-are-always-strings" title="Permalink to this headline">¶</a></h2>
+<p><font id="34">每个捕获的参数都作为一个普通的Python 字符串传递给视图，无论正则表达式使用的是什么匹配方式。</font><font id="35">例如，下面这行URLconf 中：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url</span><span class="p">(</span><span class="s">r'^articles/(?P&lt;year&gt;[0-9]{4})/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">year_archive</span><span class="p">),</span>
+</pre></div>
+</div>
+<p><font id="36">... <tt class="docutils literal"><span class="pre">views.year_archive()</span></tt> 的<tt class="docutils literal"><span class="pre">year</span></tt> 参数将是一个字符串，即使<tt class="docutils literal"><span class="pre">[0-9]{4}</span></tt> 值匹配整数字符串。</font></p>
+</div>
+<div class="section" id="s-specifying-defaults-for-view-arguments">
+<span id="specifying-defaults-for-view-arguments"></span><h2><font id="180">指定视图参数的默认值</font><a class="headerlink" href="urls.html#specifying-defaults-for-view-arguments" title="Permalink to this headline">¶</a></h2>
+<p><font id="37">有一个方便的小技巧是指定视图参数的默认值。 </font><font id="38">下面是一个URLconf 和视图的示例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># URLconf</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^blog/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">page</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^blog/page(?P&lt;num&gt;[0-9]+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">page</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="c"># View (in blog/views.py)</span>
+<span class="k">def</span> <span class="nf">page</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="s">"1"</span><span class="p">):</span>
+    <span class="c"># Output the appropriate page of blog entries, according to num.</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="39">在上面的例子中，两个URL模式指向同一个视图<tt class="docutils literal"><span class="pre">views.page</span></tt> —— 但是第一个模式不会从URL 中捕获任何值。</font><font id="274">如果第一个模式匹配，<tt class="docutils literal"><span class="pre">page()</span></tt> 函数将使用<tt class="docutils literal"><span class="pre">num</span></tt>参数的默认值<tt class="docutils literal"><span class="pre">"1"</span></tt>。</font><font id="275">如果第二个模式匹配，<tt class="docutils literal"><span class="pre">page()</span></tt> 将使用正则表达式捕获的<tt class="docutils literal"><span class="pre">num</span></tt> 值。</font></p>
+</div>
+<div class="section" id="s-performance">
+<span id="performance"></span><h2><font id="181">性能</font><a class="headerlink" href="urls.html#performance" title="Permalink to this headline">¶</a></h2>
+<p><font id="40"><tt class="docutils literal"><span class="pre">urlpatterns</span></tt> 中的每个正则表达式在第一次访问它们时被编译。</font><font id="41">这使得系统相当快。</font></p>
+</div>
+<div class="section" id="s-syntax-of-the-urlpatterns-variable">
+<span id="syntax-of-the-urlpatterns-variable"></span><h2><font id="182">urlpatterns 变量的语法</font><a class="headerlink" href="urls.html#syntax-of-the-urlpatterns-variable" title="Permalink to this headline">¶</a></h2>
+<p><font id="42"><tt class="docutils literal"><span class="pre">urlpatterns</span></tt> 应该是一个<a class="reference internal" href="../../ref/urls.html#django.conf.urls.url" title="django.conf.urls.url"><tt class="xref py py-func docutils literal"><span class="pre">url()</span></tt></a> 实例类型的Python 列表。</font></p>
+</div>
+<div class="section" id="s-error-handling">
+<span id="error-handling"></span><h2><font id="183">错误处理</font><a class="headerlink" href="urls.html#error-handling" title="Permalink to this headline">¶</a></h2>
+<p><font id="43">当Django 找不到一个匹配请求的URL 的正则表达式时，或者当抛出一个异常时，Django 将调用一个错误处理视图。</font></p>
+<p><font id="44">这些情况发生时使用的视图通过4个变量指定。</font><font id="45">它们的默认值应该满足大部分项目，但是通过赋值给它们以进一步的自定义也是可以的。</font></p>
+<p><font id="46">完整的细节请参见<a class="reference internal" href="views.html#customizing-error-views"><em>自定义错误视图</em></a>。</font></p>
+<p><font id="47">这些值可以在你的根URLconf 中设置。</font><font id="48">在其它URLconf 中设置这些变量将不会生效果。</font></p>
+<p><font id="49">它们的值必须是可调用的或者是表示视图的Python 完整导入路径的字符串，可以方便地调用它们来处理错误情况。</font></p>
+<p><font id="50">这些值是：</font></p>
+<ul class="simple">
+<li><font id="233"><tt class="docutils literal"><span class="pre">handler404</span></tt> —— 参见<a class="reference internal" href="../../ref/urls.html#django.conf.urls.handler404" title="django.conf.urls.handler404"><tt class="xref py py-data docutils literal"><span class="pre">django.conf.urls.handler404</span></tt></a>。</font></li>
+<li><font id="234"><tt class="docutils literal"><span class="pre">handler500</span></tt> —— 参见<a class="reference internal" href="../../ref/urls.html#django.conf.urls.handler500" title="django.conf.urls.handler500"><tt class="xref py py-data docutils literal"><span class="pre">django.conf.urls.handler500</span></tt></a>。</font></li>
+<li><font id="235"><tt class="docutils literal"><span class="pre">handler403</span></tt> —— 参见<a class="reference internal" href="../../ref/urls.html#django.conf.urls.handler403" title="django.conf.urls.handler403"><tt class="xref py py-data docutils literal"><span class="pre">django.conf.urls.handler403</span></tt></a>。</font></li>
+<li><font id="236"><tt class="docutils literal"><span class="pre">handler400</span></tt> —— 参见<a class="reference internal" href="../../ref/urls.html#django.conf.urls.handler400" title="django.conf.urls.handler400"><tt class="xref py py-data docutils literal"><span class="pre">django.conf.urls.handler400</span></tt></a>。</font></li>
+</ul>
+</div>
+<div class="section" id="s-including-other-urlconfs">
+<span id="s-id2"></span><span id="including-other-urlconfs"></span><span id="id2"></span><h2><font id="184">包含其它的URLconfs</font><a class="headerlink" href="urls.html#including-other-urlconfs" title="Permalink to this headline">¶</a></h2>
+<p><font id="51">在任何时候，你的<tt class="docutils literal"><span class="pre">urlpatterns</span></tt> 都可以包含其它URLconf 模块。</font><font id="52">这实际上将一部分URL 放置与其它URL 下面。</font></p>
+<p><font id="53">例如，下面是URLconf for the <a class="reference external" href="https://www.djangoproject.com/">Django 网站</a>自己的URLconf 中一个片段。</font><font id="54">它包含许多其它URLconf：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c"># ... snip ...</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^community/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'django_website.aggregator.urls'</span><span class="p">)),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^contact/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'django_website.contact.urls'</span><span class="p">)),</span>
+    <span class="c"># ... snip ...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="55">注意，这个例子中的正则表达式没有包含<tt class="docutils literal"><span class="pre">$</span></tt>（字符串结束匹配符），但是包含一个末尾的反斜杠。</font><font id="56">每当Django 遇到<tt class="docutils literal"><span class="pre">include()</span></tt>（<a class="reference internal" href="../../ref/urls.html#django.conf.urls.include" title="django.conf.urls.include"><tt class="xref py py-func docutils literal"><span class="pre">django.conf.urls.include()</span></tt></a>）时，它会去掉URL 中匹配的部分并将剩下的字符串发送给包含的URLconf 做进一步处理。</font></p>
+<p><font id="57">另外一种包含其它URL 模式的方式是使用一个<a class="reference internal" href="../../ref/urls.html#django.conf.urls.url" title="django.conf.urls.url"><tt class="xref py py-func docutils literal"><span class="pre">url()</span></tt></a> 实例的列表。</font><font id="58">例如，请看下面的URLconf：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">apps.main</span> <span class="kn">import</span> <span class="n">views</span> <span class="k">as</span> <span class="n">main_views</span>
+<span class="kn">from</span> <span class="nn">credit</span> <span class="kn">import</span> <span class="n">views</span> <span class="k">as</span> <span class="n">credit_views</span>
+
+<span class="n">extra_patterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^reports/(?P&lt;id&gt;[0-9]+)/$'</span><span class="p">,</span> <span class="n">credit_views</span><span class="o">.</span><span class="n">report</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^charge/$'</span><span class="p">,</span> <span class="n">credit_views</span><span class="o">.</span><span class="n">charge</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">main_views</span><span class="o">.</span><span class="n">homepage</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^help/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'apps.help.urls'</span><span class="p">)),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^credit/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">extra_patterns</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="59">在这个例子中，<tt class="docutils literal"><span class="pre">/credit/reports/</span></tt> URL将被 <tt class="docutils literal"><span class="pre">credit.views.report()</span></tt> 这个Django 视图处理。</font></p>
+<p><font id="60">这种方法可以用来去除URLconf 中的冗余，其中某个模式前缀被重复使用。</font><font id="61">例如，考虑这个URLconf：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;page_slug&gt;[\w-]+)-(?P&lt;page_id&gt;\w+)/history/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">history</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;page_slug&gt;[\w-]+)-(?P&lt;page_id&gt;\w+)/edit/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">edit</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;page_slug&gt;[\w-]+)-(?P&lt;page_id&gt;\w+)/discuss/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">discuss</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;page_slug&gt;[\w-]+)-(?P&lt;page_id&gt;\w+)/permissions/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">permissions</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="62">我们可以改进它，通过只声明共同的路径前缀一次并将后面的部分分组：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;page_slug&gt;[\w-]+)-(?P&lt;page_id&gt;\w+)/'</span><span class="p">,</span> <span class="n">include</span><span class="p">([</span>
+        <span class="n">url</span><span class="p">(</span><span class="s">r'^history/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">history</span><span class="p">),</span>
+        <span class="n">url</span><span class="p">(</span><span class="s">r'^edit/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">edit</span><span class="p">),</span>
+        <span class="n">url</span><span class="p">(</span><span class="s">r'^discuss/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">discuss</span><span class="p">),</span>
+        <span class="n">url</span><span class="p">(</span><span class="s">r'^permissions/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">permissions</span><span class="p">),</span>
+    <span class="p">])),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="s-captured-parameters">
+<span id="captured-parameters"></span><h3><font id="191">捕获的参数</font><a class="headerlink" href="urls.html#captured-parameters" title="Permalink to this headline">¶</a></h3>
+<p><font id="63">被包含的URLconf 会收到来之父URLconf 捕获的任何参数，所以下面的例子是合法的：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># In settings/urls/main.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;username&gt;\w+)/blog/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'foo.urls.blog'</span><span class="p">)),</span>
+<span class="p">]</span>
+
+<span class="c"># In foo/urls/blog.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">blog</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^archive/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">blog</span><span class="o">.</span><span class="n">archive</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="64">在上面的例子中，捕获的<tt class="docutils literal"><span class="pre">"username"</span></tt>变量将被如期传递给包含的 URLconf。</font></p>
+</div>
+</div>
+<div class="section" id="s-nested-arguments">
+<span id="nested-arguments"></span><h2><font id="185">嵌套的参数</font><a class="headerlink" href="urls.html#nested-arguments" title="Permalink to this headline">¶</a></h2>
+<p><font id="65">正则表达式允许嵌套的参数，Django 将解析它们并传递给视图。</font><font id="66">当反查时，Django 将尝试填满所有外围捕获的参数，并忽略嵌套捕获的参数。</font><font id="67">考虑下面的URL 模式，它带有一个可选的page 参数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'blog/(page-(\d+)/)?$'</span><span class="p">,</span> <span class="n">blog_articles</span><span class="p">),</span>                  <span class="c"># bad</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'comments/(?:page-(?P&lt;page_number&gt;\d+)/)?$'</span><span class="p">,</span> <span class="n">comments</span><span class="p">),</span>  <span class="c"># good</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="68">两个模式都使用嵌套的参数，其解析方式是：例如<tt class="docutils literal"><span class="pre">blog/page-2/</span></tt> 将匹配<tt class="docutils literal"><span class="pre">blog_articles</span></tt>并带有两个位置参数<tt class="docutils literal"><span class="pre">page-2/</span></tt> 和<tt class="docutils literal"><span class="pre">2</span></tt>。</font><font id="69">第二个<tt class="docutils literal"><span class="pre">comments</span></tt> 的模式将匹配<tt class="docutils literal"><span class="pre">comments/page-2/</span></tt> 并带有一个值为2 的关键字参数<tt class="docutils literal"><span class="pre">page_number</span></tt>。</font><font id="70">这个例子中外围参数是一个不捕获的参数<tt class="docutils literal"><span class="pre">(?:...)</span></tt>。</font></p>
+<p><font id="71"><tt class="docutils literal"><span class="pre">blog_articles</span></tt> 视图需要最外层捕获的参数来反查，在这个例子中是<tt class="docutils literal"><span class="pre">page-2/</span></tt>或者没有参数，而<tt class="docutils literal"><span class="pre">comments</span></tt>可以不带参数或者用一个<tt class="docutils literal"><span class="pre">page_number</span></tt>值来反查。</font></p>
+<p><font id="72">嵌套捕获的参数使得视图参数和URL 之间存在强耦合，正如<tt class="docutils literal"><span class="pre">blog_articles</span></tt> 所示：视图接收URL（<tt class="docutils literal"><span class="pre">page-2/</span></tt>）的一部分，而不只是视图所要的值。</font><font id="73">这种耦合在反查时更加显著，因为反查视图时我们需要传递URL 的一个片段而不只是page 的值。</font></p>
+<p><font id="74">作为一个经验的法则，当正则表达式需要一个参数但视图忽略它的时候，只捕获视图需要的值并使用非捕获参数。</font></p>
+</div>
+<div class="section" id="s-passing-extra-options-to-view-functions">
+<span id="s-views-extra-options"></span><span id="passing-extra-options-to-view-functions"></span><span id="views-extra-options"></span><h2><font id="186">传递额外的选项给视图函数</font><a class="headerlink" href="urls.html#passing-extra-options-to-view-functions" title="Permalink to this headline">¶</a></h2>
+<p><font id="75">URLconfs 具有一个钩子，让你传递一个Python 字典作为额外的参数传递给视图函数。</font></p>
+<p><font id="76"><a class="reference internal" href="../../ref/urls.html#django.conf.urls.url" title="django.conf.urls.url"><tt class="xref py py-func docutils literal"><span class="pre">django.conf.urls.url()</span></tt></a> 函数可以接收一个可选的第三个参数，它是一个字典，表示想要传递给视图函数的额外关键字参数。</font></p>
+<p><font id="77">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^blog/(?P&lt;year&gt;[0-9]{4})/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">year_archive</span><span class="p">,</span> <span class="p">{</span><span class="s">'foo'</span><span class="p">:</span> <span class="s">'bar'</span><span class="p">}),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="78">在这个例子中，对于<tt class="docutils literal"><span class="pre">/blog/2005/</span></tt>请求，Django 将调用<tt class="docutils literal"><span class="pre">views.year_archive(request,</span> <span class="pre">year='2005',</span> <span class="pre">foo='bar')</span></tt>。</font></p>
+<p><font id="79">这个技术在<a class="reference internal" href="../../ref/contrib/syndication.html"><em>Syndication 框架</em></a> 中使用，来传递元数据和选项给视图。</font></p>
+<div class="admonition-dealing-with-conflicts admonition">
+<p class="first admonition-title"><font id="80">处理冲突</font></p>
+<p class="last"><font id="81">URL 模式捕获的命名关键字参数和在字典中传递的额外参数有可能具有相同的名称。</font><font id="82">当这种情况发生时，将使用字典中的参数而不是URL 中捕获的参数。</font></p>
+</div>
+<div class="section" id="s-passing-extra-options-to-include">
+<span id="passing-extra-options-to-include"></span><h3><font id="192">传递额外的选项给</font><tt class="docutils literal"><span class="pre">include()</span></tt></h3>
+<p><font id="83">类似地，你可以传递额外的选项给<a class="reference internal" href="../../ref/urls.html#django.conf.urls.include" title="django.conf.urls.include"><tt class="xref py py-func docutils literal"><span class="pre">include()</span></tt></a>。</font><font id="84">当你传递额外的选项给<tt class="docutils literal"><span class="pre">include()</span></tt> 时，被包含的URLconf 的<em>每一</em> 行将被传递这些额外的选项。</font></p>
+<p><font id="85">例如，下面两个URLconf 设置功能上完全相同：</font></p>
+<p><font id="86">设置一次：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># main.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^blog/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'inner'</span><span class="p">),</span> <span class="p">{</span><span class="s">'blogid'</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span>
+<span class="p">]</span>
+
+<span class="c"># inner.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">mysite</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^archive/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">archive</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="87">设置两次：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># main.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">mysite</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^blog/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'inner'</span><span class="p">)),</span>
+<span class="p">]</span>
+
+<span class="c"># inner.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^archive/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">archive</span><span class="p">,</span> <span class="p">{</span><span class="s">'blogid'</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about</span><span class="p">,</span> <span class="p">{</span><span class="s">'blogid'</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="88">注意，额外的选项将<em>永远</em>传递给被包含的URLconf 中的<em>每一</em>行，无论该行的视图实际上是否认为这些选项是合法的。</font><font id="89">由于这个原因，该技术只有当你确定被包含的URLconf 中的每个视图都接收你传递给它们的额外的选项。</font></p>
+</div>
+</div>
+<div class="section" id="s-reverse-resolution-of-urls">
+<span id="reverse-resolution-of-urls"></span><h2><font id="187">URL 的反向解析</font><a class="headerlink" href="urls.html#reverse-resolution-of-urls" title="Permalink to this headline">¶</a></h2>
+<p><font id="90">在使用Django 项目时，一个常见的需求是获得URL 的最终形式，以用于嵌入到生成的内容中（视图中和显示给用户的URL等）或者用于处理服务器端的导航（重定向等）。</font></p>
+<p><font id="91">人们强烈希望不要硬编码这些URL（费力、不可扩展且容易产生错误）或者设计一种与URLconf 毫不相关的专门的URL 生成机制，因为这样容易导致一定程度上产生过期的URL。</font></p>
+<p><font id="92">换句话讲，需要的是一个DRY 机制。</font><font id="93">除了其它有点，它还允许设计的URL 可以自动更新而不用遍历项目的源代码来搜索并替换过期的URL。</font></p>
+<p><font id="94">获取一个URL 最开始想到的信息是处理它视图的标识（例如名字），查找正确的URL 的其它必要的信息有视图参数的类型（位置参数、关键字参数）和值。</font></p>
+<p><font id="95">Django 提供一个办法是让URL 映射是URL 设计唯一的地方。</font><font id="96">你填充你的URLconf，然后可以双向使用它：</font></p>
+<ul class="simple">
+<li><font id="237">根据用户/浏览器发起的URL 请求，它调用正确的Django 视图，并从URL 中提取它的参数需要的值。</font></li>
+<li><font id="238">根据Django 视图的标识和将要传递给它的参数的值，获取与之关联的URL。</font></li>
+</ul>
+<p><font id="97">第一种方式是我们在前面的章节中一直讨论的用法。</font><font id="98">第二种方式叫做<em>反向解析URL</em>、<em>反向URL 匹配</em>、<em>反向URL 查询</em>或者简单的<em>URL 反查</em>。</font></p>
+<p><font id="99">在需要URL 的地方，对于不同层级，Django 提供不同的工具用于URL 反查：</font></p>
+<ul class="simple">
+<li><font id="239">在模板中：使用<a class="reference internal" href="../../ref/templates/builtins.html#std:templatetag-url"><tt class="xref std std-ttag docutils literal"><span class="pre">url</span></tt></a> 模板标签。</font></li>
+<li><font id="240">在Python 代码中：使用<a class="reference internal" href="../../ref/urlresolvers.html#django.core.urlresolvers.reverse" title="django.core.urlresolvers.reverse"><tt class="xref py py-func docutils literal"><span class="pre">django.core.urlresolvers.reverse()</span></tt></a> 函数。</font></li>
+<li><font id="241">在更高层的与处理Django 模型实例相关的代码中：使用<a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model.get_absolute_url" title="django.db.models.Model.get_absolute_url"><tt class="xref py py-meth docutils literal"><span class="pre">get_absolute_url()</span></tt></a> 方法。</font></li>
+</ul>
+<div class="section" id="s-examples">
+<span id="examples"></span><h3><font id="193">例子</font><a class="headerlink" href="urls.html#examples" title="Permalink to this headline">¶</a></h3>
+<p><font id="100">考虑下面的URLconf：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c">#...</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^articles/([0-9]{4})/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">year_archive</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'news-year-archive'</span><span class="p">),</span>
+    <span class="c">#...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="101">根据这里的设计，某一年<em>nnnn</em>对应的归档的URL是<tt class="docutils literal"><span class="pre">/articles/nnnn/</span></tt>。</font></p>
+<p><font id="102">你可以在模板的代码中使用下面的方法获得它们：</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="k">url</span> <span class="s1">'news-year-archive'</span> <span class="m">2012</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>2012 Archive<span class="nt">&lt;/a&gt;</span>
+<span class="c"></span>
+<span class="nt">&lt;ul&gt;</span>
+<span class="cp">{%</span> <span class="k">for</span> <span class="nv">yearvar</span> <span class="k">in</span> <span class="nv">year_list</span> <span class="cp">%}</span>
+<span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="k">url</span> <span class="s1">'news-year-archive'</span> <span class="nv">yearvar</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">yearvar</span> <span class="cp">}}</span> Archive<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+<span class="nt">&lt;/ul&gt;</span>
+</pre></div>
+</div>
+<p><font id="103">在Python 代码中，这样使用：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+
+<span class="k">def</span> <span class="nf">redirect_to_year</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="n">year</span> <span class="o">=</span> <span class="mi">2006</span>
+    <span class="c"># ...</span>
+    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'news-year-archive'</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">year</span><span class="p">,)))</span>
+</pre></div>
+</div>
+<p><font id="104">如果出于某种原因决定按年归档文章发布的URL应该调整一下，那么你将只需要修改URLconf 中的内容。</font></p>
+<p><font id="105">在某些场景中，一个视图是通用的，所以在URL 和视图之间存在多对一的关系。</font><font id="106">对于这些情况，当反查URL 时，只有视图的名字还不够。</font><font id="107">请阅读下一节来了解Django 为这个问题提供的解决办法。</font></p>
+</div>
+</div>
+<div class="section" id="s-naming-url-patterns">
+<span id="s-id3"></span><span id="naming-url-patterns"></span><span id="id3"></span><h2><font id="188">命名URL 模式</font><a class="headerlink" href="urls.html#naming-url-patterns" title="Permalink to this headline">¶</a></h2>
+<p><font id="108">为了完成上面例子中的URL 反查，你将需要使用<strong>命名的URL 模式</strong>。</font><font id="109">URL 的名称使用的字符串可以包含任何你喜欢的字符。</font><font id="110">不只限制在合法的Python 名称。</font></p>
+<p><font id="111">当命名你的URL 模式时，请确保使用的名称不会与其它应用中名称冲突。</font><font id="112">如果你的URL 模式叫做<tt class="docutils literal"><span class="pre">comment</span></tt>，而另外一个应用中也有一个同样的名称，当你在模板中使用这个名称的时候不能保证将插入哪个URL。</font></p>
+<p><font id="113">在URL 名称中加上一个前缀，比如应用的名称，将减少冲突的可能。</font><font id="114">我们建议使用<tt class="docutils literal"><span class="pre">myapp-comment</span></tt> 而不是<tt class="docutils literal"><span class="pre">comment</span></tt>。</font></p>
+</div>
+<div class="section" id="s-url-namespaces">
+<span id="s-topics-http-defining-url-namespaces"></span><span id="url-namespaces"></span><span id="topics-http-defining-url-namespaces"></span><h2><font id="189">URL 命名空间</font><a class="headerlink" href="urls.html#url-namespaces" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-introduction">
+<span id="introduction"></span><h3><font id="194">简介</font><a class="headerlink" href="urls.html#introduction" title="Permalink to this headline">¶</a></h3>
+<p><font id="115">URL 命名空间允许你反查到唯一的<a class="reference internal" href="urls.html#naming-url-patterns"><em>命名URL 模式</em></a>，即使不同的应用使用相同的URL 名称。</font><font id="116">第三方应用始终使用带命名空间的URL 是一个很好的实践（我们在教程中也是这么做的）。</font><font id="117">类似地，它还允许你在一个应用有多个实例部署的情况下反查URL。</font><font id="118">换句话讲，因为一个应用的多个实例共享相同的命名URL，命名空间将提供一种区分这些命名URL 的方法。</font></p>
+<p><font id="119">在一个站点上，正确使用URL 命名空间的Django 应用可以部署多次。</font><font id="120">例如，<a class="reference internal" href="../../ref/contrib/admin/index.html#module-django.contrib.admin" title="django.contrib.admin: Django's admin site."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.admin</span></tt></a> 具有一个<a class="reference internal" href="../../ref/contrib/admin/index.html#django.contrib.admin.AdminSite" title="django.contrib.admin.AdminSite"><tt class="xref py py-class docutils literal"><span class="pre">AdminSite</span></tt></a> 类，它允许你很容易地<a class="reference internal" href="../../ref/contrib/admin/index.html#multiple-admin-sites"><em>部署多个管理站点的实例</em></a>。</font><font id="121">在下面的例子中，我们将讨论在两个不同的地方部署教程中的polls 应用，这样我们可以为两种不同的用户（作者和发布者）提供相同的功能。</font></p>
+<p><font id="122">一个URL 命名空间有两个部分，它们都是字符串：</font></p>
+<dl class="glossary docutils">
+<dt id="term-application-namespace"><font id="279">应用命名空间</font></dt>
+<dd><font id="280">它表示正在部署的应用的名称。</font><font id="281">一个应用的每个实例具有相同的应用命名空间。</font><font id="282">例如，可以预见Django 的管理站点的应用命名空间是<tt class="docutils literal"><span class="pre">'admin'</span></tt>。</font></dd>
+<dt id="term-instance-namespace"><font id="283">实例命名空间</font></dt>
+<dd><font id="284">它表示应用的一个特定的实例。</font><font id="285">实例的命名空间在你的全部项目中应该是唯一的。</font><font id="286">但是，一个实例的命名空间可以和应用的命名空间相同。</font><font id="287">它用于表示一个应用的默认实例。</font><font id="288">例如，Django 管理站点实例具有一个默认的实例命名空间<tt class="docutils literal"><span class="pre">'admin'</span></tt>。</font></dd>
+</dl>
+<p><font id="123">URL 的命名空间使用<tt class="docutils literal"><span class="pre">':'</span></tt> 操作符指定。</font><font id="124">例如，管理站点应用的主页使用<tt class="docutils literal"><span class="pre">'admin:index'</span></tt>。</font><font id="125">它表示<tt class="docutils literal"><span class="pre">'admin'</span></tt> 的一个命名空间和<tt class="docutils literal"><span class="pre">'index'</span></tt> 的一个命名URL。</font></p>
+<p><font id="126">命名空间也可以嵌套。</font><font id="127">命名URL<tt class="docutils literal"><span class="pre">'sports:polls:index'</span></tt> 将在命名空间<tt class="docutils literal"><span class="pre">'polls'</span></tt>中查找<tt class="docutils literal"><span class="pre">'index'</span></tt>，而poll 定义在顶层的命名空间<tt class="docutils literal"><span class="pre">'sports'</span></tt> 中。</font></p>
+</div>
+<div class="section" id="s-reversing-namespaced-urls">
+<span id="s-topics-http-reversing-url-namespaces"></span><span id="reversing-namespaced-urls"></span><span id="topics-http-reversing-url-namespaces"></span><h3><font id="195">反查带命名空间的URL</font><a class="headerlink" href="urls.html#reversing-namespaced-urls" title="Permalink to this headline">¶</a></h3>
+<p><font id="128">当解析一个带命名空间的URL（例如<tt class="docutils literal"><span class="pre">'polls:index'</span></tt>）时，Django 将切分名称为多个部分，然后按下面的步骤查找：</font></p>
+<ol class="arabic">
+<li><p class="first"><font id="129">首先，Django 查找匹配的<a class="reference internal" href="urls.html#term-application-namespace"><em class="xref std std-term">应用的命名空间</em></a>(在这个例子中为<tt class="docutils literal"><span class="pre">'polls'</span></tt>）。</font><font id="130">这将得到该应用实例的一个列表。</font></p>
+</li>
+<li><p class="first"><font id="131">如果有定义<em>当前</em> 应用，Django 将查找并返回那个实例的URL 解析器。</font><font id="132"><em>当前</em> 应用可以通过请求上的一个属性指定。</font><font id="133">希望可以多次部署的应用应该设置正在处理的<tt class="docutils literal"><span class="pre">request</span></tt>上的<tt class="docutils literal"><span class="pre">current_app</span></tt> 属性。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="134">在以前版本的Django 中，你必须在用于渲染模板的每个<a class="reference internal" href="../../ref/templates/api.html#django.template.Context" title="django.template.Context"><tt class="xref py py-class docutils literal"><span class="pre">Context</span></tt></a> 或 <a class="reference internal" href="../../ref/templates/api.html#django.template.RequestContext" title="django.template.RequestContext"><tt class="xref py py-class docutils literal"><span class="pre">RequestContext</span></tt></a>上设置<tt class="docutils literal"><span class="pre">current_app</span></tt> 属性。</font></p>
+</div>
+<p><font id="135">当前应用还可以通过<a class="reference internal" href="../../ref/urlresolvers.html#django.core.urlresolvers.reverse" title="django.core.urlresolvers.reverse"><tt class="xref py py-func docutils literal"><span class="pre">reverse()</span></tt></a> 函数的一个参数手工设定。</font></p>
+</li>
+<li><p class="first"><font id="136">如果没有当前应用。</font><font id="137">Django 将查找一个默认的应用实例。</font><font id="138">默认的应用实例是<a class="reference internal" href="urls.html#term-instance-namespace"><em class="xref std std-term">实例命名空间</em></a> 与<a class="reference internal" href="urls.html#term-application-namespace"><em class="xref std std-term">应用命名空间</em></a> 一致的那个实例（在这个例子中，<tt class="docutils literal"><span class="pre">polls</span></tt> 的一个叫做<tt class="docutils literal"><span class="pre">'polls'</span></tt> 的实例）。</font></p>
+</li>
+<li><p class="first"><font id="139">如果没有默认的应用实例，Django 将该应用挑选最后部署的实例，不管实例的名称是什么。</font></p>
+</li>
+<li><p class="first"><font id="140">如果提供的命名空间与第1步中的<a class="reference internal" href="urls.html#term-application-namespace"><em class="xref std std-term">应用命名空间</em></a> 不匹配，Django 将尝试直接将此命名空间作为一个<a class="reference internal" href="urls.html#term-instance-namespace"><em class="xref std std-term">实例命名空间</em></a>查找。</font></p>
+</li>
+</ol>
+<p><font id="141">如果有嵌套的命名空间，将为命名空间的每个部分重复调用这些步骤直至剩下视图的名称还未解析。</font><font id="142">然后该视图的名称将被解析到找到的这个命名空间中的一个URL。</font></p>
+<div class="section" id="s-id4">
+<span id="id4"></span><h4><font id="203">例子</font><a class="headerlink" href="urls.html#id4" title="Permalink to this headline">¶</a></h4>
+<p><font id="143">为了演示解析的策略，考虑教程中<tt class="docutils literal"><span class="pre">polls</span></tt> 应用的两个实例：<tt class="docutils literal"><span class="pre">'author-polls'</span></tt> 和<tt class="docutils literal"><span class="pre">'publisher-polls'</span></tt>。</font><font id="144">假设我们已经增强了该应用，在创建和显示投票时考虑了实例命名空间。</font></p>
+<div class="highlight-python"><div class="snippet-filename">urls.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^author-polls/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'polls.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s">'author-polls'</span><span class="p">,</span> <span class="n">app_name</span><span class="o">=</span><span class="s">'polls'</span><span class="p">)),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^publisher-polls/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'polls.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s">'publisher-polls'</span><span class="p">,</span> <span class="n">app_name</span><span class="o">=</span><span class="s">'polls'</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="snippet-filename">polls/urls.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">IndexView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'index'</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;pk&gt;\d+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">DetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'detail'</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="145">根据以上设置，可以使用下面的查询：</font></p>
+<ul>
+<li><p class="first"><font id="146">如果其中一个实例是当前实例 —— 如果我们正在渲染<tt class="docutils literal"><span class="pre">'author-polls'</span></tt> 实例的detail 页面 —— <tt class="docutils literal"><span class="pre">'polls:index'</span></tt> 将解析成<tt class="docutils literal"><span class="pre">'author-polls'</span></tt> 实例的主页面；</font><font id="276">例如下面两个都将解析成<tt class="docutils literal"><span class="pre">"/author-polls/"</span></tt>。</font></p>
+<p><font id="147">在基于类的视图的方法中：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:index'</span><span class="p">,</span> <span class="n">current_app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">resolver_match</span><span class="o">.</span><span class="n">namespace</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="148">和在模板中：</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">url</span> <span class="s1">'polls:index'</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="149">注意，在模板中的反查需要添加<tt class="docutils literal"><span class="pre">request</span></tt> 的<tt class="docutils literal"><span class="pre">current_app</span></tt> 属性，像这样：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">render_to_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">response_kwargs</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">current_app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">resolver_match</span><span class="o">.</span><span class="n">namespace</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">DetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">render_to_response</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">response_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="150">如果没有当前实例 —— 如果我们在站点的其它地方渲染一个页面 —— <tt class="docutils literal"><span class="pre">'polls:index'</span></tt> 将解析到最后注册的<tt class="docutils literal"><span class="pre">polls</span></tt>的一个实例。</font><font id="151">因为没有默认的实例（命名空间为<tt class="docutils literal"><span class="pre">'polls'</span></tt>的实例），将使用注册的<tt class="docutils literal"><span class="pre">polls</span></tt> 的最后一个实例。</font><font id="152">它将是<tt class="docutils literal"><span class="pre">'publisher-polls'</span></tt>，因为它是在<tt class="docutils literal"><span class="pre">urlpatterns</span></tt>中最后一个声明的。</font></p>
+</li>
+<li><p class="first"><font id="153"><tt class="docutils literal"><span class="pre">'author-polls:index'</span></tt> 将永远解析到 <tt class="docutils literal"><span class="pre">'author-polls'</span></tt> 实例的主页（<tt class="docutils literal"><span class="pre">'publisher-polls'</span></tt> 类似）。</font></p>
+</li>
+</ul>
+<p><font id="154">如果还有一个默认的实例 —— 例如，一个名为<tt class="docutils literal"><span class="pre">'polls'</span></tt> 的实例 —— 上面例子中唯一的变化是当没有当前实例的情况（上述第二种情况）。</font><font id="155">在这种情况下 <tt class="docutils literal"><span class="pre">'polls:index'</span></tt> 将解析到默认实例而不是<tt class="docutils literal"><span class="pre">urlpatterns</span></tt> 中最后声明的实例的主页。</font></p>
+</div>
+</div>
+<div class="section" id="s-url-namespaces-and-included-urlconfs">
+<span id="s-namespaces-and-include"></span><span id="url-namespaces-and-included-urlconfs"></span><span id="namespaces-and-include"></span><h3><font id="196">URL 命名空间和被包含的URLconf</font><a class="headerlink" href="urls.html#url-namespaces-and-included-urlconfs" title="Permalink to this headline">¶</a></h3>
+<p><font id="156">被包含的URLconf 的命名空间可以通过两种方式指定。</font></p>
+<p><font id="157">首先，在你构造你的URL 模式时，你可以提供 <a class="reference internal" href="urls.html#term-application-namespace"><em class="xref std std-term">应用</em></a> 和 <a class="reference internal" href="urls.html#term-instance-namespace"><em class="xref std std-term">实例</em></a>的命名空间给<a class="reference internal" href="../../ref/urls.html#django.conf.urls.include" title="django.conf.urls.include"><tt class="xref py py-func docutils literal"><span class="pre">include()</span></tt></a> 作为参数。</font><font id="158">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url</span><span class="p">(</span><span class="s">r'^polls/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">'polls.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s">'author-polls'</span><span class="p">,</span> <span class="n">app_name</span><span class="o">=</span><span class="s">'polls'</span><span class="p">)),</span>
+</pre></div>
+</div>
+<p><font id="159">这将包含<tt class="docutils literal"><span class="pre">polls.urls</span></tt> 中定义的URL 到<a class="reference internal" href="urls.html#term-application-namespace"><em class="xref std std-term">应用命名空间</em></a> <tt class="docutils literal"><span class="pre">'polls'</span></tt>中，其<a class="reference internal" href="urls.html#term-instance-namespace"><em class="xref std std-term">实例命名空间</em></a>为<tt class="docutils literal"><span class="pre">'author-polls'</span></tt>。</font></p>
+<p><font id="160">其次，你可以include 一个包含嵌套命名空间数据的对象。</font><font id="161">如果你<tt class="docutils literal"><span class="pre">include()</span></tt> 一个<a class="reference internal" href="../../ref/urls.html#django.conf.urls.url" title="django.conf.urls.url"><tt class="xref py py-func docutils literal"><span class="pre">url()</span></tt></a> 实例的列表，那么该对象中包含的URL 将添加到全局命名空间。</font><font id="162">然而，你还可以<tt class="docutils literal"><span class="pre">include()</span></tt> 一个3个元素的元组：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>(&lt;list of url() instances&gt;, &lt;application namespace&gt;, &lt;instance namespace&gt;)
+</pre></div>
+</div>
+<p><font id="163">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">polls_patterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">IndexView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'index'</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;pk&gt;\d+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">DetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'detail'</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">url</span><span class="p">(</span><span class="s">r'^polls/'</span><span class="p">,</span> <span class="n">include</span><span class="p">((</span><span class="n">polls_patterns</span><span class="p">,</span> <span class="s">'polls'</span><span class="p">,</span> <span class="s">'author-polls'</span><span class="p">))),</span>
+</pre></div>
+</div>
+<p><font id="164">这将include 命名的URL 模式到给定的应用和实例命名空间中。</font></p>
+<p><font id="165">例如，Django 的管理站点部署的实例叫<a class="reference internal" href="../../ref/contrib/admin/index.html#django.contrib.admin.AdminSite" title="django.contrib.admin.AdminSite"><tt class="xref py py-class docutils literal"><span class="pre">AdminSite</span></tt></a>。</font><font id="166"><tt class="docutils literal"><span class="pre">AdminSite</span></tt> 对象具有一个<tt class="docutils literal"><span class="pre">urls</span></tt> 属性：一个3元组，包含管理站点中的所有URL 模式和应用的命名空间<tt class="docutils literal"><span class="pre">'admin'</span></tt>以及管理站点实例的名称。</font><font id="167">你<tt class="docutils literal"><span class="pre">include()</span></tt>到你项目的<tt class="docutils literal"><span class="pre">urlpatterns</span></tt> 中的是这个<tt class="docutils literal"><span class="pre">urls</span></tt> 属性。</font></p>
+<p><font id="168">请确保传递一个元组给<tt class="docutils literal"><span class="pre">include()</span></tt>。</font><font id="169">如果你只是传递3个参数：<tt class="docutils literal"><span class="pre">include(polls_patterns,</span> <span class="pre">'polls',</span> <span class="pre">'author-polls')</span></tt>，Django 不会抛出一个错误，但是根据<tt class="docutils literal"><span class="pre">include()</span></tt> 的功能，<tt class="docutils literal"><span class="pre">'polls'</span></tt> 将是实例的命名空间而<tt class="docutils literal"><span class="pre">'author-polls'</span></tt> 将是应用的命名空间，而不是反过来的。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="197">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="urls.html#"><font id="242">URL 调度器</font></a><ul>
+<li><a class="reference internal" href="urls.html#overview"><font id="243">概览</font></a></li>
+<li><a class="reference internal" href="urls.html#how-django-processes-a-request"><font id="244">Django 如何处理一个请求</font></a></li>
+<li><a class="reference internal" href="urls.html#example"><font id="245">例子</font></a></li>
+<li><a class="reference internal" href="urls.html#named-groups"><font id="246">命名组</font></a><ul>
+<li><a class="reference internal" href="urls.html#the-matching-grouping-algorithm"><font id="247">匹配/分组 算法</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="urls.html#what-the-urlconf-searches-against"><font id="248">URLconf &nbsp;在什么上查找</font></a></li>
+<li><a class="reference internal" href="urls.html#captured-arguments-are-always-strings"><font id="249">捕获的参数永远是字符串</font></a></li>
+<li><a class="reference internal" href="urls.html#specifying-defaults-for-view-arguments"><font id="250">指定视图参数的默认值</font></a></li>
+<li><a class="reference internal" href="urls.html#performance"><font id="251">性能</font></a></li>
+<li><a class="reference internal" href="urls.html#syntax-of-the-urlpatterns-variable"><font id="252">urlpatterns 变量的语法</font></a></li>
+<li><a class="reference internal" href="urls.html#error-handling"><font id="253">错误处理</font></a></li>
+<li><a class="reference internal" href="urls.html#including-other-urlconfs"><font id="254">包含其它的URLconf&nbsp;</font></a><ul>
+<li><a class="reference internal" href="urls.html#captured-parameters"><font id="255">捕获的参数</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="urls.html#nested-arguments"><font id="256">嵌套的参数</font></a></li>
+<li><a class="reference internal" href="urls.html#passing-extra-options-to-view-functions"><font id="257">传递额外的选项给视图函数</font></a><ul>
+<li><a class="reference internal" href="urls.html#passing-extra-options-to-include"><font id="258">传递额外的选项给<tt class="docutils literal"><span class="pre">include()</span></tt></font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="urls.html#reverse-resolution-of-urls"><font id="259">反向解析URL</font></a><ul>
+<li><a class="reference internal" href="urls.html#examples"><font id="260">例子</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="urls.html#naming-url-patterns"><font id="261">命名URL 模式</font></a></li>
+<li><a class="reference internal" href="urls.html#url-namespaces"><font id="262">URL 命名空间</font></a><ul>
+<li><a class="reference internal" href="urls.html#introduction"><font id="263">简介</font></a></li>
+<li><a class="reference internal" href="urls.html#reversing-namespaced-urls"><font id="264">反查带命名空间的URL</font></a><ul>
+<li><a class="reference internal" href="urls.html#id4"><font id="265">例子</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="urls.html#url-namespaces-and-included-urlconfs"><font id="266">URL 命名空间和被包含的URLconf</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="198">浏览</font></h3>
+<ul>
+<li><font id="267">上一页：<a href="index.html">处理HTTP 请求</a></font></li>
+<li><font id="268">下一页：<a href="views.html">编写视图</a></font></li>
+</ul>
+<h3><font id="199">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="269">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="270">使用 Django</font></a>
+<ul><li><a href="index.html"><font id="271">处理HTTP 请求</font></a>
+<ul><li><font id="272">URL 调度器</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="200">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/http/urls.txt" rel="nofollow"><font id="273">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="201">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="170"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="202">最后更新：</font></h3>
+<p class="topless"><font id="171">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="index.html" title="Handling HTTP requests">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="views.html" title="Writing views">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/http/urls';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

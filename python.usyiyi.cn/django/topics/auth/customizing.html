@@ -1,0 +1,998 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>自定义认证 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="User authentication in Django"/>
+<link href="../cache.html" rel="next" title="Django’s cache framework"/>
+<link href="passwords.html" rel="prev" title="Password management in Django"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/auth/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/auth/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="255">Django 1.8.2.dev20150513143415 documentation</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="passwords.html" title="Password management in Django">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="../cache.html" title="Django&amp;#8217;s cache framework">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-auth-customizing">
+<div class="section" id="s-customizing-authentication-in-django">
+<span id="customizing-authentication-in-django"></span><h1><font id="256">在Django中自定义身份验证</font><a class="headerlink" href="customizing.html#customizing-authentication-in-django" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">The authentication that comes with Django is good enough for most common cases, but you may have needs not met by the out-of-the-box defaults. </font><font id="2">To customize authentication to your projects needs involves understanding what points of the provided system are extensible or replaceable. </font><font id="3">This document provides details about how the auth system can be customized.</font></p>
+<p><font id="4"><a class="reference internal" href="customizing.html#authentication-backends"><em>Authentication backends</em></a> provide an extensible system for when a username and password stored with the User model need to be authenticated against a different service than Django’s default.</font></p>
+<p><font id="5">You can give your models <a class="reference internal" href="customizing.html#custom-permissions"><em>custom permissions</em></a> that can be checked through Django’s authorization system.</font></p>
+<p><font id="6">You can <a class="reference internal" href="customizing.html#extending-user"><em>extend</em></a> the default User model, or <a class="reference internal" href="customizing.html#auth-custom-user"><em>substitute</em></a> a completely customized model.</font></p>
+<div class="section" id="s-other-authentication-sources">
+<span id="s-authentication-backends"></span><span id="other-authentication-sources"></span><span id="authentication-backends"></span><h2><font id="257">其他认证源</font><a class="headerlink" href="customizing.html#other-authentication-sources" title="Permalink to this headline">¶</a></h2>
+<p><font id="7">There may be times you have the need to hook into another authentication source – that is, another source of usernames and passwords or authentication methods.</font></p>
+<p><font id="8">For example, your company may already have an LDAP setup that stores a username and password for every employee. </font><font id="9">It’d be a hassle for both the network administrator and the users themselves if users had separate accounts in LDAP and the Django-based applications.</font></p>
+<p><font id="10">So, to handle situations like this, the Django authentication system lets you plug in other authentication sources. </font><font id="11">You can override Django’s default database-based scheme, or you can use the default system in tandem with other systems.</font></p>
+<p><font id="12">See the <a class="reference internal" href="../../ref/contrib/auth.html#authentication-backends-reference"><em>authentication backend reference</em></a> for information on the authentication backends included with Django.</font></p>
+<div class="section" id="s-specifying-authentication-backends">
+<span id="specifying-authentication-backends"></span><h3><font id="261">指定认证后端</font><a class="headerlink" href="customizing.html#specifying-authentication-backends" title="Permalink to this headline">¶</a></h3>
+<p><font id="13">Behind the scenes, Django maintains a list of “authentication backends” that it checks for authentication. </font><font id="14">When somebody calls <a class="reference internal" href="default.html#django.contrib.auth.authenticate" title="django.contrib.auth.authenticate"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.auth.authenticate()</span></tt></a> – as described in <a class="reference internal" href="default.html#how-to-log-a-user-in"><em>How to log a user in</em></a> – Django tries authenticating across all of its authentication backends. </font><font id="15">If the first authentication method fails, Django tries the second one, and so on, until all backends have been attempted.</font></p>
+<p><font id="16">The list of authentication backends to use is specified in the <a class="reference internal" href="../../ref/settings.html#std:setting-AUTHENTICATION_BACKENDS"><tt class="xref std std-setting docutils literal"><span class="pre">AUTHENTICATION_BACKENDS</span></tt></a> setting. </font><font id="17">This should be a tuple of Python path names that point to Python classes that know how to authenticate. </font><font id="18">These classes can be anywhere on your Python path.</font></p>
+<p><font id="19">By default, <a class="reference internal" href="../../ref/settings.html#std:setting-AUTHENTICATION_BACKENDS"><tt class="xref std std-setting docutils literal"><span class="pre">AUTHENTICATION_BACKENDS</span></tt></a> is set to:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="s">'django.contrib.auth.backends.ModelBackend'</span><span class="p">,)</span>
+</pre></div>
+</div>
+<p><font id="20">That’s the basic authentication backend that checks the Django users database and queries the built-in permissions. </font><font id="21">It does not provide protection against brute force attacks via any rate limiting mechanism. </font><font id="22">You may either implement your own rate limiting mechanism in a custom auth backend, or use the mechanisms provided by most Web servers.</font></p>
+<p><font id="23">The order of <a class="reference internal" href="../../ref/settings.html#std:setting-AUTHENTICATION_BACKENDS"><tt class="xref std std-setting docutils literal"><span class="pre">AUTHENTICATION_BACKENDS</span></tt></a> matters, so if the same username and password is valid in multiple backends, Django will stop processing at the first positive match.</font></p>
+<p><font id="24">If a backend raises a <a class="reference internal" href="../../ref/exceptions.html#django.core.exceptions.PermissionDenied" title="django.core.exceptions.PermissionDenied"><tt class="xref py py-class docutils literal"><span class="pre">PermissionDenied</span></tt></a> exception, authentication will immediately fail. </font><font id="25">Django won’t check the backends that follow.</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="26">Note</font></p>
+<p class="last"><font id="27">Once a user has authenticated, Django stores which backend was used to authenticate the user in the user’s session, and re-uses the same backend for the duration of that session whenever access to the currently authenticated user is needed. </font><font id="28">This effectively means that authentication sources are cached on a per-session basis, so if you change <a class="reference internal" href="../../ref/settings.html#std:setting-AUTHENTICATION_BACKENDS"><tt class="xref std std-setting docutils literal"><span class="pre">AUTHENTICATION_BACKENDS</span></tt></a>, you’ll need to clear out session data if you need to force users to re-authenticate using different methods. </font><font id="29">A simple way to do that is simply to execute <tt class="docutils literal"><span class="pre">Session.objects.all().delete()</span></tt>.</font></p>
+</div>
+</div>
+<div class="section" id="s-writing-an-authentication-backend">
+<span id="writing-an-authentication-backend"></span><h3><font id="262">编写一个认证后端</font><a class="headerlink" href="customizing.html#writing-an-authentication-backend" title="Permalink to this headline">¶</a></h3>
+<p><font id="30">An authentication backend is a class that implements two required methods: <tt class="docutils literal"><span class="pre">get_user(user_id)</span></tt> and <tt class="docutils literal"><span class="pre">authenticate(**credentials)</span></tt>, as well as a set of optional permission related <a class="reference internal" href="customizing.html#authorization-methods"><em>authorization methods</em></a>.</font></p>
+<p><font id="31">The <tt class="docutils literal"><span class="pre">get_user</span></tt> method takes a <tt class="docutils literal"><span class="pre">user_id</span></tt> – which could be a username, database ID or whatever, but has to be the primary key of your <tt class="docutils literal"><span class="pre">User</span></tt> object – and returns a <tt class="docutils literal"><span class="pre">User</span></tt> object.</font></p>
+<p><font id="32">The <tt class="docutils literal"><span class="pre">authenticate</span></tt> method takes credentials as keyword arguments. </font><font id="33">Most of the time, it’ll just look like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyBackend</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c"># Check the username/password and return a User.</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="34">But it could also authenticate a token, like so:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyBackend</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c"># Check the token and return a User.</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="35">Either way, <tt class="docutils literal"><span class="pre">authenticate</span></tt> should check the credentials it gets, and it should return a <tt class="docutils literal"><span class="pre">User</span></tt> object that matches those credentials, if the credentials are valid. </font><font id="36">If they’re not valid, it should return <tt class="docutils literal"><span class="pre">None</span></tt>.</font></p>
+<p><font id="37">The Django admin system is tightly coupled to the Django <tt class="docutils literal"><span class="pre">User</span></tt> object described at the beginning of this document. </font><font id="38">For now, the best way to deal with this is to create a Django <tt class="docutils literal"><span class="pre">User</span></tt> object for each user that exists for your backend (e.g., in your LDAP directory, your external SQL database, etc.) </font><font id="39">You can either write a script to do this in advance, or your <tt class="docutils literal"><span class="pre">authenticate</span></tt> method can do it the first time a user logs in.</font></p>
+<p><font id="40">Here’s an example backend that authenticates against a username and password variable defined in your <tt class="docutils literal"><span class="pre">settings.py</span></tt> file and creates a Django <tt class="docutils literal"><span class="pre">User</span></tt> object the first time a user authenticates:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">check_password</span>
+
+<span class="k">class</span> <span class="nc">SettingsBackend</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Authenticate against the settings ADMIN_LOGIN and ADMIN_PASSWORD.</span>
+
+<span class="sd">    Use the login name, and a hash of the password. For example:</span>
+
+<span class="sd">    ADMIN_LOGIN = 'admin'</span>
+<span class="sd">    ADMIN_PASSWORD = 'sha1$4e987$afbcf42e21bd417fb71db8c66b321e9fc33051de'</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">login_valid</span> <span class="o">=</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">ADMIN_LOGIN</span> <span class="o">==</span> <span class="n">username</span><span class="p">)</span>
+        <span class="n">pwd_valid</span> <span class="o">=</span> <span class="n">check_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">ADMIN_PASSWORD</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">login_valid</span> <span class="ow">and</span> <span class="n">pwd_valid</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="c"># Create a new user. Note that we can set password</span>
+                <span class="c"># to anything, because it won't be checked; the password</span>
+                <span class="c"># from settings.py will.</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s">'get from settings.py'</span><span class="p">)</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">is_staff</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">user</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-handling-authorization-in-custom-backends">
+<span id="s-authorization-methods"></span><span id="handling-authorization-in-custom-backends"></span><span id="authorization-methods"></span><h3><font id="263">Handling authorization in custom backends</font><a class="headerlink" href="customizing.html#handling-authorization-in-custom-backends" title="Permalink to this headline">¶</a></h3>
+<p><font id="41">Custom auth backends can provide their own permissions.</font></p>
+<p><font id="42">The user model will delegate permission lookup functions (<a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User.get_group_permissions" title="django.contrib.auth.models.User.get_group_permissions"><tt class="xref py py-meth docutils literal"><span class="pre">get_group_permissions()</span></tt></a>, <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User.get_all_permissions" title="django.contrib.auth.models.User.get_all_permissions"><tt class="xref py py-meth docutils literal"><span class="pre">get_all_permissions()</span></tt></a>, <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User.has_perm" title="django.contrib.auth.models.User.has_perm"><tt class="xref py py-meth docutils literal"><span class="pre">has_perm()</span></tt></a>, and <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User.has_module_perms" title="django.contrib.auth.models.User.has_module_perms"><tt class="xref py py-meth docutils literal"><span class="pre">has_module_perms()</span></tt></a>) to any authentication backend that implements these functions.</font></p>
+<p><font id="43">The permissions given to the user will be the superset of all permissions returned by all backends. </font><font id="44">That is, Django grants a permission to a user that any one backend grants.</font></p>
+<div class="versionadded">
+<span class="title">New in Django 1.8:</span> <p><font id="45">If a backend raises a <a class="reference internal" href="../../ref/exceptions.html#django.core.exceptions.PermissionDenied" title="django.core.exceptions.PermissionDenied"><tt class="xref py py-class docutils literal"><span class="pre">PermissionDenied</span></tt></a> exception in <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User.has_perm" title="django.contrib.auth.models.User.has_perm"><tt class="xref py py-meth docutils literal"><span class="pre">has_perm()</span></tt></a> or <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User.has_module_perms" title="django.contrib.auth.models.User.has_module_perms"><tt class="xref py py-meth docutils literal"><span class="pre">has_module_perms()</span></tt></a>, the authorization will immediately fail and Django won’t check the backends that follow.</font></p>
+</div>
+<p><font id="46">The simple backend above could implement permissions for the magic admin fairly simply:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SettingsBackend</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_obj</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">user_obj</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">settings</span><span class="o">.</span><span class="n">ADMIN_LOGIN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p><font id="47">This gives full permissions to the user granted access in the above example. </font><font id="48">Notice that in addition to the same arguments given to the associated <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></tt></a> functions, the backend auth functions all take the user object, which may be an anonymous user, as an argument.</font></p>
+<p><font id="49">A full authorization implementation can be found in the <tt class="docutils literal"><span class="pre">ModelBackend</span></tt> class in <a class="reference external" href="https://github.com/django/django/blob/master/django/contrib/auth/backends.py">django/contrib/auth/backends.py</a>, which is the default backend and queries the <tt class="docutils literal"><span class="pre">auth_permission</span></tt> table most of the time. </font><font id="50">If you wish to provide custom behavior for only part of the backend API, you can take advantage of Python inheritance and subclass <tt class="docutils literal"><span class="pre">ModelBackend</span></tt> instead of implementing the complete API in a custom backend.</font></p>
+<div class="section" id="s-authorization-for-anonymous-users">
+<span id="s-anonymous-auth"></span><span id="authorization-for-anonymous-users"></span><span id="anonymous-auth"></span><h4><font id="278">授权匿名用户</font><a class="headerlink" href="customizing.html#authorization-for-anonymous-users" title="Permalink to this headline">¶</a></h4>
+<p><font id="51">An anonymous user is one that is not authenticated i.e. they have provided no valid authentication details. </font><font id="52">However, that does not necessarily mean they are not authorized to do anything. </font><font id="53">At the most basic level, most Web sites authorize anonymous users to browse most of the site, and many allow anonymous posting of comments etc.</font></p>
+<p><font id="54">Django’s permission framework does not have a place to store permissions for anonymous users. </font><font id="55">However, the user object passed to an authentication backend may be an <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.AnonymousUser" title="django.contrib.auth.models.AnonymousUser"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.AnonymousUser</span></tt></a> object, allowing the backend to specify custom authorization behavior for anonymous users. </font><font id="56">This is especially useful for the authors of re-usable apps, who can delegate all questions of authorization to the auth backend, rather than needing settings, for example, to control anonymous access.</font></p>
+</div>
+<div class="section" id="s-authorization-for-inactive-users">
+<span id="s-inactive-auth"></span><span id="authorization-for-inactive-users"></span><span id="inactive-auth"></span><h4><font id="279">Authorization for inactive users</font><a class="headerlink" href="customizing.html#authorization-for-inactive-users" title="Permalink to this headline">¶</a></h4>
+<p><font id="57">An inactive user is a one that is authenticated but has its attribute <tt class="docutils literal"><span class="pre">is_active</span></tt> set to <tt class="docutils literal"><span class="pre">False</span></tt>. </font><font id="58">However this does not mean they are not authorized to do anything. </font><font id="59">For example they are allowed to activate their account.</font></p>
+<p><font id="60">The support for anonymous users in the permission system allows for a scenario where anonymous users have permissions to do something while inactive authenticated users do not.</font></p>
+<p><font id="61">Do not forget to test for the <tt class="docutils literal"><span class="pre">is_active</span></tt> attribute of the user in your own backend permission methods.</font></p>
+</div>
+<div class="section" id="s-handling-object-permissions">
+<span id="handling-object-permissions"></span><h4><font id="280">操作对象权限</font><a class="headerlink" href="customizing.html#handling-object-permissions" title="Permalink to this headline">¶</a></h4>
+<p><font id="62">Django’s permission framework has a foundation for object permissions, though there is no implementation for it in the core. </font><font id="63">That means that checking for object permissions will always return <tt class="docutils literal"><span class="pre">False</span></tt> or an empty list (depending on the check performed). </font><font id="64">An authentication backend will receive the keyword parameters <tt class="docutils literal"><span class="pre">obj</span></tt> and <tt class="docutils literal"><span class="pre">user_obj</span></tt> for each object related authorization method and can return the object level permission as appropriate.</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-custom-permissions">
+<span id="s-id1"></span><span id="custom-permissions"></span><span id="id1"></span><h2><font id="258">自定义权限</font><a class="headerlink" href="customizing.html#custom-permissions" title="Permalink to this headline">¶</a></h2>
+<p><font id="65">To create custom permissions for a given model object, use the <tt class="docutils literal"><span class="pre">permissions</span></tt> <a class="reference internal" href="../db/models.html#meta-options"><em>model Meta attribute</em></a>.</font></p>
+<p><font id="66">This example Task model creates three custom permissions, i.e., actions users can or cannot do with Task instances, specific to your application:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Task</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s">"view_task"</span><span class="p">,</span> <span class="s">"Can see available tasks"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">"change_task_status"</span><span class="p">,</span> <span class="s">"Can change the status of tasks"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">"close_task"</span><span class="p">,</span> <span class="s">"Can remove a task by setting its status as closed"</span><span class="p">),</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="67">The only thing this does is create those extra permissions when you run <a class="reference internal" href="../../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">manage.py</span> <span class="pre">migrate</span></tt></a>. </font><font id="68">Your code is in charge of checking the value of these permissions when a user is trying to access the functionality provided by the application (viewing tasks, changing the status of tasks, closing tasks.) </font><font id="69">Continuing the above example, the following checks if a user may view tasks:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s">'app.view_task'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-extending-the-existing-user-model">
+<span id="s-extending-user"></span><span id="extending-the-existing-user-model"></span><span id="extending-user"></span><h2><font id="259">扩展已有的用户模型</font><a class="headerlink" href="customizing.html#extending-the-existing-user-model" title="Permalink to this headline">¶</a></h2>
+<p><font id="70">有两种方法来扩展默认的&nbsp;<a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a>模型，而不会取代自己已有的模型。 </font><font id="71">If the changes you need are purely behavioral, and don’t require any change to what is stored in the database, you can create a <a class="reference internal" href="../db/models.html#proxy-models"><em>proxy model</em></a> based on <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a>. </font><font id="72">This allows for any of the features offered by proxy models including default ordering, custom managers, or custom model methods.</font></p>
+<p><font id="73">如果你想存储新字段到已有的<tt class="docutils literal"><span class="pre">User</span></tt>里，那么你可以选择<a class="reference internal" href="../../ref/models/fields.html#ref-onetoone"><em>one-to-one relationship</em></a>来扩展用户信息。</font><font id="74">这种 one-to-one 模型一般被称为资料模型(profile model)，它通常被用来存储一些有关网站用户的非验证性（&nbsp;non-auth&nbsp;）资料。</font><font id="75">例如，你可以创建一个员工模型 (Employee model)：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+
+<span class="k">class</span> <span class="nc">Employee</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="n">department</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="76">Assuming an existing Employee Fred Smith who has both a User and Employee model, you can access the related information using Django’s standard related model conventions:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">'fsmith'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">freds_department</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">employee</span><span class="o">.</span><span class="n">department</span>
+</pre></div>
+</div>
+<p><font id="77">To add a profile model’s fields to the user page in the admin, define an <a class="reference internal" href="../../ref/contrib/admin/index.html#django.contrib.admin.InlineModelAdmin" title="django.contrib.admin.InlineModelAdmin"><tt class="xref py py-class docutils literal"><span class="pre">InlineModelAdmin</span></tt></a> (for this example, we’ll use a <a class="reference internal" href="../../ref/contrib/admin/index.html#django.contrib.admin.StackedInline" title="django.contrib.admin.StackedInline"><tt class="xref py py-class docutils literal"><span class="pre">StackedInline</span></tt></a>) in your app’s <tt class="docutils literal"><span class="pre">admin.py</span></tt> and add it to a <tt class="docutils literal"><span class="pre">UserAdmin</span></tt> class which is registered with the <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> class:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.admin</span> <span class="kn">import</span> <span class="n">UserAdmin</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+
+<span class="kn">from</span> <span class="nn">my_user_profile_app.models</span> <span class="kn">import</span> <span class="n">Employee</span>
+
+<span class="c"># Define an inline admin descriptor for Employee model</span>
+<span class="c"># which acts a bit like a singleton</span>
+<span class="k">class</span> <span class="nc">EmployeeInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">StackedInline</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Employee</span>
+    <span class="n">can_delete</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s">'employee'</span>
+
+<span class="c"># Define a new User admin</span>
+<span class="k">class</span> <span class="nc">UserAdmin</span><span class="p">(</span><span class="n">UserAdmin</span><span class="p">):</span>
+    <span class="n">inlines</span> <span class="o">=</span> <span class="p">(</span><span class="n">EmployeeInline</span><span class="p">,</span> <span class="p">)</span>
+
+<span class="c"># Re-register UserAdmin</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">UserAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="78">These profile models are not special in any way - they are just Django models that happen to have a one-to-one link with a User model. </font><font id="79">As such, they do not get auto created when a user is created, but a <a class="reference internal" href="../../ref/signals.html#django.db.models.signals.post_save" title="django.db.models.signals.post_save"><tt class="xref py py-attr docutils literal"><span class="pre">django.db.models.signals.post_save</span></tt></a> could be used to create or update related models as appropriate.</font></p>
+<p><font id="80">Note that using related models results in additional queries or joins to retrieve the related data, and depending on your needs substituting the User model and adding the related fields may be your better option. </font><font id="81">However existing links to the default User model within your project’s apps may justify the extra database load.</font></p>
+</div>
+<div class="section" id="s-substituting-a-custom-user-model">
+<span id="s-auth-custom-user"></span><span id="substituting-a-custom-user-model"></span><span id="auth-custom-user"></span><h2><font id="260">重写用户模型</font><a class="headerlink" href="customizing.html#substituting-a-custom-user-model" title="Permalink to this headline">¶</a></h2>
+<p><font id="82">Some kinds of projects may have authentication requirements for which Django’s built-in <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> model is not always appropriate. </font><font id="83">For instance, on some sites it makes more sense to use an email address as your identification token instead of a username.</font></p>
+<p><font id="84">Django allows you to override the default User model by providing a value for the <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> setting that references a custom model:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_USER_MODEL</span> <span class="o">=</span> <span class="s">'myapp.MyUser'</span>
+</pre></div>
+</div>
+<p><font id="85">This dotted pair describes the name of the Django app (which must be in your <a class="reference internal" href="../../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>), and the name of the Django model that you wish to use as your User model.</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="86">Warning</font></p>
+<p><font id="87">Changing <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> has a big effect on your database structure. </font><font id="88">It changes the tables that are available, and it will affect the construction of foreign keys and many-to-many relationships. </font><font id="89">If you intend to set <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a>, you should set it before creating any migrations or running <tt class="docutils literal"><span class="pre">manage.py</span> <span class="pre">migrate</span></tt> for the first time.</font></p>
+<p class="last"><font id="90">Changing this setting after you have tables created is not supported by <a class="reference internal" href="../../ref/django-admin.html#django-admin-makemigrations"><tt class="xref std std-djadmin docutils literal"><span class="pre">makemigrations</span></tt></a> and will result in you having to manually fix your schema, port your data from the old user table, and possibly manually reapply some migrations.</font></p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="91">Warning</font></p>
+<p><font id="92">Due to limitations of Django’s dynamic dependency feature for swappable models, you must ensure that the model referenced by <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> is created in the first migration of its app (usually called <tt class="docutils literal"><span class="pre">0001_initial</span></tt>); </font><font id="93">otherwise, you will have dependency issues.</font></p>
+<p class="last"><font id="94">In addition, you may run into a CircularDependencyError when running your migrations as Django won’t be able to automatically break the dependency loop due to the dynamic dependency. </font><font id="95">If you see this error, you should break the loop by moving the models depended on by your User model into a second migration (you can try making two normal models that have a ForeignKey to each other and seeing how <tt class="docutils literal"><span class="pre">makemigrations</span></tt> resolves that circular dependency if you want to see how it’s usually done)</font></p>
+</div>
+<div class="admonition-reusable-apps-and-auth-user-model admonition">
+<p class="first admonition-title"><font id="96">Reusable apps and <tt class="docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></font></p>
+<p class="last"><font id="97">Reusable apps shouldn’t implement a custom user model. </font><font id="98">A project may use many apps, and two reusable apps that implemented a custom user model couldn’t be used together. </font><font id="99">If you need to store per user information in your app, use a <a class="reference internal" href="../../ref/models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a> or <a class="reference internal" href="../../ref/models/fields.html#django.db.models.OneToOneField" title="django.db.models.OneToOneField"><tt class="xref py py-class docutils literal"><span class="pre">OneToOneField</span></tt></a> to <tt class="docutils literal"><span class="pre">settings.</span></tt></font><font id="100">AUTH_USER_MODEL as described below.</font></p>
+</div>
+<div class="section" id="s-referencing-the-user-model">
+<span id="referencing-the-user-model"></span><h3><font id="264">引用用户模型</font><a class="headerlink" href="customizing.html#referencing-the-user-model" title="Permalink to this headline">¶</a></h3>
+<p><font id="101">If you reference <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> directly (for example, by referring to it in a foreign key), your code will not work in projects where the <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> setting has been changed to a different User model.</font></p>
+<dl class="function">
+<dt id="django.contrib.auth.get_user_model">
+<tt class="descname">get_user_model</tt>()<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/auth.html#get_user_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="customizing.html#django.contrib.auth.get_user_model" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="102">Instead of referring to <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> directly, you should reference the user model using <tt class="docutils literal"><span class="pre">django.contrib.auth.get_user_model()</span></tt>. </font><font id="103">This method will return the currently active User model – the custom User model if one is specified, or <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> otherwise.</font></p>
+<p><font id="104">When you define a foreign key or many-to-many relations to the User model, you should specify the custom model using the <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> setting. </font><font id="105">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Article</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">AUTH_USER_MODEL</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.7:</span> <p><font id="106">When connecting to signals sent by the User model, you should specify the custom model using the <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> setting. </font><font id="107">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">post_save</span>
+
+<span class="k">def</span> <span class="nf">post_save_receiver</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="n">post_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">post_save_receiver</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">AUTH_USER_MODEL</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><font id="108">Generally speaking, you should reference the User model with the <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> setting in code that is executed at import time. </font><font id="109"><tt class="docutils literal"><span class="pre">get_user_model()</span></tt> only works once Django has imported all models.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-specifying-a-custom-user-model">
+<span id="s-specifying-custom-user-model"></span><span id="specifying-a-custom-user-model"></span><span id="specifying-custom-user-model"></span><h3><font id="265">指定自定义用户模型</font><a class="headerlink" href="customizing.html#specifying-a-custom-user-model" title="Permalink to this headline">¶</a></h3>
+<div class="admonition-model-design-considerations admonition">
+<p class="first admonition-title"><font id="110">模型设计考虑</font></p>
+<p><font id="111">Think carefully before handling information not directly related to authentication in your custom User Model.</font></p>
+<p class="last"><font id="112">It may be better to store app-specific user information in a model that has a relation with the User model. </font><font id="113">That allows each app to specify its own user data requirements without risking conflicts with other apps. </font><font id="114">On the other hand, queries to retrieve this related information will involve a database join, which may have an effect on performance.</font></p>
+</div>
+<p><font id="115">Django expects your custom User model to meet some minimum requirements.</font></p>
+<ol class="arabic simple">
+<li><font id="281">模型必须有一个唯一的字段可被用于识别目的。</font><font id="282">可以是一个用户名，电子邮件地址，或任何其它独特属性。</font></li>
+<li><font id="283">Your model must provide a way to address the user in a “short” and “long” form. </font><font id="284">The most common interpretation of this would be to use the user’s given name as the “short” identifier, and the user’s full name as the “long” identifier. </font><font id="285">However, there are no constraints on what these two methods return - if you want, they can return exactly the same value.</font></li>
+</ol>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="116">Older versions of Django required your model to have an integer primary key as well.</font></p>
+</div>
+<p><font id="117">The easiest way to construct a compliant custom User model is to inherit from <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a>. </font><font id="118"><a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a> provides the core implementation of a <tt class="docutils literal"><span class="pre">User</span></tt> model, including hashed passwords and tokenized password resets. </font><font id="119">You must then provide some key implementation details:</font></p>
+<dl class="class">
+<dt id="django.contrib.auth.models.CustomUser">
+<em class="property">class </em><tt class="descclassname">models.</tt><tt class="descname">CustomUser</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUser" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="django.contrib.auth.models.CustomUser.USERNAME_FIELD">
+<tt class="descname">USERNAME_FIELD</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUser.USERNAME_FIELD" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="120">A string describing the name of the field on the User model that is used as the unique identifier. </font><font id="121">This will usually be a username of some kind, but it can also be an email address, or any other unique identifier. </font><font id="122">The field <em>must</em> be unique (i.e., have <tt class="docutils literal"><span class="pre">unique=True</span></tt> set in its definition).</font></p>
+<p><font id="123">In the following example, the field <tt class="docutils literal"><span class="pre">identifier</span></tt> is used as the identifying field:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyUser</span><span class="p">(</span><span class="n">AbstractBaseUser</span><span class="p">):</span>
+    <span class="n">identifier</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="n">USERNAME_FIELD</span> <span class="o">=</span> <span class="s">'identifier'</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="124"><a class="reference internal" href="customizing.html#django.contrib.auth.models.CustomUser.USERNAME_FIELD" title="django.contrib.auth.models.CustomUser.USERNAME_FIELD"><tt class="xref py py-attr docutils literal"><span class="pre">USERNAME_FIELD</span></tt></a> now supports <a class="reference internal" href="../../ref/models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>s. </font><font id="125">Since there is no way to pass model instances during the <a class="reference internal" href="../../ref/django-admin.html#django-admin-createsuperuser"><tt class="xref std std-djadmin docutils literal"><span class="pre">createsuperuser</span></tt></a> prompt, expect the user to enter the value of <a class="reference internal" href="../../ref/models/fields.html#django.db.models.ForeignKey.to_field" title="django.db.models.ForeignKey.to_field"><tt class="xref py py-attr docutils literal"><span class="pre">to_field</span></tt></a> value (the <a class="reference internal" href="../../ref/models/fields.html#django.db.models.Field.primary_key" title="django.db.models.Field.primary_key"><tt class="xref py py-attr docutils literal"><span class="pre">primary_key</span></tt></a> by default) of an existing instance.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.auth.models.CustomUser.REQUIRED_FIELDS">
+<tt class="descname">REQUIRED_FIELDS</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUser.REQUIRED_FIELDS" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="126">A list of the field names that will be prompted for when creating a user via the <a class="reference internal" href="../../ref/django-admin.html#django-admin-createsuperuser"><tt class="xref std std-djadmin docutils literal"><span class="pre">createsuperuser</span></tt></a> management command. </font><font id="127">The user will be prompted to supply a value for each of these fields. </font><font id="128">It must include any field for which <a class="reference internal" href="../../ref/models/fields.html#django.db.models.Field.blank" title="django.db.models.Field.blank"><tt class="xref py py-attr docutils literal"><span class="pre">blank</span></tt></a> is <tt class="docutils literal"><span class="pre">False</span></tt> or undefined and may include additional fields you want prompted for when a user is created interactively. </font><font id="129"><tt class="docutils literal"><span class="pre">REQUIRED_FIELDS</span></tt> has no effect in other parts of Django, like creating a user in the admin.</font></p>
+<p><font id="130">For example, here is the partial definition for a <tt class="docutils literal"><span class="pre">User</span></tt> model that defines two required fields - a date of birth and height:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyUser</span><span class="p">(</span><span class="n">AbstractBaseUser</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">date_of_birth</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">REQUIRED_FIELDS</span> <span class="o">=</span> <span class="p">[</span><span class="s">'date_of_birth'</span><span class="p">,</span> <span class="s">'height'</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="131">Note</font></p>
+<p class="last"><font id="132"><tt class="docutils literal"><span class="pre">REQUIRED_FIELDS</span></tt> must contain all required fields on your <tt class="docutils literal"><span class="pre">User</span></tt> model, but should <em>not</em> contain the <tt class="docutils literal"><span class="pre">USERNAME_FIELD</span></tt> or <tt class="docutils literal"><span class="pre">password</span></tt> as these fields will always be prompted for.</font></p>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="133"><a class="reference internal" href="customizing.html#django.contrib.auth.models.CustomUser.REQUIRED_FIELDS" title="django.contrib.auth.models.CustomUser.REQUIRED_FIELDS"><tt class="xref py py-attr docutils literal"><span class="pre">REQUIRED_FIELDS</span></tt></a> now supports <a class="reference internal" href="../../ref/models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>s. </font><font id="134">Since there is no way to pass model instances during the <a class="reference internal" href="../../ref/django-admin.html#django-admin-createsuperuser"><tt class="xref std std-djadmin docutils literal"><span class="pre">createsuperuser</span></tt></a> prompt, expect the user to enter the value of <a class="reference internal" href="../../ref/models/fields.html#django.db.models.ForeignKey.to_field" title="django.db.models.ForeignKey.to_field"><tt class="xref py py-attr docutils literal"><span class="pre">to_field</span></tt></a> value (the <a class="reference internal" href="../../ref/models/fields.html#django.db.models.Field.primary_key" title="django.db.models.Field.primary_key"><tt class="xref py py-attr docutils literal"><span class="pre">primary_key</span></tt></a> by default) of an existing instance.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.auth.models.CustomUser.is_active">
+<tt class="descname">is_active</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUser.is_active" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="135">A boolean attribute that indicates whether the user is considered “active”. </font><font id="136">This attribute is provided as an attribute on <tt class="docutils literal"><span class="pre">AbstractBaseUser</span></tt> defaulting to <tt class="docutils literal"><span class="pre">True</span></tt>. </font><font id="137">How you choose to implement it will depend on the details of your chosen auth backends. </font><font id="138">See the documentation of the <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User.is_active" title="django.contrib.auth.models.User.is_active"><tt class="xref py py-attr docutils literal"><span class="pre">is_active</span> <span class="pre">attribute</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">built-in</span> <span class="pre">user</span> <span class="pre">model</span></tt></a> for details.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.CustomUser.get_full_name">
+<tt class="descname">get_full_name</tt>()<a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUser.get_full_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="139">A longer formal identifier for the user. </font><font id="140">A common interpretation would be the full name of the user, but it can be any string that identifies the user.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.CustomUser.get_short_name">
+<tt class="descname">get_short_name</tt>()<a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUser.get_short_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="141">A short, informal identifier for the user. </font><font id="142">A common interpretation would be the first name of the user, but it can be any string that identifies the user in an informal way. </font><font id="143">It may also return the same value as <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User.get_full_name" title="django.contrib.auth.models.User.get_full_name"><tt class="xref py py-meth docutils literal"><span class="pre">django.contrib.auth.models.User.get_full_name()</span></tt></a>.</font></p>
+</dd></dl>
+</dd></dl>
+<p><font id="144">The following methods are available on any subclass of <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a>:</font></p>
+<dl class="class">
+<dt id="django.contrib.auth.models.AbstractBaseUser">
+<em class="property">class </em><tt class="descclassname">models.</tt><tt class="descname">AbstractBaseUser</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="django.contrib.auth.models.AbstractBaseUser.get_username">
+<tt class="descname">get_username</tt>()<a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.get_username" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="145">Returns the value of the field nominated by <tt class="docutils literal"><span class="pre">USERNAME_FIELD</span></tt>.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.AbstractBaseUser.is_anonymous">
+<tt class="descname">is_anonymous</tt>()<a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.is_anonymous" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="146">Always returns <tt class="docutils literal"><span class="pre">False</span></tt>. </font><font id="147">This is a way of differentiating from <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.AnonymousUser" title="django.contrib.auth.models.AnonymousUser"><tt class="xref py py-class docutils literal"><span class="pre">AnonymousUser</span></tt></a> objects. </font><font id="148">Generally, you should prefer using <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.is_authenticated" title="django.contrib.auth.models.AbstractBaseUser.is_authenticated"><tt class="xref py py-meth docutils literal"><span class="pre">is_authenticated()</span></tt></a> to this method.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.AbstractBaseUser.is_authenticated">
+<tt class="descname">is_authenticated</tt>()<a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.is_authenticated" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="149">Always returns <tt class="docutils literal"><span class="pre">True</span></tt>. </font><font id="150">This is a way to tell if the user has been authenticated. </font><font id="151">This does not imply any permissions, and doesn’t check if the user is active - it only indicates that the user has provided a valid username and password.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.AbstractBaseUser.set_password">
+<tt class="descname">set_password</tt>(<em>raw_password</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.set_password" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="152">Sets the user’s password to the given raw string, taking care of the password hashing. </font><font id="153">Doesn’t save the <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a> object.</font></p>
+<p><font id="154">When the raw_password is <tt class="docutils literal"><span class="pre">None</span></tt>, the password will be set to an unusable password, as if <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.set_unusable_password" title="django.contrib.auth.models.AbstractBaseUser.set_unusable_password"><tt class="xref py py-meth docutils literal"><span class="pre">set_unusable_password()</span></tt></a> were used.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.AbstractBaseUser.check_password">
+<tt class="descname">check_password</tt>(<em>raw_password</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.check_password" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="155">Returns <tt class="docutils literal"><span class="pre">True</span></tt> if the given raw string is the correct password for the user. </font><font id="156">(This takes care of the password hashing in making the comparison.)</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.AbstractBaseUser.set_unusable_password">
+<tt class="descname">set_unusable_password</tt>()<a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.set_unusable_password" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="157">Marks the user as having no password set. </font><font id="158">This isn’t the same as having a blank string for a password. </font><font id="159"><a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.check_password" title="django.contrib.auth.models.AbstractBaseUser.check_password"><tt class="xref py py-meth docutils literal"><span class="pre">check_password()</span></tt></a> for this user will never return <tt class="docutils literal"><span class="pre">True</span></tt>. </font><font id="160">Doesn’t save the <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a> object.</font></p>
+<p><font id="161">You may need this if authentication for your application takes place against an existing external source such as an LDAP directory.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.AbstractBaseUser.has_usable_password">
+<tt class="descname">has_usable_password</tt>()<a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.has_usable_password" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="162">Returns <tt class="docutils literal"><span class="pre">False</span></tt> if <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.set_unusable_password" title="django.contrib.auth.models.AbstractBaseUser.set_unusable_password"><tt class="xref py py-meth docutils literal"><span class="pre">set_unusable_password()</span></tt></a> has been called for this user.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.AbstractBaseUser.get_session_auth_hash">
+<tt class="descname">get_session_auth_hash</tt>()<a class="headerlink" href="customizing.html#django.contrib.auth.models.AbstractBaseUser.get_session_auth_hash" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="163">Returns an HMAC of the password field. </font><font id="164">Used for <a class="reference internal" href="default.html#session-invalidation-on-password-change"><em>Session invalidation on password change</em></a>.</font></p>
+</dd></dl>
+</dd></dl>
+<p><font id="165">You should also define a custom manager for your <tt class="docutils literal"><span class="pre">User</span></tt> model. </font><font id="166">If your <tt class="docutils literal"><span class="pre">User</span></tt> model defines <tt class="docutils literal"><span class="pre">username</span></tt>, <tt class="docutils literal"><span class="pre">email</span></tt>, <tt class="docutils literal"><span class="pre">is_staff</span></tt>, <tt class="docutils literal"><span class="pre">is_active</span></tt>, <tt class="docutils literal"><span class="pre">is_superuser</span></tt>, <tt class="docutils literal"><span class="pre">last_login</span></tt>, and <tt class="docutils literal"><span class="pre">date_joined</span></tt> fields the same as Django’s default <tt class="docutils literal"><span class="pre">User</span></tt>, you can just install Django’s <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.UserManager" title="django.contrib.auth.models.UserManager"><tt class="xref py py-class docutils literal"><span class="pre">UserManager</span></tt></a>; </font><font id="167">however, if your <tt class="docutils literal"><span class="pre">User</span></tt> model defines different fields, you will need to define a custom manager that extends <a class="reference internal" href="customizing.html#django.contrib.auth.models.BaseUserManager" title="django.contrib.auth.models.BaseUserManager"><tt class="xref py py-class docutils literal"><span class="pre">BaseUserManager</span></tt></a> providing two additional methods:</font></p>
+<dl class="class">
+<dt id="django.contrib.auth.models.CustomUserManager">
+<em class="property">class </em><tt class="descclassname">models.</tt><tt class="descname">CustomUserManager</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUserManager" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="django.contrib.auth.models.CustomUserManager.create_user">
+<tt class="descname">create_user</tt>(<em>*username_field*</em>, <em>password=None</em>, <em>**other_fields</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUserManager.create_user" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="168">The prototype of <tt class="docutils literal"><span class="pre">create_user()</span></tt> should accept the username field, plus all required fields as arguments. </font><font id="169">For example, if your user model uses <tt class="docutils literal"><span class="pre">email</span></tt> as the username field, and has <tt class="docutils literal"><span class="pre">date_of_birth</span></tt> as a required field, then <tt class="docutils literal"><span class="pre">create_user</span></tt> should be defined as:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">date_of_birth</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="c"># create user here</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.CustomUserManager.create_superuser">
+<tt class="descname">create_superuser</tt>(<em>*username_field*</em>, <em>password</em>, <em>**other_fields</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.CustomUserManager.create_superuser" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="170">The prototype of <tt class="docutils literal"><span class="pre">create_superuser()</span></tt> should accept the username field, plus all required fields as arguments. </font><font id="171">For example, if your user model uses <tt class="docutils literal"><span class="pre">email</span></tt> as the username field, and has <tt class="docutils literal"><span class="pre">date_of_birth</span></tt> as a required field, then <tt class="docutils literal"><span class="pre">create_superuser</span></tt> should be defined as:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">create_superuser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">date_of_birth</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+    <span class="c"># create superuser here</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="172">Unlike <tt class="docutils literal"><span class="pre">create_user()</span></tt>, <tt class="docutils literal"><span class="pre">create_superuser()</span></tt> <em>must</em> require the caller to provide a password.</font></p>
+</dd></dl>
+</dd></dl>
+<p><font id="173"><a class="reference internal" href="customizing.html#django.contrib.auth.models.BaseUserManager" title="django.contrib.auth.models.BaseUserManager"><tt class="xref py py-class docutils literal"><span class="pre">BaseUserManager</span></tt></a> provides the following utility methods:</font></p>
+<dl class="class">
+<dt id="django.contrib.auth.models.BaseUserManager">
+<em class="property">class </em><tt class="descclassname">models.</tt><tt class="descname">BaseUserManager</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.BaseUserManager" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="django.contrib.auth.models.BaseUserManager.normalize_email">
+<tt class="descname">normalize_email</tt>(<em>email</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.BaseUserManager.normalize_email" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="174">A <tt class="docutils literal"><span class="pre">classmethod</span></tt> that normalizes email addresses by lowercasing the domain portion of the email address.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.BaseUserManager.get_by_natural_key">
+<tt class="descname">get_by_natural_key</tt>(<em>username</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.BaseUserManager.get_by_natural_key" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="175">Retrieves a user instance using the contents of the field nominated by <tt class="docutils literal"><span class="pre">USERNAME_FIELD</span></tt>.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.BaseUserManager.make_random_password">
+<tt class="descname">make_random_password</tt>(<em>length=10</em>, <em>allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.BaseUserManager.make_random_password" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="176">Returns a random password with the given length and given string of allowed characters. </font><font id="177">Note that the default value of <tt class="docutils literal"><span class="pre">allowed_chars</span></tt> doesn’t contain letters that can cause user confusion, including:</font></p>
+<ul class="simple">
+<li><font id="286"><tt class="docutils literal"><span class="pre">i</span></tt>, <tt class="docutils literal"><span class="pre">l</span></tt>, <tt class="docutils literal"><span class="pre">I</span></tt>, and <tt class="docutils literal"><span class="pre">1</span></tt> (lowercase letter i, lowercase letter L, uppercase letter i, and the number one)</font></li>
+<li><font id="287"><tt class="docutils literal"><span class="pre">o</span></tt>, <tt class="docutils literal"><span class="pre">O</span></tt>, and <tt class="docutils literal"><span class="pre">0</span></tt> (lowercase letter o, uppercase letter o, and zero)</font></li>
+</ul>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-extending-django-s-default-user">
+<span id="extending-django-s-default-user"></span><h3>Extending Django’s default User<a class="headerlink" href="customizing.html#extending-django-s-default-user" title="Permalink to this headline">¶</a></h3>
+<p><font id="178">If you’re entirely happy with Django’s <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> model and you just want to add some additional profile information, you could simply subclass <tt class="docutils literal"><span class="pre">django.contrib.auth.models.AbstractUser</span></tt> and add your custom profile fields, although we’d recommend a separate model as described in the “Model design considerations” note of <a class="reference internal" href="customizing.html#specifying-custom-user-model"><em>Specifying a custom User model</em></a>. </font><font id="179"><tt class="docutils literal"><span class="pre">AbstractUser</span></tt> provides the full implementation of the default <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> as an <a class="reference internal" href="../db/models.html#abstract-base-classes"><em>abstract model</em></a>.</font></p>
+</div>
+<div class="section" id="s-custom-users-and-the-built-in-auth-forms">
+<span id="s-id2"></span><span id="custom-users-and-the-built-in-auth-forms"></span><span id="id2"></span><h3><font id="266">Custom users and the built-in auth forms</font><a class="headerlink" href="customizing.html#custom-users-and-the-built-in-auth-forms" title="Permalink to this headline">¶</a></h3>
+<p><font id="180">As you may expect, built-in Django’s <a class="reference internal" href="default.html#built-in-auth-forms"><em>forms</em></a> and <a class="reference internal" href="default.html#built-in-auth-views"><em>views</em></a> make certain assumptions about the user model that they are working with.</font></p>
+<p><font id="181">If your user model doesn’t follow the same assumptions, it may be necessary to define a replacement form, and pass that form in as part of the configuration of the auth views.</font></p>
+<ul>
+<li><p class="first"><font id="182"><a class="reference internal" href="default.html#django.contrib.auth.forms.UserCreationForm" title="django.contrib.auth.forms.UserCreationForm"><tt class="xref py py-class docutils literal"><span class="pre">UserCreationForm</span></tt></a></font></p>
+<p><font id="183">Depends on the <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> model. </font><font id="184">Must be re-written for any custom user model.</font></p>
+</li>
+<li><p class="first"><font id="185"><a class="reference internal" href="default.html#django.contrib.auth.forms.UserChangeForm" title="django.contrib.auth.forms.UserChangeForm"><tt class="xref py py-class docutils literal"><span class="pre">UserChangeForm</span></tt></a></font></p>
+<p><font id="186">Depends on the <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a> model. </font><font id="187">Must be re-written for any custom user model.</font></p>
+</li>
+<li><p class="first"><font id="188"><a class="reference internal" href="default.html#django.contrib.auth.forms.AuthenticationForm" title="django.contrib.auth.forms.AuthenticationForm"><tt class="xref py py-class docutils literal"><span class="pre">AuthenticationForm</span></tt></a></font></p>
+<p><font id="189">Works with any subclass of <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a>, and will adapt to use the field defined in <tt class="docutils literal"><span class="pre">USERNAME_FIELD</span></tt>.</font></p>
+</li>
+<li><p class="first"><font id="190"><a class="reference internal" href="default.html#django.contrib.auth.forms.PasswordResetForm" title="django.contrib.auth.forms.PasswordResetForm"><tt class="xref py py-class docutils literal"><span class="pre">PasswordResetForm</span></tt></a></font></p>
+<p><font id="191">Assumes that the user model has a field named <tt class="docutils literal"><span class="pre">email</span></tt> that can be used to identify the user and a boolean field named <tt class="docutils literal"><span class="pre">is_active</span></tt> to prevent password resets for inactive users.</font></p>
+</li>
+<li><p class="first"><font id="192"><a class="reference internal" href="default.html#django.contrib.auth.forms.SetPasswordForm" title="django.contrib.auth.forms.SetPasswordForm"><tt class="xref py py-class docutils literal"><span class="pre">SetPasswordForm</span></tt></a></font></p>
+<p><font id="193">Works with any subclass of <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a></font></p>
+</li>
+<li><p class="first"><font id="194"><a class="reference internal" href="default.html#django.contrib.auth.forms.PasswordChangeForm" title="django.contrib.auth.forms.PasswordChangeForm"><tt class="xref py py-class docutils literal"><span class="pre">PasswordChangeForm</span></tt></a></font></p>
+<p><font id="195">Works with any subclass of <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a></font></p>
+</li>
+<li><p class="first"><font id="196"><a class="reference internal" href="default.html#django.contrib.auth.forms.AdminPasswordChangeForm" title="django.contrib.auth.forms.AdminPasswordChangeForm"><tt class="xref py py-class docutils literal"><span class="pre">AdminPasswordChangeForm</span></tt></a></font></p>
+<p><font id="197">Works with any subclass of <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a></font></p>
+</li>
+</ul>
+</div>
+<div class="section" id="s-custom-users-and-django-contrib-admin">
+<span id="custom-users-and-django-contrib-admin"></span><h3><font id="267">Custom users and </font><a class="reference internal" href="../../ref/contrib/admin/index.html#module-django.contrib.admin" title="django.contrib.admin: Django's admin site."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.admin</span></tt></a></h3>
+<p><font id="198">If you want your custom User model to also work with Admin, your User model must define some additional attributes and methods. </font><font id="199">These methods allow the admin to control access of the User to admin content:</font></p>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">models.</tt><tt class="descname">CustomUser</tt></dt>
+<dd></dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.auth.is_staff">
+<tt class="descname">is_staff</tt><a class="headerlink" href="customizing.html#django.contrib.auth.is_staff" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="200">Returns <tt class="docutils literal"><span class="pre">True</span></tt> if the user is allowed to have access to the admin site.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.auth.is_active">
+<tt class="descname">is_active</tt><a class="headerlink" href="customizing.html#django.contrib.auth.is_active" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="201">Returns <tt class="docutils literal"><span class="pre">True</span></tt> if the user account is currently active.</font></p>
+</dd></dl>
+<dl class="method">
+<dt>
+<tt class="descname">has_perm(perm, obj=None):</tt></dt>
+<dd><p><font id="202">Returns <tt class="docutils literal"><span class="pre">True</span></tt> if the user has the named permission. </font><font id="203">If <tt class="docutils literal"><span class="pre">obj</span></tt> is provided, the permission needs to be checked against a specific object instance.</font></p>
+</dd></dl>
+<dl class="method">
+<dt>
+<tt class="descname">has_module_perms(app_label):</tt></dt>
+<dd><p><font id="204">Returns <tt class="docutils literal"><span class="pre">True</span></tt> if the user has permission to access models in the given app.</font></p>
+</dd></dl>
+<p><font id="205">You will also need to register your custom User model with the admin. </font><font id="206">If your custom User model extends <tt class="docutils literal"><span class="pre">django.contrib.auth.models.AbstractUser</span></tt>, you can use Django’s existing <tt class="docutils literal"><span class="pre">django.contrib.auth.admin.UserAdmin</span></tt> class. </font><font id="207">However, if your User model extends <a class="reference internal" href="customizing.html#django.contrib.auth.models.AbstractBaseUser" title="django.contrib.auth.models.AbstractBaseUser"><tt class="xref py py-class docutils literal"><span class="pre">AbstractBaseUser</span></tt></a>, you’ll need to define a custom <tt class="docutils literal"><span class="pre">ModelAdmin</span></tt> class. </font><font id="208">It may be possible to subclass the default <tt class="docutils literal"><span class="pre">django.contrib.auth.admin.UserAdmin</span></tt>; </font><font id="209">however, you’ll need to override any of the definitions that refer to fields on <tt class="docutils literal"><span class="pre">django.contrib.auth.models.AbstractUser</span></tt> that aren’t on your custom User class.</font></p>
+</div>
+<div class="section" id="s-custom-users-and-permissions">
+<span id="custom-users-and-permissions"></span><h3><font id="268">Custom users and permissions</font><a class="headerlink" href="customizing.html#custom-users-and-permissions" title="Permalink to this headline">¶</a></h3>
+<p><font id="210">To make it easy to include Django’s permission framework into your own User class, Django provides <a class="reference internal" href="customizing.html#django.contrib.auth.models.PermissionsMixin" title="django.contrib.auth.models.PermissionsMixin"><tt class="xref py py-class docutils literal"><span class="pre">PermissionsMixin</span></tt></a>. </font><font id="211">This is an abstract model you can include in the class hierarchy for your User model, giving you all the methods and database fields necessary to support Django’s permission model.</font></p>
+<p><font id="212"><a class="reference internal" href="customizing.html#django.contrib.auth.models.PermissionsMixin" title="django.contrib.auth.models.PermissionsMixin"><tt class="xref py py-class docutils literal"><span class="pre">PermissionsMixin</span></tt></a> provides the following methods and attributes:</font></p>
+<dl class="class">
+<dt id="django.contrib.auth.models.PermissionsMixin">
+<em class="property">class </em><tt class="descclassname">models.</tt><tt class="descname">PermissionsMixin</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.PermissionsMixin" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="django.contrib.auth.models.PermissionsMixin.is_superuser">
+<tt class="descname">is_superuser</tt><a class="headerlink" href="customizing.html#django.contrib.auth.models.PermissionsMixin.is_superuser" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="213">Boolean. </font><font id="214">Designates that this user has all permissions without explicitly assigning them.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.PermissionsMixin.get_group_permissions">
+<tt class="descname">get_group_permissions</tt>(<em>obj=None</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.PermissionsMixin.get_group_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="215">Returns a set of permission strings that the user has, through their groups.</font></p>
+<p><font id="216">If <tt class="docutils literal"><span class="pre">obj</span></tt> is passed in, only returns the group permissions for this specific object.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.PermissionsMixin.get_all_permissions">
+<tt class="descname">get_all_permissions</tt>(<em>obj=None</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.PermissionsMixin.get_all_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="217">Returns a set of permission strings that the user has, both through group and user permissions.</font></p>
+<p><font id="218">If <tt class="docutils literal"><span class="pre">obj</span></tt> is passed in, only returns the permissions for this specific object.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.PermissionsMixin.has_perm">
+<tt class="descname">has_perm</tt>(<em>perm</em>, <em>obj=None</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.PermissionsMixin.has_perm" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="219">Returns <tt class="docutils literal"><span class="pre">True</span></tt> if the user has the specified permission, where <tt class="docutils literal"><span class="pre">perm</span></tt> is in the format <tt class="docutils literal"><span class="pre">"&lt;app</span> <span class="pre">label&gt;.&lt;permission</span> <span class="pre">codename&gt;"</span></tt> (see <a class="reference internal" href="default.html#topic-authorization"><em>permissions</em></a>). </font><font id="314">If the user is inactive, this method will always return <tt class="docutils literal"><span class="pre">False</span></tt>.</font></p>
+<p><font id="220">If <tt class="docutils literal"><span class="pre">obj</span></tt> is passed in, this method won’t check for a permission for the model, but for this specific object.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.PermissionsMixin.has_perms">
+<tt class="descname">has_perms</tt>(<em>perm_list</em>, <em>obj=None</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.PermissionsMixin.has_perms" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="221">Returns <tt class="docutils literal"><span class="pre">True</span></tt> if the user has each of the specified permissions, where each perm is in the format <tt class="docutils literal"><span class="pre">"&lt;app</span> <span class="pre">label&gt;.&lt;permission</span> <span class="pre">codename&gt;"</span></tt>. </font><font id="315">If the user is inactive, this method will always return <tt class="docutils literal"><span class="pre">False</span></tt>.</font></p>
+<p><font id="222">If <tt class="docutils literal"><span class="pre">obj</span></tt> is passed in, this method won’t check for permissions for the model, but for the specific object.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.contrib.auth.models.PermissionsMixin.has_module_perms">
+<tt class="descname">has_module_perms</tt>(<em>package_name</em>)<a class="headerlink" href="customizing.html#django.contrib.auth.models.PermissionsMixin.has_module_perms" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="223">Returns <tt class="docutils literal"><span class="pre">True</span></tt> if the user has any permissions in the given package (the Django app label). </font><font id="224">If the user is inactive, this method will always return <tt class="docutils literal"><span class="pre">False</span></tt>.</font></p>
+</dd></dl>
+</dd></dl>
+<div class="admonition-modelbackend admonition">
+<p class="first admonition-title"><font id="225">ModelBackend</font></p>
+<p class="last"><font id="226">If you don’t include the <a class="reference internal" href="customizing.html#django.contrib.auth.models.PermissionsMixin" title="django.contrib.auth.models.PermissionsMixin"><tt class="xref py py-class docutils literal"><span class="pre">PermissionsMixin</span></tt></a>, you must ensure you don’t invoke the permissions methods on <tt class="docutils literal"><span class="pre">ModelBackend</span></tt>. </font><font id="227"><tt class="docutils literal"><span class="pre">ModelBackend</span></tt> assumes that certain fields are available on your user model. </font><font id="228">If your User model doesn’t provide those fields, you will receive database errors when you check permissions.</font></p>
+</div>
+</div>
+<div class="section" id="s-custom-users-and-proxy-models">
+<span id="custom-users-and-proxy-models"></span><h3><font id="269">Custom users and Proxy models</font><a class="headerlink" href="customizing.html#custom-users-and-proxy-models" title="Permalink to this headline">¶</a></h3>
+<p><font id="229">One limitation of custom User models is that installing a custom User model will break any proxy model extending <a class="reference internal" href="../../ref/contrib/auth.html#django.contrib.auth.models.User" title="django.contrib.auth.models.User"><tt class="xref py py-class docutils literal"><span class="pre">User</span></tt></a>. </font><font id="230">Proxy models must be based on a concrete base class; </font><font id="231">by defining a custom User model, you remove the ability of Django to reliably identify the base class.</font></p>
+<p><font id="232">If your project uses proxy models, you must either modify the proxy to extend the User model that is currently in use in your project, or merge your proxy’s behavior into your User subclass.</font></p>
+</div>
+<div class="section" id="s-custom-users-and-testing-fixtures">
+<span id="custom-users-and-testing-fixtures"></span><h3><font id="270">Custom users and testing/fixtures</font><a class="headerlink" href="customizing.html#custom-users-and-testing-fixtures" title="Permalink to this headline">¶</a></h3>
+<p><font id="233">If you are writing an application that interacts with the User model, you must take some precautions to ensure that your test suite will run regardless of the User model that is being used by a project. </font><font id="234">Any test that instantiates an instance of User will fail if the User model has been swapped out. </font><font id="235">This includes any attempt to create an instance of User with a fixture.</font></p>
+<p><font id="236">To ensure that your test suite will pass in any project configuration, <tt class="docutils literal"><span class="pre">django.contrib.auth.tests.utils</span></tt> defines a <tt class="docutils literal"><span class="pre">@skipIfCustomUser</span></tt> decorator. </font><font id="237">This decorator will cause a test case to be skipped if any User model other than the default Django user is in use. </font><font id="238">This decorator can be applied to a single test, or to an entire test class.</font></p>
+<p><font id="239">Depending on your application, tests may also be needed to be added to ensure that the application works with <em>any</em> user model, not just the default User model. </font><font id="240">To assist with this, Django provides two substitute user models that can be used in test suites:</font></p>
+<dl class="class">
+<dt id="django.contrib.auth.tests.custom_user.CustomUser">
+<em class="property">class </em><tt class="descclassname">tests.custom_user.</tt><tt class="descname">CustomUser</tt><a class="headerlink" href="customizing.html#django.contrib.auth.tests.custom_user.CustomUser" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="241">A custom user model that uses an <tt class="docutils literal"><span class="pre">email</span></tt> field as the username, and has a basic admin-compliant permissions setup</font></p>
+</dd></dl>
+<dl class="class">
+<dt id="django.contrib.auth.tests.custom_user.ExtensionUser">
+<em class="property">class </em><tt class="descclassname">tests.custom_user.</tt><tt class="descname">ExtensionUser</tt><a class="headerlink" href="customizing.html#django.contrib.auth.tests.custom_user.ExtensionUser" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="242">A custom user model that extends <tt class="docutils literal"><span class="pre">django.contrib.auth.models.AbstractUser</span></tt>, adding a <tt class="docutils literal"><span class="pre">date_of_birth</span></tt> field.</font></p>
+</dd></dl>
+<p><font id="243">You can then use the <tt class="docutils literal"><span class="pre">@override_settings</span></tt> decorator to make that test run with the custom User model. </font><font id="244">For example, here is a skeleton for a test that would test three possible User models – the default, plus the two User models provided by <tt class="docutils literal"><span class="pre">auth</span></tt> app:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.auth.tests.utils</span> <span class="kn">import</span> <span class="n">skipIfCustomUser</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.tests.custom_user</span> <span class="kn">import</span> <span class="n">CustomUser</span><span class="p">,</span> <span class="n">ExtensionUser</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
+
+
+<span class="k">class</span> <span class="nc">ApplicationTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="nd">@skipIfCustomUser</span>
+    <span class="k">def</span> <span class="nf">test_normal_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"Run tests for the normal user model"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertSomething</span><span class="p">()</span>
+
+    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">AUTH_USER_MODEL</span><span class="o">=</span><span class="s">'auth.CustomUser'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_custom_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"Run tests for a custom user model with email-based authentication"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertSomething</span><span class="p">()</span>
+
+    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">AUTH_USER_MODEL</span><span class="o">=</span><span class="s">'auth.ExtensionUser'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_extension_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"Run tests for a simple extension of the built-in User."</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertSomething</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-a-full-example">
+<span id="a-full-example"></span><h3><font id="271">一个完整例子</font><a class="headerlink" href="customizing.html#a-full-example" title="Permalink to this headline">¶</a></h3>
+<p><font id="245">Here is an example of an admin-compliant custom user app. </font><font id="246">This user model uses an email address as the username, and has a required date of birth; </font><font id="247">it provides no permission checking, beyond a simple <tt class="docutils literal"><span class="pre">admin</span></tt> flag on the user account. </font><font id="248">This model would be compatible with all the built-in auth forms and views, except for the User creation forms. </font><font id="249">This example illustrates how most of the components work together, but is not intended to be copied directly into projects for production use.</font></p>
+<p><font id="250">This code would all live in a <tt class="docutils literal"><span class="pre">models.py</span></tt> file for a custom authentication app:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseUserManager</span><span class="p">,</span> <span class="n">AbstractBaseUser</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyUserManager</span><span class="p">(</span><span class="n">BaseUserManager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">date_of_birth</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Creates and saves a User with the given email, date of</span>
+<span class="sd">        birth and password.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">'Users must have an email address'</span><span class="p">)</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span>
+            <span class="n">email</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize_email</span><span class="p">(</span><span class="n">email</span><span class="p">),</span>
+            <span class="n">date_of_birth</span><span class="o">=</span><span class="n">date_of_birth</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+    <span class="k">def</span> <span class="nf">create_superuser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">date_of_birth</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Creates and saves a superuser with the given email, date of</span>
+<span class="sd">        birth and password.</span>
+<span class="sd">        """</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">email</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+            <span class="n">date_of_birth</span><span class="o">=</span><span class="n">date_of_birth</span>
+        <span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+
+<span class="k">class</span> <span class="nc">MyUser</span><span class="p">(</span><span class="n">AbstractBaseUser</span><span class="p">):</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s">'email address'</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">date_of_birth</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span>
+    <span class="n">is_active</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">is_admin</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">MyUserManager</span><span class="p">()</span>
+
+    <span class="n">USERNAME_FIELD</span> <span class="o">=</span> <span class="s">'email'</span>
+    <span class="n">REQUIRED_FIELDS</span> <span class="o">=</span> <span class="p">[</span><span class="s">'date_of_birth'</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># The user is identified by their email address</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span>
+
+    <span class="k">def</span> <span class="nf">get_short_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># The user is identified by their email address</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c"># __unicode__ on Python 2</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span>
+
+    <span class="k">def</span> <span class="nf">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"Does the user have a specific permission?"</span>
+        <span class="c"># Simplest possible answer: Yes, always</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">has_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_label</span><span class="p">):</span>
+        <span class="s">"Does the user have permissions to view the app `app_label`?"</span>
+        <span class="c"># Simplest possible answer: Yes, always</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_staff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"Is the user a member of staff?"</span>
+        <span class="c"># Simplest possible answer: All admins are staff</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_admin</span>
+</pre></div>
+</div>
+<p><font id="251">Then, to register this custom User model with Django’s admin, the following code would be required in the app’s <tt class="docutils literal"><span class="pre">admin.py</span></tt> file:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">Group</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.admin</span> <span class="kn">import</span> <span class="n">UserAdmin</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">ReadOnlyPasswordHashField</span>
+
+<span class="kn">from</span> <span class="nn">customauth.models</span> <span class="kn">import</span> <span class="n">MyUser</span>
+
+
+<span class="k">class</span> <span class="nc">UserCreationForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+    <span class="sd">"""A form for creating new users. Includes all the required</span>
+<span class="sd">    fields, plus a repeated password."""</span>
+    <span class="n">password1</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">'Password'</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">)</span>
+    <span class="n">password2</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">'Password confirmation'</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MyUser</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s">'email'</span><span class="p">,</span> <span class="s">'date_of_birth'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">clean_password2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Check that the two password entries match</span>
+        <span class="n">password1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"password1"</span><span class="p">)</span>
+        <span class="n">password2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"password2"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">password1</span> <span class="ow">and</span> <span class="n">password2</span> <span class="ow">and</span> <span class="n">password1</span> <span class="o">!=</span> <span class="n">password2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s">"Passwords don't match"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">password2</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="c"># Save the provided password in hashed format</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">UserCreationForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">"password1"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">commit</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+
+<span class="k">class</span> <span class="nc">UserChangeForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+    <span class="sd">"""A form for updating users. Includes all the fields on</span>
+<span class="sd">    the user, but replaces the password field with admin's</span>
+<span class="sd">    password hash display field.</span>
+<span class="sd">    """</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">ReadOnlyPasswordHashField</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MyUser</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s">'email'</span><span class="p">,</span> <span class="s">'password'</span><span class="p">,</span> <span class="s">'date_of_birth'</span><span class="p">,</span> <span class="s">'is_active'</span><span class="p">,</span> <span class="s">'is_admin'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">clean_password</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Regardless of what the user provides, return the initial value.</span>
+        <span class="c"># This is done here, rather than on the field, because the</span>
+        <span class="c"># field does not have access to the initial value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial</span><span class="p">[</span><span class="s">"password"</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">MyUserAdmin</span><span class="p">(</span><span class="n">UserAdmin</span><span class="p">):</span>
+    <span class="c"># The forms to add and change user instances</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">UserChangeForm</span>
+    <span class="n">add_form</span> <span class="o">=</span> <span class="n">UserCreationForm</span>
+
+    <span class="c"># The fields to be used in displaying the User model.</span>
+    <span class="c"># These override the definitions on the base UserAdmin</span>
+    <span class="c"># that reference specific fields on auth.User.</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s">'email'</span><span class="p">,</span> <span class="s">'date_of_birth'</span><span class="p">,</span> <span class="s">'is_admin'</span><span class="p">)</span>
+    <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span><span class="s">'is_admin'</span><span class="p">,)</span>
+    <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">(</span><span class="s">'email'</span><span class="p">,</span> <span class="s">'password'</span><span class="p">)}),</span>
+        <span class="p">(</span><span class="s">'Personal info'</span><span class="p">,</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">(</span><span class="s">'date_of_birth'</span><span class="p">,)}),</span>
+        <span class="p">(</span><span class="s">'Permissions'</span><span class="p">,</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">(</span><span class="s">'is_admin'</span><span class="p">,)}),</span>
+    <span class="p">)</span>
+    <span class="c"># add_fieldsets is not a standard ModelAdmin attribute. UserAdmin</span>
+    <span class="c"># overrides get_fieldsets to use this attribute when creating a user.</span>
+    <span class="n">add_fieldsets</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s">'classes'</span><span class="p">:</span> <span class="p">(</span><span class="s">'wide'</span><span class="p">,),</span>
+            <span class="s">'fields'</span><span class="p">:</span> <span class="p">(</span><span class="s">'email'</span><span class="p">,</span> <span class="s">'date_of_birth'</span><span class="p">,</span> <span class="s">'password1'</span><span class="p">,</span> <span class="s">'password2'</span><span class="p">)}</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s">'email'</span><span class="p">,)</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s">'email'</span><span class="p">,)</span>
+    <span class="n">filter_horizontal</span> <span class="o">=</span> <span class="p">()</span>
+
+<span class="c"># Now register the new UserAdmin...</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyUserAdmin</span><span class="p">)</span>
+<span class="c"># ... and, since we're not using Django's built-in permissions,</span>
+<span class="c"># unregister the Group model from admin.</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="252">Finally, specify the custom model as the default user model for your project using the <a class="reference internal" href="../../ref/settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> setting in your <tt class="docutils literal"><span class="pre">settings.py</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">AUTH_USER_MODEL</span> <span class="o">=</span> <span class="s">'customauth.MyUser'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="272">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="customizing.html#"><font id="288">Customizing authentication in Django</font></a><ul>
+<li><a class="reference internal" href="customizing.html#other-authentication-sources"><font id="289">Other authentication sources</font></a><ul>
+<li><a class="reference internal" href="customizing.html#specifying-authentication-backends"><font id="290">Specifying authentication backends</font></a></li>
+<li><a class="reference internal" href="customizing.html#writing-an-authentication-backend"><font id="291">Writing an authentication backend</font></a></li>
+<li><a class="reference internal" href="customizing.html#handling-authorization-in-custom-backends"><font id="292">Handling authorization in custom backends</font></a><ul>
+<li><a class="reference internal" href="customizing.html#authorization-for-anonymous-users"><font id="293">Authorization for anonymous users</font></a></li>
+<li><a class="reference internal" href="customizing.html#authorization-for-inactive-users"><font id="294">Authorization for inactive users</font></a></li>
+<li><a class="reference internal" href="customizing.html#handling-object-permissions"><font id="295">Handling object permissions</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="customizing.html#custom-permissions"><font id="296">Custom permissions</font></a></li>
+<li><a class="reference internal" href="customizing.html#extending-the-existing-user-model"><font id="297">Extending the existing User model</font></a></li>
+<li><a class="reference internal" href="customizing.html#substituting-a-custom-user-model"><font id="298">Substituting a custom User model</font></a><ul>
+<li><a class="reference internal" href="customizing.html#referencing-the-user-model"><font id="299">Referencing the User model</font></a></li>
+<li><a class="reference internal" href="customizing.html#specifying-a-custom-user-model"><font id="300">Specifying a custom User model</font></a></li>
+<li><a class="reference internal" href="customizing.html#extending-django-s-default-user">Extending Django’s default User</a></li>
+<li><a class="reference internal" href="customizing.html#custom-users-and-the-built-in-auth-forms"><font id="301">Custom users and the built-in auth forms</font></a></li>
+<li><a class="reference internal" href="customizing.html#custom-users-and-django-contrib-admin"><font id="302">None</font></a></li>
+<li><a class="reference internal" href="customizing.html#custom-users-and-permissions"><font id="303">Custom users and permissions</font></a></li>
+<li><a class="reference internal" href="customizing.html#custom-users-and-proxy-models"><font id="304">Custom users and Proxy models</font></a></li>
+<li><a class="reference internal" href="customizing.html#custom-users-and-testing-fixtures"><font id="305">Custom users and testing/fixtures</font></a></li>
+<li><a class="reference internal" href="customizing.html#a-full-example"><font id="306">A full example</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="273">Browse</font></h3>
+<ul>
+<li><font id="307">Prev: <a href="passwords.html">Password management in Django</a></font></li>
+<li><font id="308">Next: <a href="../cache.html">Django’s cache framework</a></font></li>
+</ul>
+<h3><font id="274">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="309">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../index.html"><font id="310">Using Django</font></a>
+<ul><li><a href="index.html"><font id="311">User authentication in Django</font></a>
+<ul><li><font id="312">Customizing authentication in Django</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="275">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/auth/customizing.txt" rel="nofollow"><font id="313">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="276">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="253"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="277">Last update:</font></h3>
+<p class="topless"><font id="254">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="passwords.html" title="Password management in Django">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="../cache.html" title="Django&amp;#8217;s cache framework">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/auth/customizing';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

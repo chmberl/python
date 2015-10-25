@@ -1,0 +1,512 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>应用 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="API Reference"/>
+<link href="checks.html" rel="next" title="System check framework"/>
+<link href="index.html" rel="prev" title="API Reference"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="132">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="index.html" title="API Reference">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="checks.html" title="System check framework">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-applications">
+<div class="section" id="s-module-django.apps">
+<span id="s-applications"></span><span id="module-django.apps"></span><span id="applications"></span><h1><font id="133">应用</font><a class="headerlink" href="applications.html#module-django.apps" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="1">Django 包含一个安装的应用的注册表，它保存应用的配置并提供自省。</font><font id="2">它还维持一个可用<a class="reference internal" href="../topics/db/models.html"><em>模型</em></a> 的列表。</font></p>
+<p><font id="3">这个注册表叫做<a class="reference internal" href="applications.html#django.apps.apps" title="django.apps.apps"><tt class="xref py py-attr docutils literal"><span class="pre">apps</span></tt></a>，位于<a class="reference internal" href="applications.html#module-django.apps" title="django.apps"><tt class="xref py py-mod docutils literal"><span class="pre">django.apps</span></tt></a> 中：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">apps</span><span class="o">.</span><span class="n">get_app_config</span><span class="p">(</span><span class="s">'admin'</span><span class="p">)</span><span class="o">.</span><span class="n">verbose_name</span>
+<span class="go">'Admin'</span>
+</pre></div>
+</div>
+<div class="section" id="s-projects-and-applications">
+<span id="projects-and-applications"></span><h2><font id="134">项目和应用</font><a class="headerlink" href="applications.html#projects-and-applications" title="Permalink to this headline">¶</a></h2>
+<p><font id="4">历史上，Django 使用<strong>项目</strong> 这个词来描述Django 安装的一个应用。</font><font id="5">现在项目主要通过一个设置模块定义。</font></p>
+<p><font id="6"><strong>应用</strong> 这个词表示一个Python 包，它提供某些功能的集合。</font><font id="7">应用可以在各种项目中重用。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="8">注</font></p>
+<p class="last"><font id="9">最近，这个词有些令人困惑，因为使用词语“Web &nbsp;应用”来描述和Django 项目等同的事物渐渐变得常见。</font></p>
+</div>
+<p><font id="10">应用包含模型、视图、模板、模板标签、静态文件、URL、中间件等等。</font><font id="11">它们一般使用<a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> 设置和其它例如URLconf、<a class="reference internal" href="settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a> 设置以及模板继承等机制接入到项目中。</font></p>
+<p><font id="12">Django 的应用只是一个代码集，它与框架的其它部分进行交互，理解这点很重要。</font><font id="13">没有类似一个<tt class="docutils literal"><span class="pre">应用</span></tt> 对象这样的东西。</font><font id="14">然而，有一些地方Django 需要与安装的应用交互，主要用于配置和自省。</font><font id="15">这是为什么应用注册表要在<a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> 实例中维持每个安装的应用的元数据。</font></p>
+</div>
+<div class="section" id="s-configuring-applications">
+<span id="configuring-applications"></span><h2><font id="135">配置应用</font><a class="headerlink" href="applications.html#configuring-applications" title="Permalink to this headline">¶</a></h2>
+<p><font id="16">要配置一个应用，请子类化<a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> 并将这个子类的路径放在<a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> 中。</font></p>
+<p><font id="17">当<a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> 包含一个应用模块的路径后，Django 将在这个模块中检查一个<tt class="docutils literal"><span class="pre">default_app_config</span></tt> 变量。</font></p>
+<p><font id="18">如果这个变量有定义，它应该是这个应用的<a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> 子类的路径。</font></p>
+<p><font id="19">如果没有<tt class="docutils literal"><span class="pre">default_app_config</span></tt>，Django 将使用<a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> 基类。</font></p>
+<div class="section" id="s-for-application-authors">
+<span id="for-application-authors"></span><h3><font id="139">应用作者</font><a class="headerlink" href="applications.html#for-application-authors" title="Permalink to this headline">¶</a></h3>
+<p><font id="20">如果你正在创建一个名叫“Rock ’n’ roll”的可插式应用，下面是你如何给admin提供一个合适的名字</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># rock_n_roll/apps.py</span>
+
+<span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">AppConfig</span>
+
+<span class="k">class</span> <span class="nc">RockNRollConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">'rock_n_roll'</span>
+    <span class="n">verbose_name</span> <span class="o">=</span> <span class="s">"Rock ’n’ roll"</span>
+</pre></div>
+</div>
+<p><font id="21">你可以让你的应用像下面一样以默认方式加载这个<a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a>的子类</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># rock_n_roll/__init__.py</span>
+
+<span class="n">default_app_config</span> <span class="o">=</span> <span class="s">'rock_n_roll.apps.RockNRollConfig'</span>
+</pre></div>
+</div>
+<p><font id="22">That will cause <tt class="docutils literal"><span class="pre">RockNRollConfig</span></tt> to be used when <a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> just contains <tt class="docutils literal"><span class="pre">'rock_n_roll'</span></tt>. </font><font id="23">This allows you to make use of <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> features without requiring your users to update their <a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> setting.</font></p>
+<p><font id="24">Of course, you can also tell your users to put <tt class="docutils literal"><span class="pre">'rock_n_roll.apps.RockNRollConfig'</span></tt> in their <a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> setting. </font><font id="25">You can even provide several different <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> subclasses with different behaviors and allow your users to choose one via their <a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> setting.</font></p>
+<p><font id="26">The recommended convention is to put the configuration class in a submodule of the application called <tt class="docutils literal"><span class="pre">apps</span></tt>. </font><font id="27">However, this isn’t enforced by Django.</font></p>
+<p><font id="28">You must include the <a class="reference internal" href="applications.html#django.apps.AppConfig.name" title="django.apps.AppConfig.name"><tt class="xref py py-attr docutils literal"><span class="pre">name</span></tt></a> attribute for Django to determine which application this configuration applies to. </font><font id="29">You can define any attributes documented in the <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> API reference.</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="30">Note</font></p>
+<p><font id="31">If your code imports the application registry in an application’s <tt class="docutils literal"><span class="pre">__init__.py</span></tt>, the name <tt class="docutils literal"><span class="pre">apps</span></tt> will clash with the <tt class="docutils literal"><span class="pre">apps</span></tt> submodule. </font><font id="32">The best practice is to move that code to a submodule and import it. </font><font id="33">A workaround is to import the registry under a different name:</font></p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span> <span class="k">as</span> <span class="n">django_apps</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-for-application-users">
+<span id="for-application-users"></span><h3><font id="140">For application users</font><a class="headerlink" href="applications.html#for-application-users" title="Permalink to this headline">¶</a></h3>
+<p><font id="34">If you’re using “Rock ’n’ roll” in a project called <tt class="docutils literal"><span class="pre">anthology</span></tt>, but you want it to show up as “Gypsy jazz” instead, you can provide your own configuration:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># anthology/apps.py</span>
+
+<span class="kn">from</span> <span class="nn">rock_n_roll.apps</span> <span class="kn">import</span> <span class="n">RockNRollConfig</span>
+
+<span class="k">class</span> <span class="nc">GypsyJazzConfig</span><span class="p">(</span><span class="n">RockNRollConfig</span><span class="p">):</span>
+    <span class="n">verbose_name</span> <span class="o">=</span> <span class="s">"Gypsy jazz"</span>
+
+<span class="c"># anthology/settings.py</span>
+
+<span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">'anthology.apps.GypsyJazzConfig'</span><span class="p">,</span>
+    <span class="c"># ...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="35">Again, defining project-specific configuration classes in a submodule called <tt class="docutils literal"><span class="pre">apps</span></tt> is a convention, not a requirement.</font></p>
+</div>
+</div>
+<div class="section" id="s-application-configuration">
+<span id="application-configuration"></span><h2><font id="136">Application configuration</font><a class="headerlink" href="applications.html#application-configuration" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.apps.AppConfig">
+<em class="property">class </em><tt class="descname">AppConfig</tt><a class="headerlink" href="applications.html#django.apps.AppConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="36">Application configuration objects store metadata for an application. </font><font id="37">Some attributes can be configured in <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> subclasses. </font><font id="38">Others are set by Django and read-only.</font></p>
+</dd></dl>
+<div class="section" id="s-configurable-attributes">
+<span id="configurable-attributes"></span><h3><font id="141">Configurable attributes</font><a class="headerlink" href="applications.html#configurable-attributes" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.apps.AppConfig.name">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">name</tt><a class="headerlink" href="applications.html#django.apps.AppConfig.name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="39">Full Python path to the application, e.g. <tt class="docutils literal"><span class="pre">'django.contrib.admin'</span></tt>.</font></p>
+<p><font id="40">This attribute defines which application the configuration applies to. </font><font id="41">It must be set in all <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> subclasses.</font></p>
+<p><font id="42">It must be unique across a Django project.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.apps.AppConfig.label">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">label</tt><a class="headerlink" href="applications.html#django.apps.AppConfig.label" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="43">Short name for the application, e.g. <tt class="docutils literal"><span class="pre">'admin'</span></tt></font></p>
+<p><font id="44">This attribute allows relabeling an application when two applications have conflicting labels. </font><font id="45">It defaults to the last component of <tt class="docutils literal"><span class="pre">name</span></tt>. </font><font id="46">It should be a valid Python identifier.</font></p>
+<p><font id="47">It must be unique across a Django project.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.apps.AppConfig.verbose_name">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">verbose_name</tt><a class="headerlink" href="applications.html#django.apps.AppConfig.verbose_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="48">Human-readable name for the application, e.g. “Administration”.</font></p>
+<p><font id="49">This attribute defaults to <tt class="docutils literal"><span class="pre">label.title()</span></tt>.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.apps.AppConfig.path">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">path</tt><a class="headerlink" href="applications.html#django.apps.AppConfig.path" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="50">Filesystem path to the application directory, e.g. <tt class="docutils literal"><span class="pre">'/usr/lib/python3.4/dist-packages/django/contrib/admin'</span></tt>.</font></p>
+<p><font id="51">In most cases, Django can automatically detect and set this, but you can also provide an explicit override as a class attribute on your <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> subclass. </font><font id="52">In a few situations this is required; </font><font id="53">for instance if the app package is a <a class="reference internal" href="applications.html#namespace-package">namespace package</a> with multiple paths.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-read-only-attributes">
+<span id="read-only-attributes"></span><h3><font id="142">Read-only attributes</font><a class="headerlink" href="applications.html#read-only-attributes" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.apps.AppConfig.module">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">module</tt><a class="headerlink" href="applications.html#django.apps.AppConfig.module" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="54">Root module for the application, e.g. <tt class="docutils literal"><span class="pre">&lt;module</span> <span class="pre">'django.contrib.admin'</span> <span class="pre">from</span> <span class="pre">'django/contrib/admin/__init__.pyc'&gt;</span></tt>.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.apps.AppConfig.models_module">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">models_module</tt><a class="headerlink" href="applications.html#django.apps.AppConfig.models_module" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="55">Module containing the models, e.g. <tt class="docutils literal"><span class="pre">&lt;module</span> <span class="pre">'django.contrib.admin.models'</span> <span class="pre">from</span> <span class="pre">'django/contrib/admin/models.pyc'&gt;</span></tt>.</font></p>
+<p><font id="56">It may be <tt class="docutils literal"><span class="pre">None</span></tt> if the application doesn’t contain a <tt class="docutils literal"><span class="pre">models</span></tt> module. </font><font id="57">Note that the database related signals such as <a class="reference internal" href="signals.html#django.db.models.signals.pre_migrate" title="django.db.models.signals.pre_migrate"><tt class="xref py py-data docutils literal"><span class="pre">pre_migrate</span></tt></a> and <a class="reference internal" href="signals.html#django.db.models.signals.post_migrate" title="django.db.models.signals.post_migrate"><tt class="xref py py-data docutils literal"><span class="pre">post_migrate</span></tt></a> are only emitted for applications that have a <tt class="docutils literal"><span class="pre">models</span></tt> module.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-methods">
+<span id="methods"></span><h3><font id="143">Methods</font><a class="headerlink" href="applications.html#methods" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.apps.AppConfig.get_models">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">get_models</tt>()<a class="headerlink" href="applications.html#django.apps.AppConfig.get_models" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="58">Returns an iterable of <a class="reference internal" href="models/instances.html#django.db.models.Model" title="django.db.models.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a> classes.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.apps.AppConfig.get_model">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">get_model</tt>(<em>model_name</em>)<a class="headerlink" href="applications.html#django.apps.AppConfig.get_model" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="59">Returns the <a class="reference internal" href="models/instances.html#django.db.models.Model" title="django.db.models.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a> with the given <tt class="docutils literal"><span class="pre">model_name</span></tt>. </font><font id="60">Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#LookupError" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">LookupError</span></tt></a> if no such model exists. </font><font id="61"><tt class="docutils literal"><span class="pre">model_name</span></tt> is case-insensitive.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.apps.AppConfig.ready">
+<tt class="descclassname">AppConfig.</tt><tt class="descname">ready</tt>()<a class="headerlink" href="applications.html#django.apps.AppConfig.ready" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="62">Subclasses can override this method to perform initialization tasks such as registering signals. </font><font id="63">It is called as soon as the registry is fully populated.</font></p>
+<p><font id="64">You cannot import models in modules that define application configuration classes, but you can use <a class="reference internal" href="applications.html#django.apps.AppConfig.get_model" title="django.apps.AppConfig.get_model"><tt class="xref py py-meth docutils literal"><span class="pre">get_model()</span></tt></a> to access a model class by name, like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">MyModel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s">'MyModel'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="65">Warning</font></p>
+<p class="last"><font id="66">Although you can access model classes as described above, avoid interacting with the database in your <a class="reference internal" href="applications.html#django.apps.AppConfig.ready" title="django.apps.AppConfig.ready"><tt class="xref py py-meth docutils literal"><span class="pre">ready()</span></tt></a> implementation. </font><font id="67">This includes model methods that execute queries (<a class="reference internal" href="models/instances.html#django.db.models.Model.save" title="django.db.models.Model.save"><tt class="xref py py-meth docutils literal"><span class="pre">save()</span></tt></a>, <a class="reference internal" href="models/instances.html#django.db.models.Model.delete" title="django.db.models.Model.delete"><tt class="xref py py-meth docutils literal"><span class="pre">delete()</span></tt></a>, manager methods etc.), and also raw SQL queries via <tt class="docutils literal"><span class="pre">django.db.connection</span></tt>. </font><font id="68">Your <a class="reference internal" href="applications.html#django.apps.AppConfig.ready" title="django.apps.AppConfig.ready"><tt class="xref py py-meth docutils literal"><span class="pre">ready()</span></tt></a> method will run during startup of every management command. </font><font id="69">For example, even though the test database configuration is separate from the production settings, <tt class="docutils literal"><span class="pre">manage.py</span> <span class="pre">test</span></tt> would still execute some queries against your <strong>production</strong> database!</font></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="70">Note</font></p>
+<p class="last"><font id="71">In the usual initialization process, the <tt class="docutils literal"><span class="pre">ready</span></tt> method is only called once by Django. </font><font id="72">But in some corner cases, particularly in tests which are fiddling with installed applications, <tt class="docutils literal"><span class="pre">ready</span></tt> might be called more than once. </font><font id="73">In that case, either write idempotent methods, or put a flag on your <tt class="docutils literal"><span class="pre">AppConfig</span></tt> classes to prevent re-running code which should be executed exactly one time.</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-namespace-packages-as-apps-python-3-3">
+<span id="s-namespace-package"></span><span id="namespace-packages-as-apps-python-3-3"></span><span id="namespace-package"></span><h3><font id="144">Namespace packages as apps (Python 3.3+)</font><a class="headerlink" href="applications.html#namespace-packages-as-apps-python-3-3" title="Permalink to this headline">¶</a></h3>
+<p><font id="74">Python versions 3.3 and later support Python packages without an <tt class="docutils literal"><span class="pre">__init__.py</span></tt> file. </font><font id="75">These packages are known as “namespace packages” and may be spread across multiple directories at different locations on <tt class="docutils literal"><span class="pre">sys.path</span></tt> (see <span class="target" id="index-0"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0420"><strong>PEP 420</strong></a>).</font></p>
+<p><font id="76">Django applications require a single base filesystem path where Django (depending on configuration) will search for templates, static assets, etc. </font><font id="77">Thus, namespace packages may only be Django applications if one of the following is true:</font></p>
+<ol class="arabic simple">
+<li><font id="153">The namespace package actually has only a single location (i.e. is not spread across more than one directory.)</font></li>
+<li><font id="154">The <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> class used to configure the application has a <a class="reference internal" href="applications.html#django.apps.AppConfig.path" title="django.apps.AppConfig.path"><tt class="xref py py-attr docutils literal"><span class="pre">path</span></tt></a> class attribute, which is the absolute directory path Django will use as the single base path for the application.</font></li>
+</ol>
+<p><font id="78">If neither of these conditions is met, Django will raise <a class="reference internal" href="exceptions.html#django.core.exceptions.ImproperlyConfigured" title="django.core.exceptions.ImproperlyConfigured"><tt class="xref py py-exc docutils literal"><span class="pre">ImproperlyConfigured</span></tt></a>.</font></p>
+</div>
+</div>
+<div class="section" id="s-application-registry">
+<span id="application-registry"></span><h2><font id="137">Application registry</font><a class="headerlink" href="applications.html#application-registry" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="django.apps.apps">
+<tt class="descname">apps</tt><a class="headerlink" href="applications.html#django.apps.apps" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="79">The application registry provides the following public API. </font><font id="80">Methods that aren’t listed below are considered private and may change without notice.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.apps.apps.ready">
+<tt class="descclassname">apps.</tt><tt class="descname">ready</tt><a class="headerlink" href="applications.html#django.apps.apps.ready" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="81">Boolean attribute that is set to <tt class="docutils literal"><span class="pre">True</span></tt> when the registry is fully populated.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.apps.apps.get_app_configs">
+<tt class="descclassname">apps.</tt><tt class="descname">get_app_configs</tt>()<a class="headerlink" href="applications.html#django.apps.apps.get_app_configs" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="82">Returns an iterable of <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> instances.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.apps.apps.get_app_config">
+<tt class="descclassname">apps.</tt><tt class="descname">get_app_config</tt>(<em>app_label</em>)<a class="headerlink" href="applications.html#django.apps.apps.get_app_config" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="83">Returns an <a class="reference internal" href="applications.html#django.apps.AppConfig" title="django.apps.AppConfig"><tt class="xref py py-class docutils literal"><span class="pre">AppConfig</span></tt></a> for the application with the given <tt class="docutils literal"><span class="pre">app_label</span></tt>. </font><font id="84">Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#LookupError" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">LookupError</span></tt></a> if no such application exists.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.apps.apps.is_installed">
+<tt class="descclassname">apps.</tt><tt class="descname">is_installed</tt>(<em>app_name</em>)<a class="headerlink" href="applications.html#django.apps.apps.is_installed" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="85">Checks whether an application with the given name exists in the registry. </font><font id="86"><tt class="docutils literal"><span class="pre">app_name</span></tt> is the full name of the app, e.g. <tt class="docutils literal"><span class="pre">'django.contrib.admin'</span></tt>.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.apps.apps.get_model">
+<tt class="descclassname">apps.</tt><tt class="descname">get_model</tt>(<em>app_label</em>, <em>model_name</em>)<a class="headerlink" href="applications.html#django.apps.apps.get_model" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="87">Returns the <a class="reference internal" href="models/instances.html#django.db.models.Model" title="django.db.models.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a> with the given <tt class="docutils literal"><span class="pre">app_label</span></tt> and <tt class="docutils literal"><span class="pre">model_name</span></tt>. </font><font id="88">As a shortcut, this method also accepts a single argument in the form <tt class="docutils literal"><span class="pre">app_label.model_name</span></tt>. </font><font id="89"><tt class="docutils literal"><span class="pre">model_name</span></tt> is case- insensitive.</font></p>
+<p><font id="90">Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#LookupError" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">LookupError</span></tt></a> if no such application or model exists. </font><font id="91">Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt></a> when called with a single argument that doesn’t contain exactly one dot.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-initialization-process">
+<span id="initialization-process"></span><h2><font id="138">Initialization process</font><a class="headerlink" href="applications.html#initialization-process" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-how-applications-are-loaded">
+<span id="how-applications-are-loaded"></span><h3><font id="145">How applications are loaded</font><a class="headerlink" href="applications.html#how-applications-are-loaded" title="Permalink to this headline">¶</a></h3>
+<p><font id="92">When Django starts, <a class="reference internal" href="applications.html#django.setup" title="django.setup"><tt class="xref py py-func docutils literal"><span class="pre">django.setup()</span></tt></a> is responsible for populating the application registry.</font></p>
+<dl class="function">
+<dt id="django.setup">
+<tt class="descname">setup</tt>()<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django.html#setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="applications.html#django.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="93">Configures Django by:</font></p>
+<ul class="simple">
+<li><font id="155">Loading the settings.</font></li>
+<li><font id="156">Setting up logging.</font></li>
+<li><font id="157">Initializing the application registry.</font></li>
+</ul>
+<p><font id="94">This function is called automatically:</font></p>
+<ul class="simple">
+<li><font id="158">When running an HTTP server via Django’s WSGI support.</font></li>
+<li><font id="159">When invoking a management command.</font></li>
+</ul>
+<p><font id="95">It must be called explicitly in other cases, for instance in plain Python scripts.</font></p>
+</dd></dl>
+<p><font id="96">The application registry is initialized in three stages. </font><font id="97">At each stage, Django processes all applications in the order of <a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>.</font></p>
+<ol class="arabic">
+<li><p class="first"><font id="98">First Django imports each item in <a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>.</font></p>
+<p><font id="99">If it’s an application configuration class, Django imports the root package of the application, defined by its <a class="reference internal" href="applications.html#django.apps.AppConfig.name" title="django.apps.AppConfig.name"><tt class="xref py py-attr docutils literal"><span class="pre">name</span></tt></a> attribute. </font><font id="100">If it’s a Python package, Django creates a default application configuration.</font></p>
+<p><font id="101"><em>At this stage, your code shouldn’t import any models!</em></font></p>
+<p><font id="102">In other words, your applications’ root packages and the modules that define your application configuration classes shouldn’t import any models, even indirectly.</font></p>
+<p><font id="103">Strictly speaking, Django allows importing models once their application configuration is loaded. </font><font id="104">However, in order to avoid needless constraints on the order of <a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>, it’s strongly recommended not import any models at this stage.</font></p>
+<p><font id="105">Once this stage completes, APIs that operate on application configurations such as <a class="reference internal" href="applications.html#django.apps.apps.get_app_config" title="django.apps.apps.get_app_config"><tt class="xref py py-meth docutils literal"><span class="pre">get_app_config()</span></tt></a> become usable.</font></p>
+</li>
+<li><p class="first"><font id="106">Then Django attempts to import the <tt class="docutils literal"><span class="pre">models</span></tt> submodule of each application, if there is one.</font></p>
+<p><font id="107">You must define or import all models in your application’s <tt class="docutils literal"><span class="pre">models.py</span></tt> or <tt class="docutils literal"><span class="pre">models/__init__.py</span></tt>. </font><font id="108">Otherwise, the application registry may not be fully populated at this point, which could cause the ORM to malfunction.</font></p>
+<p><font id="109">Once this stage completes, APIs that operate on models such as <a class="reference internal" href="applications.html#django.apps.apps.get_model" title="django.apps.apps.get_model"><tt class="xref py py-meth docutils literal"><span class="pre">get_model()</span></tt></a> become usable.</font></p>
+</li>
+<li><p class="first"><font id="110">Finally Django runs the <a class="reference internal" href="applications.html#django.apps.AppConfig.ready" title="django.apps.AppConfig.ready"><tt class="xref py py-meth docutils literal"><span class="pre">ready()</span></tt></a> method of each application configuration.</font></p>
+</li>
+</ol>
+</div>
+<div class="section" id="s-troubleshooting">
+<span id="s-applications-troubleshooting"></span><span id="troubleshooting"></span><span id="applications-troubleshooting"></span><h3><font id="146">Troubleshooting</font><a class="headerlink" href="applications.html#troubleshooting" title="Permalink to this headline">¶</a></h3>
+<p><font id="111">Here are some common problems that you may encounter during initialization:</font></p>
+<ul>
+<li><p class="first"><font id="112"><tt class="docutils literal"><span class="pre">AppRegistryNotReady</span></tt> </font><font id="113">This happens when importing an application configuration or a models module triggers code that depends on the app registry.</font></p>
+<p><font id="114">For example, <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.translation.ugettext" title="django.utils.translation.ugettext"><tt class="xref py py-func docutils literal"><span class="pre">ugettext()</span></tt></a> uses the app registry to look up translation catalogs in applications. </font><font id="115">To translate at import time, you need <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.translation.ugettext_lazy" title="django.utils.translation.ugettext_lazy"><tt class="xref py py-func docutils literal"><span class="pre">ugettext_lazy()</span></tt></a> instead. </font><font id="116">(Using <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.translation.ugettext" title="django.utils.translation.ugettext"><tt class="xref py py-func docutils literal"><span class="pre">ugettext()</span></tt></a> would be a bug, because the translation would happen at import time, rather than at each request depending on the active language.)</font></p>
+<p><font id="117">Executing database queries with the ORM at import time in models modules will also trigger this exception. </font><font id="118">The ORM cannot function properly until all models are available.</font></p>
+<p><font id="119">Another common culprit is <a class="reference internal" href="../topics/auth/customizing.html#django.contrib.auth.get_user_model" title="django.contrib.auth.get_user_model"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.auth.get_user_model()</span></tt></a>. </font><font id="120">Use the <a class="reference internal" href="settings.html#std:setting-AUTH_USER_MODEL"><tt class="xref std std-setting docutils literal"><span class="pre">AUTH_USER_MODEL</span></tt></a> setting to reference the User model at import time.</font></p>
+<p><font id="121">This exception also happens if you forget to call <a class="reference internal" href="applications.html#django.setup" title="django.setup"><tt class="xref py py-func docutils literal"><span class="pre">django.setup()</span></tt></a> in a standalone Python script.</font></p>
+</li>
+<li><p class="first"><font id="122"><tt class="docutils literal"><span class="pre">ImportError:</span> <span class="pre">cannot</span> <span class="pre">import</span> <span class="pre">name</span> <span class="pre">...</span></tt> </font><font id="123">This happens if the import sequence ends up in a loop.</font></p>
+<p><font id="124">To eliminate such problems, you should minimize dependencies between your models modules and do as little work as possible at import time. </font><font id="125">To avoid executing code at import time, you can move it into a function and cache its results. </font><font id="126">The code will be executed when you first need its results. </font><font id="127">This concept is known as “lazy evaluation”.</font></p>
+</li>
+<li><p class="first"><font id="128"><tt class="docutils literal"><span class="pre">django.contrib.admin</span></tt> automatically performs autodiscovery of <tt class="docutils literal"><span class="pre">admin</span></tt> modules in installed applications. </font><font id="129">To prevent it, change your <a class="reference internal" href="settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> to contain <tt class="docutils literal"><span class="pre">'django.contrib.admin.apps.SimpleAdminConfig'</span></tt> instead of <tt class="docutils literal"><span class="pre">'django.contrib.admin'</span></tt>.</font></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="147">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="applications.html#"><font id="160">应用程序</font></a><ul>
+<li><a class="reference internal" href="applications.html#projects-and-applications"><font id="161">项目及应用</font></a></li>
+<li><a class="reference internal" href="applications.html#configuring-applications"><font id="162">配置应用程序</font></a><ul>
+<li><a class="reference internal" href="applications.html#for-application-authors"><font id="163">应用程序作者</font></a></li>
+<li><a class="reference internal" href="applications.html#for-application-users"><font id="164">应用程序用户</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="applications.html#application-configuration"><font id="165">应用程序配置</font></a><ul>
+<li><a class="reference internal" href="applications.html#configurable-attributes"><font id="166">可配置属性</font></a></li>
+<li><a class="reference internal" href="applications.html#read-only-attributes"><font id="167">只读属性</font></a></li>
+<li><a class="reference internal" href="applications.html#methods"><font id="168">配置方法</font></a></li>
+<li><a class="reference internal" href="applications.html#namespace-packages-as-apps-python-3-3"><font id="169">命名空间封装应用程序（Python 3.3 +）</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="applications.html#application-registry"><font id="170">应用注册</font></a></li>
+<li><a class="reference internal" href="applications.html#initialization-process"><font id="171">初始化过程</font></a><ul>
+<li><a class="reference internal" href="applications.html#how-applications-are-loaded"><font id="172">如何加载应用程序</font></a></li>
+<li><a class="reference internal" href="applications.html#troubleshooting"><font id="173">排除故障</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="148">浏览</font></h3>
+<ul>
+<li><font id="174">前一篇： <a href="index.html">API参考</a></font></li>
+<li><font id="175">后一篇: <a href="checks.html">系统检查框架</a></font></li>
+</ul>
+<h3><font id="149">我的位置：</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="176">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="index.html"><font id="177">API参考</font></a>
+<ul><li><font id="178">应用</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="150">当前页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/applications.txt" rel="nofollow"><font id="179">显示源码</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="151">快速搜索</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="130"> 输入搜索项或模块、类或函数名。 </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="152">历史更新</font></h3>
+<p class="topless"><font id="131">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="index.html" title="API Reference">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="checks.html" title="System check framework">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/applications.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

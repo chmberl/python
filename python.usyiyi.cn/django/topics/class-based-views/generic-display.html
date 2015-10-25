@@ -1,0 +1,529 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>内建的基于类的通用视图 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Class-based views"/>
+<link href="generic-editing.html" rel="next" title="Form handling with class-based views"/>
+<link href="intro.html" rel="prev" title="Introduction to Class-based views"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="92">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="intro.html" title="Introduction to Class-based views">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="generic-editing.html" title="Form handling with class-based views">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-class-based-views-generic-display">
+<div class="section" id="s-built-in-class-based-generic-views">
+<span id="s-generic-views"></span><span id="built-in-class-based-generic-views"></span><span id="generic-views"></span><h1><font id="93">基于类的内建通用视图</font><a class="headerlink" href="generic-display.html#built-in-class-based-generic-views" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">编写Web应用可能是单调的，因为你需要不断的重复某一种模式。 </font><font id="2">Django尝试从模型和模板层移除一些单调的情况，但是Web 开发者依然会在视图层经历这种厌烦。</font></p>
+<p><font id="3">Django的<em>通用视图</em>被开发用来消除这一痛苦。</font><font id="4">它们采用在视图开发过程中发现的某些共同的用法和模式然后把它们抽象出来，以便你能够写更少的代码快速的实现常见的视图。</font></p>
+<p><font id="5">我们能够识别一些基础的任务，比如展示对象的一个列表，以及编写代码来展示<em>任何</em>一个对象的列表。</font><font id="6">此外，有问题的模型可以作为一个额外的参数传递到URLconf中。</font></p>
+<p><font id="7">Django通过通用视图来完成下面一些功能：</font></p>
+<ul class="simple">
+<li><font id="106">为单一的对象展示列表和一个详细页面。 </font><font id="107">如果我们创建一个应用来管理会议，那么一个<tt class="docutils literal"><span class="pre">TalkListView</span></tt> 和一个<tt class="docutils literal"><span class="pre">RegisteredUserListView</span></tt> 将是列表视图的例子。</font><font id="108">一个单独的讨论信息页面就是我们称之为 "详细" 视图的例子。</font></li>
+<li><font id="109">在年/月/日归档页面，以及详细页面和“最后发表”页面中，展示以数据库为基础的对象。</font></li>
+<li><font id="110">允许用户创建，更新和删除对象 —— 以授权或者无需授权的方式。</font></li>
+</ul>
+<p><font id="8">总的来说，这些视图提供了一些简单的接口来完成开发者遇到的大多数的常见任务。</font></p>
+<div class="section" id="s-extending-generic-views">
+<span id="extending-generic-views"></span><h2><font id="94">扩展通用视图</font><a class="headerlink" href="generic-display.html#extending-generic-views" title="Permalink to this headline">¶</a></h2>
+<p><font id="9">使用通用视图可以极大的提高开发速度，是毫无疑问的。 </font><font id="10">然而在大多数工程中，
+总会遇到通用视图无法满足需求的时候。</font><font id="11">的确，大多数来自Django 开发新手的问题是如何能使得通用视图的使用范围更广。</font></p>
+<p><font id="12">这是通用视图在1.3 发布中被重新设计的一个原因 &nbsp;—— 之前，它们仅仅是一些函数视图加上一列令人疑惑的选项；</font><font id="13">现在，比起传递大量的配置到URLconf中，更推荐的扩展通用视图的
+方法是子类化它们，并且重写它们的属性或者方法。</font></p>
+<p><font id="14">这就是说，通用视图有一些限制。</font><font id="15">如果你将你的视图实现为通用视图的子类，你就会发现这样能够更有效地编写你想要的代码，使用你自己的基于类或功能的视图。</font></p>
+<p><font id="16">在一些三方的应用中，有更多通用视图的示例，或者你可以自己按需编写。</font></p>
+</div>
+<div class="section" id="s-generic-views-of-objects">
+<span id="generic-views-of-objects"></span><h2><font id="95">对象的通用视图</font><a class="headerlink" href="generic-display.html#generic-views-of-objects" title="Permalink to this headline">¶</a></h2>
+<p><font id="17"><a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.TemplateView" title="django.views.generic.base.TemplateView"><tt class="xref py py-class docutils literal"><span class="pre">TemplateView</span></tt></a>确实很有用，但是当你需要
+呈现你数据库中的内容时Django的通用视图才真的会脱颖而出。</font><font id="18">因为这是如此常见的任务，Django 提供了一大把内置的通用视图，使生成对象的列表和详细视图变得极其容易。</font></p>
+<p><font id="19">让我们来看一下显示对象的一个列表和一个单独的对象的例子。</font></p>
+<p><font id="20">我们将使用下面的模型：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># models.py</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Publisher</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">city</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+    <span class="n">state_province</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">country</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">website</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s">"-name"</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c"># __unicode__ on Python 2</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">salutation</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">()</span>
+    <span class="n">headshot</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="s">'author_headshots'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c"># __unicode__ on Python 2</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="s">'Author'</span><span class="p">)</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Publisher</span><span class="p">)</span>
+    <span class="n">publication_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="21">现在我们需要定义一个视图：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># views.py</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Publisher</span>
+
+<span class="k">class</span> <span class="nc">PublisherList</span><span class="p">(</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Publisher</span>
+</pre></div>
+</div>
+<p><font id="22">最后将视图解析到你的url上：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">books.views</span> <span class="kn">import</span> <span class="n">PublisherList</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^publishers/$'</span><span class="p">,</span> <span class="n">PublisherList</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="23">上面就是所有我们需要写的Python代码了。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="24">注意</font></p>
+<p class="last"><font id="25">所以，当（例如）<tt class="docutils literal"><span class="pre">DjangoTemplates</span></tt>后端的<tt class="docutils literal"><span class="pre">APP_DIRS</span></tt>选项在<a class="reference internal" href="../../ref/settings.html#std:setting-TEMPLATES"><tt class="xref std std-setting docutils literal"><span class="pre">TEMPLATES</span></tt></a>中设置为True时，模板的位置应该为：/path/to/project/books/templates/books/publisher_list.html。</font></p>
+</div>
+<p><font id="26">这个模板将会依据于一个上下文来渲染，这个上下文包含一个名为<tt class="docutils literal"><span class="pre">object_list</span></tt>包含所有publisher对象的变量。</font><font id="27">一个非常简单的模板可能看起来像下面这样：</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">extends</span> <span class="s2">"base.html"</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
+    <span class="nt">&lt;h2&gt;</span>Publishers<span class="nt">&lt;/h2&gt;</span>
+    <span class="nt">&lt;ul&gt;</span>
+        <span class="cp">{%</span> <span class="k">for</span> <span class="nv">publisher</span> <span class="k">in</span> <span class="nv">object_list</span> <span class="cp">%}</span>
+            <span class="nt">&lt;li&gt;</span><span class="cp">{{</span> <span class="nv">publisher.name</span> <span class="cp">}}</span><span class="nt">&lt;/li&gt;</span>
+        <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+    <span class="nt">&lt;/ul&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="28">这确实就是全部代码了。 </font><font id="29">所有通用视图中有趣的特性来自于修改被传递到通用视图中的"信息"
+字典。</font><font id="30"><a class="reference internal" href="../../ref/class-based-views/index.html"><em>通用视图参考</em></a>文档详细介绍了通用视图以及它的选项；</font><font id="31">本篇文档剩余的部分将会介绍自定义以及扩展通用
+视图的常见方法。</font></p>
+<div class="section" id="s-making-friendly-template-contexts">
+<span id="making-friendly-template-contexts"></span><h3><font id="128">使用“友好”的模板Context</font><a class="headerlink" href="generic-display.html#making-friendly-template-contexts" title="Permalink to this headline">¶</a></h3>
+<p><font id="32">你可能已经注意到，publisher_list 模板将所有Publisher 保存在<tt class="docutils literal"><span class="pre">object_list</span></tt> 变量中。</font><font id="33">虽然能正常工作，但这对模板作者并不"友好"：他们“只知道”在这里要处理的是Publishers。</font></p>
+<p><font id="34">如果你在处理一个模型对象，Django 已经为你准备好。 </font><font id="35">当你处理一个普通对象或者Queryset 时，Django 能使用其模型类的小写名称来放入Context。</font><font id="36">实现方法是，除了默认的<tt class="docutils literal"><span class="pre">object_list</span></tt>，还提供一个包含完全相同数据的变量，例如<tt class="docutils literal"><span class="pre">publisher_list</span></tt>。</font></p>
+<p><font id="37">如果这个变量仍然不能很好的符合要求，你可以手动设置上下文变量的名字。</font><font id="38">通用视图的<tt class="docutils literal"><span class="pre">context_object_name</span></tt> 属性指定要使用的上下文变量：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># views.py</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Publisher</span>
+
+<span class="k">class</span> <span class="nc">PublisherList</span><span class="p">(</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Publisher</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s">'my_favorite_publishers'</span>
+</pre></div>
+</div>
+<p><font id="39">提供一个有用的<tt class="docutils literal"><span class="pre">context_object_name</span></tt>总是个好主意。</font><font id="40">和你一起工作的设计模板的同事会感谢你的。</font></p>
+</div>
+<div class="section" id="s-adding-extra-context">
+<span id="s-id1"></span><span id="adding-extra-context"></span><span id="id1"></span><h3><font id="96">添加额外的上下文</font><a class="headerlink" href="generic-display.html#adding-extra-context" title="Permalink to this headline">¶</a></h3>
+<p><font id="41">你会经常需要展示一些通用视图不能提供的额外信息。 </font><font id="42">比如，考虑一下在每个Publisher&nbsp;详细页面上显示一个包含所有图书的列表。</font><font id="43"><a class="reference internal" href="../../ref/class-based-views/generic-display.html#django.views.generic.detail.DetailView" title="django.views.generic.detail.DetailView"><tt class="xref py py-class docutils literal"><span class="pre">DetailView</span></tt></a> 通用视图提供了Publisher 对象给上下文，但是我们如何在模板中获得附加信息呢？</font></p>
+<p><font id="44">答案是派生<a class="reference internal" href="../../ref/class-based-views/generic-display.html#django.views.generic.detail.DetailView" title="django.views.generic.detail.DetailView"><tt class="xref py py-class docutils literal"><span class="pre">DetailView</span></tt></a>，并且在<tt class="docutils literal"><span class="pre">get_context_data</span></tt>方法中提供你自己的实现。</font><font id="45">默认的实现只是简单地给模板添加要展示的对象，但是你这可以覆该它来展示更多信息：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">DetailView</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Publisher</span><span class="p">,</span> <span class="n">Book</span>
+
+<span class="k">class</span> <span class="nc">PublisherDetail</span><span class="p">(</span><span class="n">DetailView</span><span class="p">):</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Publisher</span>
+
+    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># Call the base implementation first to get a context</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">PublisherDetail</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c"># Add in a QuerySet of all the books</span>
+        <span class="n">context</span><span class="p">[</span><span class="s">'book_list'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">context</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="46">注意</font></p>
+<p class="last"><font id="47">通常来说，<tt class="docutils literal"><span class="pre">get_context_data</span></tt>会将当前类中的上下文数据，合并到所有超类中的上下文数据。</font><font id="48">要在你自己想要改变上下文的类中保持这一行为，你应该确保调用了超类中的<tt class="docutils literal"><span class="pre">get_context_data</span></tt>。</font><font id="49">如果没有两个类尝试定义相同的键，它会返回预期的结果。</font><font id="50">然而，如果任何一个类尝试在超类持有一个键的情况下覆写它（在调用超类之后），这个类的任何子类都需要显式于超类之后设置它，如果你想要确保他们覆写了所有超类的话。</font><font id="51">如果你有这个麻烦，复查你视图中的方法调用顺序。</font></p>
+</div>
+</div>
+<div class="section" id="s-viewing-subsets-of-objects">
+<span id="s-generic-views-list-subsets"></span><span id="viewing-subsets-of-objects"></span><span id="generic-views-list-subsets"></span><h3><font id="97">查看对象的子集</font><a class="headerlink" href="generic-display.html#viewing-subsets-of-objects" title="Permalink to this headline">¶</a></h3>
+<p><font id="52">现在让我们来近距离查看下我们一直在用的<tt class="docutils literal"><span class="pre">model</span></tt>参数。</font><font id="53"><tt class="docutils literal"><span class="pre">model</span></tt>参数指定视图在哪个数据库模型之上进行操作，这适用于所有需要操作一个单独的对象或者一个对象集合的通用视图。</font><font id="54">然而，<tt class="docutils literal"><span class="pre">model</span></tt>参数并不是唯一能够指明视图要基于哪个对象进行操作的方法 ——&nbsp;你同样可以使用<tt class="docutils literal"><span class="pre">queryset</span></tt>参数来指定一个对象列表：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">DetailView</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Publisher</span>
+
+<span class="k">class</span> <span class="nc">PublisherDetail</span><span class="p">(</span><span class="n">DetailView</span><span class="p">):</span>
+
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s">'publisher'</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Publisher</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="55">指定<tt class="docutils literal"><span class="pre">model</span> <span class="pre">=</span> <span class="pre">Publisher</span></tt>等价于快速声明的<tt class="docutils literal"><span class="pre">queryset</span> <span class="pre">=</span> <span class="pre">Publisher.objects.all()</span></tt>。</font><font id="56">然而，通过使用<tt class="docutils literal"><span class="pre">queryset</span></tt>来定义一个过滤的对象列表，你可以更加详细
+的了解哪些对象将会被显示的视图中(参见<a class="reference internal" href="../db/queries.html"><em>执行查询</em></a>来获取更多关于<a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet" title="django.db.models.query.QuerySet"><tt class="xref py py-class docutils literal"><span class="pre">查询集</span></tt></a>对象的更对信息，以及参见
+<a class="reference internal" href="../../ref/class-based-views/index.html"><em>基于类的视图参考</em></a>来获取全部
+细节)。</font></p>
+<p><font id="57">我们可能想要对图书列表按照出版日期进行排序来选择一个简单的例子，并且把
+最近的放到前面：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Book</span>
+
+<span class="k">class</span> <span class="nc">BookList</span><span class="p">(</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-publication_date'</span><span class="p">)</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s">'book_list'</span>
+</pre></div>
+</div>
+<p><font id="58">这是个非常简单的列子，但是它很好的诠释了处理思路。 </font><font id="59">当然，你通常想做的不仅仅只是
+对对象列表进行排序。</font><font id="60">如果你想要展现某个出版商的所有图书列表，你可以使用
+同样的手法：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Book</span>
+
+<span class="k">class</span> <span class="nc">AcmeBookList</span><span class="p">(</span><span class="n">ListView</span><span class="p">):</span>
+
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s">'book_list'</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">publisher__name</span><span class="o">=</span><span class="s">'Acme Publishing'</span><span class="p">)</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s">'books/acme_list.html'</span>
+</pre></div>
+</div>
+<p><font id="61">注意，除了经过过滤之后的<tt class="docutils literal"><span class="pre">查询集</span></tt>，一起定义的还有我们自定义的模板名称。</font><font id="62">如果我们不这么做，通过视图会使用和 "vanilla" 对象列表名称一样的模板，这可能不是我们想要的。</font></p>
+<p><font id="63">另外需要注意，这并不是处理特定出版商的图书的非常优雅的方法。 </font><font id="64">如果我们&nbsp;
+要创建另外一个出版商页面，我们需要添加另外几行代码到URLconf中，并且再多几个
+出版商就会觉得这么做不合理。</font><font id="65">我们会在下一个章节处理这个问题。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="66">注意</font></p>
+<p class="last"><font id="67">如果你在访问&nbsp;<tt class="docutils literal"><span class="pre">/books/acme/</span></tt>时出现404错误，检查确保你确实有一个名字为“ACME Publishing”的出版商。</font><font id="68">通用视图在这种情况下拥有一个<tt class="docutils literal"><span class="pre">allow_empty</span></tt>&nbsp;的参数。</font><font id="69">详见<a class="reference internal" href="../../ref/class-based-views/index.html"><em>基于类的视图参考</em></a>。</font></p>
+</div>
+</div>
+<div class="section" id="s-dynamic-filtering">
+<span id="dynamic-filtering"></span><h3><font id="98">动态过滤</font><a class="headerlink" href="generic-display.html#dynamic-filtering" title="Permalink to this headline">¶</a></h3>
+<p><font id="70">另一个普遍的需求是在给定的列表页面中根据URL中的关键字来过滤对象。 </font><font id="71">前面我们把出版
+商的名字硬编码到URLconf中，但是如果我们想要编写一个视图来展示任何publisher的所有
+图书，应该如何处理？</font></p>
+<p><font id="72">相当方便的是， <tt class="docutils literal"><span class="pre">ListView</span></tt> 有一个<a class="reference internal" href="../../ref/class-based-views/mixins-multiple-object.html#django.views.generic.list.MultipleObjectMixin.get_queryset" title="django.views.generic.list.MultipleObjectMixin.get_queryset"><tt class="xref py py-meth docutils literal"><span class="pre">get_queryset()</span></tt></a>&nbsp;方法来供我们重写。</font><font id="73">在之前，它只是返回一个<tt class="docutils literal"><span class="pre">queryset</span></tt>属性值，但是现在我们可以添加更多的逻辑。</font></p>
+<p><font id="74">让这种方式能够工作的关键点，在于当类视图被调用时，各种有用的对象被存储在<tt class="docutils literal"><span class="pre">self</span></tt>上；</font><font id="75">同request()(<tt class="docutils literal"><span class="pre">self.request</span></tt>)一样，其中包含了从URLconf中获取到的位置参数
+(<tt class="docutils literal"><span class="pre">self.args</span></tt>)和基于名字的参数(<tt class="docutils literal"><span class="pre">self.kwargs</span></tt>)(关键字参数)。</font></p>
+<p><font id="76">这里，我们拥有一个带有一组供捕获的参数的URLconf：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">books.views</span> <span class="kn">import</span> <span class="n">PublisherBookList</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^books/([\w-]+)/$'</span><span class="p">,</span> <span class="n">PublisherBookList</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="77">接着，我们编写了<tt class="docutils literal"><span class="pre">PublisherBookList</span></tt>视图::</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># views.py</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Book</span><span class="p">,</span> <span class="n">Publisher</span>
+
+<span class="k">class</span> <span class="nc">PublisherBookList</span><span class="p">(</span><span class="n">ListView</span><span class="p">):</span>
+
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s">'books/books_by_publisher.html'</span>
+
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Publisher</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">publisher</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="78">如你所见，在queryset区域添加更多的逻辑非常容易；</font><font id="79">如果我们想的话，我们可以
+使用<tt class="docutils literal"><span class="pre">self.request.user</span></tt>来过滤当前用户，或者添加其他更复杂的逻辑。</font></p>
+<p><font id="80">同时我们可以把出版商添加到上下文中，这样我们就可以在模板中使用它：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># ...</span>
+
+<span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c"># Call the base implementation first to get a context</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">PublisherBookList</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c"># Add in the publisher</span>
+    <span class="n">context</span><span class="p">[</span><span class="s">'publisher'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span>
+    <span class="k">return</span> <span class="n">context</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-performing-extra-work">
+<span id="s-generic-views-extra-work"></span><span id="performing-extra-work"></span><span id="generic-views-extra-work"></span><h3><font id="99">执行额外的工作</font><a class="headerlink" href="generic-display.html#performing-extra-work" title="Permalink to this headline">¶</a></h3>
+<p><font id="81">我们将要看一下的最后的共同模式是在调用通用视图之前或者之后完成一些额外的工作。</font></p>
+<p><font id="82">想象一下，在我们的<tt class="docutils literal"><span class="pre">Author</span></tt> 模型上有一个<tt class="docutils literal"><span class="pre">last_accessed</span></tt>字段，这个字段用来跟踪访问者最后一次查看该作者的时间。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># models.py</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">salutation</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">()</span>
+    <span class="n">headshot</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ImageField</span><span class="p">(</span><span class="n">upload_to</span><span class="o">=</span><span class="s">'author_headshots'</span><span class="p">)</span>
+    <span class="n">last_accessed</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="83">通用的<tt class="docutils literal"><span class="pre">DetailView</span></tt>类当然不知道关于这个字段的事情，但我们可以很容易再次编写一个自定义的视图，来保持这个字段的更新。</font></p>
+<p><font id="84">首先，我们需要添加作者详情页的代码配置到URLconf中，指向自定义的视图：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">books.views</span> <span class="kn">import</span> <span class="n">AuthorDetailView</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c">#...</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^authors/(?P&lt;pk&gt;[0-9]+)/$'</span><span class="p">,</span> <span class="n">AuthorDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">'author-detail'</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="85">然后，编写我们新的视图 —— <tt class="docutils literal"><span class="pre">get_object</span></tt>是用来获取对象的方法 —— 因此我们简单的重写它并封装调用：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">DetailView</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Author</span>
+
+<span class="k">class</span> <span class="nc">AuthorDetailView</span><span class="p">(</span><span class="n">DetailView</span><span class="p">):</span>
+
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Call the superclass</span>
+        <span class="nb">object</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AuthorDetailView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+        <span class="c"># Record the last accessed date</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">last_accessed</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="c"># Return the object</span>
+        <span class="k">return</span> <span class="nb">object</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="86">注意</font></p>
+<p><font id="87">这里URLconf使用参数组的名字<tt class="docutils literal"><span class="pre">pk</span></tt> - 这个名字是<tt class="docutils literal"><span class="pre">DetailView</span></tt>用来查找主键的值的默认名称，其中主键用于过滤查询集。</font></p>
+<p class="last"><font id="88">如果你想要调用参数组的其它方法，你可以在视图上设置<tt class="docutils literal"><span class="pre">pk_url_kwarg</span></tt>。</font><font id="89">详见 <a class="reference internal" href="../../ref/class-based-views/generic-display.html#django.views.generic.detail.DetailView" title="django.views.generic.detail.DetailView"><tt class="xref py py-class docutils literal"><span class="pre">DetailView</span></tt></a>参考。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="100">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="generic-display.html#"><font id="111">基于类的内建通用视图</font></a><ul>
+<li><a class="reference internal" href="generic-display.html#extending-generic-views"><font id="112">扩展通用视图</font></a></li>
+<li><a class="reference internal" href="generic-display.html#generic-views-of-objects"><font id="113">对象的通用视图</font></a><ul>
+<li><a class="reference internal" href="generic-display.html#making-friendly-template-contexts"><font id="129">让目标上下文变量名变得“友好”</font></a></li>
+<li><a class="reference internal" href="generic-display.html#adding-extra-context"><font id="114">添加额外的上下文</font></a></li>
+<li><a class="reference internal" href="generic-display.html#viewing-subsets-of-objects"><font id="115">查看对象的子集</font></a></li>
+<li><a class="reference internal" href="generic-display.html#dynamic-filtering"><font id="116">动态过滤</font></a></li>
+<li><a class="reference internal" href="generic-display.html#performing-extra-work"><font id="117">执行额外的工作</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="101">浏览</font></h3>
+<ul>
+<li><font id="118">上一页：<a href="intro.html">基于类的视图简介</a></font></li>
+<li><font id="119">下一页：<a href="generic-editing.html">使用基于类的视图处理表单</a></font></li>
+</ul>
+<h3><font id="102">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="120">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="121">使用Django</font></a>
+<ul><li><a href="index.html"><font id="122">基于类的视图</font></a>
+<ul><li><font id="123">基于类的内建通用视图</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="103">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/class-based-views/generic-display.txt" rel="nofollow"><font id="124">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="104">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="90"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="105">最后更新：</font></h3>
+<p class="topless"><font id="91">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="intro.html" title="Introduction to Class-based views">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="generic-editing.html" title="Form handling with class-based views">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/class-based-views/generic-display.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

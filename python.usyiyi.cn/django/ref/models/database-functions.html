@@ -1,0 +1,371 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Database Functions — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Models"/>
+<link href="../request-response.html" rel="next" title="Request and response objects"/>
+<link href="conditional-expressions.html" rel="prev" title="Conditional Expressions"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/models/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/models/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="28">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="conditional-expressions.html" title="Conditional Expressions">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="../request-response.html" title="Request and response objects">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-models-database-functions">
+<div class="section" id="s-module-django.db.models.functions">
+<span id="s-database-functions"></span><span id="module-django.db.models.functions"></span><span id="database-functions"></span><h1><font id="29">数据库函数</font><a class="headerlink" href="database-functions.html#module-django.db.models.functions" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="1">下面记述的类为用户提供了一些方法，来在Django中使用底层数据库提供的函数用于注解、聚合或者过滤器等操作。</font><font id="2">函数也是<a class="reference internal" href="expressions.html"><em>表达式</em></a>，所以可以像<a class="reference internal" href="querysets.html#aggregation-functions"><em>聚合函数</em></a>一样混合使用它们。</font></p>
+<p><font id="3">我们会在每个函数的实例中使用下面的模型：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">alias</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">goes_by</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="4">我们并不推荐在<tt class="docutils literal"><span class="pre">CharField</span></tt>上允许<tt class="docutils literal"><span class="pre">null=True</span></tt>，以后那位这会允许字段有两个“空值”，但是对于下面的<tt class="docutils literal"><span class="pre">Coalesce</span></tt>示例来说它很重要。</font></p>
+<div class="section" id="s-coalesce">
+<span id="coalesce"></span><h2><font id="30">Coalesce</font><a class="headerlink" href="database-functions.html#coalesce" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.functions.Coalesce">
+<em class="property">class </em><tt class="descname">Coalesce</tt>(<em>*expressions</em>, <em>**extra</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/db/models/functions.html#Coalesce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="database-functions.html#django.db.models.functions.Coalesce" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="5">接受一个含有至少两个字段名称或表达式的列表，返回第一个非空的值（注意空字符串不被认为是一个空值）。</font><font id="6">每个参与都必须是相似的类型，所以掺杂了文本和数字的列表会导致数据库错误。</font></p>
+<p><font id="7">使用范例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Get a screen name from least to most public</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Sum</span><span class="p">,</span> <span class="n">Value</span> <span class="k">as</span> <span class="n">V</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Coalesce</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Margaret Smith'</span><span class="p">,</span> <span class="n">goes_by</span><span class="o">=</span><span class="s">'Maggie'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">author</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">screen_name</span><span class="o">=</span><span class="n">Coalesce</span><span class="p">(</span><span class="s">'alias'</span><span class="p">,</span> <span class="s">'goes_by'</span><span class="p">,</span> <span class="s">'name'</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">screen_name</span><span class="p">)</span>
+<span class="go">Maggie</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Prevent an aggregate Sum() from returning None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aggregated</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">combined_age</span><span class="o">=</span><span class="n">Coalesce</span><span class="p">(</span><span class="n">Sum</span><span class="p">(</span><span class="s">'age'</span><span class="p">),</span> <span class="n">V</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span>
+<span class="gp">... </span>   <span class="n">combined_age_default</span><span class="o">=</span><span class="n">Sum</span><span class="p">(</span><span class="s">'age'</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">aggregated</span><span class="p">[</span><span class="s">'combined_age'</span><span class="p">])</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">aggregated</span><span class="p">[</span><span class="s">'combined_age_default'</span><span class="p">])</span>
+<span class="go">None</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-concat">
+<span id="concat"></span><h2><font id="31">Concat</font><a class="headerlink" href="database-functions.html#concat" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.functions.Concat">
+<em class="property">class </em><tt class="descname">Concat</tt>(<em>*expressions</em>, <em>**extra</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/db/models/functions.html#Concat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="database-functions.html#django.db.models.functions.Concat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="8">接受一个含有至少两个文本字段的或表达式的列表，返回连接后的文本。</font><font id="9">每个参数都必须是文本或者字符类型。</font><font id="10">如果你想把一个<tt class="docutils literal"><span class="pre">TextField()</span></tt>和一个<tt class="docutils literal"><span class="pre">CharField()</span></tt>连接， 一定要告诉Django<tt class="docutils literal"><span class="pre">output_field</span></tt>应该为<tt class="docutils literal"><span class="pre">TextField()</span></tt>类型。</font><font id="11">在下面连接<tt class="docutils literal"><span class="pre">Value</span></tt>的例子中，这也是必需的。</font></p>
+<p><font id="12">这个函数不会返回null。</font><font id="13">在后端中，如果一个null参数导致了整个表达式都是null，Django会确保把每个null的部分转换成一个空字符串。</font></p>
+<p><font id="14">使用范例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Get the display name as "name (goes_by)"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span><span class="p">,</span> <span class="n">Value</span> <span class="k">as</span> <span class="n">V</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Concat</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Margaret Smith'</span><span class="p">,</span> <span class="n">goes_by</span><span class="o">=</span><span class="s">'Maggie'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">author</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">screen_name</span><span class="o">=</span><span class="n">Concat</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="n">V</span><span class="p">(</span><span class="s">' ('</span><span class="p">),</span> <span class="s">'goes_by'</span><span class="p">,</span> <span class="n">V</span><span class="p">(</span><span class="s">')'</span><span class="p">),</span>
+<span class="gp">... </span>   <span class="n">output_field</span><span class="o">=</span><span class="n">CharField</span><span class="p">()))</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">screen_name</span><span class="p">)</span>
+<span class="go">Margaret Smith (Maggie)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-length">
+<span id="length"></span><h2><font id="32">Length</font><a class="headerlink" href="database-functions.html#length" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.functions.Length">
+<em class="property">class </em><tt class="descname">Length</tt>(<em>expression</em>, <em>**extra</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/db/models/functions.html#Length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="database-functions.html#django.db.models.functions.Length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="15">接受一个文本字段或表达式，返回值的字符个数。</font><font id="16">如果表达式是null，长度也会是null。</font></p>
+<p><font id="17">使用范例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Get the length of the name and goes_by fields</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Length</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Margaret Smith'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">author</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">name_length</span><span class="o">=</span><span class="n">Length</span><span class="p">(</span><span class="s">'name'</span><span class="p">),</span>
+<span class="gp">... </span>   <span class="n">goes_by_length</span><span class="o">=</span><span class="n">Length</span><span class="p">(</span><span class="s">'goes_by'</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">name_length</span><span class="p">,</span> <span class="n">author</span><span class="o">.</span><span class="n">goes_by_length</span><span class="p">)</span>
+<span class="go">(14, None)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-lower">
+<span id="lower"></span><h2><font id="33">Lower</font><a class="headerlink" href="database-functions.html#lower" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.functions.Lower">
+<em class="property">class </em><tt class="descname">Lower</tt>(<em>expression</em>, <em>**extra</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/db/models/functions.html#Lower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="database-functions.html#django.db.models.functions.Lower" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="18">接受一个文本字符串或表达式，返回它的小写表示形式。</font></p>
+<p><font id="19">使用范例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Lower</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Margaret Smith'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">author</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">name_lower</span><span class="o">=</span><span class="n">Lower</span><span class="p">(</span><span class="s">'name'</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">name_lower</span><span class="p">)</span>
+<span class="go">margaret smith</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-substr">
+<span id="substr"></span><h2><font id="34">Substr</font><a class="headerlink" href="database-functions.html#substr" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.functions.Substr">
+<em class="property">class </em><tt class="descname">Substr</tt>(<em>expression</em>, <em>pos</em>, <em>length=None</em>, <em>**extra</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/db/models/functions.html#Substr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="database-functions.html#django.db.models.functions.Substr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="20">返回这个字段或者表达式的，以<tt class="docutils literal"><span class="pre">pos</span></tt>位置开始，长度为<tt class="docutils literal"><span class="pre">length</span></tt>的子字符串。</font><font id="21">位置从下标为1开始，所以必须大于0。</font><font id="22">如果<tt class="docutils literal"><span class="pre">length</span></tt>是<tt class="docutils literal"><span class="pre">None</span></tt>，会返回剩余的字符串。</font></p>
+<p><font id="23">使用范例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Set the alias to the first 5 characters of the name as lowercase</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Substr</span><span class="p">,</span> <span class="n">Lower</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Margaret Smith'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="n">Lower</span><span class="p">(</span><span class="n">Substr</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Margaret Smith'</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">)</span>
+<span class="go">marga</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-upper">
+<span id="upper"></span><h2><font id="35">Upper</font><a class="headerlink" href="database-functions.html#upper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.functions.Upper">
+<em class="property">class </em><tt class="descname">Upper</tt>(<em>expression</em>, <em>**extra</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/db/models/functions.html#Upper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="database-functions.html#django.db.models.functions.Upper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="24">接受一个文本字符串或表达式，返回它的大写表示形式。</font></p>
+<p><font id="25">使用范例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Upper</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Margaret Smith'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">author</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">name_upper</span><span class="o">=</span><span class="n">Upper</span><span class="p">(</span><span class="s">'name'</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">name_upper</span><span class="p">)</span>
+<span class="go">MARGARET SMITH</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="36">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="database-functions.html#"><font id="42">Database Functions</font></a><ul>
+<li><a class="reference internal" href="database-functions.html#coalesce"><font id="43">Coalesce</font></a></li>
+<li><a class="reference internal" href="database-functions.html#concat"><font id="44">Concat</font></a></li>
+<li><a class="reference internal" href="database-functions.html#length"><font id="45">Length</font></a></li>
+<li><a class="reference internal" href="database-functions.html#lower"><font id="46">Lower</font></a></li>
+<li><a class="reference internal" href="database-functions.html#substr"><font id="47">Substr</font></a></li>
+<li><a class="reference internal" href="database-functions.html#upper"><font id="48">Upper</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="37">Browse</font></h3>
+<ul>
+<li><font id="49">Prev: <a href="conditional-expressions.html">Conditional Expressions</a></font></li>
+<li><font id="50">Next: <a href="../request-response.html">Request and response objects</a></font></li>
+</ul>
+<h3><font id="38">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="51">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../index.html"><font id="52">API Reference</font></a>
+<ul><li><a href="index.html"><font id="53">Models</font></a>
+<ul><li><font id="54">Database Functions</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="39">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/models/database-functions.txt" rel="nofollow"><font id="55">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="40">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="26"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="41">Last update:</font></h3>
+<p class="topless"><font id="27">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="conditional-expressions.html" title="Conditional Expressions">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="../request-response.html" title="Request and response objects">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/models/database-functions';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

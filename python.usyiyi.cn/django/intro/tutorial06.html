@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>编写你的第一个Django应用，第6部分 — Django 1.8.2 中文文档<</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Getting started"/>
+<link href="reusable-apps.html" rel="next" title="Advanced tutorial: How to write reusable apps"/>
+<link href="tutorial05.html" rel="prev" title="Writing your first Django app, part 5"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/intro/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/intro/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="44">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="tutorial05.html" title="Writing your first Django app, part 5">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Getting started">up</a>
+   |
+    <a href="reusable-apps.html" title="Advanced tutorial: How to write reusable apps">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="intro-tutorial06">
+<div class="section" id="s-writing-your-first-django-app-part-6">
+<span id="writing-your-first-django-app-part-6"></span><h1><font id="45">编写你的第一个Django应用，第6部分</font><a class="headerlink" href="tutorial06.html#writing-your-first-django-app-part-6" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">本教程上接<a class="reference internal" href="tutorial05.html"><em>教程 5</em></a>。 </font><font id="2">我们已经建立一个测试过的网页投票应用，现在我们将添加一张样式表和一张图片。</font></p>
+<p><font id="3">除了由服务器生成的HTML文件外，网页应用一般需要提供其它必要的文件 —— 比如图片文件、JavaScript脚本和CSS样式表 —— 来为用户呈现出一个完整的网站。 </font><font id="4">在Django中，我们将这些文件称为“静态文件”。</font></p>
+<p><font id="5">对于小型项目，这不是个大问题，因为你可以将它们放在你的网页服务器可以访问到的地方。 </font><font id="6">然而，在大一点的项目中 —— 尤其是那些由多个应用组成的项目 —— 处理每个应用提供的多个静态文件集合开始变得很难。</font></p>
+<p><font id="7">这正是<tt class="docutils literal"><span class="pre">django.contrib.staticfiles</span></tt>的用途：它收集每个应用（和任何你指定的地方）的静态文件到一个单独的位置，这个位置在线上可以很容易维护。</font></p>
+<div class="section" id="s-customize-your-app-s-look-and-feel">
+<span id="customize-your-app-s-look-and-feel"></span><h2><font id="46">自定义你的<em>应用的</em>外观</font><a class="headerlink" href="tutorial06.html#customize-your-app-s-look-and-feel" title="Permalink to this headline">¶</a></h2>
+<p><font id="8">首先在你的<tt class="docutils literal"><span class="pre">polls</span></tt>中创建一个<tt class="docutils literal"><span class="pre">static</span></tt>目录。</font><font id="9">Django将在那里查找静态文件，这与Django是如何在<tt class="docutils literal"><span class="pre">polls/templates/</span></tt>中寻找对应的模板文件的方式是一致的。</font></p>
+<p><font id="10">Django 的 <a class="reference internal" href="../ref/settings.html#std:setting-STATICFILES_FINDERS"><tt class="xref std std-setting docutils literal"><span class="pre">STATICFILES_FINDERS</span></tt></a> 设置包含一个查找器列表，它们知道如何从各种源找到静态文件。 </font><font id="11">其中默认的一个是<tt class="docutils literal"><span class="pre">AppDirectoriesFinder</span></tt>，它在每个<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>下查找“static”子目录，就像刚刚在<tt class="docutils literal"><span class="pre">polls</span></tt>中创建的一样。</font><font id="12">管理站点也为它的静态文件使用相同的目录结构。</font></p>
+<p><font id="13">在你刚刚创建的<tt class="docutils literal"><span class="pre">static</span></tt>目录中，创建另外一个目录<tt class="docutils literal"><span class="pre">polls</span></tt>并在它下面创建一个文件<tt class="docutils literal"><span class="pre">style.css</span></tt>。</font><font id="14">换句话讲，你的样式表应该位于<tt class="docutils literal"><span class="pre">polls/static/polls/style.css</span></tt>。</font><font id="15">因为<tt class="docutils literal"><span class="pre">AppDirectoriesFinder</span></tt> 静态文件查找器的工作方式，你可以通过<tt class="docutils literal"><span class="pre">polls/style.css</span></tt>在Django中访问这个静态文件，与你如何访问模板的路径类似。</font></p>
+<div class="admonition-static-file-namespacing admonition">
+<p class="first admonition-title"><font id="16">静态文件的命名空间</font></p>
+<p class="last"><font id="17">与模板类似，我们<em>可以</em>将静态文件直接放在<tt class="docutils literal"><span class="pre">polls/static</span></tt>（而不是创建另外一个<tt class="docutils literal"><span class="pre">polls</span></tt> 子目录），但实际上这是一个坏主意。</font><font id="18">Django将使用它所找到的第一个文件名符合要求的静态文件，如果在你的<em>不同</em>应用中存在两个同名的静态文件，Django将无法区分它们。&nbsp;</font><font id="19">我们需要告诉Django该使用其中的哪一个，最简单的方法就是为它们添加<em>命名空间</em>。 </font><font id="20">也就是说，将这些静态文件放进以它们所在的应用的名字命名的<em>另外一个</em>目录下。&nbsp;</font></p>
+</div>
+<p><font id="21">将下面的代码放入样式表中 (<tt class="docutils literal"><span class="pre">polls/static/polls/style.css</span></tt>)：</font></p>
+<div class="highlight-css"><div class="snippet-filename">polls/static/polls/style.css</div>
+<div class="highlight"><pre><span class="nt">li</span> <span class="nt">a</span> <span class="p">{</span>
+    <span class="k">color</span><span class="o">:</span> <span class="nb">green</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="22">下一步，在<tt class="docutils literal"><span class="pre">polls/templates/polls/index.html</span></tt>的顶端添加如下内容 ：</font></p>
+<div class="highlight-html+django"><div class="snippet-filename">polls/templates/polls/index.html</div>
+<div class="highlight"><pre><span class="cp">{%</span> <span class="k">load</span> <span class="nv">staticfiles</span> <span class="cp">%}</span>
+
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="k">static</span> <span class="s1">'polls/style.css'</span> <span class="cp">%}</span><span class="s">"</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p><font id="23"><tt class="docutils literal"><span class="pre">{%</span> <span class="pre">load</span> <span class="pre">staticfiles</span> <span class="pre">%}</span></tt> 从<tt class="docutils literal"><span class="pre">staticfiles</span></tt>模板库加载<a class="reference internal" href="http://python.usyiyi.cn/ref/contrib/staticfiles/#std:templatetag-staticfiles-static"><tt class="xref std std-ttag docutils literal"><span class="pre">{%</span> <span class="pre">static</span> <span class="pre">%}</span></tt></a> 模板标签。</font><font id="24"><tt class="docutils literal"><span class="pre">{%</span> <span class="pre">static</span> <span class="pre">%}</span></tt>模板标签会生成静态文件的绝对URL。</font></p>
+<p><font id="25">这就是你在开发过程中，所需要对静态文件做的所有处理。 </font><font id="26">重新加载<tt class="docutils literal"><span class="pre">http://localhost:8000/polls/</span></tt>，你应该会看到Question的超链接变成了绿色（Django的风格！），这意味着你的样式表被成功导入。</font></p>
+</div>
+<div class="section" id="s-adding-a-background-image">
+<span id="adding-a-background-image"></span><h2><font id="47">添加一张背景图片</font><a class="headerlink" href="tutorial06.html#adding-a-background-image" title="Permalink to this headline">¶</a></h2>
+<p><font id="27">下一步，我们将创建一个子目录来存放图片。 </font><font id="28">在<tt class="docutils literal"><span class="pre">polls/static/polls/</span></tt>目录中创建一个 <tt class="docutils literal"><span class="pre">images</span></tt> 子目录。</font><font id="29">在这个目录中，放入一张图片<tt class="docutils literal"><span class="pre">background.gif</span></tt>。</font><font id="30">换句话，将你的图片放在 <tt class="docutils literal"><span class="pre">polls/static/polls/images/background.gif</span></tt>。</font></p>
+<p><font id="31">然后，向你的样式表添加（<tt class="docutils literal"><span class="pre">polls/static/polls/style.css</span></tt>）：</font></p>
+<div class="highlight-css"><div class="snippet-filename">polls/static/polls/style.css</div>
+<div class="highlight"><pre><span class="nt">body</span> <span class="p">{</span>
+    <span class="k">background</span><span class="o">:</span> <span class="nb">white</span> <span class="sx">url("images/background.gif")</span> <span class="k">no-repeat</span> <span class="k">right</span> <span class="k">bottom</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="32">重新加载<tt class="docutils literal"><span class="pre">http://localhost:8000/polls/</span></tt>，你应该在屏幕的右下方看到载入的背景图片。</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="33">警告：</font></p>
+<p class="last"><font id="34">当然，<tt class="docutils literal"><span class="pre">{%</span> <span class="pre">static</span> <span class="pre">%}</span></tt>模板标签不能用在静态文件（比如样式表）中，因为他们不是由Django生成的。 </font><font id="35">你应该永远使用<strong>相对路径</strong>来相互链接静态文件，因为这样你可以改变<a class="reference internal" href="../ref/settings.html#std:setting-STATIC_URL"><tt class="xref std std-setting docutils literal"><span class="pre">STATIC_URL</span></tt></a> （ <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-static"><tt class="xref std std-ttag docutils literal"><span class="pre">static</span></tt></a>模板标签用它来生成URLs）而不用同时修改一大堆静态文件的路径。</font></p>
+</div>
+<p><font id="36">这些知识<strong>基础</strong>。</font><font id="37">关于静态文件设置的更多细节和框架中包含的其它部分，参见<a class="reference internal" href="../howto/static-files/index.html"><em>静态文件 howto</em></a> 和<a class="reference internal" href="../ref/contrib/staticfiles.html"><em>静态文件参考</em></a>。</font><font id="38"><a class="reference internal" href="../howto/static-files/deployment.html"><em>部署静态文件</em></a>讨论如何在真实的服务器上使用静态文件。</font></p>
+</div>
+<div class="section" id="s-what-s-next">
+<span id="what-s-next"></span><h2><font id="63">下一步？</font><a class="headerlink" href="tutorial06.html#what-s-next" title="Permalink to this headline">¶</a></h2>
+<p><font id="39">新手教程到此结束。 </font><font id="40">在这期间，你可能想要在<a class="reference internal" href="whatsnext.html"><em>如何查看文档</em></a>中了解文档的结构和查找相关信息方法。</font></p>
+<p><font id="41">如果你熟悉Python 打包的技术，并且对如何将投票应用制作成一个“可重用的应用”感兴趣，请看<a class="reference internal" href="reusable-apps.html"><em>高级教程：如何编写可重用的应用</em></a>。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="48">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="tutorial06.html#"><font id="54">编写你的第一个Django应用，第6部分</font></a><ul>
+<li><a class="reference internal" href="tutorial06.html#customize-your-app-s-look-and-feel"><font id="55">自定义你的<em>应用的</em> 外观</font></a></li>
+<li><a class="reference internal" href="tutorial06.html#adding-a-background-image"><font id="56">添加一张背景图片</font></a></li>
+<li><a class="reference internal" href="tutorial06.html#what-s-next"><font id="64">下一步？</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="49">浏览</font></h3>
+<ul>
+<li><font id="57">上一页：<a href="tutorial05.html">编写你的第一个Django应用，第5部分</a></font></li>
+<li><font id="58">下一页：<a href="reusable-apps.html">高级教程：如何编写可重用的应用</a></font></li>
+</ul>
+<h3><font id="50">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="59">Django 1.8.2 文档</font></a>
+<ul><li><a href="index.html"><font id="60">开始</font></a>
+<ul><li><font id="61">编写你的第一个Django应用，第6部分</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="51">当前页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/intro/tutorial06.txt" rel="nofollow"><font id="62">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="52">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="42"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="53">最后更新：</font></h3>
+<p class="topless"><font id="43">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="tutorial05.html" title="Writing your first Django app, part 5">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Getting started">up</a>
+   |
+    <a href="reusable-apps.html" title="Advanced tutorial: How to write reusable apps">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/intro/tutorial06';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

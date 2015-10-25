@@ -1,0 +1,374 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>密码签名 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Using Django"/>
+<link href="email.html" rel="next" title="Sending email"/>
+<link href="conditional-view-processing.html" rel="prev" title="Conditional View Processing"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="40">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="conditional-view-processing.html" title="Conditional View Processing">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="email.html" title="Sending email">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-signing">
+<div class="section" id="s-module-django.core.signing">
+<span id="s-cryptographic-signing"></span><span id="module-django.core.signing"></span><span id="cryptographic-signing"></span><h1><font id="41">加密签名</font><a class="headerlink" href="signing.html#module-django.core.signing" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">web应用安全的黄金法则是，永远不要相信来自不可信来源的数据。</font><font id="2">有时通过不可信的媒介来传递数据会非常方便。</font><font id="3">密码签名后的值可以通过不受信任的途径传递，这样是安全的，因为任何篡改都会检测的到。</font></p>
+<p><font id="4">Django提供了用于签名的底层API，以及用于设置和读取被签名cookie的上层API，它们是web应用中最常使用的签名工具之一。</font></p>
+<p><font id="5">你可能会发现，签名对于以下事情非常有用：</font></p>
+<ul class="simple">
+<li><font id="53">生成用于“重置我的账户”的URL，并发送给丢失密码的用户。</font></li>
+<li><font id="54">确保储存在隐藏表单字段的数据不被篡改，</font></li>
+<li><font id="55">生成一次性的秘密URL，用于暂时性允许访问受保护的资源，例如用户付费的下载文件。</font></li>
+</ul>
+<div class="section" id="s-protecting-the-secret-key">
+<span id="protecting-the-secret-key"></span><h2><font id="42">保护 SECRET_KEY</font><a class="headerlink" href="signing.html#protecting-the-secret-key" title="Permalink to this headline">¶</a></h2>
+<p><font id="6">当你使用&nbsp;<a class="reference internal" href="../ref/django-admin.html#django-admin-startproject"><tt class="xref std std-djadmin docutils literal"><span class="pre">startproject</span></tt></a>创建新的Django项目时，自动生成的 <tt class="docutils literal"><span class="pre">settings.py</span></tt>文件会得到一个随机的<a class="reference internal" href="../ref/settings.html#std:setting-SECRET_KEY"><tt class="xref std std-setting docutils literal"><span class="pre">SECRET_KEY</span></tt></a>值。</font><font id="7">这个值是保护签名数据的密钥 -- 它至关重要，你必须妥善保管，否则攻击者会使用它来生成自己的签名值。</font></p>
+</div>
+<div class="section" id="s-using-the-low-level-api">
+<span id="using-the-low-level-api"></span><h2><font id="43">使用底层 API</font><a class="headerlink" href="signing.html#using-the-low-level-api" title="Permalink to this headline">¶</a></h2>
+<p><font id="8">Django的签名方法存放于<tt class="docutils literal"><span class="pre">django.core.signing</span></tt>模块。</font><font id="9">首先创建一个&nbsp;<tt class="docutils literal"><span class="pre">Signer</span></tt> 的实例来对一个值签名：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core.signing</span> <span class="kn">import</span> <span class="n">Signer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span> <span class="o">=</span> <span class="n">Signer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="s">'My string'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span>
+<span class="go">'My string:GdMGD6HNQ_qdgxYP8yBZAdAIV1w'</span>
+</pre></div>
+</div>
+<p><font id="10">这个签名会附加到字符串末尾，跟在冒号后面。</font><font id="11">你可以使用<tt class="docutils literal"><span class="pre">unsign</span></tt>方法来获取原始的值：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">original</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">unsign</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">original</span>
+<span class="go">'My string'</span>
+</pre></div>
+</div>
+<p><font id="12">如果签名或者值以任何方式改变，会抛出<tt class="docutils literal"><span class="pre">django.core.signing.BadSignature</span></tt> 异常：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">signing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">+=</span> <span class="s">'m'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">original</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">unsign</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">signing</span><span class="o">.</span><span class="n">BadSignature</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="k">print</span><span class="p">(</span><span class="s">"Tampering detected!"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="13">通常，<tt class="docutils literal"><span class="pre">Signer</span></tt>类使用<a class="reference internal" href="../ref/settings.html#std:setting-SECRET_KEY"><tt class="xref std std-setting docutils literal"><span class="pre">SECRET_KEY</span></tt></a>设置来生成签名。</font><font id="14">你可以通过向<tt class="docutils literal"><span class="pre">Signer</span></tt>构造器传递一个不同的密钥来使用它：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span> <span class="o">=</span> <span class="n">Signer</span><span class="p">(</span><span class="s">'my-other-secret'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="s">'My string'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span>
+<span class="go">'My string:EkfQJafvGyiofrdGnuthdxImIJw'</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="django.core.signing.Signer">
+<em class="property">class </em><tt class="descname">Signer</tt>(<em>key=None</em>, <em>sep=':'</em>, <em>salt=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/signing.html#Signer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="signing.html#django.core.signing.Signer" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="15">返回一个signer，它使用<tt class="docutils literal"><span class="pre">key</span></tt> 来生成签名，并且使用<tt class="docutils literal"><span class="pre">sep</span></tt>来分割值。</font><font id="16"><tt class="docutils literal"><span class="pre">sep</span></tt> 不能是&nbsp;<a class="reference external" href="http://tools.ietf.org/html/rfc4648#section-5">URL安全的base64字母表</a>中的字符。</font><font id="17">字母表含有数字、字母、连字符和下划线。</font></p>
+</dd></dl>
+<div class="section" id="s-using-the-salt-argument">
+<span id="using-the-salt-argument"></span><h3><font id="44">使用salt参数</font><a class="headerlink" href="signing.html#using-the-salt-argument" title="Permalink to this headline">¶</a></h3>
+<p><font id="18">如果你不希望对每个特定的字符串都生成一个相同的签名哈希值，你可以在<tt class="docutils literal"><span class="pre">Signer</span></tt>类中使用可选的<tt class="docutils literal"><span class="pre">salt</span></tt> 参数。</font><font id="19">使用salt参数会同时用它和<a class="reference internal" href="../ref/settings.html#std:setting-SECRET_KEY"><tt class="xref std std-setting docutils literal"><span class="pre">SECRET_KEY</span></tt></a>初始化签名哈希函数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span> <span class="o">=</span> <span class="n">Signer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="s">'My string'</span><span class="p">)</span>
+<span class="go">'My string:GdMGD6HNQ_qdgxYP8yBZAdAIV1w'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span> <span class="o">=</span> <span class="n">Signer</span><span class="p">(</span><span class="n">salt</span><span class="o">=</span><span class="s">'extra'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="s">'My string'</span><span class="p">)</span>
+<span class="go">'My string:Ee7vGi-ING6n02gkcJ-QLHg6vFw'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span><span class="o">.</span><span class="n">unsign</span><span class="p">(</span><span class="s">'My string:Ee7vGi-ING6n02gkcJ-QLHg6vFw'</span><span class="p">)</span>
+<span class="go">'My string'</span>
+</pre></div>
+</div>
+<p><font id="20">以这种方法使用salt会把不同的签名放在不同的命名空间中。</font><font id="21">来自于单一命名空间（一个特定的salt值）的签名不能用于在不同的命名空间中验证相同的纯文本字符串。不同的命名空间使用不同的salt设置。</font><font id="22">这是为了防止攻击者使用在一个地方的代码中生成的签名后的字符串，作为使用不同salt来生成（和验证）签名的另一处代码的输入。</font></p>
+<p><font id="23">不像你的<a class="reference internal" href="../ref/settings.html#std:setting-SECRET_KEY"><tt class="xref std std-setting docutils literal"><span class="pre">SECRET_KEY</span></tt></a>，你的salt参数可以不用保密。</font></p>
+</div>
+<div class="section" id="s-verifying-timestamped-values">
+<span id="verifying-timestamped-values"></span><h3><font id="45">验证带有时间戳的值</font><a class="headerlink" href="signing.html#verifying-timestamped-values" title="Permalink to this headline">¶</a></h3>
+<p><font id="24"><tt class="docutils literal"><span class="pre">TimestampSigner</span></tt>是 <a class="reference internal" href="signing.html#django.core.signing.Signer" title="django.core.signing.Signer"><tt class="xref py py-class docutils literal"><span class="pre">Signer</span></tt></a>的子类，它向值附加一个签名后的时间戳。</font><font id="25">这可以让你确认一个签名后的值是否在特定时间段之内被创建：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core.signing</span> <span class="kn">import</span> <span class="n">TimestampSigner</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span> <span class="o">=</span> <span class="n">TimestampSigner</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="s">'hello'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span>
+<span class="go">'hello:1NMg5H:oPVuCqlJWmChm1rA2lyTUtelC-c'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span><span class="o">.</span><span class="n">unsign</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="go">'hello'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span><span class="o">.</span><span class="n">unsign</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">SignatureExpired: Signature age 15.5289158821 &gt; 10 seconds</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span><span class="o">.</span><span class="n">unsign</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="go">'hello'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signer</span><span class="o">.</span><span class="n">unsign</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">20</span><span class="p">))</span>
+<span class="go">'hello'</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="django.core.signing.TimestampSigner">
+<em class="property">class </em><tt class="descname">TimestampSigner</tt>(<em>key=None</em>, <em>sep=':'</em>, <em>salt=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/signing.html#TimestampSigner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="signing.html#django.core.signing.TimestampSigner" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="django.core.signing.TimestampSigner.sign">
+<tt class="descname">sign</tt>(<em>value</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/signing.html#TimestampSigner.sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="signing.html#django.core.signing.TimestampSigner.sign" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="26">签名<tt class="docutils literal"><span class="pre">value</span></tt>，并且附加当前的时间戳。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.signing.TimestampSigner.unsign">
+<tt class="descname">unsign</tt>(<em>value</em>, <em>max_age=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/signing.html#TimestampSigner.unsign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="signing.html#django.core.signing.TimestampSigner.unsign" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="27">检查<tt class="docutils literal"><span class="pre">value</span></tt>是否在少于<tt class="docutils literal"><span class="pre">max_age</span></tt> 秒之前被签名，如果不是则抛出<tt class="docutils literal"><span class="pre">SignatureExpired</span></tt>异常。</font><font id="28"><tt class="docutils literal"><span class="pre">max_age</span></tt> 参数接受一个整数或者<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">datetime.timedelta</span></tt></a>对象。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="29">在此之前，&nbsp;<tt class="docutils literal"><span class="pre">max_age</span></tt>参数只接受整数。</font></p>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-protecting-complex-data-structures">
+<span id="protecting-complex-data-structures"></span><h3><font id="46">保护复杂的数据结构</font><a class="headerlink" href="signing.html#protecting-complex-data-structures" title="Permalink to this headline">¶</a></h3>
+<p><font id="30">如果你希望保护一个列表、元组或字典，你可以使用签名模块的<tt class="docutils literal"><span class="pre">dumps</span></tt> 和 <tt class="docutils literal"><span class="pre">loads</span></tt> 函数来实现。</font><font id="31">它们模仿了Python的pickle模块，但是在背后使用了JSON序列化。</font><font id="32">JSON可以确保即使你的<a class="reference internal" href="../ref/settings.html#std:setting-SECRET_KEY"><tt class="xref std std-setting docutils literal"><span class="pre">SECRET_KEY</span></tt></a>被盗取，攻击者并不能利用pickle的格式来执行任意的命令：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">signing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">signing</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"bar"</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span>
+<span class="go">'eyJmb28iOiJiYXIifQ:1NMg1b:zGcDE4-TCkaeGzLeW9UQwZesciI'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signing</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="go">{'foo': 'bar'}</span>
+</pre></div>
+</div>
+<p><font id="33">由于JSON的本质（列表和元组之间没有原生的区别），如果你传进来一个元组，你会从<tt class="docutils literal"><span class="pre">signing.loads(object)</span></tt>得到一个列表：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">signing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">signing</span><span class="o">.</span><span class="n">dumps</span><span class="p">((</span><span class="s">'a'</span><span class="p">,</span><span class="s">'b'</span><span class="p">,</span><span class="s">'c'</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signing</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="go">['a', 'b', 'c']</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="django.core.signing.dumps">
+<tt class="descname">dumps</tt>(<em>obj</em>, <em>key=None</em>, <em>salt='django.core.signing'</em>, <em>compress=False</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/signing.html#dumps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="signing.html#django.core.signing.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="34">返回URL安全，sha1签名的base64压缩的JSON字符串。</font><font id="35">序列化的对象使用<a class="reference internal" href="signing.html#django.core.signing.TimestampSigner" title="django.core.signing.TimestampSigner"><tt class="xref py py-class docutils literal"><span class="pre">TimestampSigner</span></tt></a>来签名。</font></p>
+</dd></dl>
+<dl class="function">
+<dt id="django.core.signing.loads">
+<tt class="descname">loads</tt>(<em>string</em>, <em>key=None</em>, <em>salt='django.core.signing'</em>, <em>max_age=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/signing.html#loads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="signing.html#django.core.signing.loads" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="36"><tt class="docutils literal"><span class="pre">dumps()</span></tt>的反转，如果签名失败则抛出<tt class="docutils literal"><span class="pre">BadSignature</span></tt>异常。</font><font id="37">如果提供了<tt class="docutils literal"><span class="pre">max_age</span></tt>则会检查它（以秒为单位）。</font></p>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="47">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="signing.html#"><font id="56">Cryptographic signing</font></a><ul>
+<li><a class="reference internal" href="signing.html#protecting-the-secret-key"><font id="57">Protecting the SECRET_KEY</font></a></li>
+<li><a class="reference internal" href="signing.html#using-the-low-level-api"><font id="58">Using the low-level API</font></a><ul>
+<li><a class="reference internal" href="signing.html#using-the-salt-argument"><font id="59">Using the salt argument</font></a></li>
+<li><a class="reference internal" href="signing.html#verifying-timestamped-values"><font id="60">Verifying timestamped values</font></a></li>
+<li><a class="reference internal" href="signing.html#protecting-complex-data-structures"><font id="61">Protecting complex data structures</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="48">Browse</font></h3>
+<ul>
+<li><font id="62">Prev: <a href="conditional-view-processing.html">Conditional View Processing</a></font></li>
+<li><font id="63">Next: <a href="email.html">Sending email</a></font></li>
+</ul>
+<h3><font id="49">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="64">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="index.html"><font id="65">Using Django</font></a>
+<ul><li><font id="66">Cryptographic signing</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="50">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/signing.txt" rel="nofollow"><font id="67">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="51">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="38"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="52">Last update:</font></h3>
+<p class="topless"><font id="39">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="conditional-view-processing.html" title="Conditional View Processing">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="email.html" title="Sending email">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/signing';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

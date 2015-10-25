@@ -1,0 +1,1017 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Django的缓存框架 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Using Django"/>
+<link href="conditional-view-processing.html" rel="next" title="Conditional View Processing"/>
+<link href="auth/customizing.html" rel="prev" title="Customizing authentication in Django"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="322">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="auth/customizing.html" title="Customizing authentication in Django">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="conditional-view-processing.html" title="Conditional View Processing">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-cache">
+<div class="section" id="s-django-s-cache-framework">
+<span id="django-s-cache-framework"></span><h1>Django’s cache framework<a class="headerlink" href="cache.html#django-s-cache-framework" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">A fundamental trade-off in dynamic Web sites is, well, they’re dynamic. </font><font id="2">Each time a user requests a page, the Web server makes all sorts of calculations – from database queries to template rendering to business logic – to create the page that your site’s visitor sees. </font><font id="3">This is a lot more expensive, from a processing-overhead perspective, than your standard read-a-file-off-the-filesystem server arrangement.</font></p>
+<p><font id="4">For most Web applications, this overhead isn’t a big deal. </font><font id="5">Most Web applications aren’t <tt class="docutils literal"><span class="pre">washingtonpost.com</span></tt> or <tt class="docutils literal"><span class="pre">slashdot.org</span></tt>; </font><font id="6">they’re simply small- to medium-sized sites with so-so traffic. </font><font id="7">But for medium- to high-traffic sites, it’s essential to cut as much overhead as possible.</font></p>
+<p><font id="8">这就是需要缓存的地方</font></p>
+<p><font id="9">
+
+缓存一些东西是为了保存那些需要很多计算资源的结果，这样的话就不必在下次重复消耗计算资源。
+</font><font id="10">
+下面是一些伪代码，用来解释缓存怎样在动态生成的网页中工作的：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>given a URL, try finding that page in the cache
+if the page is in the cache:
+    return the cached page
+else:
+    generate the page
+    save the generated page in the cache (for next time)
+    return the generated page
+</pre></div>
+</div>
+<p><font id="11">Django comes with a robust cache system that lets you save dynamic pages so they don’t have to be calculated for each request. </font><font id="12">For convenience, Django offers different levels of cache granularity: You can cache the output of specific views, you can cache only the pieces that are difficult to produce, or you can cache your entire site.</font></p>
+<p><font id="13">Django also works well with “downstream” caches, such as <a class="reference external" href="http://www.squid-cache.org">Squid</a> and browser-based caches. </font><font id="14">These are the types of caches that you don’t directly control but to which you can provide hints (via HTTP headers) about which parts of your site should be cached, and how.</font></p>
+<div class="admonition seealso">
+<p class="first admonition-title"><font id="15">See also</font></p>
+<p class="last"><font id="16">The <a class="reference internal" href="http://python.usyiyi.cn/django/misc/design-philosophies.html#cache-design-philosophy"><em>Cache Framework design philosophy</em></a> explains a few of the design decisions of the framework.</font></p>
+</div>
+<div class="section" id="s-setting-up-the-cache">
+<span id="s-id1"></span><span id="setting-up-the-cache"></span><span id="id1"></span><h2><font id="323">设置缓存</font><a class="headerlink" href="cache.html#setting-up-the-cache" title="Permalink to this headline">¶</a></h2>
+<p><font id="17">缓存系统需要一些设置才能使用。</font><font id="18">
+也就是说，你必须告诉他你要把数据缓存在哪里- 是数据库中，文件系统或者直接在内存中。</font><font id="19">
+这个决定很重要，因为它会影响你的缓存性能</font><font id="20">，是的，一些缓存类型要比其他的缓存类型更快速。</font></p>
+<p><font id="21">你的缓存配置是通过setting 文件的<a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a> 配置来实现的。</font><font id="22">
+这里就解释了<a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a>配置的所有变量值。
+</font></p>
+<div class="section" id="s-memcached">
+<span id="s-id2"></span><span id="memcached"></span><span id="id2"></span><h3><font id="332">Memcached</font><a class="headerlink" href="cache.html#memcached" title="Permalink to this headline">¶</a></h3>
+<p><font id="23">
+Django支持的最快，最高效的缓存类型,&nbsp;<a class="reference external" href="http://memcached.org/">Memcached</a> 是一个全部基于内存的缓存服务，起初是为了解决LiveJournal.com负载来开发的，后来是由Danga开源出来的。</font><font id="24">
+它被类似Facebook 和 维基百科这种网站使用，用来减少数据库访问，显著的提高了网站的性能。</font></p>
+<p><font id="25">
+Memcached 是个守护进程，它被分配了单独的内存块。</font><font id="26">
+它做的所有工作就是为缓存提供一个快速的添加，检索，删除的接口。</font><font id="27">
+所有的数据直接存储在内存中，所以它不能取代数据库或者文件系统的使用。</font></p>
+<p><font id="28">After installing Memcached itself, you’ll need to install a Memcached binding. </font><font id="29">There are several Python Memcached bindings available; </font><font id="30">the two most common are <a class="reference external" href="ftp://ftp.tummy.com/pub/python-memcached/">python-memcached</a> and <a class="reference external" href="http://sendapatch.se/projects/pylibmc/">pylibmc</a>.</font></p>
+<p><font id="31">To use Memcached with Django:</font></p>
+<ul class="simple">
+<li><font id="354">Set <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-BACKEND"><tt class="xref std std-setting docutils literal"><span class="pre">BACKEND</span></tt></a> to <tt class="docutils literal"><span class="pre">django.core.cache.backends.memcached.MemcachedCache</span></tt> or <tt class="docutils literal"><span class="pre">django.core.cache.backends.memcached.PyLibMCCache</span></tt> (depending on your chosen memcached binding)</font></li>
+<li><font id="355">Set <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-LOCATION"><tt class="xref std std-setting docutils literal"><span class="pre">LOCATION</span></tt></a> to <tt class="docutils literal"><span class="pre">ip:port</span></tt> values, where <tt class="docutils literal"><span class="pre">ip</span></tt> is the IP address of the Memcached daemon and <tt class="docutils literal"><span class="pre">port</span></tt> is the port on which Memcached is running, or to a <tt class="docutils literal"><span class="pre">unix:path</span></tt> value, where <tt class="docutils literal"><span class="pre">path</span></tt> is the path to a Memcached Unix socket file.</font></li>
+</ul>
+<p><font id="32">
+在这个例子中，Memcached 运行再 本地&nbsp;(127.0.0.1) 的11211端口，使用&nbsp;<tt class="docutils literal"><span class="pre">python-memcached</span></tt>（也就是需要这么一个python插件） 绑定：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.memcached.MemcachedCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="s">'127.0.0.1:11211'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="33">
+这个例子中，Memcached 通过一个本地的Unix socket file<tt class="file docutils literal"><span class="pre">/tmp/memcached.sock</span></tt> 来交互，也要使用<tt class="docutils literal"><span class="pre">python-memcached</span></tt>绑定：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.memcached.MemcachedCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="s">'unix:/tmp/memcached.sock'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="34">
+Memcached有一个非常好的特点就是可以让几个服务的缓存共享。</font><font id="35">
+这就意味着你可以再几个物理机上运行Memcached服务，这些程序将会把这几个机器当做&nbsp;<em>同一个</em> 缓存，从而不需要复制每个缓存的值在每个机器上。</font><font id="36">为了使用这个特性，把所有的服务地址放在<a class="reference internal" href="../ref/settings.html#std:setting-CACHES-LOCATION"><tt class="xref std std-setting docutils literal"><span class="pre">LOCATION</span></tt></a>里面，用分号隔开或者当做一个list。
+</font></p>
+<p><font id="37">
+
+这个例子，缓存共享在2个Memcached 实例中，IP地址为172.19.26.240 和&nbsp;172.19.26.242，端口同为11211：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.memcached.MemcachedCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">'172.19.26.240:11211'</span><span class="p">,</span>
+            <span class="s">'172.19.26.242:11211'</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="38">下面的这个例子，缓存通过下面几个&nbsp;&nbsp;Memcached 实例共享，IP地址为172.19.26.240 (端口 11211), 172.19.26.242 (端口 11212), and 172.19.26.244 (端口 11213):</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.memcached.MemcachedCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">'172.19.26.240:11211'</span><span class="p">,</span>
+            <span class="s">'172.19.26.242:11212'</span><span class="p">,</span>
+            <span class="s">'172.19.26.244:11213'</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="39">A final point about Memcached is that memory-based caching has a disadvantage: because the cached data is stored in memory, the data will be lost if your server crashes. </font><font id="40">Clearly, memory isn’t intended for permanent data storage, so don’t rely on memory-based caching as your only data storage. </font><font id="41">Without a doubt, <em>none</em> of the Django caching backends should be used for permanent storage – they’re all intended to be solutions for caching, not storage – but we point this out here because memory-based caching is particularly temporary.</font></p>
+</div>
+<div class="section" id="s-database-caching">
+<span id="s-id4"></span><span id="database-caching"></span><span id="id4"></span><h3><font id="333">Database caching</font><a class="headerlink" href="cache.html#database-caching" title="Permalink to this headline">¶</a></h3>
+<p><font id="42">Django can store its cached data in your database. </font><font id="43">This works best if you’ve got a fast, well-indexed database server.</font></p>
+<p><font id="44">To use a database table as your cache backend:</font></p>
+<ul class="simple">
+<li><font id="356">Set <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-BACKEND"><tt class="xref std std-setting docutils literal"><span class="pre">BACKEND</span></tt></a> to <tt class="docutils literal"><span class="pre">django.core.cache.backends.db.DatabaseCache</span></tt></font></li>
+<li><font id="357">Set <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-LOCATION"><tt class="xref std std-setting docutils literal"><span class="pre">LOCATION</span></tt></a> to <tt class="docutils literal"><span class="pre">tablename</span></tt>, the name of the database table. </font><font id="358">This name can be whatever you want, as long as it’s a valid table name that’s not already being used in your database.</font></li>
+</ul>
+<p><font id="45">In this example, the cache table’s name is <tt class="docutils literal"><span class="pre">my_cache_table</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.db.DatabaseCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="s">'my_cache_table'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="s-creating-the-cache-table">
+<span id="creating-the-cache-table"></span><h4><font id="352">Creating the cache table</font><a class="headerlink" href="cache.html#creating-the-cache-table" title="Permalink to this headline">¶</a></h4>
+<p><font id="46">Before using the database cache, you must create the cache table with this command:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>python manage.py createcachetable
+</pre></div>
+</div>
+<p><font id="47">This creates a table in your database that is in the proper format that Django’s database-cache system expects. </font><font id="48">The name of the table is taken from <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-LOCATION"><tt class="xref std std-setting docutils literal"><span class="pre">LOCATION</span></tt></a>.</font></p>
+<p><font id="49">If you are using multiple database caches, <a class="reference internal" href="../ref/django-admin.html#django-admin-createcachetable"><tt class="xref std std-djadmin docutils literal"><span class="pre">createcachetable</span></tt></a> creates one table for each cache.</font></p>
+<p><font id="50">If you are using multiple databases, <a class="reference internal" href="../ref/django-admin.html#django-admin-createcachetable"><tt class="xref std std-djadmin docutils literal"><span class="pre">createcachetable</span></tt></a> observes the <tt class="docutils literal"><span class="pre">allow_migrate()</span></tt> method of your database routers (see below).</font></p>
+<p><font id="51">Like <a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>, <a class="reference internal" href="../ref/django-admin.html#django-admin-createcachetable"><tt class="xref std std-djadmin docutils literal"><span class="pre">createcachetable</span></tt></a> won’t touch an existing table. </font><font id="52">It will only create missing tables.</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="53">Before Django 1.7, <a class="reference internal" href="../ref/django-admin.html#django-admin-createcachetable"><tt class="xref std std-djadmin docutils literal"><span class="pre">createcachetable</span></tt></a> created one table at a time. </font><font id="54">You had to pass the name of the table you wanted to create, and if you were using multiple databases, you had to use the <a class="reference internal" href="../ref/django-admin.html#django-admin-option---database"><tt class="xref std std-djadminopt docutils literal"><span class="pre">--database</span></tt></a> option. </font><font id="55">For backwards compatibility, this is still possible.</font></p>
+</div>
+</div>
+<div class="section" id="s-multiple-databases">
+<span id="multiple-databases"></span><h4><font id="353">Multiple databases</font><a class="headerlink" href="cache.html#multiple-databases" title="Permalink to this headline">¶</a></h4>
+<p><font id="56">If you use database caching with multiple databases, you’ll also need to set up routing instructions for your database cache table. </font><font id="57">For the purposes of routing, the database cache table appears as a model named <tt class="docutils literal"><span class="pre">CacheEntry</span></tt>, in an application named <tt class="docutils literal"><span class="pre">django_cache</span></tt>. </font><font id="58">This model won’t appear in the models cache, but the model details can be used for routing purposes.</font></p>
+<p><font id="59">For example, the following router would direct all cache read operations to <tt class="docutils literal"><span class="pre">cache_replica</span></tt>, and all write operations to <tt class="docutils literal"><span class="pre">cache_primary</span></tt>. </font><font id="60">The cache table will only be synchronized onto <tt class="docutils literal"><span class="pre">cache_primary</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CacheRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">"""A router to control all database cache operations"""</span>
+
+    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="s">"All cache read operations go to the replica"</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="o">==</span> <span class="s">'django_cache'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">'cache_replica'</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="s">"All cache write operations go to primary"</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="o">==</span> <span class="s">'django_cache'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">'cache_primary'</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">allow_migrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">app_label</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="s">"Only install the cache model on primary"</span>
+        <span class="k">if</span> <span class="n">app_label</span> <span class="o">==</span> <span class="s">'django_cache'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">db</span> <span class="o">==</span> <span class="s">'cache_primary'</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<p><font id="61">If you don’t specify routing directions for the database cache model, the cache backend will use the <tt class="docutils literal"><span class="pre">default</span></tt> database.</font></p>
+<p><font id="62">Of course, if you don’t use the database cache backend, you don’t need to worry about providing routing instructions for the database cache model.</font></p>
+</div>
+</div>
+<div class="section" id="s-filesystem-caching">
+<span id="filesystem-caching"></span><h3><font id="334">Filesystem caching</font><a class="headerlink" href="cache.html#filesystem-caching" title="Permalink to this headline">¶</a></h3>
+<p><font id="418">The file-based backend serializes and stores each cache value as a separate file. </font><font id="419">To use this backend set <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-BACKEND"><tt class="xref std std-setting docutils literal"><span class="pre">BACKEND</span></tt></a> to <tt class="docutils literal"><span class="pre">"django.core.cache.backends.filebased.FileBasedCache"</span></tt> and <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-LOCATION"><tt class="xref std std-setting docutils literal"><span class="pre">LOCATION</span></tt></a> to a suitable directory. </font><font id="420">For example, to store cached data in <tt class="docutils literal"><span class="pre">/var/tmp/django_cache</span></tt>, use this setting:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.filebased.FileBasedCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="s">'/var/tmp/django_cache'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="64">If you’re on Windows, put the drive letter at the beginning of the path, like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.filebased.FileBasedCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="s">'c:/foo/bar'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="65">The directory path should be absolute – that is, it should start at the root of your filesystem. </font><font id="66">It doesn’t matter whether you put a slash at the end of the setting.</font></p>
+<p><font id="67">Make sure the directory pointed-to by this setting exists and is readable and writable by the system user under which your Web server runs. </font><font id="68">Continuing the above example, if your server runs as the user <tt class="docutils literal"><span class="pre">apache</span></tt>, make sure the directory <tt class="docutils literal"><span class="pre">/var/tmp/django_cache</span></tt> exists and is readable and writable by the user <tt class="docutils literal"><span class="pre">apache</span></tt>.</font></p>
+</div>
+<div class="section" id="s-local-memory-caching">
+<span id="local-memory-caching"></span><h3><font id="335">Local-memory caching</font><a class="headerlink" href="cache.html#local-memory-caching" title="Permalink to this headline">¶</a></h3>
+<p><font id="421">This is the default cache if another is not specified in your settings file. </font><font id="422">If you want the speed advantages of in-memory caching but don’t have the capability of running Memcached, consider the local-memory cache backend. </font><font id="423">This cache is per-process (see below) and thread-safe. </font><font id="424">To use it, set <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-BACKEND"><tt class="xref std std-setting docutils literal"><span class="pre">BACKEND</span></tt></a> to <tt class="docutils literal"><span class="pre">"django.core.cache.backends.locmem.LocMemCache"</span></tt>. </font><font id="425">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.locmem.LocMemCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="s">'unique-snowflake'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="70">The cache <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-LOCATION"><tt class="xref std std-setting docutils literal"><span class="pre">LOCATION</span></tt></a> is used to identify individual memory stores. </font><font id="71">If you only have one <tt class="docutils literal"><span class="pre">locmem</span></tt> cache, you can omit the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-LOCATION"><tt class="xref std std-setting docutils literal"><span class="pre">LOCATION</span></tt></a>; </font><font id="72">however, if you have more than one local memory cache, you will need to assign a name to at least one of them in order to keep them separate.</font></p>
+<p><font id="73">Note that each process will have its own private cache instance, which means no cross-process caching is possible. </font><font id="74">This obviously also means the local memory cache isn’t particularly memory-efficient, so it’s probably not a good choice for production environments. </font><font id="75">It’s nice for development.</font></p>
+</div>
+<div class="section" id="s-dummy-caching-for-development">
+<span id="dummy-caching-for-development"></span><h3><font id="336">Dummy caching (for development)</font><a class="headerlink" href="cache.html#dummy-caching-for-development" title="Permalink to this headline">¶</a></h3>
+<p><font id="76">Finally, Django comes with a “dummy” cache that doesn’t actually cache – it just implements the cache interface without doing anything.</font></p>
+<p><font id="77">This is useful if you have a production site that uses heavy-duty caching in various places but a development/test environment where you don’t want to cache and don’t want to have to change your code to special-case the latter. </font><font id="78">To activate dummy caching, set <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-BACKEND"><tt class="xref std std-setting docutils literal"><span class="pre">BACKEND</span></tt></a> like so:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.dummy.DummyCache'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-using-a-custom-cache-backend">
+<span id="using-a-custom-cache-backend"></span><h3><font id="337">Using a custom cache backend</font><a class="headerlink" href="cache.html#using-a-custom-cache-backend" title="Permalink to this headline">¶</a></h3>
+<p><font id="79">While Django includes support for a number of cache backends out-of-the-box, sometimes you might want to use a customized cache backend. </font><font id="80">To use an external cache backend with Django, use the Python import path as the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-BACKEND"><tt class="xref std std-setting docutils literal"><span class="pre">BACKEND</span></tt></a> of the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a> setting, like so:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'path.to.backend'</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="81">If you’re building your own backend, you can use the standard cache backends as reference implementations. </font><font id="82">You’ll find the code in the <tt class="docutils literal"><span class="pre">django/core/cache/backends/</span></tt> directory of the Django source.</font></p>
+<p><font id="83">Note: Without a really compelling reason, such as a host that doesn’t support them, you should stick to the cache backends included with Django. </font><font id="84">They’ve been well-tested and are easy to use.</font></p>
+</div>
+<div class="section" id="s-cache-arguments">
+<span id="cache-arguments"></span><h3><font id="338">Cache 参数</font><a class="headerlink" href="cache.html#cache-arguments" title="Permalink to this headline">¶</a></h3>
+<p><font id="85">上述每一个缓存后台都可以给定一些额外的参数来控制缓存行为，</font><font id="86">这些参数在可以在<a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a> setting中以额外键值对的形式给定</font><font id="87">，可以设置的参数如下：</font></p>
+<ul>
+<li><p class="first"><font id="88"><a class="reference internal" href="../ref/settings.html#std:setting-CACHES-TIMEOUT"><tt class="xref std std-setting docutils literal"><span class="pre">TIMEOUT</span></tt></a>:缓存的默认过期时间，以秒为单位，
+</font><font id="89">这个参数默认是 <tt class="docutils literal"><span class="pre">300</span></tt> seconds (5 分钟).</font></p>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="90">你可以设置<tt class="docutils literal"><span class="pre">TIMEOUT</span></tt> 为 <tt class="docutils literal"><span class="pre">None</span></tt> 这样的话，缓存默认永远不会过期。</font><font id="91">值设置成<tt class="docutils literal"><span class="pre">0</span></tt>造成缓存立即失效(缓存就没有意义了)。</font></p>
+</li>
+<li><p class="first"><font id="92"><a class="reference internal" href="../ref/settings.html#std:setting-CACHES-OPTIONS"><tt class="xref std std-setting docutils literal"><span class="pre">OPTIONS</span></tt></a>: Any options that should be passed to the cache backend. </font><font id="93">有效的可选项列表根据缓存的后端不同而不同，由第三方库所支持的缓存将会把这些选项直接配置到底层的缓存库。</font></p>
+<p><font id="94">Cache backends that implement their own culling strategy (i.e., the <tt class="docutils literal"><span class="pre">locmem</span></tt>, <tt class="docutils literal"><span class="pre">filesystem</span></tt> and <tt class="docutils literal"><span class="pre">database</span></tt> backends) will honor the following options:</font></p>
+<ul>
+<li><p class="first"><font id="95"><tt class="docutils literal"><span class="pre">MAX_ENTRIES</span></tt>:高速缓存允许的最大条目数，超出这个数则旧值将被删除.</font><font id="96">&nbsp;这个参数默认是<tt class="docutils literal"><span class="pre">300</span></tt>.</font></p>
+</li>
+<li><p class="first"><font id="97"><tt class="docutils literal"><span class="pre">CULL_FREQUENCY</span></tt>:当达到<tt class="docutils literal"><span class="pre">MAX_ENTRIES</span></tt> 的时候,被删除的条目比率。&nbsp;</font><font id="98">实际比率是 <tt class="docutils literal"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">CULL_FREQUENCY</span></tt>, 所以设置<tt class="docutils literal"><span class="pre">CULL_FREQUENCY</span></tt> 为<tt class="docutils literal"><span class="pre">2</span></tt>会删去一半的缓存<tt class="docutils literal"><span class="pre">MAX_ENTRIES</span></tt> 达到时。</font><font id="99">这个参数应该是整数，默认为 <tt class="docutils literal"><span class="pre">3</span></tt>.</font></p>
+<p><font id="100">把&nbsp;<tt class="docutils literal"><span class="pre">CULL_FREQUENCY</span></tt>的值设置为&nbsp;<tt class="docutils literal"><span class="pre">0</span></tt> 意味着当达到<tt class="docutils literal"><span class="pre">MAX_ENTRIES</span></tt>时,缓存将被清空。</font><font id="101">某些缓存后端 (<tt class="docutils literal"><span class="pre">database</span></tt>尤其)这将以很多缓存丢失为代价,大大<em>much</em>&nbsp;提高接受访问的速度。</font></p>
+</li>
+</ul>
+</li>
+<li><p class="first"><font id="102"><a class="reference internal" href="../ref/settings.html#std:setting-CACHES-KEY_PREFIX"><tt class="xref std std-setting docutils literal"><span class="pre">KEY_PREFIX</span></tt></a>: A string that will be automatically included (prepended by default) to all cache keys used by the Django server.</font></p>
+<p><font id="103">See the <a class="reference internal" href="cache.html#cache-key-prefixing"><em>cache documentation</em></a> for more information.</font></p>
+</li>
+<li><p class="first"><font id="104"><a class="reference internal" href="../ref/settings.html#std:setting-CACHES-VERSION"><tt class="xref std std-setting docutils literal"><span class="pre">VERSION</span></tt></a>: The default version number for cache keys generated by the Django server.</font></p>
+<p><font id="105">See the <a class="reference internal" href="cache.html#cache-versioning"><em>cache documentation</em></a> for more information.</font></p>
+</li>
+<li><p class="first"><font id="106"><a class="reference internal" href="../ref/settings.html#std:setting-CACHES-KEY_FUNCTION"><tt class="xref std std-setting docutils literal"><span class="pre">KEY_FUNCTION</span></tt></a> </font><font id="107">A string containing a dotted path to a function that defines how to compose a prefix, version and key into a final cache key.</font></p>
+<p><font id="108">See the <a class="reference internal" href="cache.html#cache-key-transformation"><em>cache documentation</em></a> for more information.</font></p>
+</li>
+</ul>
+<p><font id="109">在下面这个例子中，一个文件系统缓存后端，被配置成缓存过期时间被60秒，最大条目为1000.
+</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.filebased.FileBasedCache'</span><span class="p">,</span>
+        <span class="s">'LOCATION'</span><span class="p">:</span> <span class="s">'/var/tmp/django_cache'</span><span class="p">,</span>
+        <span class="s">'TIMEOUT'</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="s">'OPTIONS'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">'MAX_ENTRIES'</span><span class="p">:</span> <span class="mi">1000</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="110">非法的参数会被忽略掉</font></p>
+</div>
+</div>
+<div class="section" id="s-the-per-site-cache">
+<span id="s-id5"></span><span id="the-per-site-cache"></span><span id="id5"></span><h2><font id="324">站点级缓存</font><a class="headerlink" href="cache.html#the-per-site-cache" title="Permalink to this headline">¶</a></h2>
+<p><font id="111">一旦高速缓存设置，最简单的方法是使用缓存缓存整个网站。 </font><font id="112">你需要添加<tt class="docutils literal"><span class="pre">'django.middleware.cache.UpdateCacheMiddleware'</span></tt> 和 <tt class="docutils literal"><span class="pre">'django.middleware.cache.FetchFromCacheMiddleware'</span></tt> 进你的 <a class="reference internal" href="../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a> 设置里, 如例子所示:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MIDDLEWARE_CLASSES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">'django.middleware.cache.UpdateCacheMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.middleware.common.CommonMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.middleware.cache.FetchFromCacheMiddleware'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="113">Note</font></p>
+<p class="last"><font id="114">不，这里并没有排版错误： 'update'中间件，必须放在列表的开始位置，而fectch中间件，必须放在最后。 </font><font id="115">细节有点费解，如果您想了解完整内幕请参看下面<a class="reference internal" href="cache.html#order-of-middleware-classes">MIDDLEWARE_CLASSES</a>顺序</font></p>
+</div>
+<p><font id="116">然后，添加下面这些需要的参数到settings文件里:</font></p>
+<ul class="simple">
+<li><font id="359"><a class="reference internal" href="../ref/settings.html#std:setting-CACHE_MIDDLEWARE_ALIAS"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_ALIAS</span></tt></a> – 用于存储的缓存的别名</font></li>
+<li><font id="360"><a class="reference internal" href="../ref/settings.html#std:setting-CACHE_MIDDLEWARE_SECONDS"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_SECONDS</span></tt></a> –每个page需要被缓存多少秒.</font></li>
+<li><font id="361"><a class="reference internal" href="../ref/settings.html#std:setting-CACHE_MIDDLEWARE_KEY_PREFIX"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_KEY_PREFIX</span></tt></a> – 如果缓存被多个使用相同Django安装的网站所共享，那么把这个值设成当前网站名，或其他能代表这个Django实例的唯一字符串，以避免key发生冲突。 </font><font id="362">如果你不在意的话可以设成空字符串。</font></li>
+</ul>
+<p><font id="117"><tt class="docutils literal"><span class="pre">FetchFromCacheMiddleware</span></tt> 缓存GET和HEAD状态为200的回应，</font><font id="118">用不同的参数请求相同的url被视为独立的页面，缓存是分开的。</font><font id="119">This middleware expects that a HEAD request is answered with the same response headers as the corresponding GET request; </font><font id="120">in which case it can return a cached GET response for HEAD request.</font></p>
+<p><font id="121">另外， <tt class="docutils literal"><span class="pre">UpdateCacheMiddleware</span></tt> 在每个<a class="reference internal" href="../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>里自动设置了一些头部信息</font></p>
+<ul class="simple">
+<li><font id="363">设置<tt class="docutils literal"><span class="pre">Last-Modified</span></tt>&nbsp;当一个新(没缓存的)版本的页面被请求时，为当前日期/时间</font></li>
+<li><font id="364">设置 <tt class="docutils literal"><span class="pre">Expires</span></tt> 头 为当前日期/时间加上定义的<a class="reference internal" href="../ref/settings.html#std:setting-CACHE_MIDDLEWARE_SECONDS"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_SECONDS</span></tt></a>.</font></li>
+<li><font id="365">设置 <tt class="docutils literal"><span class="pre">Cache-Control</span></tt>头部来给页面一个最长的有效期, 来自 <a class="reference internal" href="../ref/settings.html#std:setting-CACHE_MIDDLEWARE_SECONDS"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_SECONDS</span></tt></a> 的设置.</font></li>
+</ul>
+<p><font id="122">查看 <a class="reference internal" href="http/middleware.html"><em>Middleware</em></a> 更多中间件.</font></p>
+<p><font id="123">If a view sets its own cache expiry time (i.e. it has a <tt class="docutils literal"><span class="pre">max-age</span></tt> section in its <tt class="docutils literal"><span class="pre">Cache-Control</span></tt> header) then the page will be cached until the expiry time, rather than <a class="reference internal" href="../ref/settings.html#std:setting-CACHE_MIDDLEWARE_SECONDS"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_SECONDS</span></tt></a>. </font><font id="124">Using the decorators in <tt class="docutils literal"><span class="pre">django.views.decorators.cache</span></tt> you can easily set a view’s expiry time (using the <tt class="docutils literal"><span class="pre">cache_control</span></tt> decorator) or disable caching for a view (using the <tt class="docutils literal"><span class="pre">never_cache</span></tt> decorator). </font><font id="125">See the <a class="reference internal" href="cache.html#controlling-cache-using-other-headers">using other headers</a> section for more on these decorators.</font></p>
+<p id="i18n-cache-key"><font id="126">If <a class="reference internal" href="../ref/settings.html#std:setting-USE_I18N"><tt class="xref std std-setting docutils literal"><span class="pre">USE_I18N</span></tt></a> is set to <tt class="docutils literal"><span class="pre">True</span></tt> then the generated cache key will include the name of the active <a class="reference internal" href="i18n/index.html#term-language-code"><em class="xref std std-term">language</em></a> – see also <a class="reference internal" href="i18n/translation.html#how-django-discovers-language-preference"><em>How Django discovers language preference</em></a>). </font><font id="127">This allows you to easily cache multilingual sites without having to create the cache key yourself.</font></p>
+<p><font id="128">Cache keys also include the active <a class="reference internal" href="i18n/index.html#term-language-code"><em class="xref std std-term">language</em></a> when <a class="reference internal" href="../ref/settings.html#std:setting-USE_L10N"><tt class="xref std std-setting docutils literal"><span class="pre">USE_L10N</span></tt></a> is set to <tt class="docutils literal"><span class="pre">True</span></tt> and the <a class="reference internal" href="i18n/timezones.html#default-current-time-zone"><em>current time zone</em></a> when <a class="reference internal" href="../ref/settings.html#std:setting-USE_TZ"><tt class="xref std std-setting docutils literal"><span class="pre">USE_TZ</span></tt></a> is set to <tt class="docutils literal"><span class="pre">True</span></tt>.</font></p>
+</div>
+<div class="section" id="s-the-per-view-cache">
+<span id="the-per-view-cache"></span><h2><font id="325">单个view缓存</font><a class="headerlink" href="cache.html#the-per-view-cache" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="django.views.decorators.cache.cache_page">
+<tt class="descclassname">django.views.decorators.cache.</tt><tt class="descname">cache_page</tt>()<a class="headerlink" href="cache.html#django.views.decorators.cache.cache_page" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="129">更加轻巧的缓存框架使用方法是对单个有效视图的输出进行缓存。 </font><font id="130"><tt class="docutils literal"><span class="pre">django.views.decorators.cache</span></tt>&nbsp;定义了一个自动缓存视图响应的&nbsp;<tt class="docutils literal"><span class="pre">cache_page</span></tt>装饰器，</font><font id="131">使用非常简单:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.decorators.cache</span> <span class="kn">import</span> <span class="n">cache_page</span>
+
+<span class="nd">@cache_page</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">15</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="132"><tt class="docutils literal"><span class="pre">cache_page</span></tt>接受一个参数：timeout，秒为单位。</font><font id="133">在前例中，“<tt class="docutils literal"><span class="pre">my_view()</span></tt>”视图的结果将被缓存 15 分钟 </font><font id="134">(注意为了提高可读性我们写了 <tt class="docutils literal"><span class="pre">60</span> <span class="pre">*</span> <span class="pre">15</span></tt> . </font><font id="135"><tt class="docutils literal"><span class="pre">60</span> <span class="pre">*</span> <span class="pre">15</span></tt> 等于 <tt class="docutils literal"><span class="pre">900</span></tt> –也就是说15分钟等于60秒乘15.)</font></p>
+<p><font id="136">和站点缓存一样，视图缓存与 URL 无关。</font><font id="137">如果多个 URL 指向同一视图，每个视图将会分别缓存。 </font><font id="138">&nbsp;继续 <tt class="docutils literal"><span class="pre">my_view</span></tt>范例，如果 URLconf 如下所示：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^foo/([0-9]{1,2})/$'</span><span class="p">,</span> <span class="n">my_view</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="139">那么正如你所期待的那样，发送到 <tt class="docutils literal"><span class="pre">/foo/1/</span></tt> and <tt class="docutils literal"><span class="pre">/foo/23/</span></tt> 会被分别缓存。</font><font id="140">但是一旦一个明确的 URL (e.g., <tt class="docutils literal"><span class="pre">/foo/23/</span></tt>) 已经被请求过了,&nbsp;之后再度发出的指向该 URL 的请求将使用缓存。</font></p>
+<p><font id="141"><tt class="docutils literal"><span class="pre">cache_page</span></tt> 也可以使用一些额外的参数, <tt class="docutils literal"><span class="pre">cache</span></tt>, 指示修饰符去具体使用缓存 (from your <a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a> setting) 当要缓存页面结果时。</font><font id="142">默认地, <tt class="docutils literal"><span class="pre">default</span></tt> cache 会被使用, 但是你可以特别指定你要用的缓存</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@cache_page</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">15</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="s">"special_cache"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="143">You can also override the cache prefix on a per-view basis. </font><font id="144"><tt class="docutils literal"><span class="pre">cache_page</span></tt> takes an optional keyword argument, <tt class="docutils literal"><span class="pre">key_prefix</span></tt>, which works in the same way as the <a class="reference internal" href="../ref/settings.html#std:setting-CACHE_MIDDLEWARE_KEY_PREFIX"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_KEY_PREFIX</span></tt></a> setting for the middleware. </font><font id="145">It can be used like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@cache_page</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">15</span><span class="p">,</span> <span class="n">key_prefix</span><span class="o">=</span><span class="s">"site1"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="146"><tt class="docutils literal"><span class="pre">key_prefix</span></tt> and <tt class="docutils literal"><span class="pre">cache</span></tt> 参数可以被一起指定。</font><font id="147">The <tt class="docutils literal"><span class="pre">key_prefix</span></tt> argument and the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-KEY_PREFIX"><tt class="xref std std-setting docutils literal"><span class="pre">KEY_PREFIX</span></tt></a> specified under <a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a> will be concatenated.</font></p>
+<div class="section" id="s-specifying-per-view-cache-in-the-urlconf">
+<span id="specifying-per-view-cache-in-the-urlconf"></span><h3><font id="339">Specifying per-view cache in the URLconf</font><a class="headerlink" href="cache.html#specifying-per-view-cache-in-the-urlconf" title="Permalink to this headline">¶</a></h3>
+<p><font id="148">前一节中的范例将视图硬编码为使用缓存，因为 <tt class="docutils literal"><span class="pre">cache_page</span></tt> 在适当的位置对&nbsp;<tt class="docutils literal"><span class="pre">my_view</span></tt>函数进行了转换。 </font><font id="149">该方法将视图与缓存系统进行了耦合，从几个方面来说并不理想。</font><font id="150">例如，你可能想在某个无缓存的站点中重用该视图函数，或者不想通过缓存使用页面的人请求你的页面。 </font><font id="151">&nbsp;解决这些问题的方法是在 URLconf 中指定视图缓存，而不是在这些视图函数上来指定。</font></p>
+<p><font id="152">Doing so is easy: simply wrap the view function with <tt class="docutils literal"><span class="pre">cache_page</span></tt> when you refer to it in the URLconf. </font><font id="153">Here’s the old URLconf from earlier:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^foo/([0-9]{1,2})/$'</span><span class="p">,</span> <span class="n">my_view</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="154">Here’s the same thing, with <tt class="docutils literal"><span class="pre">my_view</span></tt> wrapped in <tt class="docutils literal"><span class="pre">cache_page</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.decorators.cache</span> <span class="kn">import</span> <span class="n">cache_page</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^foo/([0-9]{1,2})/$'</span><span class="p">,</span> <span class="n">cache_page</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">15</span><span class="p">)(</span><span class="n">my_view</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-template-fragment-caching">
+<span id="s-std:templatetag-cache"></span><span id="template-fragment-caching"></span><span id="std:templatetag-cache"></span><h2><font id="326">Template fragment caching</font><a class="headerlink" href="cache.html#template-fragment-caching" title="Permalink to this headline">¶</a></h2>
+<p><font id="155">If you’re after even more control, you can also cache template fragments using the <tt class="docutils literal"><span class="pre">cache</span></tt> template tag. </font><font id="156">To give your template access to this tag, put <tt class="docutils literal"><span class="pre">{%</span> <span class="pre">load</span> <span class="pre">cache</span> <span class="pre">%}</span></tt> near the top of your template.</font></p>
+<p><font id="157">The <tt class="docutils literal"><span class="pre">{%</span> <span class="pre">cache</span> <span class="pre">%}</span></tt> template tag caches the contents of the block for a given amount of time. </font><font id="158">It takes at least two arguments: the cache timeout, in seconds, and the name to give the cache fragment. </font><font id="159">The name will be taken as is, do not use a variable. </font><font id="160">For example:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">load</span> <span class="nv">cache</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">cache</span> <span class="m">500</span> <span class="nv">sidebar</span> <span class="cp">%}</span>
+    .. sidebar ..
+<span class="cp">{%</span> <span class="k">endcache</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="161">Sometimes you might want to cache multiple copies of a fragment depending on some dynamic data that appears inside the fragment. </font><font id="162">For example, you might want a separate cached copy of the sidebar used in the previous example for every user of your site. </font><font id="163">Do this by passing additional arguments to the <tt class="docutils literal"><span class="pre">{%</span> <span class="pre">cache</span> <span class="pre">%}</span></tt> template tag to uniquely identify the cache fragment:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">load</span> <span class="nv">cache</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">cache</span> <span class="m">500</span> <span class="nv">sidebar</span> <span class="nv">request.user.username</span> <span class="cp">%}</span>
+    .. sidebar for logged in user ..
+<span class="cp">{%</span> <span class="k">endcache</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="164">It’s perfectly fine to specify more than one argument to identify the fragment. </font><font id="165">Simply pass as many arguments to <tt class="docutils literal"><span class="pre">{%</span> <span class="pre">cache</span> <span class="pre">%}</span></tt> as you need.</font></p>
+<p><font id="166">If <a class="reference internal" href="../ref/settings.html#std:setting-USE_I18N"><tt class="xref std std-setting docutils literal"><span class="pre">USE_I18N</span></tt></a> is set to <tt class="docutils literal"><span class="pre">True</span></tt> the per-site middleware cache will <a class="reference internal" href="cache.html#i18n-cache-key"><em>respect the active language</em></a>. </font><font id="167">For the <tt class="docutils literal"><span class="pre">cache</span></tt> template tag you could use one of the <a class="reference internal" href="i18n/translation.html#template-translation-vars"><em>translation-specific variables</em></a> available in templates to achieve the same result:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">load</span> <span class="nv">i18n</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">load</span> <span class="nv">cache</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">get_current_language</span> <span class="k">as</span> <span class="nv">LANGUAGE_CODE</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">cache</span> <span class="m">600</span> <span class="nv">welcome</span> <span class="nv">LANGUAGE_CODE</span> <span class="cp">%}</span>
+    <span class="cp">{%</span> <span class="k">trans</span> <span class="s2">"Welcome to example.com"</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">endcache</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="168">The cache timeout can be a template variable, as long as the template variable resolves to an integer value. </font><font id="169">For example, if the template variable <tt class="docutils literal"><span class="pre">my_timeout</span></tt> is set to the value <tt class="docutils literal"><span class="pre">600</span></tt>, then the following two examples are equivalent:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">cache</span> <span class="m">600</span> <span class="nv">sidebar</span> <span class="cp">%}</span> ... <span class="cp">{%</span> <span class="k">endcache</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">cache</span> <span class="nv">my_timeout</span> <span class="nv">sidebar</span> <span class="cp">%}</span> ... <span class="cp">{%</span> <span class="k">endcache</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="170">This feature is useful in avoiding repetition in templates. </font><font id="171">You can set the timeout in a variable, in one place, and just reuse that value.</font></p>
+<div class="versionadded">
+<span class="title">New in Django 1.7:</span> <p><font id="172">By default, the cache tag will try to use the cache called “template_fragments”. </font><font id="173">If no such cache exists, it will fall back to using the default cache. </font><font id="174">You may select an alternate cache backend to use with the <tt class="docutils literal"><span class="pre">using</span></tt> keyword argument, which must be the last argument to the tag.</font></p>
+</div>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">cache</span> <span class="m">300</span> <span class="nv">local-thing</span> <span class="p">...</span>  <span class="nv">using</span><span class="o">=</span><span class="s2">"localcache"</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="175">It is considered an error to specify a cache name that is not configured.</font></p>
+<dl class="function">
+<dt id="django.core.cache.utils.make_template_fragment_key">
+<tt class="descclassname">django.core.cache.utils.</tt><tt class="descname">make_template_fragment_key</tt>(<em>fragment_name</em>, <em>vary_on=None</em>)<a class="headerlink" href="cache.html#django.core.cache.utils.make_template_fragment_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="176">If you want to obtain the cache key used for a cached fragment, you can use <tt class="docutils literal"><span class="pre">make_template_fragment_key</span></tt>. </font><font id="177"><tt class="docutils literal"><span class="pre">fragment_name</span></tt> is the same as second argument to the <tt class="docutils literal"><span class="pre">cache</span></tt> template tag; </font><font id="178"><tt class="docutils literal"><span class="pre">vary_on</span></tt> is a list of all additional arguments passed to the tag. </font><font id="179">This function can be useful for invalidating or overwriting a cached item, for example:</font></p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">cache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core.cache.utils</span> <span class="kn">import</span> <span class="n">make_template_fragment_key</span>
+<span class="go"># cache key for {% cache 500 sidebar username %}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">make_template_fragment_key</span><span class="p">(</span><span class="s">'sidebar'</span><span class="p">,</span> <span class="p">[</span><span class="n">username</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="c"># invalidates cached template fragment</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-the-low-level-cache-api">
+<span id="the-low-level-cache-api"></span><h2><font id="327">底层的缓存接口</font><a class="headerlink" href="cache.html#the-low-level-cache-api" title="Permalink to this headline">¶</a></h2>
+<p><font id="180">Sometimes, caching an entire rendered page doesn’t gain you very much and is, in fact, inconvenient overkill.</font></p>
+<p><font id="181">Perhaps, for instance, your site includes a view whose results depend on several expensive queries, the results of which change at different intervals. </font><font id="182">In this case, it would not be ideal to use the full-page caching that the per-site or per-view cache strategies offer, because you wouldn’t want to cache the entire result (since some of the data changes often), but you’d still want to cache the results that rarely change.</font></p>
+<p><font id="183">For cases like this, Django exposes a simple, low-level cache API. </font><font id="184">You can use this API to store objects in the cache with any level of granularity you like. </font><font id="185">You can cache any Python object that can be pickled safely: strings, dictionaries, lists of model objects, and so forth. </font><font id="186">(Most common Python objects can be pickled; refer to the Python documentation for more information about pickling.)</font></p>
+<div class="section" id="s-accessing-the-cache">
+<span id="accessing-the-cache"></span><h3><font id="340">Accessing the cache</font><a class="headerlink" href="cache.html#accessing-the-cache" title="Permalink to this headline">¶</a></h3>
+<dl class="data">
+<dt id="django.core.cache.caches">
+<tt class="descclassname">django.core.cache.</tt><tt class="descname">caches</tt><a class="headerlink" href="cache.html#django.core.cache.caches" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="187">You can access the caches configured in the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a> setting through a dict-like object: <tt class="docutils literal"><span class="pre">django.core.cache.caches</span></tt>. </font><font id="188">Repeated requests for the same alias in the same thread will return the same object.</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">caches</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache1</span> <span class="o">=</span> <span class="n">caches</span><span class="p">[</span><span class="s">'myalias'</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache2</span> <span class="o">=</span> <span class="n">caches</span><span class="p">[</span><span class="s">'myalias'</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache1</span> <span class="ow">is</span> <span class="n">cache2</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p><font id="189">If the named key does not exist, <tt class="docutils literal"><span class="pre">InvalidCacheBackendError</span></tt> will be raised.</font></p>
+<p><font id="190">To provide thread-safety, a different instance of the cache backend will be returned for each thread.</font></p>
+</dd></dl>
+<dl class="data">
+<dt id="django.core.cache.cache">
+<tt class="descclassname">django.core.cache.</tt><tt class="descname">cache</tt><a class="headerlink" href="cache.html#django.core.cache.cache" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="191">As a shortcut, the default cache is available as <tt class="docutils literal"><span class="pre">django.core.cache.cache</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">cache</span>
+</pre></div>
+</div>
+<p><font id="192">This object is equivalent to <tt class="docutils literal"><span class="pre">caches['default']</span></tt>.</font></p>
+</dd></dl>
+<dl class="function">
+<dt id="django.core.cache.get_cache">
+<tt class="descclassname">django.core.cache.</tt><tt class="descname">get_cache</tt>(<em>backend</em>, <em>**kwargs</em>)<a class="headerlink" href="cache.html#django.core.cache.get_cache" title="Permalink to this definition">¶</a></dt>
+<dd><div class="deprecated">
+<p><font id="193"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="194">This function has been deprecated in favor of <a class="reference internal" href="cache.html#django.core.cache.caches" title="django.core.cache.caches"><tt class="xref py py-data docutils literal"><span class="pre">caches</span></tt></a>.</font></p>
+</div>
+<p><font id="195">Before Django 1.7 this function was the canonical way to obtain a cache instance. </font><font id="196">It could also be used to create a new cache instance with a different configuration.</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">get_cache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_cache</span><span class="p">(</span><span class="s">'default'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_cache</span><span class="p">(</span><span class="s">'django.core.cache.backends.memcached.MemcachedCache'</span><span class="p">,</span> <span class="n">LOCATION</span><span class="o">=</span><span class="s">'127.0.0.2'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_cache</span><span class="p">(</span><span class="s">'default'</span><span class="p">,</span> <span class="n">TIMEOUT</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-basic-usage">
+<span id="basic-usage"></span><h3><font id="341">Basic usage</font><a class="headerlink" href="cache.html#basic-usage" title="Permalink to this headline">¶</a></h3>
+<p><font id="197">The basic interface is <tt class="docutils literal"><span class="pre">set(key,</span> <span class="pre">value,</span> <span class="pre">timeout)</span></tt> and <tt class="docutils literal"><span class="pre">get(key)</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">'my_key'</span><span class="p">,</span> <span class="s">'hello, world!'</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'my_key'</span><span class="p">)</span>
+<span class="go">'hello, world!'</span>
+</pre></div>
+</div>
+<p><font id="198">The <tt class="docutils literal"><span class="pre">timeout</span></tt> argument is optional and defaults to the <tt class="docutils literal"><span class="pre">timeout</span></tt> argument of the appropriate backend in the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a> setting (explained above). </font><font id="199">It’s the number of seconds the value should be stored in the cache. </font><font id="200">Passing in <tt class="docutils literal"><span class="pre">None</span></tt> for <tt class="docutils literal"><span class="pre">timeout</span></tt> will cache the value forever. </font><font id="201">A <tt class="docutils literal"><span class="pre">timeout</span></tt> of <tt class="docutils literal"><span class="pre">0</span></tt> won’t cache the value.</font></p>
+<p><font id="202">If the object doesn’t exist in the cache, <tt class="docutils literal"><span class="pre">cache.get()</span></tt> returns <tt class="docutils literal"><span class="pre">None</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre># Wait 30 seconds for 'my_key' to expire...
+
+&gt;&gt;&gt; cache.get('my_key')
+None
+</pre></div>
+</div>
+<p><font id="203">We advise against storing the literal value <tt class="docutils literal"><span class="pre">None</span></tt> in the cache, because you won’t be able to distinguish between your stored <tt class="docutils literal"><span class="pre">None</span></tt> value and a cache miss signified by a return value of <tt class="docutils literal"><span class="pre">None</span></tt>.</font></p>
+<p><font id="204"><tt class="docutils literal"><span class="pre">cache.get()</span></tt> can take a <tt class="docutils literal"><span class="pre">default</span></tt> argument. </font><font id="205">This specifies which value to return if the object doesn’t exist in the cache:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'my_key'</span><span class="p">,</span> <span class="s">'has expired'</span><span class="p">)</span>
+<span class="go">'has expired'</span>
+</pre></div>
+</div>
+<p><font id="206">To add a key only if it doesn’t already exist, use the <tt class="docutils literal"><span class="pre">add()</span></tt> method. </font><font id="207">It takes the same parameters as <tt class="docutils literal"><span class="pre">set()</span></tt>, but it will not attempt to update the cache if the key specified is already present:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">'add_key'</span><span class="p">,</span> <span class="s">'Initial value'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">'add_key'</span><span class="p">,</span> <span class="s">'New value'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'add_key'</span><span class="p">)</span>
+<span class="go">'Initial value'</span>
+</pre></div>
+</div>
+<p><font id="208">If you need to know whether <tt class="docutils literal"><span class="pre">add()</span></tt> stored a value in the cache, you can check the return value. </font><font id="209">It will return <tt class="docutils literal"><span class="pre">True</span></tt> if the value was stored, <tt class="docutils literal"><span class="pre">False</span></tt> otherwise.</font></p>
+<p><font id="210">There’s also a <tt class="docutils literal"><span class="pre">get_many()</span></tt> interface that only hits the cache once. </font><font id="211"><tt class="docutils literal"><span class="pre">get_many()</span></tt> returns a dictionary with all the keys you asked for that actually exist in the cache (and haven’t expired):</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">'b'</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">'c'</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">get_many</span><span class="p">([</span><span class="s">'a'</span><span class="p">,</span> <span class="s">'b'</span><span class="p">,</span> <span class="s">'c'</span><span class="p">])</span>
+<span class="go">{'a': 1, 'b': 2, 'c': 3}</span>
+</pre></div>
+</div>
+<p><font id="212">To set multiple values more efficiently, use <tt class="docutils literal"><span class="pre">set_many()</span></tt> to pass a dictionary of key-value pairs:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_many</span><span class="p">({</span><span class="s">'a'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'b'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">'c'</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">get_many</span><span class="p">([</span><span class="s">'a'</span><span class="p">,</span> <span class="s">'b'</span><span class="p">,</span> <span class="s">'c'</span><span class="p">])</span>
+<span class="go">{'a': 1, 'b': 2, 'c': 3}</span>
+</pre></div>
+</div>
+<p><font id="213">Like <tt class="docutils literal"><span class="pre">cache.set()</span></tt>, <tt class="docutils literal"><span class="pre">set_many()</span></tt> takes an optional <tt class="docutils literal"><span class="pre">timeout</span></tt> parameter.</font></p>
+<p><font id="214">You can delete keys explicitly with <tt class="docutils literal"><span class="pre">delete()</span></tt>. </font><font id="215">This is an easy way of clearing the cache for a particular object:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s">'a'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="216">If you want to clear a bunch of keys at once, <tt class="docutils literal"><span class="pre">delete_many()</span></tt> can take a list of keys to be cleared:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="s">'a'</span><span class="p">,</span> <span class="s">'b'</span><span class="p">,</span> <span class="s">'c'</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="217">Finally, if you want to delete all the keys in the cache, use <tt class="docutils literal"><span class="pre">cache.clear()</span></tt>. </font><font id="218">Be careful with this; </font><font id="219"><tt class="docutils literal"><span class="pre">clear()</span></tt> will remove <em>everything</em> from the cache, not just the keys set by your application.</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="220">You can also increment or decrement a key that already exists using the <tt class="docutils literal"><span class="pre">incr()</span></tt> or <tt class="docutils literal"><span class="pre">decr()</span></tt> methods, respectively. </font><font id="221">By default, the existing cache value will incremented or decremented by 1. </font><font id="222">Other increment/decrement values can be specified by providing an argument to the increment/decrement call. </font><font id="223">A ValueError will be raised if you attempt to increment or decrement a nonexistent cache key.:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">'num'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">incr</span><span class="p">(</span><span class="s">'num'</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">incr</span><span class="p">(</span><span class="s">'num'</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="go">12</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">decr</span><span class="p">(</span><span class="s">'num'</span><span class="p">)</span>
+<span class="go">11</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">decr</span><span class="p">(</span><span class="s">'num'</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="224">Note</font></p>
+<p class="last"><font id="225"><tt class="docutils literal"><span class="pre">incr()</span></tt>/<tt class="docutils literal"><span class="pre">decr()</span></tt> methods are not guaranteed to be atomic. </font><font id="226">On those backends that support atomic increment/decrement (most notably, the memcached backend), increment and decrement operations will be atomic. </font><font id="227">However, if the backend doesn’t natively provide an increment/decrement operation, it will be implemented using a two-step retrieve/update.</font></p>
+</div>
+<p><font id="228">You can close the connection to your cache with <tt class="docutils literal"><span class="pre">close()</span></tt> if implemented by the cache backend.</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="229">Note</font></p>
+<p class="last"><font id="230">For caches that don’t implement <tt class="docutils literal"><span class="pre">close</span></tt> methods it is a no-op.</font></p>
+</div>
+</div>
+<div class="section" id="s-cache-key-prefixing">
+<span id="s-id7"></span><span id="cache-key-prefixing"></span><span id="id7"></span><h3><font id="342">Cache key prefixing</font><a class="headerlink" href="cache.html#cache-key-prefixing" title="Permalink to this headline">¶</a></h3>
+<p><font id="231">If you are sharing a cache instance between servers, or between your production and development environments, it’s possible for data cached by one server to be used by another server. </font><font id="232">If the format of cached data is different between servers, this can lead to some very hard to diagnose problems.</font></p>
+<p><font id="233">To prevent this, Django provides the ability to prefix all cache keys used by a server. </font><font id="234">When a particular cache key is saved or retrieved, Django will automatically prefix the cache key with the value of the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-KEY_PREFIX"><tt class="xref std std-setting docutils literal"><span class="pre">KEY_PREFIX</span></tt></a> cache setting.</font></p>
+<p><font id="235">By ensuring each Django instance has a different <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-KEY_PREFIX"><tt class="xref std std-setting docutils literal"><span class="pre">KEY_PREFIX</span></tt></a>, you can ensure that there will be no collisions in cache values.</font></p>
+</div>
+<div class="section" id="s-cache-versioning">
+<span id="s-id8"></span><span id="cache-versioning"></span><span id="id8"></span><h3><font id="343">Cache versioning</font><a class="headerlink" href="cache.html#cache-versioning" title="Permalink to this headline">¶</a></h3>
+<p><font id="236">When you change running code that uses cached values, you may need to purge any existing cached values. </font><font id="237">The easiest way to do this is to flush the entire cache, but this can lead to the loss of cache values that are still valid and useful.</font></p>
+<p><font id="238">Django provides a better way to target individual cache values. </font><font id="239">Django’s cache framework has a system-wide version identifier, specified using the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-VERSION"><tt class="xref std std-setting docutils literal"><span class="pre">VERSION</span></tt></a> cache setting. </font><font id="240">The value of this setting is automatically combined with the cache prefix and the user-provided cache key to obtain the final cache key.</font></p>
+<p><font id="241">By default, any key request will automatically include the site default cache key version. </font><font id="242">However, the primitive cache functions all include a <tt class="docutils literal"><span class="pre">version</span></tt> argument, so you can specify a particular cache key version to set or get. </font><font id="243">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre># Set version 2 of a cache key
+&gt;&gt;&gt; cache.set('my_key', 'hello world!', version=2)
+# Get the default version (assuming version=1)
+&gt;&gt;&gt; cache.get('my_key')
+None
+# Get version 2 of the same key
+&gt;&gt;&gt; cache.get('my_key', version=2)
+'hello world!'
+</pre></div>
+</div>
+<p><font id="244">The version of a specific key can be incremented and decremented using the <tt class="docutils literal"><span class="pre">incr_version()</span></tt> and <tt class="docutils literal"><span class="pre">decr_version()</span></tt> methods. </font><font id="245">This enables specific keys to be bumped to a new version, leaving other keys unaffected. </font><font id="246">Continuing our previous example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre># Increment the version of 'my_key'
+&gt;&gt;&gt; cache.incr_version('my_key')
+# The default version still isn't available
+&gt;&gt;&gt; cache.get('my_key')
+None
+# Version 2 isn't available, either
+&gt;&gt;&gt; cache.get('my_key', version=2)
+None
+# But version 3 *is* available
+&gt;&gt;&gt; cache.get('my_key', version=3)
+'hello world!'
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-cache-key-transformation">
+<span id="s-id9"></span><span id="cache-key-transformation"></span><span id="id9"></span><h3><font id="344">Cache key transformation</font><a class="headerlink" href="cache.html#cache-key-transformation" title="Permalink to this headline">¶</a></h3>
+<p><font id="247">As described in the previous two sections, the cache key provided by a user is not used verbatim – it is combined with the cache prefix and key version to provide a final cache key. </font><font id="248">By default, the three parts are joined using colons to produce a final string:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">make_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key_prefix</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">':'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">key_prefix</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">),</span> <span class="n">key</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="249">If you want to combine the parts in different ways, or apply other processing to the final key (e.g., taking a hash digest of the key parts), you can provide a custom key function.</font></p>
+<p><font id="250">The <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-KEY_FUNCTION"><tt class="xref std std-setting docutils literal"><span class="pre">KEY_FUNCTION</span></tt></a> cache setting specifies a dotted-path to a function matching the prototype of <tt class="docutils literal"><span class="pre">make_key()</span></tt> above. </font><font id="251">If provided, this custom key function will be used instead of the default key combining function.</font></p>
+</div>
+<div class="section" id="s-cache-key-warnings">
+<span id="cache-key-warnings"></span><h3><font id="345">Cache key warnings</font><a class="headerlink" href="cache.html#cache-key-warnings" title="Permalink to this headline">¶</a></h3>
+<p><font id="252">Memcached, the most commonly-used production cache backend, does not allow cache keys longer than 250 characters or containing whitespace or control characters, and using such keys will cause an exception. </font><font id="253">To encourage cache-portable code and minimize unpleasant surprises, the other built-in cache backends issue a warning (<tt class="docutils literal"><span class="pre">django.core.cache.backends.base.CacheKeyWarning</span></tt>) if a key is used that would cause an error on memcached.</font></p>
+<p><font id="254">If you are using a production backend that can accept a wider range of keys (a custom backend, or one of the non-memcached built-in backends), and want to use this wider range without warnings, you can silence <tt class="docutils literal"><span class="pre">CacheKeyWarning</span></tt> with this code in the <tt class="docutils literal"><span class="pre">management</span></tt> module of one of your <a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">CacheKeyWarning</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s">"ignore"</span><span class="p">,</span> <span class="n">CacheKeyWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="255">If you want to instead provide custom key validation logic for one of the built-in backends, you can subclass it, override just the <tt class="docutils literal"><span class="pre">validate_key</span></tt> method, and follow the instructions for <a class="reference internal" href="cache.html#using-a-custom-cache-backend">using a custom cache backend</a>. </font><font id="256">For instance, to do this for the <tt class="docutils literal"><span class="pre">locmem</span></tt> backend, put this code in a module:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.cache.backends.locmem</span> <span class="kn">import</span> <span class="n">LocMemCache</span>
+
+<span class="k">class</span> <span class="nc">CustomLocMemCache</span><span class="p">(</span><span class="n">LocMemCache</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">validate_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">"""Custom validation, raising exceptions or warnings as needed."""</span>
+        <span class="c"># ...</span>
+</pre></div>
+</div>
+<p><font id="257">...and use the dotted Python path to this class in the <a class="reference internal" href="../ref/settings.html#std:setting-CACHES-BACKEND"><tt class="xref std std-setting docutils literal"><span class="pre">BACKEND</span></tt></a> portion of your <a class="reference internal" href="../ref/settings.html#std:setting-CACHES"><tt class="xref std std-setting docutils literal"><span class="pre">CACHES</span></tt></a> setting.</font></p>
+</div>
+</div>
+<div class="section" id="s-downstream-caches">
+<span id="downstream-caches"></span><h2><font id="328">Downstream caches</font><a class="headerlink" href="cache.html#downstream-caches" title="Permalink to this headline">¶</a></h2>
+<p><font id="258">So far, this document has focused on caching your <em>own</em> data. </font><font id="259">But another type of caching is relevant to Web development, too: caching performed by “downstream” caches. </font><font id="260">These are systems that cache pages for users even before the request reaches your Web site.</font></p>
+<p><font id="261">Here are a few examples of downstream caches:</font></p>
+<ul class="simple">
+<li><font id="366">Your ISP may cache certain pages, so if you requested a page from <a class="reference external" href="http://example.com/">http://example.com/</a>, your ISP would send you the page without having to access example.com directly. </font><font id="367">The maintainers of example.com have no knowledge of this caching; </font><font id="368">the ISP sits between example.com and your Web browser, handling all of the caching transparently.</font></li>
+<li><font id="369">Your Django Web site may sit behind a <em>proxy cache</em>, such as Squid Web Proxy Cache (<a class="reference external" href="http://www.squid-cache.org/">http://www.squid-cache.org/</a>), that caches pages for performance. </font><font id="370">In this case, each request first would be handled by the proxy, and it would be passed to your application only if needed.</font></li>
+<li><font id="371">Your Web browser caches pages, too. </font><font id="372">If a Web page sends out the appropriate headers, your browser will use the local cached copy for subsequent requests to that page, without even contacting the Web page again to see whether it has changed.</font></li>
+</ul>
+<p><font id="262">Downstream caching is a nice efficiency boost, but there’s a danger to it: Many Web pages’ contents differ based on authentication and a host of other variables, and cache systems that blindly save pages based purely on URLs could expose incorrect or sensitive data to subsequent visitors to those pages.</font></p>
+<p><font id="263">For example, say you operate a Web email system, and the contents of the “inbox” page obviously depend on which user is logged in. </font><font id="264">If an ISP blindly cached your site, then the first user who logged in through that ISP would have their user-specific inbox page cached for subsequent visitors to the site. </font><font id="265">That’s not cool.</font></p>
+<p><font id="266">Fortunately, HTTP provides a solution to this problem. </font><font id="267">A number of HTTP headers exist to instruct downstream caches to differ their cache contents depending on designated variables, and to tell caching mechanisms not to cache particular pages. </font><font id="268">We’ll look at some of these headers in the sections that follow.</font></p>
+</div>
+<div class="section" id="s-using-vary-headers">
+<span id="s-id10"></span><span id="using-vary-headers"></span><span id="id10"></span><h2><font id="329">Using Vary headers</font><a class="headerlink" href="cache.html#using-vary-headers" title="Permalink to this headline">¶</a></h2>
+<p><font id="269">The <tt class="docutils literal"><span class="pre">Vary</span></tt> header defines which request headers a cache mechanism should take into account when building its cache key. </font><font id="270">For example, if the contents of a Web page depend on a user’s language preference, the page is said to “vary on language.”</font></p>
+<p><font id="271">By default, Django’s cache system creates its cache keys using the requested fully-qualified URL – e.g., <tt class="docutils literal"><span class="pre">"http://www.example.com/stories/2005/?order_by=author"</span></tt>. This means every request to that URL will use the same cached version, regardless of user-agent differences such as cookies or language preferences. However, if this page produces different content based on some difference in request headers – such as a cookie, or a language, or a user-agent – you’ll need to use the <tt class="docutils literal"><span class="pre">Vary</span></tt> header to tell caching mechanisms that the page output depends on those things.</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="272">Cache keys use the request’s fully-qualified URL rather than just the path and query string.</font></p>
+</div>
+<p><font id="273">To do this in Django, use the convenient <a class="reference internal" href="http/decorators.html#django.views.decorators.vary.vary_on_headers" title="django.views.decorators.vary.vary_on_headers"><tt class="xref py py-func docutils literal"><span class="pre">django.views.decorators.vary.vary_on_headers()</span></tt></a> view decorator, like so:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>from django.views.decorators.vary import vary_on_headers
+
+@vary_on_headers('User-Agent')
+def my_view(request):
+    # ...
+</pre></div>
+</div>
+<p><font id="274">In this case, a caching mechanism (such as Django’s own cache middleware) will cache a separate version of the page for each unique user-agent.</font></p>
+<p><font id="275">The advantage to using the <tt class="docutils literal"><span class="pre">vary_on_headers</span></tt> decorator rather than manually setting the <tt class="docutils literal"><span class="pre">Vary</span></tt> header (using something like <tt class="docutils literal"><span class="pre">response['Vary']</span> <span class="pre">=</span> <span class="pre">'user-agent'</span></tt>) is that the decorator <em>adds</em> to the <tt class="docutils literal"><span class="pre">Vary</span></tt> header (which may already exist), rather than setting it from scratch and potentially overriding anything that was already in there.</font></p>
+<p><font id="276">You can pass multiple headers to <tt class="docutils literal"><span class="pre">vary_on_headers()</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>@vary_on_headers('User-Agent', 'Cookie')
+def my_view(request):
+    # ...
+</pre></div>
+</div>
+<p><font id="277">This tells downstream caches to vary on <em>both</em>, which means each combination of user-agent and cookie will get its own cache value. </font><font id="278">For example, a request with the user-agent <tt class="docutils literal"><span class="pre">Mozilla</span></tt> and the cookie value <tt class="docutils literal"><span class="pre">foo=bar</span></tt> will be considered different from a request with the user-agent <tt class="docutils literal"><span class="pre">Mozilla</span></tt> and the cookie value <tt class="docutils literal"><span class="pre">foo=ham</span></tt>.</font></p>
+<p><font id="279">Because varying on cookie is so common, there’s a <a class="reference internal" href="http/decorators.html#django.views.decorators.vary.vary_on_cookie" title="django.views.decorators.vary.vary_on_cookie"><tt class="xref py py-func docutils literal"><span class="pre">django.views.decorators.vary.vary_on_cookie()</span></tt></a> decorator. </font><font id="280">These two views are equivalent:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>@vary_on_cookie
+def my_view(request):
+    # ...
+
+@vary_on_headers('Cookie')
+def my_view(request):
+    # ...
+</pre></div>
+</div>
+<p><font id="281">The headers you pass to <tt class="docutils literal"><span class="pre">vary_on_headers</span></tt> are not case sensitive; <tt class="docutils literal"><span class="pre">"User-Agent"</span></tt> is the same thing as <tt class="docutils literal"><span class="pre">"user-agent"</span></tt>.</font></p>
+<p><font id="282">You can also use a helper function, <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.cache.patch_vary_headers" title="django.utils.cache.patch_vary_headers"><tt class="xref py py-func docutils literal"><span class="pre">django.utils.cache.patch_vary_headers()</span></tt></a>, directly. </font><font id="283">This function sets, or adds to, the <tt class="docutils literal"><span class="pre">Vary</span> <span class="pre">header</span></tt>. </font><font id="284">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.utils.cache</span> <span class="kn">import</span> <span class="n">patch_vary_headers</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">render_to_response</span><span class="p">(</span><span class="s">'template_name'</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">patch_vary_headers</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="p">[</span><span class="s">'Cookie'</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p><font id="285"><tt class="docutils literal"><span class="pre">patch_vary_headers</span></tt> takes an <a class="reference internal" href="../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a> instance as its first argument and a list/tuple of case-insensitive header names as its second argument.</font></p>
+<p><font id="286">For more on Vary headers, see the <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.44">official Vary spec</a>.</font></p>
+</div>
+<div class="section" id="s-controlling-cache-using-other-headers">
+<span id="controlling-cache-using-other-headers"></span><h2><font id="330">Controlling cache: Using other headers</font><a class="headerlink" href="cache.html#controlling-cache-using-other-headers" title="Permalink to this headline">¶</a></h2>
+<p><font id="287">Other problems with caching are the privacy of data and the question of where data should be stored in a cascade of caches.</font></p>
+<p><font id="288">A user usually faces two kinds of caches: their own browser cache (a private cache) and their provider’s cache (a public cache). </font><font id="289">A public cache is used by multiple users and controlled by someone else. </font><font id="290">This poses problems with sensitive data–you don’t want, say, your bank account number stored in a public cache. </font><font id="291">So Web applications need a way to tell caches which data is private and which is public.</font></p>
+<p><font id="292">The solution is to indicate a page’s cache should be “private.” </font><font id="293">To do this in Django, use the <tt class="docutils literal"><span class="pre">cache_control</span></tt> view decorator. </font><font id="294">Example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>from django.views.decorators.cache import cache_control
+
+@cache_control(private=True)
+def my_view(request):
+    # ...
+</pre></div>
+</div>
+<p><font id="295">This decorator takes care of sending out the appropriate HTTP header behind the scenes.</font></p>
+<p><font id="296">Note that the cache control settings “private” and “public” are mutually exclusive. </font><font id="297">The decorator ensures that the “public” directive is removed if “private” should be set (and vice versa). </font><font id="298">An example use of the two directives would be a blog site that offers both private and public entries. </font><font id="299">Public entries may be cached on any shared cache. </font><font id="300">The following code uses <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.cache.patch_cache_control" title="django.utils.cache.patch_cache_control"><tt class="xref py py-func docutils literal"><span class="pre">django.utils.cache.patch_cache_control()</span></tt></a>, the manual way to modify the cache control header (it is internally called by the <tt class="docutils literal"><span class="pre">cache_control</span></tt> decorator):</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.decorators.cache</span> <span class="kn">import</span> <span class="n">patch_cache_control</span>
+<span class="kn">from</span> <span class="nn">django.views.decorators.vary</span> <span class="kn">import</span> <span class="n">vary_on_cookie</span>
+
+<span class="nd">@vary_on_cookie</span>
+<span class="k">def</span> <span class="nf">list_blog_entries_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_anonymous</span><span class="p">():</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">render_only_public_entries</span><span class="p">()</span>
+        <span class="n">patch_cache_control</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">public</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">render_private_and_public_entries</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">patch_cache_control</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">private</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p><font id="301">There are a few other ways to control cache parameters. </font><font id="302">For example, HTTP allows applications to do the following:</font></p>
+<ul class="simple">
+<li><font id="373">Define the maximum time a page should be cached.</font></li>
+<li><font id="374">Specify whether a cache should always check for newer versions, only delivering the cached content when there are no changes. </font><font id="375">(Some caches might deliver cached content even if the server page changed, simply because the cache copy isn’t yet expired.)</font></li>
+</ul>
+<p><font id="303">In Django, use the <tt class="docutils literal"><span class="pre">cache_control</span></tt> view decorator to specify these cache parameters. </font><font id="304">In this example, <tt class="docutils literal"><span class="pre">cache_control</span></tt> tells caches to revalidate the cache on every access and to store cached versions for, at most, 3,600 seconds:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>from django.views.decorators.cache import cache_control
+
+@cache_control(must_revalidate=True, max_age=3600)
+def my_view(request):
+    # ...
+</pre></div>
+</div>
+<p><font id="305">Any valid <tt class="docutils literal"><span class="pre">Cache-Control</span></tt> HTTP directive is valid in <tt class="docutils literal"><span class="pre">cache_control()</span></tt>. </font><font id="306">Here’s a full list:</font></p>
+<ul class="simple">
+<li><font id="376"><tt class="docutils literal"><span class="pre">public=True</span></tt></font></li>
+<li><font id="377"><tt class="docutils literal"><span class="pre">private=True</span></tt></font></li>
+<li><font id="378"><tt class="docutils literal"><span class="pre">no_cache=True</span></tt></font></li>
+<li><font id="379"><tt class="docutils literal"><span class="pre">no_transform=True</span></tt></font></li>
+<li><font id="380"><tt class="docutils literal"><span class="pre">must_revalidate=True</span></tt></font></li>
+<li><font id="381"><tt class="docutils literal"><span class="pre">proxy_revalidate=True</span></tt></font></li>
+<li><font id="382"><tt class="docutils literal"><span class="pre">max_age=num_seconds</span></tt></font></li>
+<li><font id="383"><tt class="docutils literal"><span class="pre">s_maxage=num_seconds</span></tt></font></li>
+</ul>
+<p><font id="307">For explanation of Cache-Control HTTP directives, see the <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9">Cache-Control spec</a>.</font></p>
+<p><font id="308">(Note that the caching middleware already sets the cache header’s max-age with the value of the <a class="reference internal" href="../ref/settings.html#std:setting-CACHE_MIDDLEWARE_SECONDS"><tt class="xref std std-setting docutils literal"><span class="pre">CACHE_MIDDLEWARE_SECONDS</span></tt></a> setting. </font><font id="309">If you use a custom <tt class="docutils literal"><span class="pre">max_age</span></tt> in a <tt class="docutils literal"><span class="pre">cache_control</span></tt> decorator, the decorator will take precedence, and the header values will be merged correctly.)</font></p>
+<p><font id="310">If you want to use headers to disable caching altogether, <tt class="docutils literal"><span class="pre">django.views.decorators.cache.never_cache</span></tt> is a view decorator that adds headers to ensure the response won’t be cached by browsers or other caches. </font><font id="311">Example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>from django.views.decorators.cache import never_cache
+
+@never_cache
+def myview(request):
+    # ...
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-order-of-middleware-classes">
+<span id="order-of-middleware-classes"></span><h2><font id="331">Order of MIDDLEWARE_CLASSES</font><a class="headerlink" href="cache.html#order-of-middleware-classes" title="Permalink to this headline">¶</a></h2>
+<p><font id="312">If you use caching middleware, it’s important to put each half in the right place within the <a class="reference internal" href="../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a> setting. </font><font id="313">That’s because the cache middleware needs to know which headers by which to vary the cache storage. </font><font id="314">Middleware always adds something to the <tt class="docutils literal"><span class="pre">Vary</span></tt> response header when it can.</font></p>
+<p><font id="315"><tt class="docutils literal"><span class="pre">UpdateCacheMiddleware</span></tt> runs during the response phase, where middleware is run in reverse order, so an item at the top of the list runs <em>last</em> during the response phase. </font><font id="316">Thus, you need to make sure that <tt class="docutils literal"><span class="pre">UpdateCacheMiddleware</span></tt> appears <em>before</em> any other middleware that might add something to the <tt class="docutils literal"><span class="pre">Vary</span></tt> header. </font><font id="317">The following middleware modules do so:</font></p>
+<ul class="simple">
+<li><font id="384"><tt class="docutils literal"><span class="pre">SessionMiddleware</span></tt> adds <tt class="docutils literal"><span class="pre">Cookie</span></tt></font></li>
+<li><font id="385"><tt class="docutils literal"><span class="pre">GZipMiddleware</span></tt> adds <tt class="docutils literal"><span class="pre">Accept-Encoding</span></tt></font></li>
+<li><font id="386"><tt class="docutils literal"><span class="pre">LocaleMiddleware</span></tt> adds <tt class="docutils literal"><span class="pre">Accept-Language</span></tt></font></li>
+</ul>
+<p><font id="318"><tt class="docutils literal"><span class="pre">FetchFromCacheMiddleware</span></tt>, on the other hand, runs during the request phase, where middleware is applied first-to-last, so an item at the top of the list runs <em>first</em> during the request phase. </font><font id="319">The <tt class="docutils literal"><span class="pre">FetchFromCacheMiddleware</span></tt> also needs to run after other middleware updates the <tt class="docutils literal"><span class="pre">Vary</span></tt> header, so <tt class="docutils literal"><span class="pre">FetchFromCacheMiddleware</span></tt> must be <em>after</em> any item that does so.</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="346">内容结构</font></h3>
+<ul>
+<li><a class="reference internal" href="cache.html#">Django’s cache framework</a><ul>
+<li><a class="reference internal" href="cache.html#setting-up-the-cache"><font id="387">开始使用缓存</font></a><ul>
+<li><a class="reference internal" href="cache.html#memcached"><font id="388">Memcached</font></a></li>
+<li><a class="reference internal" href="cache.html#database-caching"><font id="389">数据库缓存</font></a><ul>
+<li><a class="reference internal" href="cache.html#creating-the-cache-table"><font id="390">创建缓存表</font></a></li>
+<li><a class="reference internal" href="cache.html#multiple-databases"><font id="391">多数据库</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="cache.html#filesystem-caching"><font id="392">文件系统缓存</font></a></li>
+<li><a class="reference internal" href="cache.html#local-memory-caching"><font id="393">本地内存缓存</font></a></li>
+<li><a class="reference internal" href="cache.html#dummy-caching-for-development"><font id="394">Dummy 缓存 (开发中使用)</font></a></li>
+<li><a class="reference internal" href="cache.html#using-a-custom-cache-backend"><font id="395">
+使用自定义的缓存后端
+</font></a></li>
+<li><a class="reference internal" href="cache.html#cache-arguments"><font id="396">缓存参数</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="cache.html#the-per-site-cache"><font id="397">site缓存</font></a></li>
+<li><a class="reference internal" href="cache.html#the-per-view-cache"><font id="398">view缓存</font></a><ul>
+<li><a class="reference internal" href="cache.html#specifying-per-view-cache-in-the-urlconf"><font id="399">
+在URLconf中指定特定的view缓存</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="cache.html#template-fragment-caching"><font id="400">模板系统缓存</font></a></li>
+<li><a class="reference internal" href="cache.html#the-low-level-cache-api"><font id="401">底层的缓存接口</font></a><ul>
+<li><a class="reference internal" href="cache.html#accessing-the-cache"><font id="402">连接缓存</font></a></li>
+<li><a class="reference internal" href="cache.html#basic-usage"><font id="403">基本使用</font></a></li>
+<li><a class="reference internal" href="cache.html#cache-key-prefixing"><font id="404">
+缓存key 前缀</font></a></li>
+<li><a class="reference internal" href="cache.html#cache-versioning"><font id="405">缓存版本</font></a></li>
+<li><a class="reference internal" href="cache.html#cache-key-transformation"><font id="406">缓存key 转化</font></a></li>
+<li><a class="reference internal" href="cache.html#cache-key-warnings"><font id="407">缓存key警告</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="cache.html#downstream-caches"><font id="408">下载流缓存</font></a></li>
+<li><a class="reference internal" href="cache.html#using-vary-headers"><font id="409">使用不同的请求头</font></a></li>
+<li><a class="reference internal" href="cache.html#controlling-cache-using-other-headers"><font id="410">
+控制缓存：使用其他请求头</font></a></li>
+<li><a class="reference internal" href="cache.html#order-of-middleware-classes"><font id="411">MIDDLEWARE_CLASSES 的顺序</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="347">浏览</font></h3>
+<ul>
+<li><font id="412">前一章: <a href="auth/customizing.html">自定义Django权限</a></font></li>
+<li><font id="413">下一章: <a href="conditional-view-processing.html">不同条件view处理</a></font></li>
+</ul>
+<h3><font id="348">你的位置:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="414">Django 1.8.2 文档</font></a>
+<ul><li><a href="index.html"><font id="415">使用Django</font></a>
+<ul><li><font id="416">Django 的缓存框架</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="349">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/cache.txt" rel="nofollow"><font id="417">查看源码</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="350">快速查询</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="320">
+输入查询的条目，或者模块，类或者方法名。</font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="351">最后更新:</font></h3>
+<p class="topless"><font id="321">2015年15月13日</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="auth/customizing.html" title="Customizing authentication in Django">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="conditional-view-processing.html" title="Conditional View Processing">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/cache.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

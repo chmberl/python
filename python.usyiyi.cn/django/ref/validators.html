@@ -1,0 +1,487 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Validators — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="API Reference"/>
+<link href="views.html" rel="next" title="Built-in Views"/>
+<link href="http://python.usyiyi.cn/django/ref/utils.html" rel="prev" title="Django Utils"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="58">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="http://python.usyiyi.cn/django/ref/utils.html" title="Django Utils">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="views.html" title="Built-in Views">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-validators">
+<div class="section" id="s-module-django.core.validators">
+<span id="s-validators"></span><span id="module-django.core.validators"></span><span id="validators"></span><h1><font id="59">验证器</font><a class="headerlink" href="validators.html#module-django.core.validators" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="s-writing-validators">
+<span id="writing-validators"></span><h2><font id="60">编写验证器</font><a class="headerlink" href="validators.html#writing-validators" title="Permalink to this headline">¶</a></h2>
+<p><font id="1">验证器是一个可调用的对象，它接受一个值，并在不符合一些规则时抛出<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>异常。</font><font id="2">验证器有助于在不同类型的字段之间重复使用验证逻辑。</font></p>
+<p><font id="3">例如，这个验证器只允许偶数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
+
+<span class="k">def</span> <span class="nf">validate_even</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s">'</span><span class="si">%s</span><span class="s"> is not an even number'</span> <span class="o">%</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="4">你可以通过字段的<a class="reference internal" href="models/fields.html#django.db.models.Field.validators" title="django.db.models.Field.validators"><tt class="xref py py-attr docutils literal"><span class="pre">validators</span></tt></a>参数将它添加到模型字段中：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">even_field</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">validate_even</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="5">由于值在验证器运行之前会转化为Python，你可以在表单上使用相同的验证器：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">even_field</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">validate_even</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="6">你也可以使用带有&nbsp;<tt class="docutils literal"><span class="pre">__call__()</span></tt>方法的类，来实现更复杂或可配置的验证器。</font><font id="7">例如，<a class="reference internal" href="validators.html#django.core.validators.RegexValidator" title="django.core.validators.RegexValidator"><tt class="xref py py-class docutils literal"><span class="pre">RegexValidator</span></tt></a>就用了这种技巧。</font><font id="8">如果一个基于类的验证器用于<a class="reference internal" href="models/fields.html#django.db.models.Field.validators" title="django.db.models.Field.validators"><tt class="xref py py-attr docutils literal"><span class="pre">validators</span></tt></a>模型字段的选项，你应该通过添加<a class="reference internal" href="../topics/migrations.html#custom-deconstruct-method"><em>deconstruct()</em></a> 和<tt class="docutils literal"><span class="pre">__eq__()</span></tt> 方法确保它可以<a class="reference internal" href="../topics/migrations.html#migration-serializing"><em>被迁移框架序列化</em></a>。</font></p>
+</div>
+<div class="section" id="s-how-validators-are-run">
+<span id="how-validators-are-run"></span><h2><font id="61">验证器如何运行</font><a class="headerlink" href="validators.html#how-validators-are-run" title="Permalink to this headline">¶</a></h2>
+<p><font id="9">关于验证器如何在表单中运行，详见<a class="reference internal" href="forms/validation.html"><em>表单验证</em></a> 。关于它们如何在模型中运行，详见&nbsp;<a class="reference internal" href="models/instances.html#validating-objects"><em>验证对象</em></a>。</font><font id="10">要注意验证器不会在你保存模型时自动运行，但是如果你使用<a class="reference internal" href="../topics/forms/modelforms.html#django.forms.ModelForm" title="django.forms.ModelForm"><tt class="xref py py-class docutils literal"><span class="pre">ModelForm</span></tt></a>，它会在任何你表单包含的字段上运行你的验证器。</font><font id="11">关于模型验证器如何和表单交互，详见<a class="reference internal" href="../topics/forms/modelforms.html"><em>ModelForm 文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-built-in-validators">
+<span id="built-in-validators"></span><h2><font id="62">内建的验证器</font><a class="headerlink" href="validators.html#built-in-validators" title="Permalink to this headline">¶</a></h2>
+<p><font id="12"><a class="reference internal" href="validators.html#module-django.core.validators" title="django.core.validators: Validation utilities and base classes"><tt class="xref py py-mod docutils literal"><span class="pre">django.core.validators</span></tt></a>模块包含了一系列的可调用验证器，用于模型和表单字段。</font><font id="13">它们在内部使用，但是也可以用在你自己的字段上。</font><font id="14">它们可以用在<tt class="docutils literal"><span class="pre">field.clean()</span></tt> 方法之外，或者代替它。
+</font></p>
+<div class="section" id="s-regexvalidator">
+<span id="regexvalidator"></span><h3><font id="63">RegexValidator</font><a class="headerlink" href="validators.html#regexvalidator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.validators.RegexValidator">
+<em class="property">class </em><tt class="descname">RegexValidator</tt>(<span class="optional">[</span><em>regex=None</em>, <em>message=None</em>, <em>code=None</em>, <em>inverse_match=None</em>, <em>flags=0</em><span class="optional">]</span>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#RegexValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.RegexValidator" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"></col>
+<col class="field-body"></col>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name"><font id="119">Parameters:</font></th><td class="field-body"><ul class="first last simple">
+<li><font id="82"><strong>regex</strong> – 如果不是<tt class="docutils literal"><span class="pre">None</span></tt>则覆写 <a class="reference internal" href="validators.html#django.core.validators.RegexValidator.regex" title="django.core.validators.RegexValidator.regex"><tt class="xref py py-attr docutils literal"><span class="pre">regex</span></tt></a>。</font><font id="83">可以是一个正则表达式字符串，或者预编译的正则表达式对象。</font></li>
+<li><font id="84"><strong>message</strong> – 如果不是<tt class="docutils literal"><span class="pre">None</span></tt>，则覆写 <a class="reference internal" href="validators.html#django.core.validators.RegexValidator.message" title="django.core.validators.RegexValidator.message"><tt class="xref py py-attr docutils literal"><span class="pre">message</span></tt></a>。</font></li>
+<li><font id="85"><strong>code</strong> – 如果不是<tt class="docutils literal"><span class="pre">None</span></tt>，则覆写<a class="reference internal" href="validators.html#django.core.validators.RegexValidator.code" title="django.core.validators.RegexValidator.code"><tt class="xref py py-attr docutils literal"><span class="pre">code</span></tt></a>。</font></li>
+<li><font id="86"><strong>inverse_match</strong> – 如果不是<tt class="docutils literal"><span class="pre">None</span></tt>，则覆写<a class="reference internal" href="validators.html#django.core.validators.RegexValidator.inverse_match" title="django.core.validators.RegexValidator.inverse_match"><tt class="xref py py-attr docutils literal"><span class="pre">inverse_match</span></tt></a>。</font></li>
+<li><font id="87"><strong>flags</strong> – 如果不是<tt class="docutils literal"><span class="pre">None</span></tt>，则覆写 <a class="reference internal" href="validators.html#django.core.validators.RegexValidator.flags" title="django.core.validators.RegexValidator.flags"><tt class="xref py py-attr docutils literal"><span class="pre">flags</span></tt></a>。</font><font id="88">这种情况下，<a class="reference internal" href="validators.html#django.core.validators.RegexValidator.regex" title="django.core.validators.RegexValidator.regex"><tt class="xref py py-attr docutils literal"><span class="pre">regex</span></tt></a> ，必须是正则表达式字符串，否则抛出<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">TypeError</span></tt></a> 异常。</font></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="django.core.validators.RegexValidator.regex">
+<tt class="descname">regex</tt><a class="headerlink" href="validators.html#django.core.validators.RegexValidator.regex" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="15">用于搜索提供的<tt class="docutils literal"><span class="pre">value</span></tt>的正则表达式，或者是预编译的正则表达式对象。</font><font id="16">通常在找不到匹配时抛出带有 <a class="reference internal" href="validators.html#django.core.validators.RegexValidator.message" title="django.core.validators.RegexValidator.message"><tt class="xref py py-attr docutils literal"><span class="pre">message</span></tt></a> 和<a class="reference internal" href="validators.html#django.core.validators.RegexValidator.code" title="django.core.validators.RegexValidator.code"><tt class="xref py py-attr docutils literal"><span class="pre">code</span></tt></a>的&nbsp;<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>异常。</font><font id="17">这一标准行为可以通过设置<a class="reference internal" href="validators.html#django.core.validators.RegexValidator.inverse_match" title="django.core.validators.RegexValidator.inverse_match"><tt class="xref py py-attr docutils literal"><span class="pre">inverse_match</span></tt></a> 为<tt class="docutils literal"><span class="pre">True</span></tt>来反转，这种情况下，如果<strong>找到</strong>匹配则抛出&nbsp;<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>异常。</font><font id="18">通常它会匹配任何字符串（包括空字符串）。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.validators.RegexValidator.message">
+<tt class="descname">message</tt><a class="headerlink" href="validators.html#django.core.validators.RegexValidator.message" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="19">验证失败时<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>所使用的错误信息。</font><font id="115">默认为<tt class="docutils literal"><span class="pre">"Enter</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">value"</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.validators.RegexValidator.code">
+<tt class="descname">code</tt><a class="headerlink" href="validators.html#django.core.validators.RegexValidator.code" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="20">验证失败时<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>所使用的错误代码。</font><font id="116">默认为<tt class="docutils literal"><span class="pre">"invalid"</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.validators.RegexValidator.inverse_match">
+<tt class="descname">inverse_match</tt><a class="headerlink" href="validators.html#django.core.validators.RegexValidator.inverse_match" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="21"><a class="reference internal" href="validators.html#django.core.validators.RegexValidator.regex" title="django.core.validators.RegexValidator.regex"><tt class="xref py py-attr docutils literal"><span class="pre">regex</span></tt></a>的匹配模式。</font><font id="22">默认为<tt class="docutils literal"><span class="pre">False</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.validators.RegexValidator.flags">
+<tt class="descname">flags</tt><a class="headerlink" href="validators.html#django.core.validators.RegexValidator.flags" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="23">编译正则表达式字符串<a class="reference internal" href="validators.html#django.core.validators.RegexValidator.regex" title="django.core.validators.RegexValidator.regex"><tt class="xref py py-attr docutils literal"><span class="pre">regex</span></tt></a>时所用的标识。</font><font id="24">如果<a class="reference internal" href="validators.html#django.core.validators.RegexValidator.regex" title="django.core.validators.RegexValidator.regex"><tt class="xref py py-attr docutils literal"><span class="pre">regex</span></tt></a>是预编译的正则表达式，并且覆写了<a class="reference internal" href="validators.html#django.core.validators.RegexValidator.flags" title="django.core.validators.RegexValidator.flags"><tt class="xref py py-attr docutils literal"><span class="pre">flags</span></tt></a>，会产生<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">TypeError</span></tt></a>异常。</font><font id="25">默认为 <cite>0</cite>。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-emailvalidator">
+<span id="emailvalidator"></span><h3><font id="64">EmailValidator</font><a class="headerlink" href="validators.html#emailvalidator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.validators.EmailValidator">
+<em class="property">class </em><tt class="descname">EmailValidator</tt>(<span class="optional">[</span><em>message=None</em>, <em>code=None</em>, <em>whitelist=None</em><span class="optional">]</span>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#EmailValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.EmailValidator" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"></col>
+<col class="field-body"></col>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name"><font id="120">Parameters:</font></th><td class="field-body"><ul class="first last simple">
+<li><font id="89"><strong>message</strong> – 如果不是 <tt class="docutils literal"><span class="pre">None</span></tt>，则覆写<a class="reference internal" href="validators.html#django.core.validators.EmailValidator.message" title="django.core.validators.EmailValidator.message"><tt class="xref py py-attr docutils literal"><span class="pre">message</span></tt></a>。</font></li>
+<li><font id="90"><strong>code</strong> – 如果不是 <tt class="docutils literal"><span class="pre">None</span></tt>，则覆写<a class="reference internal" href="validators.html#django.core.validators.EmailValidator.code" title="django.core.validators.EmailValidator.code"><tt class="xref py py-attr docutils literal"><span class="pre">code</span></tt></a>。</font></li>
+<li><font id="91"><strong>whitelist</strong> – 如果不是<tt class="docutils literal"><span class="pre">None</span></tt>，则覆写 <a class="reference internal" href="validators.html#django.core.validators.EmailValidator.whitelist" title="django.core.validators.EmailValidator.whitelist"><tt class="xref py py-attr docutils literal"><span class="pre">whitelist</span></tt></a>。</font></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="django.core.validators.EmailValidator.message">
+<tt class="descname">message</tt><a class="headerlink" href="validators.html#django.core.validators.EmailValidator.message" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="26">验证失败时<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>所使用的错误信息。</font><font id="117">默认为<tt class="docutils literal"><span class="pre">"Enter</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">email</span> <span class="pre">address"</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.validators.EmailValidator.code">
+<tt class="descname">code</tt><a class="headerlink" href="validators.html#django.core.validators.EmailValidator.code" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="27">验证失败时<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>所使用的错误代码。</font><font id="118">默认为<tt class="docutils literal"><span class="pre">"invalid"</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.validators.EmailValidator.whitelist">
+<tt class="descname">whitelist</tt><a class="headerlink" href="validators.html#django.core.validators.EmailValidator.whitelist" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="28">所允许的邮件域名的白名单。</font><font id="29">通常，正则表达式(<tt class="docutils literal"><span class="pre">domain_regex</span></tt> 属性)&nbsp;用于验证&nbsp;@ 符号后面的任何东西。</font><font id="30">但是，如果这个字符串在白名单里，就可以通过验证。</font><font id="31">如果没有提供，默认的白名单是 <tt class="docutils literal"><span class="pre">['localhost']</span></tt>。</font><font id="32">其它不包含点符号的域名不能通过验证，所以你需要按需将它们添加进白名单。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-urlvalidator">
+<span id="urlvalidator"></span><h3><font id="65">URLValidator</font><a class="headerlink" href="validators.html#urlvalidator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.validators.URLValidator">
+<em class="property">class </em><tt class="descname">URLValidator</tt>(<span class="optional">[</span><em>schemes=None</em>, <em>regex=None</em>, <em>message=None</em>, <em>code=None</em><span class="optional">]</span>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#URLValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.URLValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="33"><a class="reference internal" href="validators.html#django.core.validators.RegexValidator" title="django.core.validators.RegexValidator"><tt class="xref py py-class docutils literal"><span class="pre">RegexValidator</span></tt></a>确保一个值看起来像是URL，并且如果不是的话产生<tt class="docutils literal"><span class="pre">'invalid'</span></tt>错误代码。</font></p>
+<p><font id="34">回送地址以及保留的IP空间被视为有效。</font><font id="35">同时也支持字面的IPv6地址 (<span class="target" id="index-0"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc2732.html"><strong>RFC 2732</strong></a>) 以及unicode域名。</font></p>
+<p><font id="36">除了父类<a class="reference internal" href="validators.html#django.core.validators.RegexValidator" title="django.core.validators.RegexValidator"><tt class="xref py py-class docutils literal"><span class="pre">RegexValidator</span></tt></a>的可选参数之外，<tt class="docutils literal"><span class="pre">URLValidator</span></tt>接受一个额外的可选属性：</font></p>
+<dl class="attribute">
+<dt id="django.core.validators.URLValidator.schemes">
+<tt class="descname">schemes</tt><a class="headerlink" href="validators.html#django.core.validators.URLValidator.schemes" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="37">需要验证的URL/URI模式列表。</font><font id="38">如果没有提供，默认为 <tt class="docutils literal"><span class="pre">['http',</span> <span class="pre">'https',</span> <span class="pre">'ftp',</span> <span class="pre">'ftps']</span></tt>。</font><font id="39">IANA 网站提供了 <a class="reference external" href="https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml">有效的URI模式</a>的完整列表作为参考。</font></p>
+</dd></dl>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="40">添加了可选的<tt class="docutils literal"><span class="pre">schemes</span></tt> 属性。</font></p>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="41">添加了对IPv6 地址, unicode 域名, 以及含有验证信息的URL的支持。</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-validate-email">
+<span id="validate-email"></span><h3><font id="66">validate_email</font><a class="headerlink" href="validators.html#validate-email" title="Permalink to this headline">¶</a></h3>
+<dl class="data">
+<dt id="django.core.validators.validate_email">
+<tt class="descname">validate_email</tt><a class="headerlink" href="validators.html#django.core.validators.validate_email" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="42">一个不带有任何自定义的<a class="reference internal" href="validators.html#django.core.validators.EmailValidator" title="django.core.validators.EmailValidator"><tt class="xref py py-class docutils literal"><span class="pre">EmailValidator</span></tt></a>实例。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-validate-slug">
+<span id="validate-slug"></span><h3><font id="67">validate_slug</font><a class="headerlink" href="validators.html#validate-slug" title="Permalink to this headline">¶</a></h3>
+<dl class="data">
+<dt id="django.core.validators.validate_slug">
+<tt class="descname">validate_slug</tt><a class="headerlink" href="validators.html#django.core.validators.validate_slug" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="43">一个&nbsp;<a class="reference internal" href="validators.html#django.core.validators.RegexValidator" title="django.core.validators.RegexValidator"><tt class="xref py py-class docutils literal"><span class="pre">RegexValidator</span></tt></a>实例，确保值只含有字母、数字、下划线和连字符。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-validate-ipv4-address">
+<span id="validate-ipv4-address"></span><h3><font id="68">validate_ipv4_address</font><a class="headerlink" href="validators.html#validate-ipv4-address" title="Permalink to this headline">¶</a></h3>
+<dl class="data">
+<dt id="django.core.validators.validate_ipv4_address">
+<tt class="descname">validate_ipv4_address</tt><a class="headerlink" href="validators.html#django.core.validators.validate_ipv4_address" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="44">一个<a class="reference internal" href="validators.html#django.core.validators.RegexValidator" title="django.core.validators.RegexValidator"><tt class="xref py py-class docutils literal"><span class="pre">RegexValidator</span></tt></a>的实例，确保值是IPv4地址。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-validate-ipv6-address">
+<span id="validate-ipv6-address"></span><h3><font id="69">validate_ipv6_address</font><a class="headerlink" href="validators.html#validate-ipv6-address" title="Permalink to this headline">¶</a></h3>
+<dl class="data">
+<dt id="django.core.validators.validate_ipv6_address">
+<tt class="descname">validate_ipv6_address</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#validate_ipv6_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.validate_ipv6_address" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="45">使用<tt class="docutils literal"><span class="pre">django.utils.ipv6</span></tt> 来检查是否是 IPv6 地址。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-validate-ipv46-address">
+<span id="validate-ipv46-address"></span><h3><font id="70">validate_ipv46_address</font><a class="headerlink" href="validators.html#validate-ipv46-address" title="Permalink to this headline">¶</a></h3>
+<dl class="data">
+<dt id="django.core.validators.validate_ipv46_address">
+<tt class="descname">validate_ipv46_address</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#validate_ipv46_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.validate_ipv46_address" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="46">使用<tt class="docutils literal"><span class="pre">validate_ipv4_address</span></tt> 和 <tt class="docutils literal"><span class="pre">validate_ipv6_address</span></tt> 值是有效的 IPv4 或 IPv6 地址。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-validate-comma-separated-integer-list">
+<span id="validate-comma-separated-integer-list"></span><h3><font id="71">validate_comma_separated_integer_list</font><a class="headerlink" href="validators.html#validate-comma-separated-integer-list" title="Permalink to this headline">¶</a></h3>
+<dl class="data">
+<dt id="django.core.validators.validate_comma_separated_integer_list">
+<tt class="descname">validate_comma_separated_integer_list</tt><a class="headerlink" href="validators.html#django.core.validators.validate_comma_separated_integer_list" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="47">一个<a class="reference internal" href="validators.html#django.core.validators.RegexValidator" title="django.core.validators.RegexValidator"><tt class="xref py py-class docutils literal"><span class="pre">RegexValidator</span></tt></a>的实例，确保值是整数的逗号分隔列表。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-maxvaluevalidator">
+<span id="maxvaluevalidator"></span><h3><font id="72">MaxValueValidator</font><a class="headerlink" href="validators.html#maxvaluevalidator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.validators.MaxValueValidator">
+<em class="property">class </em><tt class="descname">MaxValueValidator</tt>(<em>max_value</em>, <em>message=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#MaxValueValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.MaxValueValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="48">如果<tt class="docutils literal"><span class="pre">value</span></tt> 大于&nbsp;<tt class="docutils literal"><span class="pre">max_value</span></tt>，抛出带有<tt class="docutils literal"><span class="pre">'max_value'</span></tt>代码的<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a> 异常。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="49">添加了<tt class="docutils literal"><span class="pre">message</span></tt>参数。</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-minvaluevalidator">
+<span id="minvaluevalidator"></span><h3><font id="73">MinValueValidator</font><a class="headerlink" href="validators.html#minvaluevalidator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.validators.MinValueValidator">
+<em class="property">class </em><tt class="descname">MinValueValidator</tt>(<em>min_value</em>, <em>message=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#MinValueValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.MinValueValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="50">如果<tt class="docutils literal"><span class="pre">value</span></tt>小于<tt class="docutils literal"><span class="pre">min_value</span></tt>，抛出带有<tt class="docutils literal"><span class="pre">'min_value'</span></tt>代码的<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>异常。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="51">添加了<tt class="docutils literal"><span class="pre">message</span></tt> 参数。</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-maxlengthvalidator">
+<span id="maxlengthvalidator"></span><h3><font id="74">MaxLengthValidator</font><a class="headerlink" href="validators.html#maxlengthvalidator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.validators.MaxLengthValidator">
+<em class="property">class </em><tt class="descname">MaxLengthValidator</tt>(<em>max_length</em>, <em>message=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#MaxLengthValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.MaxLengthValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="52">如果<tt class="docutils literal"><span class="pre">value</span></tt>的长度大于<tt class="docutils literal"><span class="pre">max_length</span></tt>，抛出带有<tt class="docutils literal"><span class="pre">'max_length'</span></tt>代码的<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a> 异常。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="53">添加了<tt class="docutils literal"><span class="pre">message</span></tt>参数。</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-minlengthvalidator">
+<span id="minlengthvalidator"></span><h3><font id="75">MinLengthValidator</font><a class="headerlink" href="validators.html#minlengthvalidator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.core.validators.MinLengthValidator">
+<em class="property">class </em><tt class="descname">MinLengthValidator</tt>(<em>min_length</em>, <em>message=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/validators.html#MinLengthValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="validators.html#django.core.validators.MinLengthValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="54">如果<tt class="docutils literal"><span class="pre">value</span></tt>的长度小于<tt class="docutils literal"><span class="pre">min_length</span></tt>，抛出带有<tt class="docutils literal"><span class="pre">'min_length'</span></tt>代码的<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>异常。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="55">添加了<tt class="docutils literal"><span class="pre">message</span></tt> 参数。</font></p>
+</div>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="76">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="validators.html#"><font id="92">Validators</font></a><ul>
+<li><a class="reference internal" href="validators.html#writing-validators"><font id="93">Writing validators</font></a></li>
+<li><a class="reference internal" href="validators.html#how-validators-are-run"><font id="94">How validators are run</font></a></li>
+<li><a class="reference internal" href="validators.html#built-in-validators"><font id="95">Built-in validators</font></a><ul>
+<li><a class="reference internal" href="validators.html#regexvalidator"><font id="96">RegexValidator</font></a></li>
+<li><a class="reference internal" href="validators.html#emailvalidator"><font id="97">EmailValidator</font></a></li>
+<li><a class="reference internal" href="validators.html#urlvalidator"><font id="98">URLValidator</font></a></li>
+<li><a class="reference internal" href="validators.html#validate-email"><font id="99">validate_email</font></a></li>
+<li><a class="reference internal" href="validators.html#validate-slug"><font id="100">validate_slug</font></a></li>
+<li><a class="reference internal" href="validators.html#validate-ipv4-address"><font id="101">validate_ipv4_address</font></a></li>
+<li><a class="reference internal" href="validators.html#validate-ipv6-address"><font id="102">validate_ipv6_address</font></a></li>
+<li><a class="reference internal" href="validators.html#validate-ipv46-address"><font id="103">validate_ipv46_address</font></a></li>
+<li><a class="reference internal" href="validators.html#validate-comma-separated-integer-list"><font id="104">validate_comma_separated_integer_list</font></a></li>
+<li><a class="reference internal" href="validators.html#maxvaluevalidator"><font id="105">MaxValueValidator</font></a></li>
+<li><a class="reference internal" href="validators.html#minvaluevalidator"><font id="106">MinValueValidator</font></a></li>
+<li><a class="reference internal" href="validators.html#maxlengthvalidator"><font id="107">MaxLengthValidator</font></a></li>
+<li><a class="reference internal" href="validators.html#minlengthvalidator"><font id="108">MinLengthValidator</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="77">Browse</font></h3>
+<ul>
+<li><font id="109">Prev: <a href="http://python.usyiyi.cn/django/ref/utils.html">Django Utils</a></font></li>
+<li><font id="110">Next: <a href="views.html">Built-in Views</a></font></li>
+</ul>
+<h3><font id="78">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="111">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="index.html"><font id="112">API Reference</font></a>
+<ul><li><font id="113">Validators</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="79">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/validators.txt" rel="nofollow"><font id="114">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="80">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="56"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="81">Last update:</font></h3>
+<p class="topless"><font id="57">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="http://python.usyiyi.cn/django/ref/utils.html" title="Django Utils">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="views.html" title="Built-in Views">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/validators.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

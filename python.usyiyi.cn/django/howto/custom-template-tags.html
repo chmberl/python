@@ -1,0 +1,985 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Custom template tags and filters — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="http://python.usyiyi.cn/django/howto/index.html" rel="up" title="“How-to” guides"/>
+<link href="custom-file-storage.html" rel="next" title="Writing a custom storage system"/>
+<link href="custom-lookups.html" rel="prev" title="Custom Lookups"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="285">Django 1.8.2.dev20150513143415 documentation</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="custom-lookups.html" title="Custom Lookups">previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="custom-file-storage.html" title="Writing a custom storage system">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="howto-custom-template-tags">
+<div class="section" id="s-custom-template-tags-and-filters">
+<span id="custom-template-tags-and-filters"></span><h1><font id="286">自定义模板标签和过滤器</font><a class="headerlink" href="custom-template-tags.html#custom-template-tags-and-filters" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">为了解决程序中的展示逻辑需求，Django的模板语言提供了各式各样的<a class="reference internal" href="../ref/templates/builtins.html"><em>内建标签以及过滤器</em></a>。</font><font id="2">然而，你或许会发现模板内建的这些工具集合不一定能全部满足你的功能需要。</font><font id="3">在Python中，你可以通过自定义标签或过滤器的方式扩展模板引擎的功能，并使用<a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-load"><tt class="xref std std-ttag docutils literal"><span class="pre">}}</span> <span class="pre">load</span> <span class="pre">}}</span></tt></a>标签在你的模板中进行调用。</font></p>
+<div class="section" id="s-code-layout">
+<span id="code-layout"></span><h2><font id="287">Code layout</font><a class="headerlink" href="custom-template-tags.html#code-layout" title="Permalink to this headline">¶</a></h2>
+<p><font id="4">Custom template tags and filters must live inside a Django app. </font><font id="5">If they relate to an existing app it makes sense to bundle them there; </font><font id="6">otherwise, you should create a new app to hold them.</font></p>
+<p><font id="7">The app should contain a <tt class="docutils literal"><span class="pre">templatetags</span></tt> directory, at the same level as <tt class="docutils literal"><span class="pre">models.py</span></tt>, <tt class="docutils literal"><span class="pre">views.py</span></tt>, etc. </font><font id="8">If this doesn’t already exist, create it - don’t forget the <tt class="docutils literal"><span class="pre">__init__.py</span></tt> file to ensure the directory is treated as a Python package. </font><font id="9">After adding this module, you will need to restart your server before you can use the tags or filters in templates.</font></p>
+<p><font id="10">Your custom tags and filters will live in a module inside the <tt class="docutils literal"><span class="pre">templatetags</span></tt> directory. </font><font id="11">The name of the module file is the name you’ll use to load the tags later, so be careful to pick a name that won’t clash with custom tags and filters in another app.</font></p>
+<p><font id="12">For example, if your custom tags/filters are in a file called <tt class="docutils literal"><span class="pre">poll_extras.py</span></tt>, your app layout might look like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>polls/
+    __init__.py
+    models.py
+    templatetags/
+        __init__.py
+        poll_extras.py
+    views.py
+</pre></div>
+</div>
+<p><font id="13">And in your template you would use the following:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">load</span> <span class="nv">poll_extras</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="14">The app that contains the custom tags must be in <a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> in order for the <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-load"><tt class="xref std std-ttag docutils literal"><span class="pre">}}</span> <span class="pre">load</span> <span class="pre">}}</span></tt></a> tag to work. </font><font id="15">This is a security feature: It allows you to host Python code for many template libraries on a single host machine without enabling access to all of them for every Django installation.</font></p>
+<p><font id="16">There’s no limit on how many modules you put in the <tt class="docutils literal"><span class="pre">templatetags</span></tt> package. </font><font id="17">Just keep in mind that a <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-load"><tt class="xref std std-ttag docutils literal"><span class="pre">}}</span> <span class="pre">load</span> <span class="pre">}}</span></tt></a> statement will load tags/filters for the given Python module name, not the name of the app.</font></p>
+<p><font id="18">To be a valid tag library, the module must contain a module-level variable named <tt class="docutils literal"><span class="pre">register</span></tt> that is a <tt class="docutils literal"><span class="pre">template.</span></tt></font><font id="19">Library instance, in which all the tags and filters are registered. </font><font id="20">So, near the top of your module, put the following:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition-behind-the-scenes admonition">
+<p class="first admonition-title"><font id="21">Behind the scenes</font></p>
+<p><font id="22">For a ton of examples, read the source code for Django’s default filters and tags. </font><font id="23">They’re in <tt class="docutils literal"><span class="pre">django/template/defaultfilters.py</span></tt> and <tt class="docutils literal"><span class="pre">django/template/defaulttags.py</span></tt>, respectively.</font></p>
+<p class="last"><font id="24">For more information on the <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-load"><tt class="xref std std-ttag docutils literal"><span class="pre">load</span></tt></a> tag, read its documentation.</font></p>
+</div>
+</div>
+<div class="section" id="s-writing-custom-template-filters">
+<span id="s-howto-writing-custom-template-filters"></span><span id="writing-custom-template-filters"></span><span id="howto-writing-custom-template-filters"></span><h2><font id="288">Writing custom template filters</font><a class="headerlink" href="custom-template-tags.html#writing-custom-template-filters" title="Permalink to this headline">¶</a></h2>
+<p><font id="25">Custom filters are just Python functions that take one or two arguments:</font></p>
+<ul class="simple">
+<li><font id="314">The value of the variable (input) – not necessarily a string.</font></li>
+<li><font id="315">The value of the argument – this can have a default value, or be left out altogether.</font></li>
+</ul>
+<p><font id="26">For example, in the filter <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">var|foo:"bar"</span> <span class="pre">}}</span></tt>, the filter <tt class="docutils literal"><span class="pre">foo</span></tt> would be passed the variable <tt class="docutils literal"><span class="pre">var</span></tt> and the argument <tt class="docutils literal"><span class="pre">"bar"</span></tt>.</font></p>
+<p><font id="27">Since the template language doesn’t provide exception handling, any exception raised from a template filter will be exposed as a server error. </font><font id="28">Thus, filter functions should avoid raising exceptions if there is a reasonable fallback value to return. </font><font id="29">In case of input that represents a clear bug in a template, raising an exception may still be better than silent failure which hides the bug.</font></p>
+<p><font id="30">Here’s an example filter definition:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">cut</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+    <span class="sd">"""Removes all values of arg from the given string"""</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="31">And here’s an example of how that filter would be used:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{{</span> <span class="nv">somevariable</span><span class="o">|</span><span class="nf">cut</span><span class="s2">:"0"</span> <span class="cp">}}</span>
+</pre></div>
+</div>
+<p><font id="32">Most filters don’t take arguments. </font><font id="33">In this case, just leave the argument out of your function. </font><font id="34">Example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">lower</span><span class="p">(</span><span class="n">value</span><span class="p">):</span> <span class="c"># Only one argument.</span>
+    <span class="sd">"""Converts a string into all lowercase"""</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="s-registering-custom-filters">
+<span id="registering-custom-filters"></span><h3><font id="290">Registering custom filters</font><a class="headerlink" href="custom-template-tags.html#registering-custom-filters" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.template.Library.filter">
+<tt class="descclassname">django.template.Library.</tt><tt class="descname">filter</tt>()<a class="headerlink" href="custom-template-tags.html#django.template.Library.filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="35">Once you’ve written your filter definition, you need to register it with your <tt class="docutils literal"><span class="pre">Library</span></tt> instance, to make it available to Django’s template language:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">register</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s">'cut'</span><span class="p">,</span> <span class="n">cut</span><span class="p">)</span>
+<span class="n">register</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s">'lower'</span><span class="p">,</span> <span class="n">lower</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="36">The <tt class="docutils literal"><span class="pre">Library.filter()</span></tt> method takes two arguments:</font></p>
+<ol class="arabic simple">
+<li><font id="316">The name of the filter – a string.</font></li>
+<li><font id="317">The compilation function – a Python function (not the name of the function as a string).</font></li>
+</ol>
+<p><font id="37">You can use <tt class="docutils literal"><span class="pre">register.filter()</span></tt> as a decorator instead:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'cut'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cut</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+
+<span class="nd">@register.filter</span>
+<span class="k">def</span> <span class="nf">lower</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="38">If you leave off the <tt class="docutils literal"><span class="pre">name</span></tt> argument, as in the second example above, Django will use the function’s name as the filter name.</font></p>
+<p><font id="39">Finally, <tt class="docutils literal"><span class="pre">register.filter()</span></tt> also accepts three keyword arguments, <tt class="docutils literal"><span class="pre">is_safe</span></tt>, <tt class="docutils literal"><span class="pre">needs_autoescape</span></tt>, and <tt class="docutils literal"><span class="pre">expects_localtime</span></tt>. </font><font id="40">These arguments are described in <a class="reference internal" href="custom-template-tags.html#filters-auto-escaping"><em>filters and auto-escaping</em></a> and <a class="reference internal" href="custom-template-tags.html#filters-timezones"><em>filters and time zones</em></a> below.</font></p>
+</div>
+<div class="section" id="s-template-filters-that-expect-strings">
+<span id="template-filters-that-expect-strings"></span><h3><font id="291">Template filters that expect strings</font><a class="headerlink" href="custom-template-tags.html#template-filters-that-expect-strings" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.template.defaultfilters.stringfilter">
+<tt class="descclassname">django.template.defaultfilters.</tt><tt class="descname">stringfilter</tt>()<a class="headerlink" href="custom-template-tags.html#django.template.defaultfilters.stringfilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="41">If you’re writing a template filter that only expects a string as the first argument, you should use the decorator <tt class="docutils literal"><span class="pre">stringfilter</span></tt>. </font><font id="42">This will convert an object to its string value before being passed to your function:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="kn">from</span> <span class="nn">django.template.defaultfilters</span> <span class="kn">import</span> <span class="n">stringfilter</span>
+
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+
+<span class="nd">@register.filter</span>
+<span class="nd">@stringfilter</span>
+<span class="k">def</span> <span class="nf">lower</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="43">This way, you’ll be able to pass, say, an integer to this filter, and it won’t cause an <tt class="docutils literal"><span class="pre">AttributeError</span></tt> (because integers don’t have <tt class="docutils literal"><span class="pre">lower()</span></tt> methods).</font></p>
+</div>
+<div class="section" id="s-filters-and-auto-escaping">
+<span id="s-filters-auto-escaping"></span><span id="filters-and-auto-escaping"></span><span id="filters-auto-escaping"></span><h3><font id="292">Filters and auto-escaping</font><a class="headerlink" href="custom-template-tags.html#filters-and-auto-escaping" title="Permalink to this headline">¶</a></h3>
+<p><font id="44">When writing a custom filter, give some thought to how the filter will interact with Django’s auto-escaping behavior. </font><font id="45">Note that three types of strings can be passed around inside the template code:</font></p>
+<ul>
+<li><p class="first"><font id="46"><strong>Raw strings</strong> are the native Python <tt class="docutils literal"><span class="pre">str</span></tt> or <tt class="docutils literal"><span class="pre">unicode</span></tt> types. </font><font id="47">On output, they’re escaped if auto-escaping is in effect and presented unchanged, otherwise.</font></p>
+</li>
+<li><p class="first"><font id="48"><strong>Safe strings</strong> are strings that have been marked safe from further escaping at output time. </font><font id="49">Any necessary escaping has already been done. </font><font id="50">They’re commonly used for output that contains raw HTML that is intended to be interpreted as-is on the client side.</font></p>
+<p><font id="51">Internally, these strings are of type <tt class="docutils literal"><span class="pre">SafeBytes</span></tt> or <tt class="docutils literal"><span class="pre">SafeText</span></tt>. </font><font id="52">They share a common base class of <tt class="docutils literal"><span class="pre">SafeData</span></tt>, so you can test for them using code like:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">SafeData</span><span class="p">):</span>
+    <span class="c"># Do something with the "safe" string.</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="53"><strong>Strings marked as “needing escaping”</strong> are <em>always</em> escaped on output, regardless of whether they are in an <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-autoescape"><tt class="xref std std-ttag docutils literal"><span class="pre">autoescape</span></tt></a> block or not. </font><font id="54">These strings are only escaped once, however, even if auto-escaping applies.</font></p>
+<p><font id="55">Internally, these strings are of type <tt class="docutils literal"><span class="pre">EscapeBytes</span></tt> or <tt class="docutils literal"><span class="pre">EscapeText</span></tt>. </font><font id="56">Generally you don’t have to worry about these; </font><font id="57">they exist for the implementation of the <a class="reference internal" href="../ref/templates/builtins.html#std:templatefilter-escape"><tt class="xref std std-tfilter docutils literal"><span class="pre">escape</span></tt></a> filter.</font></p>
+</li>
+</ul>
+<p><font id="58">Template filter code falls into one of two situations:</font></p>
+<ol class="arabic">
+<li><p class="first"><font id="378">Your filter does not introduce any HTML-unsafe characters (<tt class="docutils literal"><span class="pre">&lt;</span></tt>, <tt class="docutils literal"><span class="pre">&gt;</span></tt>, <tt class="docutils literal"><span class="pre">'</span></tt>, <tt class="docutils literal"><span class="pre">"</span></tt> or <tt class="docutils literal"><span class="pre">&amp;</span></tt>) into the result that were not already present. </font><font id="379">In this case, you can let Django take care of all the auto-escaping handling for you. </font><font id="380">All you need to do is set the <tt class="docutils literal"><span class="pre">is_safe</span></tt> flag to <tt class="docutils literal"><span class="pre">True</span></tt> when you register your filter function, like so:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.filter</span><span class="p">(</span><span class="n">is_safe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">myfilter</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+</div>
+<p><font id="60">This flag tells Django that if a “safe” string is passed into your filter, the result will still be “safe” and if a non-safe string is passed in, Django will automatically escape it, if necessary.</font></p>
+<p><font id="61">You can think of this as meaning “this filter is safe – it doesn’t introduce any possibility of unsafe HTML.”</font></p>
+<p><font id="62">The reason <tt class="docutils literal"><span class="pre">is_safe</span></tt> is necessary is because there are plenty of normal string operations that will turn a <tt class="docutils literal"><span class="pre">SafeData</span></tt> object back into a normal <tt class="docutils literal"><span class="pre">str</span></tt> or <tt class="docutils literal"><span class="pre">unicode</span></tt> object and, rather than try to catch them all, which would be very difficult, Django repairs the damage after the filter has completed.</font></p>
+<p><font id="63">For example, suppose you have a filter that adds the string <tt class="docutils literal"><span class="pre">xx</span></tt> to the end of any input. </font><font id="64">Since this introduces no dangerous HTML characters to the result (aside from any that were already present), you should mark your filter with <tt class="docutils literal"><span class="pre">is_safe</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.filter</span><span class="p">(</span><span class="n">is_safe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">add_xx</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">'</span><span class="si">%s</span><span class="s">xx'</span> <span class="o">%</span> <span class="n">value</span>
+</pre></div>
+</div>
+<p><font id="65">When this filter is used in a template where auto-escaping is enabled, Django will escape the output whenever the input is not already marked as “safe”.</font></p>
+<p><font id="66">By default, <tt class="docutils literal"><span class="pre">is_safe</span></tt> is <tt class="docutils literal"><span class="pre">False</span></tt>, and you can omit it from any filters where it isn’t required.</font></p>
+<p><font id="67">Be careful when deciding if your filter really does leave safe strings as safe. </font><font id="68">If you’re <em>removing</em> characters, you might inadvertently leave unbalanced HTML tags or entities in the result. </font><font id="69">For example, removing a <tt class="docutils literal"><span class="pre">&gt;</span></tt> from the input might turn <tt class="docutils literal"><span class="pre">&lt;a&gt;</span></tt> into <tt class="docutils literal"><span class="pre">&lt;a</span></tt>, which would need to be escaped on output to avoid causing problems. </font><font id="70">Similarly, removing a semicolon (<tt class="docutils literal"><span class="pre">;</span></tt>) can turn <tt class="docutils literal"><span class="pre">&amp;amp;</span></tt> into <tt class="docutils literal"><span class="pre">&amp;amp</span></tt>, which is no longer a valid entity and thus needs further escaping. </font><font id="71">Most cases won’t be nearly this tricky, but keep an eye out for any problems like that when reviewing your code.</font></p>
+<p><font id="72">Marking a filter <tt class="docutils literal"><span class="pre">is_safe</span></tt> will coerce the filter’s return value to a string. </font><font id="73">If your filter should return a boolean or other non-string value, marking it <tt class="docutils literal"><span class="pre">is_safe</span></tt> will probably have unintended consequences (such as converting a boolean False to the string ‘False’).</font></p>
+</li>
+<li><p class="first"><font id="74">Alternatively, your filter code can manually take care of any necessary escaping. </font><font id="75">This is necessary when you’re introducing new HTML markup into the result. </font><font id="76">You want to mark the output as safe from further escaping so that your HTML markup isn’t escaped further, so you’ll need to handle the input yourself.</font></p>
+<p><font id="77">To mark the output as a safe string, use <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.safestring.mark_safe" title="django.utils.safestring.mark_safe"><tt class="xref py py-func docutils literal"><span class="pre">django.utils.safestring.mark_safe()</span></tt></a>.</font></p>
+<p><font id="78">Be careful, though. </font><font id="79">You need to do more than just mark the output as safe. </font><font id="80">You need to ensure it really <em>is</em> safe, and what you do depends on whether auto-escaping is in effect. </font><font id="81">The idea is to write filters that can operate in templates where auto-escaping is either on or off in order to make things easier for your template authors.</font></p>
+<p><font id="82">In order for your filter to know the current auto-escaping state, set the <tt class="docutils literal"><span class="pre">needs_autoescape</span></tt> flag to <tt class="docutils literal"><span class="pre">True</span></tt> when you register your filter function. </font><font id="83">(If you don’t specify this flag, it defaults to <tt class="docutils literal"><span class="pre">False</span></tt>). </font><font id="84">This flag tells Django that your filter function wants to be passed an extra keyword argument, called <tt class="docutils literal"><span class="pre">autoescape</span></tt>, that is <tt class="docutils literal"><span class="pre">True</span></tt> if auto-escaping is in effect and <tt class="docutils literal"><span class="pre">False</span></tt> otherwise. </font><font id="85">It is recommended to set the default of the <tt class="docutils literal"><span class="pre">autoescape</span></tt> parameter to <tt class="docutils literal"><span class="pre">True</span></tt>, so that if you call the function from Python code it will have escaping enabled by default.</font></p>
+<p><font id="86">For example, let’s write a filter that emphasizes the first character of a string:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">conditional_escape</span>
+<span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">mark_safe</span>
+
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+
+<span class="nd">@register.filter</span><span class="p">(</span><span class="n">needs_autoescape</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">initial_letter_filter</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">autoescape</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="n">first</span><span class="p">,</span> <span class="n">other</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="n">autoescape</span><span class="p">:</span>
+        <span class="n">esc</span> <span class="o">=</span> <span class="n">conditional_escape</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">esc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="s">'&lt;strong&gt;</span><span class="si">%s</span><span class="s">&lt;/strong&gt;</span><span class="si">%s</span><span class="s">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">esc</span><span class="p">(</span><span class="n">first</span><span class="p">),</span> <span class="n">esc</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="87">The <tt class="docutils literal"><span class="pre">needs_autoescape</span></tt> flag and the <tt class="docutils literal"><span class="pre">autoescape</span></tt> keyword argument mean that our function will know whether automatic escaping is in effect when the filter is called. </font><font id="88">We use <tt class="docutils literal"><span class="pre">autoescape</span></tt> to decide whether the input data needs to be passed through <tt class="docutils literal"><span class="pre">django.utils.html.conditional_escape</span></tt> or not. </font><font id="89">(In the latter case, we just use the identity function as the “escape” function.) </font><font id="90">The <tt class="docutils literal"><span class="pre">conditional_escape()</span></tt> function is like <tt class="docutils literal"><span class="pre">escape()</span></tt> except it only escapes input that is <strong>not</strong> a <tt class="docutils literal"><span class="pre">SafeData</span></tt> instance. </font><font id="91">If a <tt class="docutils literal"><span class="pre">SafeData</span></tt> instance is passed to <tt class="docutils literal"><span class="pre">conditional_escape()</span></tt>, the data is returned unchanged.</font></p>
+<p><font id="92">Finally, in the above example, we remember to mark the result as safe so that our HTML is inserted directly into the template without further escaping.</font></p>
+<p><font id="93">There’s no need to worry about the <tt class="docutils literal"><span class="pre">is_safe</span></tt> flag in this case (although including it wouldn’t hurt anything). </font><font id="94">Whenever you manually handle the auto-escaping issues and return a safe string, the <tt class="docutils literal"><span class="pre">is_safe</span></tt> flag won’t change anything either way.</font></p>
+</li>
+</ol>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="95">Warning</font></p>
+<p><font id="96">Avoiding XSS vulnerabilities when reusing built-in filters</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8.</span> </div>
+<p><font id="97">Django’s built-in filters have <tt class="docutils literal"><span class="pre">autoescape=True</span></tt> by default in order to get the proper autoescaping behavior and avoid a cross-site script vulnerability.</font></p>
+<p><font id="98">In older versions of Django, be careful when reusing Django’s built-in filters as <tt class="docutils literal"><span class="pre">autoescape</span></tt> defaults to <tt class="docutils literal"><span class="pre">None</span></tt>. </font><font id="99">You’ll need to pass <tt class="docutils literal"><span class="pre">autoescape=True</span></tt> to get autoescaping.</font></p>
+<p><font id="100">For example, if you wanted to write a custom filter called <tt class="docutils literal"><span class="pre">urlize_and_linebreaks</span></tt> that combined the <a class="reference internal" href="../ref/templates/builtins.html#std:templatefilter-urlize"><tt class="xref std std-tfilter docutils literal"><span class="pre">urlize</span></tt></a> and <a class="reference internal" href="../ref/templates/builtins.html#std:templatefilter-linebreaksbr"><tt class="xref std std-tfilter docutils literal"><span class="pre">linebreaksbr</span></tt></a> filters, the filter would look like:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.template.defaultfilters</span> <span class="kn">import</span> <span class="n">linebreaksbr</span><span class="p">,</span> <span class="n">urlize</span>
+
+<span class="nd">@register.filter</span><span class="p">(</span><span class="n">needs_autoescape</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">urlize_and_linebreaks</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">autoescape</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">linebreaksbr</span><span class="p">(</span>
+        <span class="n">urlize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">autoescape</span><span class="o">=</span><span class="n">autoescape</span><span class="p">),</span>
+        <span class="n">autoescape</span><span class="o">=</span><span class="n">autoescape</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="101">Then:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{{</span> <span class="nv">comment</span><span class="o">|</span><span class="nf">urlize_and_linebreaks</span> <span class="cp">}}</span>
+</pre></div>
+</div>
+<p><font id="102">would be equivalent to:</font></p>
+<div class="last highlight-html+django"><div class="highlight"><pre><span class="cp">{{</span> <span class="nv">comment</span><span class="o">|</span><span class="nf">urlize</span><span class="o">|</span><span class="nf">linebreaksbr</span> <span class="cp">}}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-filters-and-time-zones">
+<span id="s-filters-timezones"></span><span id="filters-and-time-zones"></span><span id="filters-timezones"></span><h3><font id="293">Filters and time zones</font><a class="headerlink" href="custom-template-tags.html#filters-and-time-zones" title="Permalink to this headline">¶</a></h3>
+<p><font id="103">If you write a custom filter that operates on <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt></a> objects, you’ll usually register it with the <tt class="docutils literal"><span class="pre">expects_localtime</span></tt> flag set to <tt class="docutils literal"><span class="pre">True</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.filter</span><span class="p">(</span><span class="n">expects_localtime</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">businesshours</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">9</span> <span class="o">&lt;=</span> <span class="n">value</span><span class="o">.</span><span class="n">hour</span> <span class="o">&lt;</span> <span class="mi">17</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">''</span>
+</pre></div>
+</div>
+<p><font id="104">When this flag is set, if the first argument to your filter is a time zone aware datetime, Django will convert it to the current time zone before passing it to your filter when appropriate, according to <a class="reference internal" href="../topics/i18n/timezones.html#time-zones-in-templates"><em>rules for time zones conversions in templates</em></a>.</font></p>
+</div>
+</div>
+<div class="section" id="s-writing-custom-template-tags">
+<span id="s-howto-writing-custom-template-tags"></span><span id="writing-custom-template-tags"></span><span id="howto-writing-custom-template-tags"></span><h2><font id="289">Writing custom template tags</font><a class="headerlink" href="custom-template-tags.html#writing-custom-template-tags" title="Permalink to this headline">¶</a></h2>
+<p><font id="105">Tags are more complex than filters, because tags can do anything. </font><font id="106">Django provides a number of shortcuts that make writing most types of tags easier. </font><font id="107">First we’ll explore those shortcuts, then explain how to write a tag from scratch for those cases when the shortcuts aren’t powerful enough.</font></p>
+<div class="section" id="s-simple-tags">
+<span id="s-howto-custom-template-tags-simple-tags"></span><span id="simple-tags"></span><span id="howto-custom-template-tags-simple-tags"></span><h3><font id="294">Simple tags</font><a class="headerlink" href="custom-template-tags.html#simple-tags" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.template.Library.simple_tag">
+<tt class="descclassname">django.template.Library.</tt><tt class="descname">simple_tag</tt>()<a class="headerlink" href="custom-template-tags.html#django.template.Library.simple_tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="108">Many template tags take a number of arguments – strings or template variables – and return a string after doing some processing based solely on the input arguments and some external information. </font><font id="109">For example, a <tt class="docutils literal"><span class="pre">current_time</span></tt> tag might accept a format string and return the time as a string formatted accordingly.</font></p>
+<p><font id="110">To ease the creation of these types of tags, Django provides a helper function, <tt class="docutils literal"><span class="pre">simple_tag</span></tt>. </font><font id="111">This function, which is a method of <tt class="docutils literal"><span class="pre">django.template.Library</span></tt>, takes a function that accepts any number of arguments, wraps it in a <tt class="docutils literal"><span class="pre">render</span></tt> function and the other necessary bits mentioned above and registers it with the template system.</font></p>
+<p><font id="112">Our <tt class="docutils literal"><span class="pre">current_time</span></tt> function could thus be written like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+
+<span class="nd">@register.simple_tag</span>
+<span class="k">def</span> <span class="nf">current_time</span><span class="p">(</span><span class="n">format_string</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="113">A few things to note about the <tt class="docutils literal"><span class="pre">simple_tag</span></tt> helper function:</font></p>
+<ul class="simple">
+<li><font id="318">Checking for the required number of arguments, etc., has already been done by the time our function is called, so we don’t need to do that.</font></li>
+<li><font id="319">The quotes around the argument (if any) have already been stripped away, so we just receive a plain string.</font></li>
+<li><font id="320">If the argument was a template variable, our function is passed the current value of the variable, not the variable itself.</font></li>
+</ul>
+<p><font id="114">If your template tag needs to access the current context, you can use the <tt class="docutils literal"><span class="pre">takes_context</span></tt> argument when registering your tag:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.simple_tag</span><span class="p">(</span><span class="n">takes_context</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">current_time</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">format_string</span><span class="p">):</span>
+    <span class="n">timezone</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s">'timezone'</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">your_get_current_time_method</span><span class="p">(</span><span class="n">timezone</span><span class="p">,</span> <span class="n">format_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="115">Note that the first argument <em>must</em> be called <tt class="docutils literal"><span class="pre">context</span></tt>.</font></p>
+<p><font id="116">For more information on how the <tt class="docutils literal"><span class="pre">takes_context</span></tt> option works, see the section on <a class="reference internal" href="custom-template-tags.html#howto-custom-template-tags-inclusion-tags"><em>inclusion tags</em></a>.</font></p>
+<p><font id="117">If you need to rename your tag, you can provide a custom name for it:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">register</span><span class="o">.</span><span class="n">simple_tag</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'minusone'</span><span class="p">)</span>
+
+<span class="nd">@register.simple_tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'minustwo'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">-</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p><font id="118"><tt class="docutils literal"><span class="pre">simple_tag</span></tt> functions may accept any number of positional or keyword arguments. </font><font id="119">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.simple_tag</span>
+<span class="k">def</span> <span class="nf">my_tag</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">warning</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">'warning'</span><span class="p">]</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">'profile'</span><span class="p">]</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="120">Then in the template any number of arguments, separated by spaces, may be passed to the template tag. </font><font id="121">Like in Python, the values for keyword arguments are set using the equal sign (“<tt class="docutils literal"><span class="pre">=</span></tt>”) and must be provided after the positional arguments. </font><font id="122">For example:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">my_tag</span> <span class="m">123</span> <span class="s2">"abcd"</span> <span class="nv">book.title</span> <span class="nv">warning</span><span class="o">=</span><span class="nv">message</span><span class="o">|</span><span class="nf">lower</span> <span class="nv">profile</span><span class="o">=</span><span class="nv">user.profile</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-inclusion-tags">
+<span id="s-howto-custom-template-tags-inclusion-tags"></span><span id="inclusion-tags"></span><span id="howto-custom-template-tags-inclusion-tags"></span><h3><font id="295">Inclusion tags</font><a class="headerlink" href="custom-template-tags.html#inclusion-tags" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.template.Library.inclusion_tag">
+<tt class="descclassname">django.template.Library.</tt><tt class="descname">inclusion_tag</tt>()<a class="headerlink" href="custom-template-tags.html#django.template.Library.inclusion_tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="123">Another common type of template tag is the type that displays some data by rendering <em>another</em> template. </font><font id="124">For example, Django’s admin interface uses custom template tags to display the buttons along the bottom of the “add/change” form pages. </font><font id="125">Those buttons always look the same, but the link targets change depending on the object being edited – so they’re a perfect case for using a small template that is filled with details from the current object. </font><font id="126">(In the admin’s case, this is the <tt class="docutils literal"><span class="pre">submit_row</span></tt> tag.)</font></p>
+<p><font id="127">These sorts of tags are called “inclusion tags”.</font></p>
+<p><font id="128">Writing inclusion tags is probably best demonstrated by example. </font><font id="129">Let’s write a tag that outputs a list of choices for a given <tt class="docutils literal"><span class="pre">Poll</span></tt> object, such as was created in the <a class="reference internal" href="../intro/tutorial01.html#creating-models"><em>tutorials</em></a>. </font><font id="130">We’ll use the tag like this:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">show_results</span> <span class="nv">poll</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="131">...and the output will be something like this:</font></p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;ul&gt;</span>
+  <span class="nt">&lt;li&gt;</span>First choice<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>Second choice<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li&gt;</span>Third choice<span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</pre></div>
+</div>
+<p><font id="132">First, define the function that takes the argument and produces a dictionary of data for the result. </font><font id="133">The important point here is we only need to return a dictionary, not anything more complex. </font><font id="134">This will be used as a template context for the template fragment. </font><font id="135">Example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">show_results</span><span class="p">(</span><span class="n">poll</span><span class="p">):</span>
+    <span class="n">choices</span> <span class="o">=</span> <span class="n">poll</span><span class="o">.</span><span class="n">choice_set</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">'choices'</span><span class="p">:</span> <span class="n">choices</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="136">Next, create the template used to render the tag’s output. </font><font id="137">This template is a fixed feature of the tag: the tag writer specifies it, not the template designer. </font><font id="138">Following our example, the template is very simple:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="nt">&lt;ul&gt;</span>
+<span class="cp">{%</span> <span class="k">for</span> <span class="nv">choice</span> <span class="k">in</span> <span class="nv">choices</span> <span class="cp">%}</span>
+    <span class="nt">&lt;li&gt;</span> <span class="cp">{{</span> <span class="nv">choice</span> <span class="cp">}}</span> <span class="nt">&lt;/li&gt;</span>
+<span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+<span class="nt">&lt;/ul&gt;</span>
+</pre></div>
+</div>
+<p><font id="139">Now, create and register the inclusion tag by calling the <tt class="docutils literal"><span class="pre">inclusion_tag()</span></tt> method on a <tt class="docutils literal"><span class="pre">Library</span></tt> object. </font><font id="140">Following our example, if the above template is in a file called <tt class="docutils literal"><span class="pre">results.html</span></tt> in a directory that’s searched by the template loader, we’d register the tag like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Here, register is a django.template.Library instance, as before</span>
+<span class="nd">@register.inclusion_tag</span><span class="p">(</span><span class="s">'results.html'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">show_results</span><span class="p">(</span><span class="n">poll</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="141">Alternatively it is possible to register the inclusion tag using a <a class="reference internal" href="../ref/templates/api.html#django.template.Template" title="django.template.Template"><tt class="xref py py-class docutils literal"><span class="pre">django.template.Template</span></tt></a> instance:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.template.loader</span> <span class="kn">import</span> <span class="n">get_template</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">get_template</span><span class="p">(</span><span class="s">'results.html'</span><span class="p">)</span>
+<span class="n">register</span><span class="o">.</span><span class="n">inclusion_tag</span><span class="p">(</span><span class="n">t</span><span class="p">)(</span><span class="n">show_results</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="142">...when first creating the function.</font></p>
+<p><font id="143">Sometimes, your inclusion tags might require a large number of arguments, making it a pain for template authors to pass in all the arguments and remember their order. </font><font id="144">To solve this, Django provides a <tt class="docutils literal"><span class="pre">takes_context</span></tt> option for inclusion tags. </font><font id="145">If you specify <tt class="docutils literal"><span class="pre">takes_context</span></tt> in creating a template tag, the tag will have no required arguments, and the underlying Python function will have one argument – the template context as of when the tag was called.</font></p>
+<p><font id="146">For example, say you’re writing an inclusion tag that will always be used in a context that contains <tt class="docutils literal"><span class="pre">home_link</span></tt> and <tt class="docutils literal"><span class="pre">home_title</span></tt> variables that point back to the main page. </font><font id="147">Here’s what the Python function would look like:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.inclusion_tag</span><span class="p">(</span><span class="s">'link.html'</span><span class="p">,</span> <span class="n">takes_context</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">jump_link</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s">'link'</span><span class="p">:</span> <span class="n">context</span><span class="p">[</span><span class="s">'home_link'</span><span class="p">],</span>
+        <span class="s">'title'</span><span class="p">:</span> <span class="n">context</span><span class="p">[</span><span class="s">'home_title'</span><span class="p">],</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p><font id="148">Note that the first parameter to the function <em>must</em> be called <tt class="docutils literal"><span class="pre">context</span></tt>.</font></p>
+<p><font id="149">In that <tt class="docutils literal"><span class="pre">register.inclusion_tag()</span></tt> line, we specified <tt class="docutils literal"><span class="pre">takes_context=True</span></tt> and the name of the template. </font><font id="150">Here’s what the template <tt class="docutils literal"><span class="pre">link.html</span></tt> might look like:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre>Jump directly to <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{{</span> <span class="nv">link</span> <span class="cp">}}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">title</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;</span>.
+</pre></div>
+</div>
+<p><font id="151">Then, any time you want to use that custom tag, load its library and call it without any arguments, like so:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">jump_link</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="152">Note that when you’re using <tt class="docutils literal"><span class="pre">takes_context=True</span></tt>, there’s no need to pass arguments to the template tag. </font><font id="153">It automatically gets access to the context.</font></p>
+<p><font id="154">The <tt class="docutils literal"><span class="pre">takes_context</span></tt> parameter defaults to <tt class="docutils literal"><span class="pre">False</span></tt>. </font><font id="155">When it’s set to <tt class="docutils literal"><span class="pre">True</span></tt>, the tag is passed the context object, as in this example. </font><font id="156">That’s the only difference between this case and the previous <tt class="docutils literal"><span class="pre">inclusion_tag</span></tt> example.</font></p>
+<p><font id="157"><tt class="docutils literal"><span class="pre">inclusion_tag</span></tt> functions may accept any number of positional or keyword arguments. </font><font id="158">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.inclusion_tag</span><span class="p">(</span><span class="s">'my_template.html'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_tag</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">warning</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">'warning'</span><span class="p">]</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">'profile'</span><span class="p">]</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="159">Then in the template any number of arguments, separated by spaces, may be passed to the template tag. </font><font id="160">Like in Python, the values for keyword arguments are set using the equal sign (“<tt class="docutils literal"><span class="pre">=</span></tt>”) and must be provided after the positional arguments. </font><font id="161">For example:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">my_tag</span> <span class="m">123</span> <span class="s2">"abcd"</span> <span class="nv">book.title</span> <span class="nv">warning</span><span class="o">=</span><span class="nv">message</span><span class="o">|</span><span class="nf">lower</span> <span class="nv">profile</span><span class="o">=</span><span class="nv">user.profile</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-assignment-tags">
+<span id="s-howto-custom-template-tags-assignment-tags"></span><span id="assignment-tags"></span><span id="howto-custom-template-tags-assignment-tags"></span><h3><font id="296">Assignment tags</font><a class="headerlink" href="custom-template-tags.html#assignment-tags" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.template.Library.assignment_tag">
+<tt class="descclassname">django.template.Library.</tt><tt class="descname">assignment_tag</tt>()<a class="headerlink" href="custom-template-tags.html#django.template.Library.assignment_tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="162">To ease the creation of tags setting a variable in the context, Django provides a helper function, <tt class="docutils literal"><span class="pre">assignment_tag</span></tt>. </font><font id="163">This function works the same way as <a class="reference internal" href="custom-template-tags.html#howto-custom-template-tags-simple-tags"><em>simple_tag</em></a>, except that it stores the tag’s result in a specified context variable instead of directly outputting it.</font></p>
+<p><font id="164">Our earlier <tt class="docutils literal"><span class="pre">current_time</span></tt> function could thus be written like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.assignment_tag</span>
+<span class="k">def</span> <span class="nf">get_current_time</span><span class="p">(</span><span class="n">format_string</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="165">You may then store the result in a template variable using the <tt class="docutils literal"><span class="pre">as</span></tt> argument followed by the variable name, and output it yourself where you see fit:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">get_current_time</span> <span class="s2">"%Y-%m-%d %I:%M %p"</span> <span class="k">as</span> <span class="nv">the_time</span> <span class="cp">%}</span>
+<span class="nt">&lt;p&gt;</span>The time is <span class="cp">{{</span> <span class="nv">the_time</span> <span class="cp">}}</span>.<span class="nt">&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p><font id="166">If your template tag needs to access the current context, you can use the <tt class="docutils literal"><span class="pre">takes_context</span></tt> argument when registering your tag:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.assignment_tag</span><span class="p">(</span><span class="n">takes_context</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_current_time</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">format_string</span><span class="p">):</span>
+    <span class="n">timezone</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s">'timezone'</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">your_get_current_time_method</span><span class="p">(</span><span class="n">timezone</span><span class="p">,</span> <span class="n">format_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="167">Note that the first parameter to the function <em>must</em> be called <tt class="docutils literal"><span class="pre">context</span></tt>.</font></p>
+<p><font id="168">For more information on how the <tt class="docutils literal"><span class="pre">takes_context</span></tt> option works, see the section on <a class="reference internal" href="custom-template-tags.html#howto-custom-template-tags-inclusion-tags"><em>inclusion tags</em></a>.</font></p>
+<p><font id="169"><tt class="docutils literal"><span class="pre">assignment_tag</span></tt> functions may accept any number of positional or keyword arguments. </font><font id="170">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.assignment_tag</span>
+<span class="k">def</span> <span class="nf">my_tag</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">warning</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">'warning'</span><span class="p">]</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">'profile'</span><span class="p">]</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="171">Then in the template any number of arguments, separated by spaces, may be passed to the template tag. </font><font id="172">Like in Python, the values for keyword arguments are set using the equal sign (“<tt class="docutils literal"><span class="pre">=</span></tt>”) and must be provided after the positional arguments. </font><font id="173">For example:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">my_tag</span> <span class="m">123</span> <span class="s2">"abcd"</span> <span class="nv">book.title</span> <span class="nv">warning</span><span class="o">=</span><span class="nv">message</span><span class="o">|</span><span class="nf">lower</span> <span class="nv">profile</span><span class="o">=</span><span class="nv">user.profile</span> <span class="k">as</span> <span class="nv">the_result</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-advanced-custom-template-tags">
+<span id="advanced-custom-template-tags"></span><h3><font id="297">Advanced custom template tags</font><a class="headerlink" href="custom-template-tags.html#advanced-custom-template-tags" title="Permalink to this headline">¶</a></h3>
+<p><font id="174">Sometimes the basic features for custom template tag creation aren’t enough. </font><font id="175">Don’t worry, Django gives you complete access to the internals required to build a template tag from the ground up.</font></p>
+</div>
+<div class="section" id="s-a-quick-overview">
+<span id="a-quick-overview"></span><h3><font id="298">A quick overview</font><a class="headerlink" href="custom-template-tags.html#a-quick-overview" title="Permalink to this headline">¶</a></h3>
+<p><font id="176">The template system works in a two-step process: compiling and rendering. </font><font id="177">To define a custom template tag, you specify how the compilation works and how the rendering works.</font></p>
+<p><font id="178">When Django compiles a template, it splits the raw template text into ‘’nodes’‘. </font><font id="179">Each node is an instance of <tt class="docutils literal"><span class="pre">django.template.Node</span></tt> and has a <tt class="docutils literal"><span class="pre">render()</span></tt> method. </font><font id="180">A compiled template is, simply, a list of <tt class="docutils literal"><span class="pre">Node</span></tt> objects. </font><font id="181">When you call <tt class="docutils literal"><span class="pre">render()</span></tt> on a compiled template object, the template calls <tt class="docutils literal"><span class="pre">render()</span></tt> on each <tt class="docutils literal"><span class="pre">Node</span></tt> in its node list, with the given context. </font><font id="182">The results are all concatenated together to form the output of the template.</font></p>
+<p><font id="183">Thus, to define a custom template tag, you specify how the raw template tag is converted into a <tt class="docutils literal"><span class="pre">Node</span></tt> (the compilation function), and what the node’s <tt class="docutils literal"><span class="pre">render()</span></tt> method does.</font></p>
+</div>
+<div class="section" id="s-writing-the-compilation-function">
+<span id="writing-the-compilation-function"></span><h3><font id="299">Writing the compilation function</font><a class="headerlink" href="custom-template-tags.html#writing-the-compilation-function" title="Permalink to this headline">¶</a></h3>
+<p><font id="184">For each template tag the template parser encounters, it calls a Python function with the tag contents and the parser object itself. </font><font id="185">This function is responsible for returning a <tt class="docutils literal"><span class="pre">Node</span></tt> instance based on the contents of the tag.</font></p>
+<p><font id="186">For example, let’s write a full implementation of our simple template tag, <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">current_time</span> <span class="pre">}}</span></tt>, that displays the current date/time, formatted according to a parameter given in the tag, in <a class="reference external" href="https://docs.python.org/3/library/time.html#time.strftime" title="(in Python v3.4)"><tt class="xref py py-func docutils literal"><span class="pre">strftime()</span></tt></a> syntax. </font><font id="187">It’s a good idea to decide the tag syntax before anything else. </font><font id="188">In our case, let’s say the tag should be used like this:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="nt">&lt;p&gt;</span>The time is <span class="cp">{%</span> <span class="k">current_time</span> <span class="s2">"%Y-%m-%d %I:%M %p"</span> <span class="cp">%}</span>.<span class="nt">&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p><font id="189">The parser for this function should grab the parameter and create a <tt class="docutils literal"><span class="pre">Node</span></tt> object:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+
+<span class="k">def</span> <span class="nf">do_current_time</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># split_contents() knows not to split quoted strings.</span>
+        <span class="n">tag_name</span><span class="p">,</span> <span class="n">format_string</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split_contents</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">template</span><span class="o">.</span><span class="n">TemplateSyntaxError</span><span class="p">(</span>
+            <span class="s">"</span><span class="si">%r</span><span class="s"> tag requires a single argument"</span> <span class="o">%</span> <span class="n">token</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">format_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">format_string</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">format_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s">'"'</span><span class="p">,</span> <span class="s">"'"</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">template</span><span class="o">.</span><span class="n">TemplateSyntaxError</span><span class="p">(</span>
+            <span class="s">"</span><span class="si">%r</span><span class="s"> tag's argument should be in quotes"</span> <span class="o">%</span> <span class="n">tag_name</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">CurrentTimeNode</span><span class="p">(</span><span class="n">format_string</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="190">Notes:</font></p>
+<ul class="simple">
+<li><font id="321"><tt class="docutils literal"><span class="pre">parser</span></tt> is the template parser object. </font><font id="322">We don’t need it in this example.</font></li>
+<li><font id="381"><tt class="docutils literal"><span class="pre">token.contents</span></tt> is a string of the raw contents of the tag. </font><font id="382">In our example, it’s <tt class="docutils literal"><span class="pre">'current_time</span> <span class="pre">"%Y-%m-%d</span> <span class="pre">%I:%M</span> <span class="pre">%p"'</span></tt>.</font></li>
+<li><font id="324">The <tt class="docutils literal"><span class="pre">token.split_contents()</span></tt> method separates the arguments on spaces while keeping quoted strings together. </font><font id="325">The more straightforward <tt class="docutils literal"><span class="pre">token.contents.split()</span></tt> wouldn’t be as robust, as it would naively split on <em>all</em> spaces, including those within quoted strings. </font><font id="326">It’s a good idea to always use <tt class="docutils literal"><span class="pre">token.split_contents()</span></tt>.</font></li>
+<li><font id="327">This function is responsible for raising <tt class="docutils literal"><span class="pre">django.template.TemplateSyntaxError</span></tt>, with helpful messages, for any syntax error.</font></li>
+<li><font id="328">The <tt class="docutils literal"><span class="pre">TemplateSyntaxError</span></tt> exceptions use the <tt class="docutils literal"><span class="pre">tag_name</span></tt> variable. </font><font id="329">Don’t hard-code the tag’s name in your error messages, because that couples the tag’s name to your function. </font><font id="330"><tt class="docutils literal"><span class="pre">token.contents.split()[0]</span></tt> will ‘’always’’ be the name of your tag – even when the tag has no arguments.</font></li>
+<li><font id="383">The function returns a <tt class="docutils literal"><span class="pre">CurrentTimeNode</span></tt> with everything the node needs to know about this tag. </font><font id="384">In this case, it just passes the argument – <tt class="docutils literal"><span class="pre">"%Y-%m-%d</span> <span class="pre">%I:%M</span> <span class="pre">%p"</span></tt>. </font><font id="385">The leading and trailing quotes from the template tag are removed in <tt class="docutils literal"><span class="pre">format_string[1:-1]</span></tt>.</font></li>
+<li><font id="332">The parsing is very low-level. </font><font id="333">The Django developers have experimented with writing small frameworks on top of this parsing system, using techniques such as EBNF grammars, but those experiments made the template engine too slow. </font><font id="334">It’s low-level because that’s fastest.</font></li>
+</ul>
+</div>
+<div class="section" id="s-writing-the-renderer">
+<span id="writing-the-renderer"></span><h3><font id="300">Writing the renderer</font><a class="headerlink" href="custom-template-tags.html#writing-the-renderer" title="Permalink to this headline">¶</a></h3>
+<p><font id="191">The second step in writing custom tags is to define a <tt class="docutils literal"><span class="pre">Node</span></tt> subclass that has a <tt class="docutils literal"><span class="pre">render()</span></tt> method.</font></p>
+<p><font id="192">Continuing the above example, we need to define <tt class="docutils literal"><span class="pre">CurrentTimeNode</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+
+<span class="k">class</span> <span class="nc">CurrentTimeNode</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_string</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="193">Notes:</font></p>
+<ul class="simple">
+<li><font id="335"><tt class="docutils literal"><span class="pre">__init__()</span></tt> gets the <tt class="docutils literal"><span class="pre">format_string</span></tt> from <tt class="docutils literal"><span class="pre">do_current_time()</span></tt>. </font><font id="336">Always pass any options/parameters/arguments to a <tt class="docutils literal"><span class="pre">Node</span></tt> via its <tt class="docutils literal"><span class="pre">__init__()</span></tt>.</font></li>
+<li><font id="337">The <tt class="docutils literal"><span class="pre">render()</span></tt> method is where the work actually happens.</font></li>
+<li><font id="338"><tt class="docutils literal"><span class="pre">render()</span></tt> should generally fail silently, particularly in a production environment. </font><font id="339">In some cases however, particularly if <tt class="docutils literal"><span class="pre">context.template.engine.debug</span></tt> is <tt class="docutils literal"><span class="pre">True</span></tt>, this method may raise an exception to make debugging easier. </font><font id="340">For example, several core tags raise <tt class="docutils literal"><span class="pre">django.template.TemplateSyntaxError</span></tt> if they receive the wrong number or type of arguments.</font></li>
+</ul>
+<p><font id="194">Ultimately, this decoupling of compilation and rendering results in an efficient template system, because a template can render multiple contexts without having to be parsed multiple times.</font></p>
+</div>
+<div class="section" id="s-auto-escaping-considerations">
+<span id="auto-escaping-considerations"></span><h3><font id="301">Auto-escaping considerations</font><a class="headerlink" href="custom-template-tags.html#auto-escaping-considerations" title="Permalink to this headline">¶</a></h3>
+<p><font id="195">The output from template tags is <strong>not</strong> automatically run through the auto-escaping filters. </font><font id="196">However, there are still a couple of things you should keep in mind when writing a template tag.</font></p>
+<p><font id="197">If the <tt class="docutils literal"><span class="pre">render()</span></tt> function of your template stores the result in a context variable (rather than returning the result in a string), it should take care to call <tt class="docutils literal"><span class="pre">mark_safe()</span></tt> if appropriate. </font><font id="198">When the variable is ultimately rendered, it will be affected by the auto-escape setting in effect at the time, so content that should be safe from further escaping needs to be marked as such.</font></p>
+<p><font id="199">Also, if your template tag creates a new context for performing some sub-rendering, set the auto-escape attribute to the current context’s value. </font><font id="200">The <tt class="docutils literal"><span class="pre">__init__</span></tt> method for the <tt class="docutils literal"><span class="pre">Context</span></tt> class takes a parameter called <tt class="docutils literal"><span class="pre">autoescape</span></tt> that you can use for this purpose. </font><font id="201">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">Context</span>
+
+<span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="n">new_context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">({</span><span class="s">'var'</span><span class="p">:</span> <span class="n">obj</span><span class="p">},</span> <span class="n">autoescape</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">autoescape</span><span class="p">)</span>
+    <span class="c"># ... Do something with new_context ...</span>
+</pre></div>
+</div>
+<p><font id="202">This is not a very common situation, but it’s useful if you’re rendering a template yourself. </font><font id="203">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s">'small_fragment.html'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">Context</span><span class="p">({</span><span class="s">'var'</span><span class="p">:</span> <span class="n">obj</span><span class="p">},</span> <span class="n">autoescape</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">autoescape</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="204">The <tt class="docutils literal"><span class="pre">template</span></tt> attribute of <tt class="docutils literal"><span class="pre">Context</span></tt> objects was added in Django 1.8. </font><font id="205"><a class="reference internal" href="../ref/templates/api.html#django.template.Engine.get_template" title="django.template.Engine.get_template"><tt class="xref py py-meth docutils literal"><span class="pre">context.template.engine.get_template</span></tt></a> must be used instead of <a class="reference internal" href="../topics/templates.html#django.template.loader.get_template" title="django.template.loader.get_template"><tt class="xref py py-func docutils literal"><span class="pre">django.template.loader.get_template()</span></tt></a> because the latter now returns a wrapper whose <tt class="docutils literal"><span class="pre">render</span></tt> method doesn’t accept a <a class="reference internal" href="../ref/templates/api.html#django.template.Context" title="django.template.Context"><tt class="xref py py-class docutils literal"><span class="pre">Context</span></tt></a>.</font></p>
+</div>
+<p><font id="206">If we had neglected to pass in the current <tt class="docutils literal"><span class="pre">context.autoescape</span></tt> value to our new <tt class="docutils literal"><span class="pre">Context</span></tt> in this example, the results would have <em>always</em> been automatically escaped, which may not be the desired behavior if the template tag is used inside a <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-autoescape"><tt class="xref std std-ttag docutils literal"><span class="pre">}}</span> <span class="pre">autoescape</span> <span class="pre">off</span> <span class="pre">}}</span></tt></a> block.</font></p>
+</div>
+<div class="section" id="s-thread-safety-considerations">
+<span id="s-template-tag-thread-safety"></span><span id="thread-safety-considerations"></span><span id="template-tag-thread-safety"></span><h3><font id="302">Thread-safety considerations</font><a class="headerlink" href="custom-template-tags.html#thread-safety-considerations" title="Permalink to this headline">¶</a></h3>
+<p><font id="207">Once a node is parsed, its <tt class="docutils literal"><span class="pre">render</span></tt> method may be called any number of times. </font><font id="208">Since Django is sometimes run in multi-threaded environments, a single node may be simultaneously rendering with different contexts in response to two separate requests. </font><font id="209">Therefore, it’s important to make sure your template tags are thread safe.</font></p>
+<p><font id="210">To make sure your template tags are thread safe, you should never store state information on the node itself. </font><font id="211">For example, Django provides a builtin <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-cycle"><tt class="xref std std-ttag docutils literal"><span class="pre">cycle</span></tt></a> template tag that cycles among a list of given strings each time it’s rendered:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">for</span> <span class="nv">o</span> <span class="k">in</span> <span class="nv">some_list</span> <span class="cp">%}</span>
+    <span class="nt">&lt;tr</span> <span class="na">class=</span><span class="s">"</span><span class="cp">{%</span> <span class="k">cycle</span> <span class="s1">'row1'</span> <span class="s1">'row2'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/tr&gt;</span>
+<span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="212">A naive implementation of <tt class="docutils literal"><span class="pre">CycleNode</span></tt> might look something like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+
+<span class="k">class</span> <span class="nc">CycleNode</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cyclevars</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_iter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">(</span><span class="n">cyclevars</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle_iter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="213">But, suppose we have two templates rendering the template snippet from above at the same time:</font></p>
+<ol class="arabic simple">
+<li><font id="341">Thread 1 performs its first loop iteration, <tt class="docutils literal"><span class="pre">CycleNode.render()</span></tt> returns ‘row1’</font></li>
+<li><font id="342">Thread 2 performs its first loop iteration, <tt class="docutils literal"><span class="pre">CycleNode.render()</span></tt> returns ‘row2’</font></li>
+<li><font id="343">Thread 1 performs its second loop iteration, <tt class="docutils literal"><span class="pre">CycleNode.render()</span></tt> returns ‘row1’</font></li>
+<li><font id="344">Thread 2 performs its second loop iteration, <tt class="docutils literal"><span class="pre">CycleNode.render()</span></tt> returns ‘row2’</font></li>
+</ol>
+<p><font id="214">The CycleNode is iterating, but it’s iterating globally. </font><font id="215">As far as Thread 1 and Thread 2 are concerned, it’s always returning the same value. </font><font id="216">This is obviously not what we want!</font></p>
+<p><font id="217">To address this problem, Django provides a <tt class="docutils literal"><span class="pre">render_context</span></tt> that’s associated with the <tt class="docutils literal"><span class="pre">context</span></tt> of the template that is currently being rendered. </font><font id="218">The <tt class="docutils literal"><span class="pre">render_context</span></tt> behaves like a Python dictionary, and should be used to store <tt class="docutils literal"><span class="pre">Node</span></tt> state between invocations of the <tt class="docutils literal"><span class="pre">render</span></tt> method.</font></p>
+<p><font id="219">Let’s refactor our <tt class="docutils literal"><span class="pre">CycleNode</span></tt> implementation to use the <tt class="docutils literal"><span class="pre">render_context</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CycleNode</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cyclevars</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cyclevars</span> <span class="o">=</span> <span class="n">cyclevars</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">render_context</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">render_context</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cyclevars</span><span class="p">)</span>
+        <span class="n">cycle_iter</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">render_context</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">cycle_iter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="220">Note that it’s perfectly safe to store global information that will not change throughout the life of the <tt class="docutils literal"><span class="pre">Node</span></tt> as an attribute. </font><font id="221">In the case of <tt class="docutils literal"><span class="pre">CycleNode</span></tt>, the <tt class="docutils literal"><span class="pre">cyclevars</span></tt> argument doesn’t change after the <tt class="docutils literal"><span class="pre">Node</span></tt> is instantiated, so we don’t need to put it in the <tt class="docutils literal"><span class="pre">render_context</span></tt>. </font><font id="222">But state information that is specific to the template that is currently being rendered, like the current iteration of the <tt class="docutils literal"><span class="pre">CycleNode</span></tt>, should be stored in the <tt class="docutils literal"><span class="pre">render_context</span></tt>.</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="223">Note</font></p>
+<p class="last"><font id="224">Notice how we used <tt class="docutils literal"><span class="pre">self</span></tt> to scope the <tt class="docutils literal"><span class="pre">CycleNode</span></tt> specific information within the <tt class="docutils literal"><span class="pre">render_context</span></tt>. </font><font id="225">There may be multiple <tt class="docutils literal"><span class="pre">CycleNodes</span></tt> in a given template, so we need to be careful not to clobber another node’s state information. </font><font id="226">The easiest way to do this is to always use <tt class="docutils literal"><span class="pre">self</span></tt> as the key into <tt class="docutils literal"><span class="pre">render_context</span></tt>. </font><font id="227">If you’re keeping track of several state variables, make <tt class="docutils literal"><span class="pre">render_context[self]</span></tt> a dictionary.</font></p>
+</div>
+</div>
+<div class="section" id="s-registering-the-tag">
+<span id="registering-the-tag"></span><h3><font id="303">Registering the tag</font><a class="headerlink" href="custom-template-tags.html#registering-the-tag" title="Permalink to this headline">¶</a></h3>
+<p><font id="228">Finally, register the tag with your module’s <tt class="docutils literal"><span class="pre">Library</span></tt> instance, as explained in <a class="reference internal" href="custom-template-tags.html#howto-writing-custom-template-tags"><em>writing custom template filters</em></a> above. </font><font id="229">Example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">register</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="s">'current_time'</span><span class="p">,</span> <span class="n">do_current_time</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="230">The <tt class="docutils literal"><span class="pre">tag()</span></tt> method takes two arguments:</font></p>
+<ol class="arabic simple">
+<li><font id="345">The name of the template tag – a string. </font><font id="346">If this is left out, the name of the compilation function will be used.</font></li>
+<li><font id="347">The compilation function – a Python function (not the name of the function as a string).</font></li>
+</ol>
+<p><font id="231">As with filter registration, it is also possible to use this as a decorator:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register.tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"current_time"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">do_current_time</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="nd">@register.tag</span>
+<span class="k">def</span> <span class="nf">shout</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="232">If you leave off the <tt class="docutils literal"><span class="pre">name</span></tt> argument, as in the second example above, Django will use the function’s name as the tag name.</font></p>
+</div>
+<div class="section" id="s-passing-template-variables-to-the-tag">
+<span id="passing-template-variables-to-the-tag"></span><h3><font id="304">Passing template variables to the tag</font><a class="headerlink" href="custom-template-tags.html#passing-template-variables-to-the-tag" title="Permalink to this headline">¶</a></h3>
+<p><font id="233">Although you can pass any number of arguments to a template tag using <tt class="docutils literal"><span class="pre">token.split_contents()</span></tt>, the arguments are all unpacked as string literals. </font><font id="234">A little more work is required in order to pass dynamic content (a template variable) to a template tag as an argument.</font></p>
+<p><font id="235">While the previous examples have formatted the current time into a string and returned the string, suppose you wanted to pass in a <a class="reference internal" href="../ref/models/fields.html#django.db.models.DateTimeField" title="django.db.models.DateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></tt></a> from an object and have the template tag format that date-time:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="nt">&lt;p&gt;</span>This post was last updated at <span class="cp">{%</span> <span class="k">format_time</span> <span class="nv">blog_entry.date_updated</span> <span class="s2">"%Y-%m-%d %I:%M %p"</span> <span class="cp">%}</span>.<span class="nt">&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p><font id="236">Initially, <tt class="docutils literal"><span class="pre">token.split_contents()</span></tt> will return three values:</font></p>
+<ol class="arabic simple">
+<li><font id="348">The tag name <tt class="docutils literal"><span class="pre">format_time</span></tt>.</font></li>
+<li><font id="349">The string <tt class="docutils literal"><span class="pre">'blog_entry.date_updated'</span></tt> (without the surrounding quotes).</font></li>
+<li><font id="386">The formatting string <tt class="docutils literal"><span class="pre">'"%Y-%m-%d</span> <span class="pre">%I:%M</span> <span class="pre">%p"'</span></tt>. </font><font id="387">The return value from <tt class="docutils literal"><span class="pre">split_contents()</span></tt> will include the leading and trailing quotes for string literals like this.</font></li>
+</ol>
+<p><font id="237">Now your tag should begin to look like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+
+<span class="k">def</span> <span class="nf">do_format_time</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># split_contents() knows not to split quoted strings.</span>
+        <span class="n">tag_name</span><span class="p">,</span> <span class="n">date_to_be_formatted</span><span class="p">,</span> <span class="n">format_string</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split_contents</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">template</span><span class="o">.</span><span class="n">TemplateSyntaxError</span><span class="p">(</span>
+            <span class="s">"</span><span class="si">%r</span><span class="s"> tag requires exactly two arguments"</span> <span class="o">%</span> <span class="n">token</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">format_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">format_string</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">format_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s">'"'</span><span class="p">,</span> <span class="s">"'"</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">template</span><span class="o">.</span><span class="n">TemplateSyntaxError</span><span class="p">(</span>
+            <span class="s">"</span><span class="si">%r</span><span class="s"> tag's argument should be in quotes"</span> <span class="o">%</span> <span class="n">tag_name</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">FormatTimeNode</span><span class="p">(</span><span class="n">date_to_be_formatted</span><span class="p">,</span> <span class="n">format_string</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="238">You also have to change the renderer to retrieve the actual contents of the <tt class="docutils literal"><span class="pre">date_updated</span></tt> property of the <tt class="docutils literal"><span class="pre">blog_entry</span></tt> object. </font><font id="239">This can be accomplished by using the <tt class="docutils literal"><span class="pre">Variable()</span></tt> class in <tt class="docutils literal"><span class="pre">django.template</span></tt>.</font></p>
+<p><font id="240">To use the <tt class="docutils literal"><span class="pre">Variable</span></tt> class, simply instantiate it with the name of the variable to be resolved, and then call <tt class="docutils literal"><span class="pre">variable.resolve(context)</span></tt>. </font><font id="241">So, for example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">FormatTimeNode</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_to_be_formatted</span><span class="p">,</span> <span class="n">format_string</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_to_be_formatted</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">date_to_be_formatted</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">actual_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_to_be_formatted</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">actual_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_string</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">template</span><span class="o">.</span><span class="n">VariableDoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">''</span>
+</pre></div>
+</div>
+<p><font id="242">Variable resolution will throw a <tt class="docutils literal"><span class="pre">VariableDoesNotExist</span></tt> exception if it cannot resolve the string passed to it in the current context of the page.</font></p>
+</div>
+<div class="section" id="s-setting-a-variable-in-the-context">
+<span id="setting-a-variable-in-the-context"></span><h3><font id="305">Setting a variable in the context</font><a class="headerlink" href="custom-template-tags.html#setting-a-variable-in-the-context" title="Permalink to this headline">¶</a></h3>
+<p><font id="243">The above examples simply output a value. </font><font id="244">Generally, it’s more flexible if your template tags set template variables instead of outputting values. </font><font id="245">That way, template authors can reuse the values that your template tags create.</font></p>
+<p><font id="246">To set a variable in the context, just use dictionary assignment on the context object in the <tt class="docutils literal"><span class="pre">render()</span></tt> method. </font><font id="247">Here’s an updated version of <tt class="docutils literal"><span class="pre">CurrentTimeNode</span></tt> that sets a template variable <tt class="docutils literal"><span class="pre">current_time</span></tt> instead of outputting it:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+
+<span class="k">class</span> <span class="nc">CurrentTimeNode2</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_string</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span>
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">context</span><span class="p">[</span><span class="s">'current_time'</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">''</span>
+</pre></div>
+</div>
+<p><font id="248">Note that <tt class="docutils literal"><span class="pre">render()</span></tt> returns the empty string. </font><font id="249"><tt class="docutils literal"><span class="pre">render()</span></tt> should always return string output. </font><font id="250">If all the template tag does is set a variable, <tt class="docutils literal"><span class="pre">render()</span></tt> should return the empty string.</font></p>
+<p><font id="251">Here’s how you’d use this new version of the tag:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">current_time</span> <span class="s2">"%Y-%M-%d %I:%M %p"</span> <span class="cp">%}</span><span class="nt">&lt;p&gt;</span>The time is <span class="cp">{{</span> <span class="nv">current_time</span> <span class="cp">}}</span>.<span class="nt">&lt;/p&gt;</span>
+</pre></div>
+</div>
+<div class="admonition-variable-scope-in-context admonition">
+<p class="first admonition-title"><font id="252">Variable scope in context</font></p>
+<p class="last"><font id="253">Any variable set in the context will only be available in the same <tt class="docutils literal"><span class="pre">block</span></tt> of the template in which it was assigned. </font><font id="254">This behavior is intentional; </font><font id="255">it provides a scope for variables so that they don’t conflict with context in other blocks.</font></p>
+</div>
+<p><font id="256">But, there’s a problem with <tt class="docutils literal"><span class="pre">CurrentTimeNode2</span></tt>: The variable name <tt class="docutils literal"><span class="pre">current_time</span></tt> is hard-coded. </font><font id="257">This means you’ll need to make sure your template doesn’t use <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">current_time</span> <span class="pre">}}</span></tt> anywhere else, because the <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">current_time</span> <span class="pre">}}</span></tt> will blindly overwrite that variable’s value. </font><font id="258">A cleaner solution is to make the template tag specify the name of the output variable, like so:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">current_time</span> <span class="s2">"%Y-%M-%d %I:%M %p"</span> <span class="k">as</span> <span class="nv">my_current_time</span> <span class="cp">%}</span>
+<span class="nt">&lt;p&gt;</span>The current time is <span class="cp">{{</span> <span class="nv">my_current_time</span> <span class="cp">}}</span>.<span class="nt">&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p><font id="259">To do that, you’ll need to refactor both the compilation function and <tt class="docutils literal"><span class="pre">Node</span></tt> class, like so:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">class</span> <span class="nc">CurrentTimeNode3</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_string</span><span class="p">,</span> <span class="n">var_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">var_name</span> <span class="o">=</span> <span class="n">var_name</span>
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">context</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">''</span>
+
+<span class="k">def</span> <span class="nf">do_current_time</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+    <span class="c"># This version uses a regular expression to parse tag contents.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># Splitting by None == splitting by spaces.</span>
+        <span class="n">tag_name</span><span class="p">,</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">template</span><span class="o">.</span><span class="n">TemplateSyntaxError</span><span class="p">(</span>
+            <span class="s">"</span><span class="si">%r</span><span class="s"> tag requires arguments"</span> <span class="o">%</span> <span class="n">token</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r'(.*?) as (\w+)'</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">template</span><span class="o">.</span><span class="n">TemplateSyntaxError</span><span class="p">(</span><span class="s">"</span><span class="si">%r</span><span class="s"> tag had invalid arguments"</span> <span class="o">%</span> <span class="n">tag_name</span><span class="p">)</span>
+    <span class="n">format_string</span><span class="p">,</span> <span class="n">var_name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">format_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">format_string</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">format_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s">'"'</span><span class="p">,</span> <span class="s">"'"</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">template</span><span class="o">.</span><span class="n">TemplateSyntaxError</span><span class="p">(</span>
+            <span class="s">"</span><span class="si">%r</span><span class="s"> tag's argument should be in quotes"</span> <span class="o">%</span> <span class="n">tag_name</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">CurrentTimeNode3</span><span class="p">(</span><span class="n">format_string</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">var_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="260">The difference here is that <tt class="docutils literal"><span class="pre">do_current_time()</span></tt> grabs the format string and the variable name, passing both to <tt class="docutils literal"><span class="pre">CurrentTimeNode3</span></tt>.</font></p>
+<p><font id="261">Finally, if you only need to have a simple syntax for your custom context-updating template tag, you might want to consider using the <a class="reference internal" href="custom-template-tags.html#howto-custom-template-tags-assignment-tags"><em>assignment tag</em></a> shortcut we introduced above.</font></p>
+</div>
+<div class="section" id="s-parsing-until-another-block-tag">
+<span id="parsing-until-another-block-tag"></span><h3><font id="306">Parsing until another block tag</font><a class="headerlink" href="custom-template-tags.html#parsing-until-another-block-tag" title="Permalink to this headline">¶</a></h3>
+<p><font id="262">Template tags can work in tandem. </font><font id="263">For instance, the standard <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-comment"><tt class="xref std std-ttag docutils literal"><span class="pre">}}</span> <span class="pre">comment</span> <span class="pre">}}</span></tt></a> tag hides everything until <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">endcomment</span> <span class="pre">}}</span></tt>. </font><font id="264">To create a template tag such as this, use <tt class="docutils literal"><span class="pre">parser.parse()</span></tt> in your compilation function.</font></p>
+<p><font id="265">Here’s how a simplified <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">comment</span> <span class="pre">}}</span></tt> tag might be implemented:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">do_comment</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+    <span class="n">nodelist</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">((</span><span class="s">'endcomment'</span><span class="p">,))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">delete_first_token</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">CommentNode</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">CommentNode</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">''</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="266">Note</font></p>
+<p class="last"><font id="267">The actual implementation of <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-comment"><tt class="xref std std-ttag docutils literal"><span class="pre">}}</span> <span class="pre">comment</span> <span class="pre">}}</span></tt></a> is slightly different in that it allows broken template tags to appear between <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">comment</span> <span class="pre">}}</span></tt> and <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">endcomment</span> <span class="pre">}}</span></tt>. </font><font id="268">It does so by calling <tt class="docutils literal"><span class="pre">parser.skip_past('endcomment')</span></tt> instead of <tt class="docutils literal"><span class="pre">parser.parse(('endcomment',))</span></tt> followed by <tt class="docutils literal"><span class="pre">parser.delete_first_token()</span></tt>, thus avoiding the generation of a node list.</font></p>
+</div>
+<p><font id="269"><tt class="docutils literal"><span class="pre">parser.parse()</span></tt> takes a tuple of names of block tags ‘’to parse until’‘. </font><font id="270">It returns an instance of <tt class="docutils literal"><span class="pre">django.template.NodeList</span></tt>, which is a list of all <tt class="docutils literal"><span class="pre">Node</span></tt> objects that the parser encountered ‘’before’’ it encountered any of the tags named in the tuple.</font></p>
+<p><font id="271">In <tt class="docutils literal"><span class="pre">"nodelist</span> <span class="pre">=</span> <span class="pre">parser.parse(('endcomment',))"</span></tt> in the above example, <tt class="docutils literal"><span class="pre">nodelist</span></tt> is a list of all nodes between the <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">comment</span> <span class="pre">}}</span></tt> and <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">endcomment</span> <span class="pre">}}</span></tt>, not counting <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">comment</span> <span class="pre">}}</span></tt> and <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">endcomment</span> <span class="pre">}}</span></tt> themselves.</font></p>
+<p><font id="272">After <tt class="docutils literal"><span class="pre">parser.parse()</span></tt> is called, the parser hasn’t yet “consumed” the <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">endcomment</span> <span class="pre">}}</span></tt> tag, so the code needs to explicitly call <tt class="docutils literal"><span class="pre">parser.delete_first_token()</span></tt>.</font></p>
+<p><font id="273"><tt class="docutils literal"><span class="pre">CommentNode.render()</span></tt> simply returns an empty string. </font><font id="274">Anything between <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">comment</span> <span class="pre">}}</span></tt> and <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">endcomment</span> <span class="pre">}}</span></tt> is ignored.</font></p>
+</div>
+<div class="section" id="s-parsing-until-another-block-tag-and-saving-contents">
+<span id="parsing-until-another-block-tag-and-saving-contents"></span><h3><font id="307">Parsing until another block tag, and saving contents</font><a class="headerlink" href="custom-template-tags.html#parsing-until-another-block-tag-and-saving-contents" title="Permalink to this headline">¶</a></h3>
+<p><font id="275">In the previous example, <tt class="docutils literal"><span class="pre">do_comment()</span></tt> discarded everything between <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">comment</span> <span class="pre">}}</span></tt> and <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">endcomment</span> <span class="pre">}}</span></tt>. </font><font id="276">Instead of doing that, it’s possible to do something with the code between block tags.</font></p>
+<p><font id="277">For example, here’s a custom template tag, <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">upper</span> <span class="pre">}}</span></tt>, that capitalizes everything between itself and <tt class="docutils literal"><span class="pre">}}</span> <span class="pre">endupper</span> <span class="pre">}}</span></tt>.</font></p>
+<p><font id="278">Usage:</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">upper</span> <span class="cp">%}</span>This will appear in uppercase, <span class="cp">{{</span> <span class="nv">your_name</span> <span class="cp">}}</span>.<span class="cp">{%</span> <span class="k">endupper</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="279">As in the previous example, we’ll use <tt class="docutils literal"><span class="pre">parser.parse()</span></tt>. </font><font id="280">But this time, we pass the resulting <tt class="docutils literal"><span class="pre">nodelist</span></tt> to the <tt class="docutils literal"><span class="pre">Node</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">do_upper</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+    <span class="n">nodelist</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">((</span><span class="s">'endupper'</span><span class="p">,))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">delete_first_token</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">UpperNode</span><span class="p">(</span><span class="n">nodelist</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">UpperNode</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodelist</span> <span class="o">=</span> <span class="n">nodelist</span>
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="281">The only new concept here is the <tt class="docutils literal"><span class="pre">self.nodelist.render(context)</span></tt> in <tt class="docutils literal"><span class="pre">UpperNode.render()</span></tt>.</font></p>
+<p><font id="282">For more examples of complex rendering, see the source code of <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-for"><tt class="xref std std-ttag docutils literal"><span class="pre">}}</span> <span class="pre">for</span> <span class="pre">}}</span></tt></a> in <tt class="docutils literal"><span class="pre">django/template/defaulttags.py</span></tt> and <a class="reference internal" href="../ref/templates/builtins.html#std:templatetag-if"><tt class="xref std std-ttag docutils literal"><span class="pre">}}</span> <span class="pre">if</span> <span class="pre">}}</span></tt></a> in <tt class="docutils literal"><span class="pre">django/template/smartif.py</span></tt>.</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="308">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="custom-template-tags.html#"><font id="351">Custom template tags and filters</font></a><ul>
+<li><a class="reference internal" href="custom-template-tags.html#code-layout"><font id="352">Code layout</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#writing-custom-template-filters"><font id="353">Writing custom template filters</font></a><ul>
+<li><a class="reference internal" href="custom-template-tags.html#registering-custom-filters"><font id="354">Registering custom filters</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#template-filters-that-expect-strings"><font id="355">Template filters that expect strings</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#filters-and-auto-escaping"><font id="356">Filters and auto-escaping</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#filters-and-time-zones"><font id="357">Filters and time zones</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="custom-template-tags.html#writing-custom-template-tags"><font id="358">Writing custom template tags</font></a><ul>
+<li><a class="reference internal" href="custom-template-tags.html#simple-tags"><font id="359">Simple tags</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#inclusion-tags"><font id="360">Inclusion tags</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#assignment-tags"><font id="361">Assignment tags</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#advanced-custom-template-tags"><font id="362">Advanced custom template tags</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#a-quick-overview"><font id="363">A quick overview</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#writing-the-compilation-function"><font id="364">Writing the compilation function</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#writing-the-renderer"><font id="365">Writing the renderer</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#auto-escaping-considerations"><font id="366">Auto-escaping considerations</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#thread-safety-considerations"><font id="367">Thread-safety considerations</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#registering-the-tag"><font id="368">Registering the tag</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#passing-template-variables-to-the-tag"><font id="369">Passing template variables to the tag</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#setting-a-variable-in-the-context"><font id="370">Setting a variable in the context</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#parsing-until-another-block-tag"><font id="371">Parsing until another block tag</font></a></li>
+<li><a class="reference internal" href="custom-template-tags.html#parsing-until-another-block-tag-and-saving-contents"><font id="372">Parsing until another block tag, and saving contents</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="309">Browse</font></h3>
+<ul>
+<li><font id="373">Prev: <a href="custom-lookups.html">Custom Lookups</a></font></li>
+<li><font id="374">Next: <a href="custom-file-storage.html">Writing a custom storage system</a></font></li>
+</ul>
+<h3><font id="310">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="375">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="http://python.usyiyi.cn/django/howto/index.html">“How-to” guides</a>
+<ul><li><font id="376">Custom template tags and filters</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="311">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/howto/custom-template-tags.txt" rel="nofollow"><font id="377">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="312">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="283"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="313">Last update:</font></h3>
+<p class="topless"><font id="284">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="custom-lookups.html" title="Custom Lookups">previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="custom-file-storage.html" title="Writing a custom storage system">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/howto/custom-template-tags.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

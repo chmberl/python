@@ -1,0 +1,429 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>编写和运行测试 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Testing in Django"/>
+<link href="tools.html" rel="next" title="Testing tools"/>
+<link href="index.html" rel="prev" title="Testing in Django"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/testing/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/testing/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="103">Django 1.8.2.dev20150513143415 documentation</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="index.html" title="Testing in Django">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="tools.html" title="Testing tools">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-testing-overview">
+<div class="section" id="s-module-django.test">
+<span id="s-writing-and-running-tests"></span><span id="module-django.test"></span><span id="writing-and-running-tests"></span><h1><font id="104">Writing and running tests</font><a class="headerlink" href="overview.html#module-django.test" title="Permalink to this headline">¶</a></h1>
+<div class="admonition seealso">
+<p class="first admonition-title"><font id="1">See also</font></p>
+<p class="last"><font id="2">The <a class="reference internal" href="../../intro/tutorial05.html"><em>testing tutorial</em></a>, the <a class="reference internal" href="tools.html"><em>testing tools reference</em></a>, and the <a class="reference internal" href="advanced.html"><em>advanced testing topics</em></a>.</font></p>
+</div>
+<p><font id="3">This document is split into two primary sections. </font><font id="4">First, we explain how to write tests with Django. </font><font id="5">Then, we explain how to run them.</font></p>
+<div class="section" id="s-writing-tests">
+<span id="writing-tests"></span><h2><font id="105">Writing tests</font><a class="headerlink" href="overview.html#writing-tests" title="Permalink to this headline">¶</a></h2>
+<p><font id="6">Django’s unit tests use a Python standard library module: <a class="reference external" href="https://docs.python.org/3/library/unittest.html#module-unittest" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">unittest</span></tt></a>. </font><font id="7">This module defines tests using a class-based approach.</font></p>
+<div class="admonition-unittest2 admonition">
+<p class="first admonition-title"><font id="8">unittest2</font></p>
+<div class="deprecated">
+<p><font id="9"><span class="versionmodified">Deprecated since version 1.7.</span></font></p>
+</div>
+<p><font id="10">Python 2.7 introduced some major changes to the <tt class="docutils literal"><span class="pre">unittest</span></tt> library, adding some extremely useful features. </font><font id="11">To ensure that every Django project could benefit from these new features, Django used to ship with a copy of Python 2.7’s <tt class="docutils literal"><span class="pre">unittest</span></tt> backported for Python 2.6 compatibility.</font></p>
+<p class="last"><font id="12">Since Django no longer supports Python versions older than 2.7, <tt class="docutils literal"><span class="pre">django.utils.unittest</span></tt> is deprecated. </font><font id="13">Simply use <tt class="docutils literal"><span class="pre">unittest</span></tt>.</font></p>
+</div>
+<p><font id="14">Here is an example which subclasses from <a class="reference internal" href="tools.html#django.test.TestCase" title="django.test.TestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.test.TestCase</span></tt></a>, which is a subclass of <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.</span></tt></a></font><font id="15">TestCase that runs each test inside a transaction to provide isolation:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">Animal</span>
+
+<span class="k">class</span> <span class="nc">AnimalTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Animal</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"lion"</span><span class="p">,</span> <span class="n">sound</span><span class="o">=</span><span class="s">"roar"</span><span class="p">)</span>
+        <span class="n">Animal</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"cat"</span><span class="p">,</span> <span class="n">sound</span><span class="o">=</span><span class="s">"meow"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_animals_can_speak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Animals that can speak are correctly identified"""</span>
+        <span class="n">lion</span> <span class="o">=</span> <span class="n">Animal</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"lion"</span><span class="p">)</span>
+        <span class="n">cat</span> <span class="o">=</span> <span class="n">Animal</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"cat"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">lion</span><span class="o">.</span><span class="n">speak</span><span class="p">(),</span> <span class="s">'The lion says "roar"'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">speak</span><span class="p">(),</span> <span class="s">'The cat says "meow"'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="16">When you <a class="reference internal" href="overview.html#running-tests"><em>run your tests</em></a>, the default behavior of the test utility is to find all the test cases (that is, subclasses of <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.</span></tt></a></font><font id="17">TestCase) in any file whose name begins with <tt class="docutils literal"><span class="pre">test</span></tt>, automatically build a test suite out of those test cases, and run that suite.</font></p>
+<p><font id="18">For more details about <a class="reference external" href="https://docs.python.org/3/library/unittest.html#module-unittest" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">unittest</span></tt></a>, see the Python documentation.</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="19">Warning</font></p>
+<p><font id="20">If your tests rely on database access such as creating or querying models, be sure to create your test classes as subclasses of <a class="reference internal" href="tools.html#django.test.TestCase" title="django.test.TestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.test.TestCase</span></tt></a> rather than <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.</span></tt></a></font><font id="21">TestCase.</font></p>
+<p class="last"><font id="22">Using <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.</span></tt></a></font><font id="23">TestCase avoids the cost of running each test in a transaction and flushing the database, but if your tests interact with the database their behavior will vary based on the order that the test runner executes them. </font><font id="24">This can lead to unit tests that pass when run in isolation but fail when run in a suite.</font></p>
+</div>
+</div>
+<div class="section" id="s-running-tests">
+<span id="s-id1"></span><span id="running-tests"></span><span id="id1"></span><h2><font id="106">Running tests</font><a class="headerlink" href="overview.html#running-tests" title="Permalink to this headline">¶</a></h2>
+<p><font id="25">Once you’ve written tests, run them using the <a class="reference internal" href="../../ref/django-admin.html#django-admin-test"><tt class="xref std std-djadmin docutils literal"><span class="pre">test</span></tt></a> command of your project’s <tt class="docutils literal"><span class="pre">manage.py</span></tt> utility:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>$ ./manage.py test
+</pre></div>
+</div>
+<p><font id="26">Test discovery is based on the unittest module’s <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest-test-discovery" title="(in Python v3.4)"><em class="xref std std-ref">built-in test discovery</em></a>. </font><font id="27">By default, this will discover tests in any file named “test*.py” under the current working directory.</font></p>
+<p><font id="28">You can specify particular tests to run by supplying any number of “test labels” to <tt class="docutils literal"><span class="pre">./manage.py</span> <span class="pre">test</span></tt>. </font><font id="29">Each test label can be a full Python dotted path to a package, module, <tt class="docutils literal"><span class="pre">TestCase</span></tt> subclass, or test method. </font><font id="30">For instance:</font></p>
+<div class="highlight-python"><div class="highlight"><pre># Run all the tests in the animals.tests module
+$ ./manage.py test animals.tests
+
+# Run all the tests found within the 'animals' package
+$ ./manage.py test animals
+
+# Run just one test case
+$ ./manage.py test animals.tests.AnimalTestCase
+
+# Run just one test method
+$ ./manage.py test animals.tests.AnimalTestCase.test_animals_can_speak
+</pre></div>
+</div>
+<p><font id="31">You can also provide a path to a directory to discover tests below that directory:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>$ ./manage.py test animals/
+</pre></div>
+</div>
+<p><font id="32">You can specify a custom filename pattern match using the <tt class="docutils literal"><span class="pre">-p</span></tt> (or <tt class="docutils literal"><span class="pre">--pattern</span></tt>) option, if your test files are named differently from the <tt class="docutils literal"><span class="pre">test*.py</span></tt> pattern:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>$ ./manage.py test --pattern="tests_*.py"
+</pre></div>
+</div>
+<p><font id="33">If you press <tt class="docutils literal"><span class="pre">Ctrl-C</span></tt> while the tests are running, the test runner will wait for the currently running test to complete and then exit gracefully. </font><font id="34">During a graceful exit the test runner will output details of any test failures, report on how many tests were run and how many errors and failures were encountered, and destroy any test databases as usual. </font><font id="35">Thus pressing <tt class="docutils literal"><span class="pre">Ctrl-C</span></tt> can be very useful if you forget to pass the <a class="reference internal" href="../../ref/django-admin.html#django-admin-option---failfast"><tt class="xref std std-djadminopt docutils literal"><span class="pre">--failfast</span></tt></a> option, notice that some tests are unexpectedly failing, and want to get details on the failures without waiting for the full test run to complete.</font></p>
+<p><font id="36">If you do not want to wait for the currently running test to finish, you can press <tt class="docutils literal"><span class="pre">Ctrl-C</span></tt> a second time and the test run will halt immediately, but not gracefully. </font><font id="37">No details of the tests run before the interruption will be reported, and any test databases created by the run will not be destroyed.</font></p>
+<div class="admonition-test-with-warnings-enabled admonition">
+<p class="first admonition-title"><font id="38">Test with warnings enabled</font></p>
+<p class="last"><font id="39">It’s a good idea to run your tests with Python warnings enabled: <tt class="docutils literal"><span class="pre">python</span> <span class="pre">-Wall</span> <span class="pre">manage.py</span> <span class="pre">test</span></tt>. </font><font id="40">The <tt class="docutils literal"><span class="pre">-Wall</span></tt> flag tells Python to display deprecation warnings. </font><font id="41">Django, like many other Python libraries, uses these warnings to flag when features are going away. </font><font id="42">It also might flag areas in your code that aren’t strictly wrong but could benefit from a better implementation.</font></p>
+</div>
+<div class="section" id="s-the-test-database">
+<span id="s-id2"></span><span id="the-test-database"></span><span id="id2"></span><h3><font id="107">The test database</font><a class="headerlink" href="overview.html#the-test-database" title="Permalink to this headline">¶</a></h3>
+<p><font id="43">Tests that require a database (namely, model tests) will not use your “real” (production) database. </font><font id="44">Separate, blank databases are created for the tests.</font></p>
+<p><font id="45">Regardless of whether the tests pass or fail, the test databases are destroyed when all the tests have been executed.</font></p>
+<div class="versionadded">
+<span class="title">New in Django 1.8:</span> <p><font id="46">You can prevent the test databases from being destroyed by adding the <a class="reference internal" href="../../ref/django-admin.html#django-admin-option---keepdb"><tt class="xref std std-djadminopt docutils literal"><span class="pre">--keepdb</span></tt></a> flag to the test command. </font><font id="47">This will preserve the test database between runs. </font><font id="48">If the database does not exist, it will first be created. </font><font id="49">Any migrations will also be applied in order to keep it up to date.</font></p>
+</div>
+<p><font id="50">By default the test databases get their names by prepending <tt class="docutils literal"><span class="pre">test_</span></tt> to the value of the <a class="reference internal" href="../../ref/settings.html#std:setting-NAME"><tt class="xref std std-setting docutils literal"><span class="pre">NAME</span></tt></a> settings for the databases defined in <a class="reference internal" href="../../ref/settings.html#std:setting-DATABASES"><tt class="xref std std-setting docutils literal"><span class="pre">DATABASES</span></tt></a>. </font><font id="51">When using the SQLite database engine the tests will by default use an in-memory database (i.e., the database will be created in memory, bypassing the filesystem entirely!). </font><font id="52">If you want to use a different database name, specify <a class="reference internal" href="../../ref/settings.html#std:setting-TEST_NAME"><tt class="xref std std-setting docutils literal"><span class="pre">NAME</span></tt></a> in the <a class="reference internal" href="../../ref/settings.html#std:setting-DATABASE-TEST"><tt class="xref std std-setting docutils literal"><span class="pre">TEST</span></tt></a> dictionary for any given database in <a class="reference internal" href="../../ref/settings.html#std:setting-DATABASES"><tt class="xref std std-setting docutils literal"><span class="pre">DATABASES</span></tt></a>.</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="53">On PostgreSQL, <a class="reference internal" href="../../ref/settings.html#std:setting-USER"><tt class="xref std std-setting docutils literal"><span class="pre">USER</span></tt></a> will also need read access to the built-in <tt class="docutils literal"><span class="pre">postgres</span></tt> database.</font></p>
+</div>
+<p><font id="54">Aside from using a separate database, the test runner will otherwise use all of the same database settings you have in your settings file: <a class="reference internal" href="../../ref/settings.html#std:setting-DATABASE-ENGINE"><tt class="xref std std-setting docutils literal"><span class="pre">ENGINE</span></tt></a>, <a class="reference internal" href="../../ref/settings.html#std:setting-USER"><tt class="xref std std-setting docutils literal"><span class="pre">USER</span></tt></a>, <a class="reference internal" href="../../ref/settings.html#std:setting-HOST"><tt class="xref std std-setting docutils literal"><span class="pre">HOST</span></tt></a>, etc. </font><font id="55">The test database is created by the user specified by <a class="reference internal" href="../../ref/settings.html#std:setting-USER"><tt class="xref std std-setting docutils literal"><span class="pre">USER</span></tt></a>, so you’ll need to make sure that the given user account has sufficient privileges to create a new database on the system.</font></p>
+<p><font id="56">For fine-grained control over the character encoding of your test database, use the <a class="reference internal" href="../../ref/settings.html#std:setting-TEST_CHARSET"><tt class="xref std std-setting docutils literal"><span class="pre">CHARSET</span></tt></a> TEST option. </font><font id="57">If you’re using MySQL, you can also use the <a class="reference internal" href="../../ref/settings.html#std:setting-TEST_COLLATION"><tt class="xref std std-setting docutils literal"><span class="pre">COLLATION</span></tt></a> option to control the particular collation used by the test database. </font><font id="58">See the <a class="reference internal" href="../../ref/settings.html"><em>settings documentation</em></a> for details of these and other advanced settings.</font></p>
+<p><font id="59">If using a SQLite in-memory database with Python 3.4+ and SQLite 3.7.13+, <a class="reference external" href="https://www.sqlite.org/sharedcache.html">shared cache</a> will be enabled, so you can write tests with ability to share the database between threads.</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="60">The different options in the <a class="reference internal" href="../../ref/settings.html#std:setting-DATABASE-TEST"><tt class="xref std std-setting docutils literal"><span class="pre">TEST</span></tt></a> database setting used to be separate options in the database settings dictionary, prefixed with <tt class="docutils literal"><span class="pre">TEST_</span></tt>.</font></p>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.8:</span> <p><font id="61">The ability to use SQLite with a shared cache as described above was added.</font></p>
+</div>
+<div class="admonition-finding-data-from-your-production-database-when-running-tests admonition">
+<p class="first admonition-title"><font id="62">Finding data from your production database when running tests?</font></p>
+<p><font id="63">If your code attempts to access the database when its modules are compiled, this will occur <em>before</em> the test database is set up, with potentially unexpected results. </font><font id="64">For example, if you have a database query in module-level code and a real database exists, production data could pollute your tests. </font><font id="65"><em>It is a bad idea to have such import-time database queries in your code</em> anyway - rewrite your code so that it doesn’t do this.</font></p>
+<div class="last versionadded">
+<span class="title">New in Django 1.7:</span> <p><font id="66">This also applies to customized implementations of <a class="reference internal" href="../../ref/applications.html#django.apps.AppConfig.ready" title="django.apps.AppConfig.ready"><tt class="xref py py-meth docutils literal"><span class="pre">ready()</span></tt></a>.</font></p>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title"><font id="67">See also</font></p>
+<p class="last"><font id="68">The <a class="reference internal" href="advanced.html#topics-testing-advanced-multidb"><em>advanced multi-db testing topics</em></a>.</font></p>
+</div>
+</div>
+<div class="section" id="s-order-in-which-tests-are-executed">
+<span id="s-order-of-tests"></span><span id="order-in-which-tests-are-executed"></span><span id="order-of-tests"></span><h3><font id="108">Order in which tests are executed</font><a class="headerlink" href="overview.html#order-in-which-tests-are-executed" title="Permalink to this headline">¶</a></h3>
+<p><font id="69">In order to guarantee that all <tt class="docutils literal"><span class="pre">TestCase</span></tt> code starts with a clean database, the Django test runner reorders tests in the following way:</font></p>
+<ul class="simple">
+<li><font id="119">All <a class="reference internal" href="tools.html#django.test.TestCase" title="django.test.TestCase"><tt class="xref py py-class docutils literal"><span class="pre">TestCase</span></tt></a> subclasses are run first.</font></li>
+<li><font id="120">Then, all other Django-based tests (test cases based on <a class="reference internal" href="tools.html#django.test.SimpleTestCase" title="django.test.SimpleTestCase"><tt class="xref py py-class docutils literal"><span class="pre">SimpleTestCase</span></tt></a>, including <a class="reference internal" href="tools.html#django.test.TransactionTestCase" title="django.test.TransactionTestCase"><tt class="xref py py-class docutils literal"><span class="pre">TransactionTestCase</span></tt></a>) are run with no particular ordering guaranteed nor enforced among them.</font></li>
+<li><font id="121">Then any other <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.</span></tt></a></font><font id="122">TestCase tests (including doctests) that may alter the database without restoring it to its original state are run.</font></li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title"><font id="70">Note</font></p>
+<p class="last"><font id="71">The new ordering of tests may reveal unexpected dependencies on test case ordering. </font><font id="72">This is the case with doctests that relied on state left in the database by a given <a class="reference internal" href="tools.html#django.test.TransactionTestCase" title="django.test.TransactionTestCase"><tt class="xref py py-class docutils literal"><span class="pre">TransactionTestCase</span></tt></a> test, they must be updated to be able to run independently.</font></p>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.8:</span> <p><font id="73">You may reverse the execution order inside groups by passing <a class="reference internal" href="../../ref/django-admin.html#django-admin-option---reverse"><tt class="xref std std-djadminopt docutils literal"><span class="pre">--reverse</span></tt></a> to the test command. </font><font id="74">This can help with ensuring your tests are independent from each other.</font></p>
+</div>
+</div>
+<div class="section" id="s-rollback-emulation">
+<span id="s-test-case-serialized-rollback"></span><span id="rollback-emulation"></span><span id="test-case-serialized-rollback"></span><h3><font id="109">Rollback emulation</font><a class="headerlink" href="overview.html#rollback-emulation" title="Permalink to this headline">¶</a></h3>
+<p><font id="75">Any initial data loaded in migrations will only be available in <tt class="docutils literal"><span class="pre">TestCase</span></tt> tests and not in <tt class="docutils literal"><span class="pre">TransactionTestCase</span></tt> tests, and additionally only on backends where transactions are supported (the most important exception being MyISAM). </font><font id="76">This is also true for tests which rely on <tt class="docutils literal"><span class="pre">TransactionTestCase</span></tt> such as <a class="reference internal" href="tools.html#django.test.LiveServerTestCase" title="django.test.LiveServerTestCase"><tt class="xref py py-class docutils literal"><span class="pre">LiveServerTestCase</span></tt></a> and <a class="reference internal" href="../../ref/contrib/staticfiles.html#django.contrib.staticfiles.testing.StaticLiveServerTestCase" title="django.contrib.staticfiles.testing.StaticLiveServerTestCase"><tt class="xref py py-class docutils literal"><span class="pre">StaticLiveServerTestCase</span></tt></a>.</font></p>
+<p><font id="77">Django can reload that data for you on a per-testcase basis by setting the <tt class="docutils literal"><span class="pre">serialized_rollback</span></tt> option to <tt class="docutils literal"><span class="pre">True</span></tt> in the body of the <tt class="docutils literal"><span class="pre">TestCase</span></tt> or <tt class="docutils literal"><span class="pre">TransactionTestCase</span></tt>, but note that this will slow down that test suite by approximately 3x.</font></p>
+<p><font id="78">Third-party apps or those developing against MyISAM will need to set this; </font><font id="79">in general, however, you should be developing your own projects against a transactional database and be using <tt class="docutils literal"><span class="pre">TestCase</span></tt> for most tests, and thus not need this setting.</font></p>
+<p><font id="80">The initial serialization is usually very quick, but if you wish to exclude some apps from this process (and speed up test runs slightly), you may add those apps to <a class="reference internal" href="../../ref/settings.html#std:setting-TEST_NON_SERIALIZED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">TEST_NON_SERIALIZED_APPS</span></tt></a>.</font></p>
+<p><font id="81">Apps without migrations are not affected; </font><font id="82"><tt class="docutils literal"><span class="pre">initial_data</span></tt> fixtures are reloaded as usual.</font></p>
+</div>
+<div class="section" id="s-other-test-conditions">
+<span id="other-test-conditions"></span><h3><font id="110">Other test conditions</font><a class="headerlink" href="overview.html#other-test-conditions" title="Permalink to this headline">¶</a></h3>
+<p><font id="83">Regardless of the value of the <a class="reference internal" href="../../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a> setting in your configuration file, all Django tests run with <a class="reference internal" href="../../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a>=False. </font><font id="84">This is to ensure that the observed output of your code matches what will be seen in a production setting.</font></p>
+<p><font id="85">Caches are not cleared after each test, and running “manage.py test fooapp” can insert data from the tests into the cache of a live system if you run your tests in production because, unlike databases, a separate “test cache” is not used. </font><font id="86">This behavior <a class="reference external" href="https://code.djangoproject.com/ticket/11505">may change</a> in the future.</font></p>
+</div>
+<div class="section" id="s-understanding-the-test-output">
+<span id="understanding-the-test-output"></span><h3><font id="111">Understanding the test output</font><a class="headerlink" href="overview.html#understanding-the-test-output" title="Permalink to this headline">¶</a></h3>
+<p><font id="87">When you run your tests, you’ll see a number of messages as the test runner prepares itself. </font><font id="88">You can control the level of detail of these messages with the <tt class="docutils literal"><span class="pre">verbosity</span></tt> option on the command line:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>Creating test database...
+Creating table myapp_animal
+Creating table myapp_mineral
+Loading 'initial_data' fixtures...
+No fixtures found.
+</pre></div>
+</div>
+<p><font id="89">This tells you that the test runner is creating a test database, as described in the previous section.</font></p>
+<p><font id="90">Once the test database has been created, Django will run your tests. </font><font id="91">If everything goes well, you’ll see something like this:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>----------------------------------------------------------------------
+Ran 22 tests in 0.221s
+
+OK
+</pre></div>
+</div>
+<p><font id="92">If there are test failures, however, you’ll see full details about which tests failed:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>======================================================================
+FAIL: test_was_published_recently_with_future_poll (polls.tests.PollMethodTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/mysite/polls/tests.py", line 16, in test_was_published_recently_with_future_poll
+    self.assertEqual(future_poll.was_published_recently(), False)
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)
+</pre></div>
+</div>
+<p><font id="93">A full explanation of this error output is beyond the scope of this document, but it’s pretty intuitive. </font><font id="94">You can consult the documentation of Python’s <a class="reference external" href="https://docs.python.org/3/library/unittest.html#module-unittest" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">unittest</span></tt></a> library for details.</font></p>
+<p><font id="95">Note that the return code for the test-runner script is 1 for any number of failed and erroneous tests. </font><font id="96">If all the tests pass, the return code is 0. </font><font id="97">This feature is useful if you’re using the test-runner script in a shell script and need to test for success or failure at that level.</font></p>
+</div>
+<div class="section" id="s-speeding-up-the-tests">
+<span id="speeding-up-the-tests"></span><h3><font id="112">Speeding up the tests</font><a class="headerlink" href="overview.html#speeding-up-the-tests" title="Permalink to this headline">¶</a></h3>
+<p><font id="98">In recent versions of Django, the default password hasher is rather slow by design. </font><font id="99">If during your tests you are authenticating many users, you may want to use a custom settings file and set the <a class="reference internal" href="../../ref/settings.html#std:setting-PASSWORD_HASHERS"><tt class="xref std std-setting docutils literal"><span class="pre">PASSWORD_HASHERS</span></tt></a> setting to a faster hashing algorithm:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">PASSWORD_HASHERS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">'django.contrib.auth.hashers.MD5PasswordHasher'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="100">Don’t forget to also include in <a class="reference internal" href="../../ref/settings.html#std:setting-PASSWORD_HASHERS"><tt class="xref std std-setting docutils literal"><span class="pre">PASSWORD_HASHERS</span></tt></a> any hashing algorithm used in fixtures, if any.</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="113">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="overview.html#"><font id="123">Writing and running tests</font></a><ul>
+<li><a class="reference internal" href="overview.html#writing-tests"><font id="124">Writing tests</font></a></li>
+<li><a class="reference internal" href="overview.html#running-tests"><font id="125">Running tests</font></a><ul>
+<li><a class="reference internal" href="overview.html#the-test-database"><font id="126">The test database</font></a></li>
+<li><a class="reference internal" href="overview.html#order-in-which-tests-are-executed"><font id="127">Order in which tests are executed</font></a></li>
+<li><a class="reference internal" href="overview.html#rollback-emulation"><font id="128">Rollback emulation</font></a></li>
+<li><a class="reference internal" href="overview.html#other-test-conditions"><font id="129">Other test conditions</font></a></li>
+<li><a class="reference internal" href="overview.html#understanding-the-test-output"><font id="130">Understanding the test output</font></a></li>
+<li><a class="reference internal" href="overview.html#speeding-up-the-tests"><font id="131">Speeding up the tests</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="114">Browse</font></h3>
+<ul>
+<li><font id="132">Prev: <a href="index.html">Testing in Django</a></font></li>
+<li><font id="133">Next: <a href="tools.html">Testing tools</a></font></li>
+</ul>
+<h3><font id="115">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="134">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../index.html"><font id="135">Using Django</font></a>
+<ul><li><a href="index.html"><font id="136">Testing in Django</font></a>
+<ul><li><font id="137">Writing and running tests</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="116">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/testing/overview.txt" rel="nofollow"><font id="138">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="117">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="101"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="118">Last update:</font></h3>
+<p class="topless"><font id="102">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="index.html" title="Testing in Django">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="tools.html" title="Testing tools">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/testing/overview.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

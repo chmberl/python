@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>管理静态文件(CSS, images) — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="http://python.usyiyi.cn/django/howto/index.html" rel="up" title="“How-to” guides"/>
+<link href="deployment.html" rel="next" title="Deploying static files"/>
+<link href="../outputting-pdf.html" rel="prev" title="Outputting PDFs with Django"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/static-files/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/static-files/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="53">Django 1.8.2.dev20150513143415 documentation</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="../outputting-pdf.html" title="Outputting PDFs with Django">previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="deployment.html" title="Deploying static files">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="howto-static-files-index">
+<div class="section" id="s-managing-static-files-css-images">
+<span id="managing-static-files-css-images"></span><h1><font id="54">管理静态文件 (CSS, images)</font><a class="headerlink" href="index.html#managing-static-files-css-images" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">网站通常需要额外的文件，例如:image，JavaScript，或者CSS文件。</font><font id="2">在Django中，我们将这类文件统称为“静态文件(static files)”。</font><font id="3">Django提供了 <a class="reference internal" href="../../ref/contrib/staticfiles.html#module-django.contrib.staticfiles" title="django.contrib.staticfiles: An app for handling static files."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.staticfiles</span></tt></a> 来帮助我们管理他们。</font></p>
+<p><font id="4">本页面描述了如何来提供这些静态文件。</font></p>
+<div class="section" id="s-configuring-static-files">
+<span id="configuring-static-files"></span><h2><font id="55">配置静态文件</font><a class="headerlink" href="index.html#configuring-static-files" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first"><font id="5">确认 <tt class="docutils literal"><span class="pre">django.contrib.staticfiles</span></tt> 包含在你的 <a class="reference internal" href="../../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>中。</font></p>
+</li>
+<li><p class="first"><font id="6">在你的settings文件中定义了<a class="reference internal" href="../../ref/settings.html#std:setting-STATIC_URL"><tt class="xref std std-setting docutils literal"><span class="pre">STATIC_URL</span></tt></a>，例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">STATIC_URL</span> <span class="o">=</span> <span class="s">'/static/'</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="7">在你的模板中，要么像<tt class="docutils literal"><span class="pre">/static/my_app/myexample.jpg</span></tt>一样采用硬编码url， 要么，利用经过配置的<a class="reference internal" href="../../ref/settings.html#std:setting-STATICFILES_STORAGE"><tt class="xref std std-setting docutils literal"><span class="pre">STATICFILES_STORAGE</span></tt></a>存储（这使得你选择硬件网络来保存静态文件时变得更加容易），采用 <a class="reference internal" href="../../ref/contrib/staticfiles.html#std:templatetag-staticfiles-static"><tt class="xref std std-ttag docutils literal"><span class="pre">static</span></tt></a>模板标签去创建url来建立有关联的路径。</font></p>
+<div class="highlight-html+django" id="staticfiles-in-templates"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">load</span> <span class="nv">staticfiles</span> <span class="cp">%}</span>
+<span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"</span><span class="cp">{%</span> <span class="k">static</span> <span class="s2">"my_app/myexample.jpg"</span> <span class="cp">%}</span><span class="s">"</span> <span class="na">alt=</span><span class="s">"My image"</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="8">在你的应用中，将你的静态文件存储在名为<tt class="docutils literal"><span class="pre">static</span></tt> 目录下。</font><font id="9">例如：<tt class="docutils literal"><span class="pre">my_app/static/my_app/myimage.jpg</span></tt>。</font></p>
+</li>
+</ol>
+<div class="admonition-serving-the-files admonition">
+<p class="first admonition-title"><font id="10">提示内容</font></p>
+<p><font id="11">加上你原本确认的步骤，你还需要实际提供静态文件。</font></p>
+<p><font id="12">在开发过程中，如果你将 <a class="reference internal" href="../../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a>设置成 <tt class="docutils literal"><span class="pre">True</span></tt>的话，如果你使用<a class="reference internal" href="../../ref/contrib/staticfiles.html#module-django.contrib.staticfiles" title="django.contrib.staticfiles: An app for handling static files."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.staticfiles</span></tt></a>，<a class="reference internal" href="../../ref/django-admin.html#django-admin-runserver"><tt class="xref std std-djadmin docutils literal"><span class="pre">runserver</span></tt></a> 会自动的完成。 (参见<a class="reference internal" href="../../ref/contrib/staticfiles.html#django.contrib.staticfiles.views.serve" title="django.contrib.staticfiles.views.serve"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.staticfiles.views.serve()</span></tt></a>)。</font></p>
+<p><font id="13">This method is <strong>grossly inefficient</strong> and probably <strong>insecure</strong>, so it is <strong>unsuitable for production</strong>.</font></p>
+<p class="last"><font id="14">See <a class="reference internal" href="deployment.html"><em>Deploying static files</em></a> for proper strategies to serve static files in production environments.</font></p>
+</div>
+<p><font id="15">Your project will probably also have static assets that aren’t tied to a particular app. </font><font id="16">In addition to using a <tt class="docutils literal"><span class="pre">static/</span></tt> directory inside your apps, you can define a list of directories (<a class="reference internal" href="../../ref/settings.html#std:setting-STATICFILES_DIRS"><tt class="xref std std-setting docutils literal"><span class="pre">STATICFILES_DIRS</span></tt></a>) in your settings file where Django will also look for static files. </font><font id="17">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">STATICFILES_DIRS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s">"static"</span><span class="p">),</span>
+    <span class="s">'/var/www/static/'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="18">See the documentation for the <a class="reference internal" href="../../ref/settings.html#std:setting-STATICFILES_FINDERS"><tt class="xref std std-setting docutils literal"><span class="pre">STATICFILES_FINDERS</span></tt></a> setting for details on how <tt class="docutils literal"><span class="pre">staticfiles</span></tt> finds your files.</font></p>
+<div class="admonition-static-file-namespacing admonition">
+<p class="first admonition-title"><font id="19">Static file namespacing</font></p>
+<p class="last"><font id="20">Now we <em>might</em> be able to get away with putting our static files directly in <tt class="docutils literal"><span class="pre">my_app/static/</span></tt> (rather than creating another <tt class="docutils literal"><span class="pre">my_app</span></tt> subdirectory), but it would actually be a bad idea. </font><font id="21">Django will use the first static file it finds whose name matches, and if you had a static file with the same name in a <em>different</em> application, Django would be unable to distinguish between them. </font><font id="22">We need to be able to point Django at the right one, and the easiest way to ensure this is by <em>namespacing</em> them. </font><font id="23">That is, by putting those static files inside <em>another</em> directory named for the application itself.</font></p>
+</div>
+</div>
+<div class="section" id="s-serving-static-files-during-development">
+<span id="s-serving-static-files-in-development"></span><span id="serving-static-files-during-development"></span><span id="serving-static-files-in-development"></span><h2><font id="56">Serving static files during development.</font><a class="headerlink" href="index.html#serving-static-files-during-development" title="Permalink to this headline">¶</a></h2>
+<p><font id="24">If you use <a class="reference internal" href="../../ref/contrib/staticfiles.html#module-django.contrib.staticfiles" title="django.contrib.staticfiles: An app for handling static files."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.staticfiles</span></tt></a> as explained above, <a class="reference internal" href="../../ref/django-admin.html#django-admin-runserver"><tt class="xref std std-djadmin docutils literal"><span class="pre">runserver</span></tt></a> will do this automatically when <a class="reference internal" href="../../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a> is set to <tt class="docutils literal"><span class="pre">True</span></tt>. </font><font id="25">If you don’t have <tt class="docutils literal"><span class="pre">django.contrib.staticfiles</span></tt> in <a class="reference internal" href="../../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>, you can still manually serve static files using the <a class="reference internal" href="../../ref/contrib/staticfiles.html#django.contrib.staticfiles.views.serve" title="django.contrib.staticfiles.views.serve"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.staticfiles.views.serve()</span></tt></a> view.</font></p>
+<p><font id="26">This is not suitable for production use! </font><font id="27">For some common deployment strategies, see <a class="reference internal" href="deployment.html"><em>Deploying static files</em></a>.</font></p>
+<p><font id="28">For example, if your <a class="reference internal" href="../../ref/settings.html#std:setting-STATIC_URL"><tt class="xref std std-setting docutils literal"><span class="pre">STATIC_URL</span></tt></a> is defined as <tt class="docutils literal"><span class="pre">/static/</span></tt>, you can do this by adding the following snippet to your urls.py:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls.static</span> <span class="kn">import</span> <span class="n">static</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c"># ... the rest of your URLconf goes here ...</span>
+<span class="p">]</span> <span class="o">+</span> <span class="n">static</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">STATIC_URL</span><span class="p">,</span> <span class="n">document_root</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">STATIC_ROOT</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="29">Note</font></p>
+<p><font id="30">This helper function works only in debug mode and only if the given prefix is local (e.g. <tt class="docutils literal"><span class="pre">/static/</span></tt>) and not a URL (e.g. <tt class="docutils literal"><span class="pre">http://static.example.com/</span></tt>).</font></p>
+<p class="last"><font id="31">Also this helper function only serves the actual <a class="reference internal" href="../../ref/settings.html#std:setting-STATIC_ROOT"><tt class="xref std std-setting docutils literal"><span class="pre">STATIC_ROOT</span></tt></a> folder; </font><font id="32">it doesn’t perform static files discovery like <a class="reference internal" href="../../ref/contrib/staticfiles.html#module-django.contrib.staticfiles" title="django.contrib.staticfiles: An app for handling static files."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.staticfiles</span></tt></a>.</font></p>
+</div>
+</div>
+<div class="section" id="s-serving-files-uploaded-by-a-user-during-development">
+<span id="s-serving-uploaded-files-in-development"></span><span id="serving-files-uploaded-by-a-user-during-development"></span><span id="serving-uploaded-files-in-development"></span><h2><font id="57">Serving files uploaded by a user during development.</font><a class="headerlink" href="index.html#serving-files-uploaded-by-a-user-during-development" title="Permalink to this headline">¶</a></h2>
+<p><font id="33">During development, you can serve user-uploaded media files from <a class="reference internal" href="../../ref/settings.html#std:setting-MEDIA_ROOT"><tt class="xref std std-setting docutils literal"><span class="pre">MEDIA_ROOT</span></tt></a> using the <a class="reference internal" href="../../ref/contrib/staticfiles.html#django.contrib.staticfiles.views.serve" title="django.contrib.staticfiles.views.serve"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.staticfiles.views.serve()</span></tt></a> view.</font></p>
+<p><font id="34">This is not suitable for production use! </font><font id="35">For some common deployment strategies, see <a class="reference internal" href="deployment.html"><em>Deploying static files</em></a>.</font></p>
+<p><font id="36">For example, if your <a class="reference internal" href="../../ref/settings.html#std:setting-MEDIA_URL"><tt class="xref std std-setting docutils literal"><span class="pre">MEDIA_URL</span></tt></a> is defined as <tt class="docutils literal"><span class="pre">/media/</span></tt>, you can do this by adding the following snippet to your urls.py:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls.static</span> <span class="kn">import</span> <span class="n">static</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c"># ... the rest of your URLconf goes here ...</span>
+<span class="p">]</span> <span class="o">+</span> <span class="n">static</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_URL</span><span class="p">,</span> <span class="n">document_root</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="37">Note</font></p>
+<p class="last"><font id="38">This helper function works only in debug mode and only if the given prefix is local (e.g. <tt class="docutils literal"><span class="pre">/media/</span></tt>) and not a URL (e.g. <tt class="docutils literal"><span class="pre">http://media.example.com/</span></tt>).</font></p>
+</div>
+</div>
+<div class="section" id="s-testing">
+<span id="s-staticfiles-testing-support"></span><span id="testing"></span><span id="staticfiles-testing-support"></span><h2><font id="58">Testing</font><a class="headerlink" href="index.html#testing" title="Permalink to this headline">¶</a></h2>
+<p><font id="39">When running tests that use actual HTTP requests instead of the built-in testing client (i.e. when using the built-in <a class="reference internal" href="../../topics/testing/tools.html#django.test.LiveServerTestCase" title="django.test.LiveServerTestCase"><tt class="xref py py-class docutils literal"><span class="pre">LiveServerTestCase</span></tt></a>) the static assets need to be served along the rest of the content so the test environment reproduces the real one as faithfully as possible, but <tt class="docutils literal"><span class="pre">LiveServerTestCase</span></tt> has only very basic static file-serving functionality: It doesn’t know about the finders feature of the <tt class="docutils literal"><span class="pre">staticfiles</span></tt> application and assumes the static content has already been collected under <a class="reference internal" href="../../ref/settings.html#std:setting-STATIC_ROOT"><tt class="xref std std-setting docutils literal"><span class="pre">STATIC_ROOT</span></tt></a>.</font></p>
+<p><font id="40">Because of this, <tt class="docutils literal"><span class="pre">staticfiles</span></tt> ships its own <a class="reference internal" href="../../ref/contrib/staticfiles.html#django.contrib.staticfiles.testing.StaticLiveServerTestCase" title="django.contrib.staticfiles.testing.StaticLiveServerTestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.staticfiles.testing.StaticLiveServerTestCase</span></tt></a>, a subclass of the built-in one that has the ability to transparently serve all the assets during execution of these tests in a way very similar to what we get at development time with <tt class="docutils literal"><span class="pre">DEBUG</span> <span class="pre">=</span> <span class="pre">True</span></tt>, i.e. without having to collect them using <a class="reference internal" href="../../ref/contrib/staticfiles.html#django-admin-collectstatic"><tt class="xref std std-djadmin docutils literal"><span class="pre">collectstatic</span></tt></a> first.</font></p>
+<div class="versionadded">
+<span class="title">New in Django 1.7:</span> <p><font id="41"><a class="reference internal" href="../../ref/contrib/staticfiles.html#django.contrib.staticfiles.testing.StaticLiveServerTestCase" title="django.contrib.staticfiles.testing.StaticLiveServerTestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.staticfiles.testing.StaticLiveServerTestCase</span></tt></a> is new in Django 1.7. </font><font id="42">Previously its functionality was provided by <a class="reference internal" href="../../topics/testing/tools.html#django.test.LiveServerTestCase" title="django.test.LiveServerTestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.test.LiveServerTestCase</span></tt></a>.</font></p>
+</div>
+</div>
+<div class="section" id="s-deployment">
+<span id="deployment"></span><h2><font id="59">Deployment</font><a class="headerlink" href="index.html#deployment" title="Permalink to this headline">¶</a></h2>
+<p><font id="43"><a class="reference internal" href="../../ref/contrib/staticfiles.html#module-django.contrib.staticfiles" title="django.contrib.staticfiles: An app for handling static files."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.staticfiles</span></tt></a> provides a convenience management command for gathering static files in a single directory so you can serve them easily.</font></p>
+<ol class="arabic">
+<li><p class="first"><font id="44">Set the <a class="reference internal" href="../../ref/settings.html#std:setting-STATIC_ROOT"><tt class="xref std std-setting docutils literal"><span class="pre">STATIC_ROOT</span></tt></a> setting to the directory from which you’d like to serve these files, for example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">STATIC_ROOT</span> <span class="o">=</span> <span class="s">"/var/www/example.com/static/"</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="45">Run the <a class="reference internal" href="../../ref/contrib/staticfiles.html#django-admin-collectstatic"><tt class="xref std std-djadmin docutils literal"><span class="pre">collectstatic</span></tt></a> management command:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>$ python manage.py collectstatic
+</pre></div>
+</div>
+<p><font id="46">This will copy all files from your static folders into the <a class="reference internal" href="../../ref/settings.html#std:setting-STATIC_ROOT"><tt class="xref std std-setting docutils literal"><span class="pre">STATIC_ROOT</span></tt></a> directory.</font></p>
+</li>
+<li><p class="first"><font id="47">Use a web server of your choice to serve the files. </font><font id="48"><a class="reference internal" href="deployment.html"><em>Deploying static files</em></a> covers some common deployment strategies for static files.</font></p>
+</li>
+</ol>
+</div>
+<div class="section" id="s-learn-more">
+<span id="learn-more"></span><h2><font id="60">Learn more</font><a class="headerlink" href="index.html#learn-more" title="Permalink to this headline">¶</a></h2>
+<p><font id="49">This document has covered the basics and some common usage patterns. </font><font id="50">For complete details on all the settings, commands, template tags, and other pieces included in <a class="reference internal" href="../../ref/contrib/staticfiles.html#module-django.contrib.staticfiles" title="django.contrib.staticfiles: An app for handling static files."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.staticfiles</span></tt></a>, see <a class="reference internal" href="../../ref/contrib/staticfiles.html"><em>the staticfiles reference</em></a>.</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="61">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="index.html#"><font id="67">Managing static files (CSS, images)</font></a><ul>
+<li><a class="reference internal" href="index.html#configuring-static-files"><font id="68">Configuring static files</font></a></li>
+<li><a class="reference internal" href="index.html#serving-static-files-during-development"><font id="69">Serving static files during development.</font></a></li>
+<li><a class="reference internal" href="index.html#serving-files-uploaded-by-a-user-during-development"><font id="70">Serving files uploaded by a user during development.</font></a></li>
+<li><a class="reference internal" href="index.html#testing"><font id="71">Testing</font></a></li>
+<li><a class="reference internal" href="index.html#deployment"><font id="72">Deployment</font></a></li>
+<li><a class="reference internal" href="index.html#learn-more"><font id="73">Learn more</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="62">Browse</font></h3>
+<ul>
+<li><font id="74">Prev: <a href="../outputting-pdf.html">Outputting PDFs with Django</a></font></li>
+<li><font id="75">Next: <a href="deployment.html">Deploying static files</a></font></li>
+</ul>
+<h3><font id="63">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="76">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="http://python.usyiyi.cn/django/howto/index.html">“How-to” guides</a>
+<ul><li><font id="77">Managing static files (CSS, images)</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="64">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/howto/static-files/index.txt" rel="nofollow"><font id="78">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="65">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="51"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="66">Last update:</font></h3>
+<p class="topless"><font id="52">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="../outputting-pdf.html" title="Outputting PDFs with Django">previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="deployment.html" title="Deploying static files">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/howto/static-files/index';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Django 中的异常 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="API Reference"/>
+<link href="files/index.html" rel="next" title="File handling"/>
+<link href="django-admin.html" rel="prev" title="django-admin and manage.py"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="49">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="django-admin.html" title="django-admin and manage.py">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="files/index.html" title="File handling">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-exceptions">
+<div class="section" id="s-django-exceptions">
+<span id="django-exceptions"></span><h1><font id="50">Django异常</font><a class="headerlink" href="exceptions.html#django-exceptions" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">DJango会抛出一些它自己的异常，以及Python的标准异常。</font></p>
+<div class="section" id="s-module-django.core.exceptions">
+<span id="s-django-core-exceptions"></span><span id="module-django.core.exceptions"></span><span id="django-core-exceptions"></span><h2><font id="51">Django核心异常</font><a class="headerlink" href="exceptions.html#module-django.core.exceptions" title="Permalink to this headline">¶</a></h2>
+<p><font id="2">Django核心异常类定义在<tt class="docutils literal"><span class="pre">django.core.exceptions</span></tt>中。</font></p>
+<div class="section" id="s-objectdoesnotexist">
+<span id="objectdoesnotexist"></span><h3><font id="58">ObjectDoesNotExist</font><a class="headerlink" href="exceptions.html#objectdoesnotexist" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.ObjectDoesNotExist">
+<em class="property">exception </em><tt class="descname">ObjectDoesNotExist</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#ObjectDoesNotExist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.ObjectDoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="3"><a class="reference internal" href="models/instances.html#django.db.models.Model.DoesNotExist" title="django.db.models.Model.DoesNotExist"><tt class="xref py py-exc docutils literal"><span class="pre">DoesNotExist</span></tt></a>异常的基类；</font><font id="4">对<tt class="docutils literal"><span class="pre">ObjectDoesNotExist</span></tt>的<tt class="docutils literal"><span class="pre">try/except</span></tt>会为所有模型捕获到所有<a class="reference internal" href="models/instances.html#django.db.models.Model.DoesNotExist" title="django.db.models.Model.DoesNotExist"><tt class="xref py py-exc docutils literal"><span class="pre">DoesNotExist</span></tt></a> 异常。</font></p>
+<p><font id="5"><a class="reference internal" href="exceptions.html#django.core.exceptions.ObjectDoesNotExist" title="django.core.exceptions.ObjectDoesNotExist"><tt class="xref py py-exc docutils literal"><span class="pre">ObjectDoesNotExist</span></tt></a> 和 <a class="reference internal" href="models/instances.html#django.db.models.Model.DoesNotExist" title="django.db.models.Model.DoesNotExist"><tt class="xref py py-exc docutils literal"><span class="pre">DoesNotExist</span></tt></a>的更多信息请见&nbsp;<a class="reference internal" href="models/querysets.html#django.db.models.query.QuerySet.get" title="django.db.models.query.QuerySet.get"><tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt></a>。
+</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-fielddoesnotexist">
+<span id="fielddoesnotexist"></span><h3><font id="59">FieldDoesNotExist</font><a class="headerlink" href="exceptions.html#fielddoesnotexist" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.FieldDoesNotExist">
+<em class="property">exception </em><tt class="descname">FieldDoesNotExist</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#FieldDoesNotExist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.FieldDoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="6">当被请求的字段在模型或模型的父类中不存在时，<tt class="docutils literal"><span class="pre">FieldDoesNotExist</span></tt>异常由模型的&nbsp;<tt class="docutils literal"><span class="pre">_meta.get_field()</span></tt>方法抛出。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="7">之前的版本中，异常只在<tt class="docutils literal"><span class="pre">django.db.models.fields</span></tt>中定义，并不是公共API的一部分。</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-multipleobjectsreturned">
+<span id="multipleobjectsreturned"></span><h3><font id="60">MultipleObjectsReturned</font><a class="headerlink" href="exceptions.html#multipleobjectsreturned" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descname">MultipleObjectsReturned</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#MultipleObjectsReturned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="8"><a class="reference internal" href="exceptions.html#django.core.exceptions.MultipleObjectsReturned" title="django.core.exceptions.MultipleObjectsReturned"><tt class="xref py py-exc docutils literal"><span class="pre">MultipleObjectsReturned</span></tt></a>异常由查询产生，当预期只有一个对象，但是有多个对象返回的时候。</font><font id="9">这个异常的一个基础版本在<a class="reference internal" href="exceptions.html#module-django.core.exceptions" title="django.core.exceptions: Django core exceptions"><tt class="xref py py-mod docutils literal"><span class="pre">django.core.exceptions</span></tt></a>中提供。</font><font id="10">每个模型类都包含一个它的子类版本，它可以用于定义返回多个对象的特定的对象类型。</font></p>
+<p><font id="11">详见<a class="reference internal" href="models/querysets.html#django.db.models.query.QuerySet.get" title="django.db.models.query.QuerySet.get"><tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt></a>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-suspiciousoperation">
+<span id="suspiciousoperation"></span><h3><font id="61">SuspiciousOperation</font><a class="headerlink" href="exceptions.html#suspiciousoperation" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.SuspiciousOperation">
+<em class="property">exception </em><tt class="descname">SuspiciousOperation</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#SuspiciousOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.SuspiciousOperation" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="12">当用户进行的操作在安全方面可疑的时候，抛出<a class="reference internal" href="exceptions.html#django.core.exceptions.SuspiciousOperation" title="django.core.exceptions.SuspiciousOperation"><tt class="xref py py-exc docutils literal"><span class="pre">SuspiciousOperation</span></tt></a>异常，例如篡改会话cookie。</font><font id="13"><tt class="docutils literal"><span class="pre">SuspiciousOperation</span></tt>的子类包括：</font></p>
+<ul class="simple">
+<li><font id="80"><tt class="docutils literal"><span class="pre">DisallowedHost</span></tt></font></li>
+<li><font id="81"><tt class="docutils literal"><span class="pre">DisallowedModelAdminLookup</span></tt></font></li>
+<li><font id="82"><tt class="docutils literal"><span class="pre">DisallowedModelAdminToField</span></tt></font></li>
+<li><font id="83"><tt class="docutils literal"><span class="pre">DisallowedRedirect</span></tt></font></li>
+<li><font id="84"><tt class="docutils literal"><span class="pre">InvalidSessionKey</span></tt></font></li>
+<li><font id="85"><tt class="docutils literal"><span class="pre">SuspiciousFileOperation</span></tt></font></li>
+<li><font id="86"><tt class="docutils literal"><span class="pre">SuspiciousMultipartForm</span></tt></font></li>
+<li><font id="87"><tt class="docutils literal"><span class="pre">SuspiciousSession</span></tt></font></li>
+</ul>
+<p><font id="14">如果<tt class="docutils literal"><span class="pre">SuspiciousOperation</span></tt>异常到达了WSGI处理器层，它会在<tt class="docutils literal"><span class="pre">Error</span></tt>层记录，并导致<a class="reference internal" href="request-response.html#django.http.HttpResponseBadRequest" title="django.http.HttpResponseBadRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponseBadRequest</span></tt></a>异常。
+</font><font id="15">详见<a class="reference internal" href="../topics/logging.html"><em>日志文档</em></a>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-permissiondenied">
+<span id="permissiondenied"></span><h3><font id="62">PermissionDenied</font><a class="headerlink" href="exceptions.html#permissiondenied" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.PermissionDenied">
+<em class="property">exception </em><tt class="descname">PermissionDenied</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#PermissionDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.PermissionDenied" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="16"><a class="reference internal" href="exceptions.html#django.core.exceptions.PermissionDenied" title="django.core.exceptions.PermissionDenied"><tt class="xref py py-exc docutils literal"><span class="pre">PermissionDenied</span></tt></a>异常当用户不被允许来执行请求的操作时产生。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-viewdoesnotexist">
+<span id="viewdoesnotexist"></span><h3><font id="63">ViewDoesNotExist</font><a class="headerlink" href="exceptions.html#viewdoesnotexist" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.ViewDoesNotExist">
+<em class="property">exception </em><tt class="descname">ViewDoesNotExist</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#ViewDoesNotExist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.ViewDoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="17">当所请求的视图不存在时，<a class="reference internal" href="exceptions.html#django.core.exceptions.ViewDoesNotExist" title="django.core.exceptions.ViewDoesNotExist"><tt class="xref py py-exc docutils literal"><span class="pre">ViewDoesNotExist</span></tt></a> 异常由&nbsp;<a class="reference internal" href="urlresolvers.html#module-django.core.urlresolvers" title="django.core.urlresolvers"><tt class="xref py py-mod docutils literal"><span class="pre">django.core.urlresolvers</span></tt></a>产生。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-middlewarenotused">
+<span id="middlewarenotused"></span><h3><font id="64">MiddlewareNotUsed</font><a class="headerlink" href="exceptions.html#middlewarenotused" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.MiddlewareNotUsed">
+<em class="property">exception </em><tt class="descname">MiddlewareNotUsed</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#MiddlewareNotUsed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.MiddlewareNotUsed" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="18">当中间件没有在服务器配置中出现时，产生<a class="reference internal" href="exceptions.html#django.core.exceptions.MiddlewareNotUsed" title="django.core.exceptions.MiddlewareNotUsed"><tt class="xref py py-exc docutils literal"><span class="pre">MiddlewareNotUsed</span></tt></a>异常。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-improperlyconfigured">
+<span id="improperlyconfigured"></span><h3><font id="65">ImproperlyConfigured</font><a class="headerlink" href="exceptions.html#improperlyconfigured" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.ImproperlyConfigured">
+<em class="property">exception </em><tt class="descname">ImproperlyConfigured</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#ImproperlyConfigured"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.ImproperlyConfigured" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="19">DJango配置不当时产生<a class="reference internal" href="exceptions.html#django.core.exceptions.ImproperlyConfigured" title="django.core.exceptions.ImproperlyConfigured"><tt class="xref py py-exc docutils literal"><span class="pre">ImproperlyConfigured</span></tt></a>异常 -- 例如，<tt class="docutils literal"><span class="pre">settings.py</span></tt>中的值不正确或者不可解析。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-fielderror">
+<span id="fielderror"></span><h3><font id="66">FieldError</font><a class="headerlink" href="exceptions.html#fielderror" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.FieldError">
+<em class="property">exception </em><tt class="descname">FieldError</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#FieldError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.FieldError" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="20"><a class="reference internal" href="exceptions.html#django.core.exceptions.FieldError" title="django.core.exceptions.FieldError"><tt class="xref py py-exc docutils literal"><span class="pre">FieldError</span></tt></a>异常当模型字段上出现问题时产生。</font><font id="21">它会由以下原因造成：</font></p>
+<ul class="simple">
+<li><font id="88">模型中的字段与抽象基类中相同名称的字段冲突。</font></li>
+<li><font id="89">排序造成了一个死循环。</font></li>
+<li><font id="90">关键词不能由过滤器参数解析。</font></li>
+<li><font id="91">字段不能由查询参数中的关键词决定。</font></li>
+<li><font id="92">连接（join）不能在指定对象上使用。</font></li>
+<li><font id="93">字段名称不可用。</font></li>
+<li><font id="94">查询包含了无效的&nbsp;order_by参数。</font></li>
+</ul>
+</dd></dl>
+</div>
+<div class="section" id="s-validationerror">
+<span id="validationerror"></span><h3><font id="67">ValidationError</font><a class="headerlink" href="exceptions.html#validationerror" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.exceptions.ValidationError">
+<em class="property">exception </em><tt class="descname">ValidationError</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/exceptions.html#ValidationError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.exceptions.ValidationError" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="22">当表单或模型字段验证失败时抛出<a class="reference internal" href="exceptions.html#django.core.exceptions.ValidationError" title="django.core.exceptions.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>异常。</font><font id="23">关于验证的更多信息，请见<a class="reference internal" href="forms/validation.html"><em>表单字段验证</em></a>, <a class="reference internal" href="models/instances.html#validating-objects"><em>模型字段验证</em></a> 和 <a class="reference internal" href="validators.html"><em>验证器参考</em></a>。</font></p>
+</dd></dl>
+<div class="section" id="s-non-field-errors">
+<span id="non-field-errors"></span><h4><font id="79">NON_FIELD_ERRORS</font><a class="headerlink" href="exceptions.html#non-field-errors" title="Permalink to this headline">¶</a></h4>
+<dl class="data">
+<dt id="django.core.exceptions.NON_FIELD_ERRORS">
+<tt class="descname">NON_FIELD_ERRORS</tt><a class="headerlink" href="exceptions.html#django.core.exceptions.NON_FIELD_ERRORS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="24">在表单或者模型中不属于特定字段的<tt class="docutils literal"><span class="pre">ValidationError</span></tt> 被归类为<tt class="docutils literal"><span class="pre">NON_FIELD_ERRORS</span></tt>。</font><font id="25">This constant is used as a key in dictionaries that otherwise map fields to their respective list of errors.</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-url-resolver-exceptions">
+<span id="url-resolver-exceptions"></span><h2><font id="52">URL解析器异常</font><a class="headerlink" href="exceptions.html#url-resolver-exceptions" title="Permalink to this headline">¶</a></h2>
+<p><font id="26">URL解析器异常定义在<tt class="docutils literal"><span class="pre">django.core.urlresolvers</span></tt>中。</font></p>
+<div class="section" id="s-resolver404">
+<span id="resolver404"></span><h3><font id="68">Resolver404</font><a class="headerlink" href="exceptions.html#resolver404" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.urlresolvers.Resolver404">
+<em class="property">exception </em><tt class="descname">Resolver404</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/urlresolvers.html#Resolver404"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.urlresolvers.Resolver404" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="27">当向&nbsp;<tt class="docutils literal"><span class="pre">resolve()</span></tt> 传递的路径不映射到视图的时候，<a class="reference internal" href="exceptions.html#django.core.urlresolvers.Resolver404" title="django.core.urlresolvers.Resolver404"><tt class="xref py py-exc docutils literal"><span class="pre">Resolver404</span></tt></a>异常由<a class="reference internal" href="urlresolvers.html#django.core.urlresolvers.resolve" title="django.core.urlresolvers.resolve"><tt class="xref py py-func docutils literal"><span class="pre">django.core.urlresolvers.resolve()</span></tt></a>产生。 </font><font id="28">它是&nbsp;<a class="reference internal" href="../topics/http/views.html#django.http.Http404" title="django.http.Http404"><tt class="xref py py-class docutils literal"><span class="pre">django.http.Http404</span></tt></a>的子类。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-noreversematch">
+<span id="noreversematch"></span><h3><font id="69">NoReverseMatch</font><a class="headerlink" href="exceptions.html#noreversematch" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.core.urlresolvers.NoReverseMatch">
+<em class="property">exception </em><tt class="descname">NoReverseMatch</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/urlresolvers.html#NoReverseMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.core.urlresolvers.NoReverseMatch" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="29">当你的URLconf中的一个匹配的URL不能基于提供的参数识别时，<a class="reference internal" href="exceptions.html#django.core.urlresolvers.NoReverseMatch" title="django.core.urlresolvers.NoReverseMatch"><tt class="xref py py-exc docutils literal"><span class="pre">NoReverseMatch</span></tt></a> 异常由 <a class="reference internal" href="urlresolvers.html#module-django.core.urlresolvers" title="django.core.urlresolvers"><tt class="xref py py-mod docutils literal"><span class="pre">django.core.urlresolvers</span></tt></a> 产生。</font></p>
+</dd></dl>
+</div>
+</div>
+<div class="section" id="s-database-exceptions">
+<span id="database-exceptions"></span><h2><font id="53">Database Exceptions</font><a class="headerlink" href="exceptions.html#database-exceptions" title="Permalink to this headline">¶</a></h2>
+<p><font id="30">数据库异常由<tt class="docutils literal"><span class="pre">django.db</span></tt>导入。</font></p>
+<p><font id="31">Django封装了标准的数据库异常，以便确保你的DJango代码拥有这些类的通用实现。</font></p>
+<dl class="exception">
+<dt id="django.db.Error">
+<em class="property">exception </em><tt class="descname">Error</tt><a class="headerlink" href="exceptions.html#django.db.Error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="exception">
+<dt id="django.db.InterfaceError">
+<em class="property">exception </em><tt class="descname">InterfaceError</tt><a class="headerlink" href="exceptions.html#django.db.InterfaceError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="exception">
+<dt id="django.db.DatabaseError">
+<em class="property">exception </em><tt class="descname">DatabaseError</tt><a class="headerlink" href="exceptions.html#django.db.DatabaseError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="exception">
+<dt id="django.db.DataError">
+<em class="property">exception </em><tt class="descname">DataError</tt><a class="headerlink" href="exceptions.html#django.db.DataError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="exception">
+<dt id="django.db.OperationalError">
+<em class="property">exception </em><tt class="descname">OperationalError</tt><a class="headerlink" href="exceptions.html#django.db.OperationalError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="exception">
+<dt id="django.db.IntegrityError">
+<em class="property">exception </em><tt class="descname">IntegrityError</tt><a class="headerlink" href="exceptions.html#django.db.IntegrityError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="exception">
+<dt id="django.db.InternalError">
+<em class="property">exception </em><tt class="descname">InternalError</tt><a class="headerlink" href="exceptions.html#django.db.InternalError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="exception">
+<dt id="django.db.ProgrammingError">
+<em class="property">exception </em><tt class="descname">ProgrammingError</tt><a class="headerlink" href="exceptions.html#django.db.ProgrammingError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="exception">
+<dt id="django.db.NotSupportedError">
+<em class="property">exception </em><tt class="descname">NotSupportedError</tt><a class="headerlink" href="exceptions.html#django.db.NotSupportedError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="32">Django数据库异常的包装器的行为和底层的数据库异常一样。</font><font id="33">详见<span class="target" id="index-0"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0249"><strong>PEP 249</strong></a>，Python 数据库 API 说明 v2.0。</font></p>
+<p><font id="34">按照 <span class="target" id="index-1"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-3134"><strong>PEP 3134</strong></a>，<tt class="docutils literal"><span class="pre">__cause__</span></tt>属性会在原生（底层）的数据库异常中设置，允许访问所提供的任何附加信息。</font><font id="35">（注意这一属性在Python 2和 3下面都可用，虽然&nbsp;<span class="target" id="index-2"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-3134"><strong>PEP 3134</strong></a>通常只用于Python 3。）</font></p>
+<dl class="exception">
+<dt id="django.db.models.ProtectedError">
+<em class="property">exception </em><tt class="descclassname">models.</tt><tt class="descname">ProtectedError</tt><a class="headerlink" href="exceptions.html#django.db.models.ProtectedError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="36">使用<a class="reference internal" href="models/fields.html#django.db.models.PROTECT" title="django.db.models.PROTECT"><tt class="xref py py-attr docutils literal"><span class="pre">django.db.models.PROTECT</span></tt></a>时，抛出异常来阻止所引用对象的删除。</font><font id="37"><a class="reference internal" href="exceptions.html#django.db.models.ProtectedError" title="django.db.models.ProtectedError"><tt class="xref py py-exc docutils literal"><span class="pre">models.</span></tt></a></font><font id="38">ProtectedError is a subclass of <a class="reference internal" href="exceptions.html#django.db.IntegrityError" title="django.db.IntegrityError"><tt class="xref py py-exc docutils literal"><span class="pre">IntegrityError</span></tt></a>.</font></p>
+</div>
+<div class="section" id="s-http-exceptions">
+<span id="http-exceptions"></span><h2><font id="54">Http异常</font><a class="headerlink" href="exceptions.html#http-exceptions" title="Permalink to this headline">¶</a></h2>
+<p><font id="39">HTTP异常由<tt class="docutils literal"><span class="pre">django.http</span></tt>导入。</font></p>
+<div class="section" id="s-unreadableposterror">
+<span id="unreadableposterror"></span><h3><font id="70">UnreadablePostError</font><a class="headerlink" href="exceptions.html#unreadableposterror" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.http.UnreadablePostError">
+<em class="property">exception </em><tt class="descname">UnreadablePostError</tt><a class="headerlink" href="exceptions.html#django.http.UnreadablePostError" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="40">用户取消上传时抛出<a class="reference internal" href="exceptions.html#django.http.UnreadablePostError" title="django.http.UnreadablePostError"><tt class="xref py py-exc docutils literal"><span class="pre">UnreadablePostError</span></tt></a>异常。</font></p>
+</dd></dl>
+</div>
+</div>
+<div class="section" id="s-transaction-exceptions">
+<span id="transaction-exceptions"></span><h2><font id="55">事务异常</font><a class="headerlink" href="exceptions.html#transaction-exceptions" title="Permalink to this headline">¶</a></h2>
+<p><font id="41">事务异常定义在<tt class="docutils literal"><span class="pre">django.db.transaction</span></tt>中。</font></p>
+<div class="section" id="s-transactionmanagementerror">
+<span id="transactionmanagementerror"></span><h3><font id="71">TransactionManagementError</font><a class="headerlink" href="exceptions.html#transactionmanagementerror" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.db.transaction.TransactionManagementError">
+<em class="property">exception </em><tt class="descname">TransactionManagementError</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/db/transaction.html#TransactionManagementError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="exceptions.html#django.db.transaction.TransactionManagementError" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="42">对于数据库事务相关的任何问题，抛出<a class="reference internal" href="exceptions.html#django.db.transaction.TransactionManagementError" title="django.db.transaction.TransactionManagementError"><tt class="xref py py-exc docutils literal"><span class="pre">TransactionManagementError</span></tt></a>异常。</font></p>
+</dd></dl>
+</div>
+</div>
+<div class="section" id="s-testing-framework-exceptions">
+<span id="testing-framework-exceptions"></span><h2><font id="56">测试框架异常</font><a class="headerlink" href="exceptions.html#testing-framework-exceptions" title="Permalink to this headline">¶</a></h2>
+<p><font id="43">由DJango&nbsp;<tt class="docutils literal"><span class="pre">django.test</span></tt> 包提供的异常。</font></p>
+<div class="section" id="s-redirectcycleerror">
+<span id="redirectcycleerror"></span><h3><font id="72">RedirectCycleError</font><a class="headerlink" href="exceptions.html#redirectcycleerror" title="Permalink to this headline">¶</a></h3>
+<dl class="exception">
+<dt id="django.test.client.RedirectCycleError">
+<em class="property">exception </em><tt class="descclassname">client.</tt><tt class="descname">RedirectCycleError</tt><a class="headerlink" href="exceptions.html#django.test.client.RedirectCycleError" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="44">当测试客户端检测到重定向的循环或者过长的链时，抛出<a class="reference internal" href="exceptions.html#django.test.client.RedirectCycleError" title="django.test.client.RedirectCycleError"><tt class="xref py py-exc docutils literal"><span class="pre">RedirectCycleError</span></tt></a>异常。</font></p>
+</dd></dl>
+</div>
+</div>
+<div class="section" id="s-python-exceptions">
+<span id="python-exceptions"></span><h2><font id="57">Python异常</font><a class="headerlink" href="exceptions.html#python-exceptions" title="Permalink to this headline">¶</a></h2>
+<p><font id="45">Django在适当的时候也会抛出Python的内建异常。</font><font id="46">进一步的信息请见<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#bltin-exceptions" title="(in Python v3.4)"><em>内建的异常</em></a>的Python文档。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="73">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="exceptions.html#"><font id="95">Django Exceptions</font></a><ul>
+<li><a class="reference internal" href="exceptions.html#module-django.core.exceptions"><font id="96">Django Core Exceptions</font></a><ul>
+<li><a class="reference internal" href="exceptions.html#objectdoesnotexist"><font id="97">ObjectDoesNotExist</font></a></li>
+<li><a class="reference internal" href="exceptions.html#fielddoesnotexist"><font id="98">FieldDoesNotExist</font></a></li>
+<li><a class="reference internal" href="exceptions.html#multipleobjectsreturned"><font id="99">MultipleObjectsReturned</font></a></li>
+<li><a class="reference internal" href="exceptions.html#suspiciousoperation"><font id="100">SuspiciousOperation</font></a></li>
+<li><a class="reference internal" href="exceptions.html#permissiondenied"><font id="101">PermissionDenied</font></a></li>
+<li><a class="reference internal" href="exceptions.html#viewdoesnotexist"><font id="102">ViewDoesNotExist</font></a></li>
+<li><a class="reference internal" href="exceptions.html#middlewarenotused"><font id="103">MiddlewareNotUsed</font></a></li>
+<li><a class="reference internal" href="exceptions.html#improperlyconfigured"><font id="104">ImproperlyConfigured</font></a></li>
+<li><a class="reference internal" href="exceptions.html#fielderror"><font id="105">FieldError</font></a></li>
+<li><a class="reference internal" href="exceptions.html#validationerror"><font id="106">ValidationError</font></a><ul>
+<li><a class="reference internal" href="exceptions.html#non-field-errors"><font id="107">NON_FIELD_ERRORS</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="exceptions.html#url-resolver-exceptions"><font id="108">URL Resolver exceptions</font></a><ul>
+<li><a class="reference internal" href="exceptions.html#resolver404"><font id="109">Resolver404</font></a></li>
+<li><a class="reference internal" href="exceptions.html#noreversematch"><font id="110">NoReverseMatch</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="exceptions.html#database-exceptions"><font id="111">Database Exceptions</font></a></li>
+<li><a class="reference internal" href="exceptions.html#http-exceptions"><font id="112">Http Exceptions</font></a><ul>
+<li><a class="reference internal" href="exceptions.html#unreadableposterror"><font id="113">UnreadablePostError</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="exceptions.html#transaction-exceptions"><font id="114">Transaction Exceptions</font></a><ul>
+<li><a class="reference internal" href="exceptions.html#transactionmanagementerror"><font id="115">TransactionManagementError</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="exceptions.html#testing-framework-exceptions"><font id="116">Testing Framework Exceptions</font></a><ul>
+<li><a class="reference internal" href="exceptions.html#redirectcycleerror"><font id="117">RedirectCycleError</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="exceptions.html#python-exceptions"><font id="118">Python Exceptions</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="74">Browse</font></h3>
+<ul>
+<li><font id="119">Prev: <a href="django-admin.html">django-admin and manage.py</a></font></li>
+<li><font id="120">Next: <a href="files/index.html">File handling</a></font></li>
+</ul>
+<h3><font id="75">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="121">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="index.html"><font id="122">API Reference</font></a>
+<ul><li><font id="123">Django Exceptions</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="76">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/exceptions.txt" rel="nofollow"><font id="124">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="77">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="47"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="78">Last update:</font></h3>
+<p class="topless"><font id="48">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="django-admin.html" title="django-admin and manage.py">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="files/index.html" title="File handling">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/exceptions.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

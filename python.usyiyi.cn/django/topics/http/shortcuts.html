@@ -1,0 +1,573 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Django的快捷函数 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Handling HTTP requests"/>
+<link href="generic-views.html" rel="next" title="Generic views"/>
+<link href="file-uploads.html" rel="prev" title="File Uploads"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/http/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/http/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="77">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="file-uploads.html" title="File Uploads">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="generic-views.html" title="Generic views">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-http-shortcuts">
+<div class="section" id="s-module-django.shortcuts">
+<span id="s-django-shortcut-functions"></span><span id="module-django.shortcuts"></span><span id="django-shortcut-functions"></span><h1><font id="78">Django 的快捷函数</font><a class="headerlink" href="shortcuts.html#module-django.shortcuts" title="Permalink to this headline">¶</a></h1>
+<p id="index-0"><font id="1"><tt class="docutils literal"><span class="pre">django.shortcuts</span></tt> 收集了“跨越” 多层MVC 的辅助函数和类。 </font><font id="2">换句话讲，这些函数/类为了方便，引入了可控的耦合。</font></p>
+<div class="section" id="s-render">
+<span id="render"></span><h2><font id="79">render</font><a class="headerlink" href="shortcuts.html#render" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="django.shortcuts.render">
+<tt class="descname">render</tt>(<em>request, template_name[, context][, context_instance][, content_type][, status][, current_app][, dirs][, using]</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/shortcuts.html#render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="shortcuts.html#django.shortcuts.render" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="3">结合一个给定的模板和一个给定的上下文字典，并返回一个渲染后的 <a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a> 对象。</font></p>
+<p><font id="4"><a class="reference internal" href="shortcuts.html#django.shortcuts.render" title="django.shortcuts.render"><tt class="xref py py-func docutils literal"><span class="pre">render()</span></tt></a> 与以一个强制使用<a class="reference internal" href="../../ref/templates/api.html#django.template.RequestContext" title="django.template.RequestContext"><tt class="xref py py-class docutils literal"><span class="pre">RequestContext</span></tt></a>的<tt class="docutils literal"><span class="pre">context_instance</span></tt> 参数调用<a class="reference internal" href="shortcuts.html#django.shortcuts.render_to_response" title="django.shortcuts.render_to_response"><tt class="xref py py-func docutils literal"><span class="pre">render_to_response()</span></tt></a> 相同。</font></p>
+<p><font id="5">Django 不提供返回<a class="reference internal" href="../../ref/template-response.html#django.template.response.TemplateResponse" title="django.template.response.TemplateResponse"><tt class="xref py py-class docutils literal"><span class="pre">TemplateResponse</span></tt></a> 的快捷函数，因为<a class="reference internal" href="../../ref/template-response.html#django.template.response.TemplateResponse" title="django.template.response.TemplateResponse"><tt class="xref py py-class docutils literal"><span class="pre">TemplateResponse</span></tt></a> 的构造与<a class="reference internal" href="shortcuts.html#django.shortcuts.render" title="django.shortcuts.render"><tt class="xref py py-func docutils literal"><span class="pre">render()</span></tt></a> 提供的便利是一个层次的。</font></p>
+</dd></dl>
+<div class="section" id="s-required-arguments">
+<span id="required-arguments"></span><h3><font id="84">必选的参数</font><a class="headerlink" href="shortcuts.html#required-arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">request</span></tt></dt>
+<dd><font id="128">用于生成响应的请求对象。</font></dd>
+<dt><tt class="docutils literal"><span class="pre">template_name</span></tt></dt>
+<dd><font id="129">要使用的模板的完整名称或者模板名称的一个序列。</font></dd>
+</dl>
+</div>
+<div class="section" id="s-optional-arguments">
+<span id="optional-arguments"></span><h3><font id="85">可选的参数</font><a class="headerlink" href="shortcuts.html#optional-arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">context</span></tt></dt>
+<dd><p class="first"><font id="6">添加到模板上下文的一个字典。</font><font id="7">默认是一个空字典。</font><font id="8">如果字典中的某个值是可调用的，视图将在渲染模板之前调用它。</font></p>
+<div class="last versionchanged">
+<span class="title"><font id="130">Django 1.8 的改变：</font></span> <p><font id="9"><tt class="docutils literal"><span class="pre">context</span></tt> 参数之前叫做<tt class="docutils literal"><span class="pre">dictionary</span></tt>。</font><font id="10">这个名字在Django 1.8 中废弃并将在Django 2.0 中删除。</font></p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">context_instance</span></tt></dt>
+<dd><p class="first"><font id="11">渲染模板的上下文实例。</font><font id="12">默认情况下，模板将使用<tt class="docutils literal"><span class="pre">RequestContext</span></tt> 实例（ 值来自<tt class="docutils literal"><span class="pre">request</span></tt> 和<tt class="docutils literal"><span class="pre">context</span></tt>）渲染。</font></p>
+<div class="last deprecated">
+<p><font id="13"><span class="versionmodified">版本 1.8 以后废弃：</span></font><font id="14">废弃<tt class="docutils literal"><span class="pre">context_instance</span></tt> 参数。</font><font id="15">仅仅使用<tt class="docutils literal"><span class="pre">context</span></tt>。</font></p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">content_type</span></tt></dt>
+<dd><font id="131">生成的文档要使用的MIME 类型。默认为<a class="reference internal" href="../../ref/settings.html#std:setting-DEFAULT_CONTENT_TYPE"><tt class="xref std std-setting docutils literal"><span class="pre">DEFAULT_CONTENT_TYPE</span></tt></a> 设置的值。</font></dd>
+<dt><tt class="docutils literal"><span class="pre">status</span></tt></dt>
+<dd><font id="132">响应的状态码。默认为<tt class="docutils literal"><span class="pre">200</span></tt>。</font></dd>
+<dt><tt class="docutils literal"><span class="pre">current_app</span></tt></dt>
+<dd><p class="first"><font id="16">指示哪个应用包含当前的视图。</font><font id="17">更多信息，参见<a class="reference internal" href="urls.html#topics-http-reversing-url-namespaces"><em>带命名空间的URL 的解析</em></a>。</font></p>
+<div class="last deprecated">
+<p><font id="18"><span class="versionmodified">版本1.8 以后废弃：</span></font><font id="19">废弃<tt class="docutils literal"><span class="pre">current_app</span></tt> 参数。</font><font id="20">你应该设置<tt class="docutils literal"><span class="pre">request.current_app</span></tt>。</font></p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">using</span></tt></dt>
+<dd><font id="133">用于加载模板使用的模板引擎的<a class="reference internal" href="../../ref/settings.html#std:setting-TEMPLATES-NAME"><tt class="xref std std-setting docutils literal"><span class="pre">名称</span></tt></a>。</font></dd>
+</dl>
+<div class="versionchanged">
+<span class="title"><font id="134">Changed in Django 1.8:</font></span> <p><font id="21">增加<tt class="docutils literal"><span class="pre">using</span></tt> 参数。</font></p>
+</div>
+<div class="versionchanged">
+<span class="title"><font id="135">Changed in Django 1.7:</font></span> <p><font id="22">增加<tt class="docutils literal"><span class="pre">dirs</span></tt> 参数。</font></p>
+</div>
+<div class="deprecated">
+<p><font id="23"><span class="versionmodified">Deprecated since version 1.8: </span></font><font id="24">废弃<tt class="docutils literal"><span class="pre">dirs</span></tt> 参数。</font></p>
+</div>
+</div>
+<div class="section" id="s-example">
+<span id="example"></span><h3><font id="86">示例</font><a class="headerlink" href="shortcuts.html#example" title="Permalink to this headline">¶</a></h3>
+<p><font id="25">下面的示例渲染模板<tt class="docutils literal"><span class="pre">myapp/index.html</span></tt>，MIME 类型为<em class="mimetype">application/xhtml+xml</em>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># View code here...</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'myapp/index.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"bar"</span><span class="p">},</span>
+        <span class="n">content_type</span><span class="o">=</span><span class="s">"application/xhtml+xml"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="26">这个示例等同于：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">RequestContext</span><span class="p">,</span> <span class="n">loader</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># View code here...</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s">'myapp/index.html'</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{</span><span class="s">'foo'</span><span class="p">:</span> <span class="s">'bar'</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+        <span class="n">content_type</span><span class="o">=</span><span class="s">"application/xhtml+xml"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-render-to-response">
+<span id="render-to-response"></span><h2><font id="80">render_to_response</font><a class="headerlink" href="shortcuts.html#render-to-response" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="django.shortcuts.render_to_response">
+<tt class="descname">render_to_response</tt>(<em>template_name[, context][, context_instance][, content_type][, status][, dirs][, using]</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/shortcuts.html#render_to_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="shortcuts.html#django.shortcuts.render_to_response" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="27">根据一个给定的上下文字典渲染一个给定的目标，并返回渲染后的<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>。</font></p>
+</dd></dl>
+<div class="section" id="s-id1">
+<span id="id1"></span><h3><font id="87">必选的参数</font><a class="headerlink" href="shortcuts.html#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">template_name</span></tt></dt>
+<dd><font id="136">使用的模板的完整名称或者模板名称的序列。</font><font id="137">如果给出的是一个序列，将使用存在的第一个模板。</font><font id="138">关于如何查找模板的更多信息请参见 <a class="reference internal" href="../templates.html#template-loading"><em>模板加载的文档</em></a> 。</font></dd>
+</dl>
+</div>
+<div class="section" id="s-id2">
+<span id="id2"></span><h3><font id="88">可选的参数</font><a class="headerlink" href="shortcuts.html#id2" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">context</span></tt></dt>
+<dd><p class="first"><font id="28">添加到模板上下文中的字典。</font><font id="29">默认是个空字典。</font><font id="30">如果字典中的某个值是可调用的，视图将在渲染模板之前调用它。</font></p>
+<div class="last versionchanged">
+<span class="title"><font id="139">Changed in Django 1.8:</font></span> <p><font id="31"><tt class="docutils literal"><span class="pre">context</span></tt> 参数之前叫做<tt class="docutils literal"><span class="pre">dictionary</span></tt>。 </font><font id="32">这个名字在Django 1.8 中废弃并将在Django 2.0 中删除。</font></p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">context_instance</span></tt></dt>
+<dd><p class="first"><font id="33">渲染模板使用的上下文实例。</font><font id="34">默认情况下，模板将<a class="reference internal" href="../../ref/templates/api.html#django.template.Context" title="django.template.Context"><tt class="xref py py-class docutils literal"><span class="pre">Context</span></tt></a> 实例（值来自<tt class="docutils literal"><span class="pre">context</span></tt>）渲染。</font><font id="35">如果你需要使用<a class="reference internal" href="../../ref/templates/api.html#subclassing-context-requestcontext"><em>上下文处理器</em></a>，请使用<a class="reference internal" href="../../ref/templates/api.html#django.template.RequestContext" title="django.template.RequestContext"><tt class="xref py py-class docutils literal"><span class="pre">RequestContext</span></tt></a> 实例渲染模板。</font><font id="36">你的代码看上去像是这样：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">return</span> <span class="n">render_to_response</span><span class="p">(</span><span class="s">'my_template.html'</span><span class="p">,</span>
+                          <span class="n">my_context</span><span class="p">,</span>
+                          <span class="n">context_instance</span><span class="o">=</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="last deprecated">
+<p><font id="37"><span class="versionmodified">版本1.8 以后废弃：</span></font><font id="38">废弃<tt class="docutils literal"><span class="pre">context_instance</span></tt> 参数。 </font><font id="39">仅仅使用<tt class="docutils literal"><span class="pre">context</span></tt>。</font></p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">content_type</span></tt></dt>
+<dd><font id="140">生成的文档使用的MIME 类型。默认为<a class="reference internal" href="../../ref/settings.html#std:setting-DEFAULT_CONTENT_TYPE"><tt class="xref std std-setting docutils literal"><span class="pre">DEFAULT_CONTENT_TYPE</span></tt></a> 设置的值。</font></dd>
+<dt><tt class="docutils literal"><span class="pre">status</span></tt></dt>
+<dd><font id="141">相应的状态码。默认为<tt class="docutils literal"><span class="pre">200</span></tt>。</font></dd>
+<dt><tt class="docutils literal"><span class="pre">using</span></tt></dt>
+<dd><font id="142">加载模板使用的模板引擎的<a class="reference internal" href="../../ref/settings.html#std:setting-TEMPLATES-NAME"><tt class="xref std std-setting docutils literal"><span class="pre">名称</span></tt></a>。</font></dd>
+</dl>
+<div class="versionchanged">
+<span class="title"><font id="143">Changed in Django 1.8:</font></span> <p><font id="40">添加<tt class="docutils literal"><span class="pre">status</span></tt> 和<tt class="docutils literal"><span class="pre">using</span></tt> 参数。</font></p>
+</div>
+<div class="versionchanged">
+<span class="title"><font id="144">Changed in Django 1.7:</font></span> <p><font id="41">增加<tt class="docutils literal"><span class="pre">dirs</span></tt> 参数。</font></p>
+</div>
+<div class="deprecated">
+<p><font id="42"><span class="versionmodified">Deprecated since version 1.8: </span></font><font id="43">废弃<tt class="docutils literal"><span class="pre">dirs</span></tt> 参数。</font></p>
+</div>
+</div>
+<div class="section" id="s-id3">
+<span id="id3"></span><h3><font id="89">示例</font><a class="headerlink" href="shortcuts.html#id3" title="Permalink to this headline">¶</a></h3>
+<p><font id="44">下面的示例渲染模板<tt class="docutils literal"><span class="pre">myapp/index.html</span></tt>，MIIME 类型为<em class="mimetype">application/xhtml+xml</em>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render_to_response</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># View code here...</span>
+    <span class="k">return</span> <span class="n">render_to_response</span><span class="p">(</span><span class="s">'myapp/index.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"bar"</span><span class="p">},</span>
+        <span class="n">content_type</span><span class="o">=</span><span class="s">"application/xhtml+xml"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="45">这个示例等同于：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">Context</span><span class="p">,</span> <span class="n">loader</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># View code here...</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s">'myapp/index.html'</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Context</span><span class="p">({</span><span class="s">'foo'</span><span class="p">:</span> <span class="s">'bar'</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+        <span class="n">content_type</span><span class="o">=</span><span class="s">"application/xhtml+xml"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-redirect">
+<span id="redirect"></span><h2><font id="81">redirect</font><a class="headerlink" href="shortcuts.html#redirect" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="django.shortcuts.redirect">
+<tt class="descname">redirect</tt>(<em>to</em>, <span class="optional">[</span><em>permanent=False</em>, <span class="optional">]</span><em>*args</em>, <em>**kwargs</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/shortcuts.html#redirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="shortcuts.html#django.shortcuts.redirect" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="46">为传递进来的参数返回<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponseRedirect" title="django.http.HttpResponseRedirect"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponseRedirect</span></tt></a> 给正确的URL 。</font></p>
+<p><font id="47">参数可以是：</font></p>
+<ul class="simple">
+<li><font id="101">一个模型：将调用模型的<a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model.get_absolute_url" title="django.db.models.Model.get_absolute_url"><tt class="xref py py-meth docutils literal"><span class="pre">get_absolute_url()</span></tt></a> 函数</font></li>
+<li><font id="102">一个视图，可以带有参数：将使用<a class="reference internal" href="../../ref/urlresolvers.html#django.core.urlresolvers.reverse" title="django.core.urlresolvers.reverse"><tt class="xref py py-func docutils literal"><span class="pre">urlresolvers.reverse</span></tt></a> 来反向解析名称</font></li>
+<li><font id="103">一个绝对的或相对的URL，将原样作为重定向的位置。</font></li>
+</ul>
+<p><font id="48">默认返回一个临时的重定向；</font><font id="49">传递<tt class="docutils literal"><span class="pre">permanent=True</span></tt> 可以返回一个永久的重定向。</font></p>
+<div class="versionchanged">
+<span class="title"><font id="145">Django 1.7 中的改变：</font></span> <p><font id="50">增加使用相对URL 的功能。</font></p>
+</div>
+</dd></dl>
+<div class="section" id="s-examples">
+<span id="examples"></span><h3><font id="90">示例</font><a class="headerlink" href="shortcuts.html#examples" title="Permalink to this headline">¶</a></h3>
+<p><font id="51">你可以用多种方式使用<a class="reference internal" href="shortcuts.html#django.shortcuts.redirect" title="django.shortcuts.redirect"><tt class="xref py py-func docutils literal"><span class="pre">redirect()</span></tt></a> 函数。</font></p>
+<ol class="arabic">
+<li><p class="first"><font id="52">通过传递一个对象；</font><font id="53">将调用<a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model.get_absolute_url" title="django.db.models.Model.get_absolute_url"><tt class="xref py py-meth docutils literal"><span class="pre">get_absolute_url()</span></tt></a> 方法来获取重定向的URL：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">redirect</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="nb">object</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="54">通过传递一个视图的名称，可以带有位置参数和关键字参数；</font><font id="55">将使用<a class="reference internal" href="../../ref/urlresolvers.html#django.core.urlresolvers.reverse" title="django.core.urlresolvers.reverse"><tt class="xref py py-func docutils literal"><span class="pre">reverse()</span></tt></a> 方法反向解析URL：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">'some-view-name'</span><span class="p">,</span> <span class="n">foo</span><span class="o">=</span><span class="s">'bar'</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="56">传递要重定向的一个硬编码的URL：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">'/some/url/'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="57">完整的URL 也可以：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">'http://example.com/'</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p><font id="58">默认情况下，<a class="reference internal" href="shortcuts.html#django.shortcuts.redirect" title="django.shortcuts.redirect"><tt class="xref py py-func docutils literal"><span class="pre">redirect()</span></tt></a> 返回一个临时重定向。</font><font id="59">以上所有的形式都接收一个<tt class="docutils literal"><span class="pre">permanent</span></tt> 参数；</font><font id="60">如果设置为<tt class="docutils literal"><span class="pre">True</span></tt>，将返回一个永久的重定向：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="nb">object</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-get-object-or-404">
+<span id="get-object-or-404"></span><h2><font id="82">get_object_or_404</font><a class="headerlink" href="shortcuts.html#get-object-or-404" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="django.shortcuts.get_object_or_404">
+<tt class="descname">get_object_or_404</tt>(<em>klass</em>, <em>*args</em>, <em>**kwargs</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/shortcuts.html#get_object_or_404"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="shortcuts.html#django.shortcuts.get_object_or_404" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="61">在一个给定的模型管理器上调用<a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet.get" title="django.db.models.query.QuerySet.get"><tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt></a>，但是引发<a class="reference internal" href="views.html#django.http.Http404" title="django.http.Http404"><tt class="xref py py-class docutils literal"><span class="pre">Http404</span></tt></a> 而不是模型的<a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model.DoesNotExist" title="django.db.models.Model.DoesNotExist"><tt class="xref py py-class docutils literal"><span class="pre">DoesNotExist</span></tt></a> 异常。</font></p>
+</dd></dl>
+<div class="section" id="s-id4">
+<span id="id4"></span><h3><font id="91">必选的参数</font><a class="headerlink" href="shortcuts.html#id4" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">klass</span></tt></dt>
+<dd><font id="146">获取该对象的一个<a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model" title="django.db.models.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a> 类，<a class="reference internal" href="../db/managers.html#django.db.models.Manager" title="django.db.models.Manager"><tt class="xref py py-class docutils literal"><span class="pre">Manager</span></tt></a>或<a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet" title="django.db.models.query.QuerySet"><tt class="xref py py-class docutils literal"><span class="pre">QuerySet</span></tt></a> 实例。</font></dd>
+<dt><tt class="docutils literal"><span class="pre">**kwargs</span></tt></dt>
+<dd><font id="147">查询的参数，格式应该可以被<tt class="docutils literal"><span class="pre">get()</span></tt> 和<tt class="docutils literal"><span class="pre">filter()</span></tt>接受。</font></dd>
+</dl>
+</div>
+<div class="section" id="s-id5">
+<span id="id5"></span><h3><font id="92">示例</font><a class="headerlink" href="shortcuts.html#id5" title="Permalink to this headline">¶</a></h3>
+<p><font id="62">下面的示例从<tt class="docutils literal"><span class="pre">MyModel</span></tt> 中使用主键1 来获取对象：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">get_object_or_404</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">my_object</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="63">这个示例等同于：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">my_object</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Http404</span><span class="p">(</span><span class="s">"No MyModel matches the given query."</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="64">最常见的用法是传递一个 <a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model" title="django.db.models.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a>，如上所示。</font><font id="65">然而，你还可以传递一个<a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet" title="django.db.models.query.QuerySet"><tt class="xref py py-class docutils literal"><span class="pre">QuerySet</span></tt></a> 实例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__startswith</span><span class="o">=</span><span class="s">'M'</span><span class="p">)</span>
+<span class="n">get_object_or_404</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="66">上面的示例有点做作，因为它等同于：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Book</span><span class="p">,</span> <span class="n">title__startswith</span><span class="o">=</span><span class="s">'M'</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="67">但是如果你的<tt class="docutils literal"><span class="pre">queryset</span></tt> 来自其它地方，它就会很有用了。</font></p>
+<p><font id="68">最后你还可以使用一个<a class="reference internal" href="../db/managers.html#django.db.models.Manager" title="django.db.models.Manager"><tt class="xref py py-class docutils literal"><span class="pre">管理器</span></tt></a>。</font><font id="69">如果你有一个<a class="reference internal" href="../db/managers.html#custom-managers"><em>自定义的管理器</em></a>，它将很有用：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Book</span><span class="o">.</span><span class="n">dahl_objects</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">'Matilda'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="70">你还可以使用<a class="reference internal" href="../../ref/models/relations.html#django.db.models.fields.related.RelatedManager" title="django.db.models.fields.related.RelatedManager"><tt class="xref py py-class docutils literal"><span class="pre">关联的</span> <span class="pre">管理器</span></tt></a>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">author</span> <span class="o">=</span> <span class="n">Author</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Roald Dahl'</span><span class="p">)</span>
+<span class="n">get_object_or_404</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">book_set</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">'Matilda'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="71">注：与<tt class="docutils literal"><span class="pre">get()</span></tt>一样，如果找到多个对象将引发一个<a class="reference internal" href="../../ref/exceptions.html#django.core.exceptions.MultipleObjectsReturned" title="django.core.exceptions.MultipleObjectsReturned"><tt class="xref py py-class docutils literal"><span class="pre">MultipleObjectsReturned</span></tt></a> 异常。</font></p>
+</div>
+</div>
+<div class="section" id="s-get-list-or-404">
+<span id="get-list-or-404"></span><h2><font id="83">get_list_or_404</font><a class="headerlink" href="shortcuts.html#get-list-or-404" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="django.shortcuts.get_list_or_404">
+<tt class="descname">get_list_or_404</tt>(<em>klass</em>, <em>*args</em>, <em>**kwargs</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/shortcuts.html#get_list_or_404"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="shortcuts.html#django.shortcuts.get_list_or_404" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="72">返回一个给定模型管理器上<a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet.filter" title="django.db.models.query.QuerySet.filter"><tt class="xref py py-meth docutils literal"><span class="pre">filter()</span></tt></a> 的结果，并将结果映射为一个列表，如果结果为空则返回<a class="reference internal" href="views.html#django.http.Http404" title="django.http.Http404"><tt class="xref py py-class docutils literal"><span class="pre">Http404</span></tt></a>。</font></p>
+</dd></dl>
+<div class="section" id="s-id6">
+<span id="id6"></span><h3><font id="93">必选的参数</font><a class="headerlink" href="shortcuts.html#id6" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">klass</span></tt></dt>
+<dd><font id="148">获取该列表的一个<a class="reference internal" href="../../ref/models/instances.html#django.db.models.Model" title="django.db.models.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a>、<a class="reference internal" href="../db/managers.html#django.db.models.Manager" title="django.db.models.Manager"><tt class="xref py py-class docutils literal"><span class="pre">Manager</span></tt></a> 或<a class="reference internal" href="../../ref/models/querysets.html#django.db.models.query.QuerySet" title="django.db.models.query.QuerySet"><tt class="xref py py-class docutils literal"><span class="pre">QuerySet</span></tt></a> 实例。</font></dd>
+<dt><tt class="docutils literal"><span class="pre">**kwargs</span></tt></dt>
+<dd><font id="149">查寻的参数，格式应该可以被<tt class="docutils literal"><span class="pre">get()</span></tt> 和<tt class="docutils literal"><span class="pre">filter()</span></tt> 接受。</font></dd>
+</dl>
+</div>
+<div class="section" id="s-id7">
+<span id="id7"></span><h3><font id="94">示例</font><a class="headerlink" href="shortcuts.html#id7" title="Permalink to this headline">¶</a></h3>
+<p><font id="73">下面的示例从<tt class="docutils literal"><span class="pre">MyModel</span></tt> 中获取所有发布出来的对象：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">get_list_or_404</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">my_objects</span> <span class="o">=</span> <span class="n">get_list_or_404</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">published</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="74">这个示例等同于：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">my_objects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">MyModel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">published</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">my_objects</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Http404</span><span class="p">(</span><span class="s">"No MyModel matches the given query."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="95">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="shortcuts.html#"><font id="104">Django 的快捷函数</font></a><ul>
+<li><a class="reference internal" href="shortcuts.html#render"><font id="105">render</font></a><ul>
+<li><a class="reference internal" href="shortcuts.html#required-arguments"><font id="106">必选的参数</font></a></li>
+<li><a class="reference internal" href="shortcuts.html#optional-arguments"><font id="107">可选的参数</font></a></li>
+<li><a class="reference internal" href="shortcuts.html#example"><font id="108">示例</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="shortcuts.html#render-to-response"><font id="109">render_to_response</font></a><ul>
+<li><a class="reference internal" href="shortcuts.html#id1"><font id="110">必选的参数</font></a></li>
+<li><a class="reference internal" href="shortcuts.html#id2"><font id="111">可选的参数</font></a></li>
+<li><a class="reference internal" href="shortcuts.html#id3"><font id="112">示例</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="shortcuts.html#redirect"><font id="113">redirect</font></a><ul>
+<li><a class="reference internal" href="shortcuts.html#examples"><font id="114">示例</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="shortcuts.html#get-object-or-404"><font id="115">get_object_or_404</font></a><ul>
+<li><a class="reference internal" href="shortcuts.html#id4"><font id="116">必选的参数</font></a></li>
+<li><a class="reference internal" href="shortcuts.html#id5"><font id="117">示例</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="shortcuts.html#get-list-or-404"><font id="118">get_list_or_404</font></a><ul>
+<li><a class="reference internal" href="shortcuts.html#id6"><font id="119">必选的参数</font></a></li>
+<li><a class="reference internal" href="shortcuts.html#id7"><font id="120">示例</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="96">浏览</font></h3>
+<ul>
+<li><font id="121">上一页：<a href="file-uploads.html">文件上传</a></font></li>
+<li><font id="122">下一页：<a href="generic-views.html">通用的视图</a></font></li>
+</ul>
+<h3><font id="97">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="123">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="124">使用 Django</font></a>
+<ul><li><a href="index.html"><font id="125">处理HTTP 请求</font></a>
+<ul><li><font id="126">Django 的快捷函数</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="98">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/http/shortcuts.txt" rel="nofollow"><font id="127">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="99">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="75"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="100">最后更新：</font></h3>
+<p class="topless"><font id="76">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="file-uploads.html" title="File Uploads">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="generic-views.html" title="Generic views">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/http/shortcuts';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

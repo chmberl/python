@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>The File object — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="File handling"/>
+<link href="storage.html" rel="next" title="File storage API"/>
+<link href="index.html" rel="prev" title="File handling"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/files/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/files/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="46">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="index.html" title="File handling">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="storage.html" title="File storage API">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-files-file">
+<div class="section" id="s-the-file-object">
+<span id="the-file-object"></span><h1><font id="47"><tt class="docutils literal"><span class="pre">File</span></tt>对象</font><a class="headerlink" href="file.html#the-file-object" title="Permalink to this headline">¶</a></h1>
+<p><font id="1"><a class="reference internal" href="index.html#module-django.core.files" title="django.core.files: File handling and storage"><tt class="xref py py-mod docutils literal"><span class="pre">django.core.files</span></tt></a>模块及其子模块包含了一些用于基本文件处理的内建类。</font></p>
+<div class="section" id="s-the-file-class">
+<span id="the-file-class"></span><h2><font id="48"><tt class="docutils literal"><span class="pre">File</span></tt>类</font><a class="headerlink" href="file.html#the-file-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.core.files.File">
+<em class="property">class </em><tt class="descname">File</tt>(<em>file_object</em>)<a class="headerlink" href="file.html#django.core.files.File" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="2"><a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a> 类是Python <a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object" title="(in Python v3.4)"><em class="xref std std-term">file 对象</em></a>的一个简单封装，并带有Django特定的附加功能。</font><font id="3">需要表示文件的时候，Django内部会使用这个类。</font></p>
+<p><font id="4"><a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a>对象拥有下列属性和方法：</font></p>
+<dl class="attribute">
+<dt id="django.core.files.File.name">
+<tt class="descname">name</tt><a class="headerlink" href="file.html#django.core.files.File.name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="5">含有<a class="reference internal" href="../settings.html#std:setting-MEDIA_ROOT"><tt class="xref std std-setting docutils literal"><span class="pre">MEDIA_ROOT</span></tt></a>相对路径的文件名称。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.files.File.size">
+<tt class="descname">size</tt><a class="headerlink" href="file.html#django.core.files.File.size" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="6">文件的字节数。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.files.File.file">
+<tt class="descname">file</tt><a class="headerlink" href="file.html#django.core.files.File.file" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="7">这个类所封装的，原生的<a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object" title="(in Python v3.4)"><em class="xref std std-term">file 对象</em></a>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.files.File.mode">
+<tt class="descname">mode</tt><a class="headerlink" href="file.html#django.core.files.File.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="8">文件的读写模式。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.files.File.open">
+<tt class="descname">open</tt>(<span class="optional">[</span><em>mode=None</em><span class="optional">]</span>)<a class="headerlink" href="file.html#django.core.files.File.open" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="9">打开或者重新打开文件（同时会执行<tt class="docutils literal"><span class="pre">File.seek(0)</span></tt>）。</font><font id="10">&nbsp;<tt class="docutils literal"><span class="pre">mode</span></tt>参数的值和Python内建的<a class="reference external" href="https://docs.python.org/3/library/functions.html#open" title="(in Python v3.4)"><tt class="docutils literal"><span class="pre">open()</span></tt></a>相同。</font></p>
+<p><font id="11">重新打开一个文件时，无论文件原先以什么模式打开，<tt class="docutils literal"><span class="pre">mode</span></tt>都会覆盖；</font><font id="12"><tt class="docutils literal"><span class="pre">None</span></tt>的意思是以原先的模式重新打开。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.files.File.read">
+<tt class="descname">read</tt>(<span class="optional">[</span><em>num_bytes=None</em><span class="optional">]</span>)<a class="headerlink" href="file.html#django.core.files.File.read" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="13">读取文件内容。</font><font id="14">可选的<tt class="docutils literal"><span class="pre">size</span></tt>参数是要读的字节数；</font><font id="15">没有指定的话，文件会一直读到结尾。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.files.File.__iter__">
+<tt class="descname">__iter__</tt>()<a class="headerlink" href="file.html#django.core.files.File.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="16">迭代整个文件，并且每次生成一行。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="17"><tt class="docutils literal"><span class="pre">File</span></tt>现在使用<a class="reference external" href="https://www.python.org/dev/peps/pep-0278">通用的换行符</a>。</font><font id="18">以下字符会识别为换行符：Unix换行符<tt class="docutils literal"><span class="pre">'\n'</span></tt>，WIndows换行符<tt class="docutils literal"><span class="pre">'\r\n'</span></tt></font><font id="19">，以及Macintosh旧式换行符<tt class="docutils literal">\r</tt>。</font><font id="20"></font></p>
+</div>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.files.File.chunks">
+<tt class="descname">chunks</tt>(<span class="optional">[</span><em>chunk_size=None</em><span class="optional">]</span>)<a class="headerlink" href="file.html#django.core.files.File.chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="21">迭代整个文件，并生成指定大小的一部分内容。</font><font id="22"><tt class="docutils literal"><span class="pre">chunk_size</span></tt>默认为64 KB。</font></p>
+<p><font id="23">处理大文件时这会非常有用，因为这样可以把他们从磁盘中读取出来，而避免将整个文件存到内存中。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.files.File.multiple_chunks">
+<tt class="descname">multiple_chunks</tt>(<span class="optional">[</span><em>chunk_size=None</em><span class="optional">]</span>)<a class="headerlink" href="file.html#django.core.files.File.multiple_chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="24">如果文件足够大，需要按照提供的<tt class="docutils literal"><span class="pre">chunk_size</span></tt>切分成几个部分来访问到所有内容，则返回<tt class="docutils literal"><span class="pre">True</span></tt> 。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.files.File.write">
+<tt class="descname">write</tt>(<span class="optional">[</span><em>content</em><span class="optional">]</span>)<a class="headerlink" href="file.html#django.core.files.File.write" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="25">将指定的内容字符串写到文件。</font><font id="26">取决于底层的储存系统，写入的内容在调用<a class="reference internal" href="file.html#django.core.files.File.close" title="django.core.files.File.close"><tt class="xref py py-func docutils literal"><span class="pre">close()</span></tt></a>之前可能不会完全提交。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.files.File.close">
+<tt class="descname">close</tt>()<a class="headerlink" href="file.html#django.core.files.File.close" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="27">关闭文件。</font></p>
+</dd></dl>
+<p><font id="28">除了这些列出的方法，<a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a>暴露了 <tt class="docutils literal"><span class="pre">file</span></tt> 对象的以下属性和方法：<tt class="docutils literal"><span class="pre">encoding</span></tt>, <tt class="docutils literal"><span class="pre">fileno</span></tt>, <tt class="docutils literal"><span class="pre">flush</span></tt>, <tt class="docutils literal"><span class="pre">isatty</span></tt>, <tt class="docutils literal"><span class="pre">newlines</span></tt>, <tt class="docutils literal"><span class="pre">read</span></tt>, <tt class="docutils literal"><span class="pre">readinto</span></tt>, <tt class="docutils literal"><span class="pre">readlines</span></tt>, <tt class="docutils literal"><span class="pre">seek</span></tt>, <tt class="docutils literal"><span class="pre">softspace</span></tt>, <tt class="docutils literal"><span class="pre">tell</span></tt>, <tt class="docutils literal"><span class="pre">truncate</span></tt>, <tt class="docutils literal"><span class="pre">writelines</span></tt>, <tt class="docutils literal"><span class="pre">xreadlines</span></tt>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-the-contentfile-class">
+<span id="the-contentfile-class"></span><h2><font id="49"><tt class="docutils literal"><span class="pre">ContentFile</span></tt>类</font><a class="headerlink" href="file.html#the-contentfile-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.core.files.base.ContentFile">
+<em class="property">class </em><tt class="descname">ContentFile</tt>(<em>File</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/files/base.html#ContentFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="file.html#django.core.files.base.ContentFile" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="29"><tt class="docutils literal"><span class="pre">ContentFile</span></tt>类继承自<a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a>，但是并不像<a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a>那样，它操作字符串的内容（也支持字节集），而不是一个实际的文件。</font><font id="30">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">django.core.files.base</span> <span class="kn">import</span> <span class="n">ContentFile</span>
+
+<span class="n">f1</span> <span class="o">=</span> <span class="n">ContentFile</span><span class="p">(</span><span class="s">"esta sentencia está en español"</span><span class="p">)</span>
+<span class="n">f2</span> <span class="o">=</span> <span class="n">ContentFile</span><span class="p">(</span><span class="n">b</span><span class="s">"these are bytes"</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-the-imagefile-class">
+<span id="the-imagefile-class"></span><h2><font id="50"><tt class="docutils literal"><span class="pre">ImageFile</span></tt>类</font><a class="headerlink" href="file.html#the-imagefile-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.core.files.images.ImageFile">
+<em class="property">class </em><tt class="descname">ImageFile</tt>(<em>file_object</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/core/files/images.html#ImageFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="file.html#django.core.files.images.ImageFile" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="31">Django特地为图像提供了这个内建类。</font><font id="32"><a class="reference internal" href="file.html#django.core.files.images.ImageFile" title="django.core.files.images.ImageFile"><tt class="xref py py-class docutils literal"><span class="pre">django.core.files.images.ImageFile</span></tt></a>继承了 <a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a>的所有属性和方法，并且额外提供了以下的属性：</font></p>
+<dl class="attribute">
+<dt id="django.core.files.images.ImageFile.width">
+<tt class="descname">width</tt><a class="headerlink" href="file.html#django.core.files.images.ImageFile.width" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="33">图像的像素单位宽度。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.core.files.images.ImageFile.height">
+<tt class="descname">height</tt><a class="headerlink" href="file.html#django.core.files.images.ImageFile.height" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="34">图像的像素单位高度。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-additional-methods-on-files-attached-to-objects">
+<span id="additional-methods-on-files-attached-to-objects"></span><h2><font id="51">附加到对象的文件的额外方法</font><a class="headerlink" href="file.html#additional-methods-on-files-attached-to-objects" title="Permalink to this headline">¶</a></h2>
+<p><font id="35">任何关联到一个对象（比如下面的<tt class="docutils literal"><span class="pre">Car.photo</span></tt>）的<a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a>都会有一些额外的方法：</font></p>
+<dl class="method">
+<dt id="django.core.files.File.save">
+<tt class="descclassname">File.</tt><tt class="descname">save</tt>(<em>name</em>, <em>content</em><span class="optional">[</span>, <em>save=True</em><span class="optional">]</span>)<a class="headerlink" href="file.html#django.core.files.File.save" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="36">以提供的文件名和内容保存一个新文件。</font><font id="37">这样不会替换已存在的文件，但是会创建新的文件，并且更新对象来指向它。</font><font id="38">如果<tt class="docutils literal"><span class="pre">save</span></tt>为<tt class="docutils literal"><span class="pre">True</span></tt>，模型的<tt class="docutils literal"><span class="pre">save()</span></tt>方法会在文件保存之后调用。</font><font id="39">这就是说，下面两行：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">car</span><span class="o">.</span><span class="n">photo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">'myphoto.jpg'</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">car</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="40">等价于：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">car</span><span class="o">.</span><span class="n">photo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">'myphoto.jpg'</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="41">要注意<tt class="docutils literal"><span class="pre">content</span></tt>参数必须是<a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a>或者 <a class="reference internal" href="file.html#django.core.files.File" title="django.core.files.File"><tt class="xref py py-class docutils literal"><span class="pre">File</span></tt></a>的子类的实例，比如<a class="reference internal" href="file.html#django.core.files.base.ContentFile" title="django.core.files.base.ContentFile"><tt class="xref py py-class docutils literal"><span class="pre">ContentFile</span></tt></a>。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.core.files.File.delete">
+<tt class="descclassname">File.</tt><tt class="descname">delete</tt>(<span class="optional">[</span><em>save=True</em><span class="optional">]</span>)<a class="headerlink" href="file.html#django.core.files.File.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="42">从模型实例中移除文件，并且删除内部的文件。</font><font id="43">如果<tt class="docutils literal"><span class="pre">save</span></tt>是<tt class="docutils literal"><span class="pre">True</span></tt>，模型的<tt class="docutils literal"><span class="pre">save()</span></tt> 方法会在文件删除之后调用。</font></p>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="52">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="file.html#"><font id="58">The <tt class="docutils literal"><span class="pre">File</span></tt> object</font></a><ul>
+<li><a class="reference internal" href="file.html#the-file-class"><font id="59">The <tt class="docutils literal"><span class="pre">File</span></tt> Class</font></a></li>
+<li><a class="reference internal" href="file.html#the-contentfile-class"><font id="60">The <tt class="docutils literal"><span class="pre">ContentFile</span></tt> Class</font></a></li>
+<li><a class="reference internal" href="file.html#the-imagefile-class"><font id="61">The <tt class="docutils literal"><span class="pre">ImageFile</span></tt> Class</font></a></li>
+<li><a class="reference internal" href="file.html#additional-methods-on-files-attached-to-objects"><font id="62">Additional methods on files attached to objects</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="53">Browse</font></h3>
+<ul>
+<li><font id="63">Prev: <a href="index.html">File handling</a></font></li>
+<li><font id="64">Next: <a href="storage.html">File storage API</a></font></li>
+</ul>
+<h3><font id="54">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="65">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="66">API Reference</font></a>
+<ul><li><a href="index.html"><font id="67">File handling</font></a>
+<ul><li><font id="68">The <tt class="docutils literal"><span class="pre">File</span></tt> object</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="55">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/files/file.txt" rel="nofollow"><font id="69">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="56">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="44"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="57">Last update:</font></h3>
+<p class="topless"><font id="45">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="index.html" title="File handling">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="storage.html" title="File storage API">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/files/file';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

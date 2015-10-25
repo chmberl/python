@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Clickjacking防护 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="API Reference"/>
+<link href="contrib/index.html" rel="next" title="contrib packages"/>
+<link href="class-based-views/flattened-index.html" rel="prev" title="Class-based generic views - flattened index"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="25">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="class-based-views/flattened-index.html" title="Class-based generic views - flattened index">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="contrib/index.html" title='&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;contrib&lt;/span&gt;&lt;/tt&gt; packages'>next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-clickjacking">
+<div class="section" id="s-module-django.middleware.clickjacking">
+<span id="s-clickjacking-protection"></span><span id="module-django.middleware.clickjacking"></span><span id="clickjacking-protection"></span><h1><font id="26">点击劫持保护</font><a class="headerlink" href="clickjacking.html#module-django.middleware.clickjacking" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">点击劫持中间件和装饰器提供了简捷易用的，对<a class="reference external" href="http://en.wikipedia.org/wiki/Clickjacking">点击劫持</a>的保护。</font><font id="2">这种攻击在恶意站点诱导用户点击另一个站点的被覆盖元素时出现，另一个站点已经加载到了隐藏的frame或iframe中。</font></p>
+<div class="section" id="s-an-example-of-clickjacking">
+<span id="an-example-of-clickjacking"></span><h2><font id="27">点击劫持的示例</font><a class="headerlink" href="clickjacking.html#an-example-of-clickjacking" title="Permalink to this headline">¶</a></h2>
+<p><font id="3">假设一个在线商店拥有一个页面，已登录的用户可以点击“现在购买”来购买一个商品。</font><font id="4">用户为了方便，可以选择一直保持商店的登录状态。</font><font id="5">一个攻击者的站点可能在他们自己的页面上会创建一个“我喜欢Ponies”的按钮，并且在一个透明的iframe中加载商店的页面，把“现在购买”的按钮隐藏起来覆盖在“我喜欢Ponies”上。</font><font id="6">如果用户访问了攻击者的站点，点击“我喜欢Ponies”按钮会触发对“现在购买”按钮的无意识的点击，不知不觉中购买了商品。</font></p>
+</div>
+<div class="section" id="s-preventing-clickjacking">
+<span id="s-clickjacking-prevention"></span><span id="preventing-clickjacking"></span><span id="clickjacking-prevention"></span><h2><font id="28">点击劫持的防御</font><a class="headerlink" href="clickjacking.html#preventing-clickjacking" title="Permalink to this headline">¶</a></h2>
+<p><font id="7">现代浏览器遵循<a class="reference external" href="https://developer.mozilla.org/en/The_X-FRAME-OPTIONS_response_header">X-Frame-Options</a>协议头，它表明一个资源是否允许加载到frame或者iframe中。</font><font id="8">如果响应包含值为<tt class="docutils literal"><span class="pre">SAMEORIGIN</span></tt>的协议头，浏览器会在frame中只加载同源请求的的资源。</font><font id="9">如果协议头设置为<tt class="docutils literal"><span class="pre">DENY</span></tt>，浏览器会在加载frame时屏蔽所有资源，无论请求来自于哪个站点。</font></p>
+<p><font id="10">Django提供了一些简单的方法来在你站点的响应中包含这个协议头：</font></p>
+<ol class="arabic simple">
+<li><font id="41">一个简单的中间件，在所有响应中设置协议头。</font></li>
+<li><font id="42">一系列的视图装饰器，可以用于覆盖中间件，或者只用于设置指定视图的协议头。</font></li>
+</ol>
+</div>
+<div class="section" id="s-how-to-use-it">
+<span id="how-to-use-it"></span><h2><font id="29">如何使用</font><a class="headerlink" href="clickjacking.html#how-to-use-it" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-setting-x-frame-options-for-all-responses">
+<span id="setting-x-frame-options-for-all-responses"></span><h3><font id="31">为所有响应设置X-Frame-Options</font><a class="headerlink" href="clickjacking.html#setting-x-frame-options-for-all-responses" title="Permalink to this headline">¶</a></h3>
+<p><font id="11">要为你站点中所有的响应设置相同的<tt class="docutils literal"><span class="pre">X-Frame-Options</span></tt>值，将<tt class="docutils literal"><span class="pre">'django.middleware.clickjacking.XFrameOptionsMiddleware'</span></tt>设置为&nbsp;<a class="reference internal" href="settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>MIDDLEWARE_CLASSES = (
+    ...
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ...
+)
+</pre></div>
+</div>
+<p><font id="12">这个中间件可以在<a class="reference internal" href="django-admin.html#django-admin-startproject"><tt class="xref std std-djadmin docutils literal"><span class="pre">startproject</span></tt></a>生成的设置文件中开启。</font></p>
+<p><font id="13">通常，这个中间件会为任何开放的<tt class="docutils literal"><span class="pre">HttpResponse</span></tt>设置<tt class="docutils literal"><span class="pre">X-Frame-Options</span></tt>协议头为<tt class="docutils literal"><span class="pre">SAMEORIGIN</span></tt>。</font><font id="14">如果你想用&nbsp;<tt class="docutils literal"><span class="pre">DENY</span></tt>来替代它，要设置<a class="reference internal" href="settings.html#std:setting-X_FRAME_OPTIONS"><tt class="xref std std-setting docutils literal"><span class="pre">X_FRAME_OPTIONS</span></tt></a>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">X_FRAME_OPTIONS</span> <span class="o">=</span> <span class="s">'DENY'</span>
+</pre></div>
+</div>
+<p><font id="15">使用这个中间件时可能会有一些视图，你并<strong>不想</strong>为它设置<tt class="docutils literal"><span class="pre">X-Frame-Options</span></tt>协议头。</font><font id="16">对于这些情况，你可以使用一个视图装饰器来告诉中间件不要设置协议头：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.views.decorators.clickjacking</span> <span class="kn">import</span> <span class="n">xframe_options_exempt</span>
+
+<span class="nd">@xframe_options_exempt</span>
+<span class="k">def</span> <span class="nf">ok_to_load_in_a_frame</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s">"This page is safe to load in a frame on any site."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-setting-x-frame-options-per-view">
+<span id="setting-x-frame-options-per-view"></span><h3><font id="32">为每个视图设置 X-Frame-Options&nbsp;</font><a class="headerlink" href="clickjacking.html#setting-x-frame-options-per-view" title="Permalink to this headline">¶</a></h3>
+<p><font id="17">Django提供了以下装饰器来为每个基础视图设置<tt class="docutils literal"><span class="pre">X-Frame-Options</span></tt>协议头。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.views.decorators.clickjacking</span> <span class="kn">import</span> <span class="n">xframe_options_deny</span>
+<span class="kn">from</span> <span class="nn">django.views.decorators.clickjacking</span> <span class="kn">import</span> <span class="n">xframe_options_sameorigin</span>
+
+<span class="nd">@xframe_options_deny</span>
+<span class="k">def</span> <span class="nf">view_one</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s">"I won't display in any frame!"</span><span class="p">)</span>
+
+<span class="nd">@xframe_options_sameorigin</span>
+<span class="k">def</span> <span class="nf">view_two</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s">"Display in a frame if it's from the same origin as me."</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="18">注意你可以在中间件的连接中使用装饰器。</font><font id="19">使用装饰器来覆盖中间件。</font></p>
+</div>
+</div>
+<div class="section" id="s-limitations">
+<span id="limitations"></span><h2><font id="30">限制</font><a class="headerlink" href="clickjacking.html#limitations" title="Permalink to this headline">¶</a></h2>
+<p><font id="20"><tt class="docutils literal"><span class="pre">X-Frame-Options</span></tt>协议头只在现代浏览器中保护点击劫持。</font><font id="21">老式的浏览器会忽视这个协议头，并且需要&nbsp;<a class="reference external" href="http://en.wikipedia.org/wiki/Clickjacking#Prevention">其它点击劫持防范技巧</a>。</font></p>
+<div class="section" id="s-browsers-that-support-x-frame-options">
+<span id="browsers-that-support-x-frame-options"></span><h3><font id="33">支持&nbsp;X-Frame-Options 的浏览器</font><a class="headerlink" href="clickjacking.html#browsers-that-support-x-frame-options" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><font id="43">Internet Explorer 8+</font></li>
+<li><font id="44">Firefox 3.6.9+</font></li>
+<li><font id="45">Opera 10.5+</font></li>
+<li><font id="46">Safari 4+</font></li>
+<li><font id="47">Chrome 4.1+</font></li>
+</ul>
+</div>
+<div class="section" id="s-see-also">
+<span id="see-also"></span><h3><font id="34">另见</font><a class="headerlink" href="clickjacking.html#see-also" title="Permalink to this headline">¶</a></h3>
+<p><font id="22">浏览器对<tt class="docutils literal"><span class="pre">X-Frame-Options</span></tt>支持情况的<a class="reference external" href="https://developer.mozilla.org/en/The_X-FRAME-OPTIONS_response_header#Browser_compatibility">完整列表</a>。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="35">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="clickjacking.html#"><font id="48">Clickjacking Protection</font></a><ul>
+<li><a class="reference internal" href="clickjacking.html#an-example-of-clickjacking"><font id="49">An example of clickjacking</font></a></li>
+<li><a class="reference internal" href="clickjacking.html#preventing-clickjacking"><font id="50">Preventing clickjacking</font></a></li>
+<li><a class="reference internal" href="clickjacking.html#how-to-use-it"><font id="51">How to use it</font></a><ul>
+<li><a class="reference internal" href="clickjacking.html#setting-x-frame-options-for-all-responses"><font id="52">Setting X-Frame-Options for all responses</font></a></li>
+<li><a class="reference internal" href="clickjacking.html#setting-x-frame-options-per-view"><font id="53">Setting X-Frame-Options per view</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="clickjacking.html#limitations"><font id="54">Limitations</font></a><ul>
+<li><a class="reference internal" href="clickjacking.html#browsers-that-support-x-frame-options"><font id="55">Browsers that support X-Frame-Options</font></a></li>
+<li><a class="reference internal" href="clickjacking.html#see-also"><font id="56">See also</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="36">Browse</font></h3>
+<ul>
+<li><font id="57">Prev: <a href="class-based-views/flattened-index.html">Class-based generic views - flattened index</a></font></li>
+<li><font id="58">Next: <a href="contrib/index.html"><tt class="docutils literal"><span class="pre">contrib</span></tt> packages</a></font></li>
+</ul>
+<h3><font id="37">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="59">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="index.html"><font id="60">API Reference</font></a>
+<ul><li><font id="61">Clickjacking Protection</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="38">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/clickjacking.txt" rel="nofollow"><font id="62">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="39">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="23"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="40">Last update:</font></h3>
+<p class="topless"><font id="24">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="class-based-views/flattened-index.html" title="Class-based generic views - flattened index">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="API Reference">up</a>
+   |
+    <a href="contrib/index.html" title='&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;contrib&lt;/span&gt;&lt;/tt&gt; packages'>next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/clickjacking';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

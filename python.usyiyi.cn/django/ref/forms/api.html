@@ -1,0 +1,1082 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>表单 API — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Forms"/>
+<link href="fields.html" rel="next" title="Form fields"/>
+<link href="index.html" rel="prev" title="Forms"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/forms/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/forms/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="182">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="index.html" title="Forms">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="fields.html" title="Form fields">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-forms-api">
+<div class="section" id="s-module-django.forms">
+<span id="s-the-forms-api"></span><span id="module-django.forms"></span><span id="the-forms-api"></span><h1><font id="183">表单 API</font><a class="headerlink" href="api.html#module-django.forms" title="Permalink to this headline">¶</a></h1>
+<div class="admonition-about-this-document admonition">
+<p class="first admonition-title"><font id="1">关于这篇文档</font></p>
+<p class="last"><font id="2">这篇文档讲述Django 表单API 的详细细节。</font><font id="3">你应该先阅读<a class="reference internal" href="../../topics/forms/index.html"><em>表单简介</em></a>。</font></p>
+</div>
+<div class="section" id="s-bound-and-unbound-forms">
+<span id="s-ref-forms-api-bound-unbound"></span><span id="bound-and-unbound-forms"></span><span id="ref-forms-api-bound-unbound"></span><h2><font id="184">绑定的表单和未绑定的表单</font><a class="headerlink" href="api.html#bound-and-unbound-forms" title="Permalink to this headline">¶</a></h2>
+<p><font id="4"><a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>要么是<strong>绑定的</strong>，要么是<strong>未绑定的</strong>。</font></p>
+<ul class="simple">
+<li><font id="209">如果是<strong>绑定的</strong>，那么它能够验证数据，并渲染表单及其数据成HTML。</font></li>
+<li><font id="210">如果是<strong>未绑定的</strong>，那么它不能够完成验证（因为没有可验证的数据！），但是仍然能渲染空白的表单成HTML。</font></li>
+</ul>
+<dl class="class">
+<dt id="django.forms.Form">
+<em class="property">class </em><tt class="descname">Form</tt><a class="headerlink" href="api.html#django.forms.Form" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="5">若要创建一个未绑定的<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例，只需简单地实例化该类：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="6">若要绑定数据到表单，可以将数据以字典的形式传递给<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>类的构造函数的第一个参数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'hello'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'foo@example.com'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="7">在这个字典中，键为字段的名称，它们对应于<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>类中的属性。</font><font id="8">值为需要验证的数据。</font><font id="9">它们通常为字符串，但是没有强制要求必须是字符串；</font><font id="10">传递的数据类型取决于<a class="reference internal" href="fields.html#django.forms.Field" title="django.forms.Field"><tt class="xref py py-class docutils literal"><span class="pre">字段</span></tt></a>，我们稍后会看到。</font></p>
+<dl class="attribute">
+<dt id="django.forms.Form.is_bound">
+<tt class="descclassname">Form.</tt><tt class="descname">is_bound</tt><a class="headerlink" href="api.html#django.forms.Form.is_bound" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="11">如果运行时刻你需要区分绑定的表单和未绑定的表单，可以检查下表单<a class="reference internal" href="api.html#django.forms.Form.is_bound" title="django.forms.Form.is_bound"><tt class="xref py py-attr docutils literal"><span class="pre">is_bound</span></tt></a> 属性的值：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_bound</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">({</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'hello'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_bound</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p><font id="12">注意，传递一个空的字典将创建一个带有空数据的<em>绑定的</em>表单：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">({})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_bound</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p><font id="13">如果你有一个绑定的<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例但是想改下数据，或者你想绑定一个未绑定的<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>表单到某些数据，你需要创建另外一个<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例。</font><font id="14"><a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">Form</span></tt></a> 实例的数据没有办法修改。</font><font id="15"><a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例一旦创建，你应该将它的数据视为不可变的，无论它有没有数据。</font></p>
+</div>
+<div class="section" id="s-using-forms-to-validate-data">
+<span id="using-forms-to-validate-data"></span><h2><font id="185">使用表单来验证数据</font><a class="headerlink" href="api.html#using-forms-to-validate-data" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="django.forms.Form.clean">
+<tt class="descclassname">Form.</tt><tt class="descname">clean</tt>()<a class="headerlink" href="api.html#django.forms.Form.clean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="16">当你需要为相互依赖的字段添加自定义的验证时，你可以实现<tt class="docutils literal"><span class="pre">表单</span></tt>的<tt class="docutils literal"><span class="pre">clean()</span></tt>方法。</font><font id="17">示例用法参见<a class="reference internal" href="validation.html#validating-fields-with-clean"><em>Cleaning and validating fields that depend on each other</em></a>。</font></p>
+<dl class="method">
+<dt id="django.forms.Form.is_valid">
+<tt class="descclassname">Form.</tt><tt class="descname">is_valid</tt>()<a class="headerlink" href="api.html#django.forms.Form.is_valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="18"><a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>对象的首要任务就是验证数据。</font><font id="19">对于绑定的<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例，可以调用<a class="reference internal" href="api.html#django.forms.Form.is_valid" title="django.forms.Form.is_valid"><tt class="xref py py-meth docutils literal"><span class="pre">is_valid()</span></tt></a>方法来执行验证并返回一个表示数据是否合法的布尔值。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'hello'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'foo@example.com'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p><font id="20">让我们试下非法的数据。</font><font id="21">下面的情形中，<tt class="docutils literal"><span class="pre">subject</span></tt> 为空（默认所有字段都是必需的）且<tt class="docutils literal"><span class="pre">sender</span></tt> 是一个不合法的邮件地址：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'invalid email address'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="django.forms.Form.errors">
+<tt class="descclassname">Form.</tt><tt class="descname">errors</tt><a class="headerlink" href="api.html#django.forms.Form.errors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="22">访问<a class="reference internal" href="api.html#django.forms.Form.errors" title="django.forms.Form.errors"><tt class="xref py py-attr docutils literal"><span class="pre">errors</span></tt></a> 属性可以获得错误信息的一个字典：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">errors</span>
+<span class="go">{'sender': ['Enter a valid email address.'], 'subject': ['This field is required.']}</span>
+</pre></div>
+</div>
+<p><font id="23">在这个字典中，键为字段的名称，值为表示错误信息的Unicode 字符串组成的列表。</font><font id="24">错误信息保存在列表中是因为字段可能有多个错误信息。</font></p>
+<p><font id="25">你可以在调用<a class="reference internal" href="api.html#django.forms.Form.is_valid" title="django.forms.Form.is_valid"><tt class="xref py py-meth docutils literal"><span class="pre">is_valid()</span></tt></a>&nbsp;之前访问<a class="reference internal" href="api.html#django.forms.Form.errors" title="django.forms.Form.errors"><tt class="xref py py-attr docutils literal"><span class="pre">errors</span></tt></a>。</font><font id="26">表单的数据将在第一次调用<a class="reference internal" href="api.html#django.forms.Form.is_valid" title="django.forms.Form.is_valid"><tt class="xref py py-meth docutils literal"><span class="pre">is_valid()</span></tt></a> 或者访问<a class="reference internal" href="api.html#django.forms.Form.errors" title="django.forms.Form.errors"><tt class="xref py py-attr docutils literal"><span class="pre">errors</span></tt></a> 时验证。</font></p>
+<p><font id="27">验证将值调用一次，无论你访问<a class="reference internal" href="api.html#django.forms.Form.errors" title="django.forms.Form.errors"><tt class="xref py py-attr docutils literal"><span class="pre">errors</span></tt></a> 或者调用<a class="reference internal" href="api.html#django.forms.Form.is_valid" title="django.forms.Form.is_valid"><tt class="xref py py-meth docutils literal"><span class="pre">is_valid()</span></tt></a> 多少次。</font><font id="28">这意味着，如果验证过程有副作用，这些副作用将只触发一次。</font></p>
+<dl class="method">
+<dt id="django.forms.Form.errors.as_data">
+<tt class="descclassname">Form.errors.</tt><tt class="descname">as_data</tt>()<a class="headerlink" href="api.html#django.forms.Form.errors.as_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="29">返回一个<tt class="docutils literal"><span class="pre">字典</span></tt>，它映射字段到原始的<tt class="docutils literal"><span class="pre">ValidationError</span></tt> 实例。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">as_data</span><span class="p">()</span>
+<span class="go">{'sender': [ValidationError(['Enter a valid email address.'])],</span>
+<span class="go">'subject': [ValidationError(['This field is required.'])]}</span>
+</pre></div>
+</div>
+<p><font id="30">每当你需要根据错误的<tt class="docutils literal"><span class="pre">code</span></tt> 来识别错误时，可以调用这个方法。</font><font id="31">它可以用来重写错误信息或者根据特定的错误编写自定义的逻辑。</font><font id="32">它还可以用来序列化错误为一个自定义的格式（例如，XML）；</font><font id="33"><a class="reference internal" href="api.html#django.forms.Form.errors.as_json" title="django.forms.Form.errors.as_json"><tt class="xref py py-meth docutils literal"><span class="pre">as_json()</span></tt></a> 就依赖于<tt class="docutils literal"><span class="pre">as_data()</span></tt>。</font></p>
+<p><font id="34">需要<tt class="docutils literal"><span class="pre">as_data()</span></tt> 方法是为了向后兼容。</font><font id="35">以前，<tt class="docutils literal"><span class="pre">ValidationError</span></tt> 实例在它们<strong>渲染后</strong>&nbsp;的错误消息一旦添加到<tt class="docutils literal"><span class="pre">Form.errors</span></tt> 字典就立即被丢弃。</font><font id="36">理想情况下，<tt class="docutils literal"><span class="pre">Form.errors</span></tt> 应该已经保存<tt class="docutils literal"><span class="pre">ValidationError</span></tt> 实例而带有<tt class="docutils literal"><span class="pre">as_</span></tt> 前缀的方法可以渲染它们，但是为了不破坏直接使用<tt class="docutils literal"><span class="pre">Form.errors</span></tt> 中的错误消息的代码，必须使用其它方法来实现。</font></p>
+<dl class="method">
+<dt id="django.forms.Form.errors.as_json">
+<tt class="descclassname">Form.errors.</tt><tt class="descname">as_json</tt>(<em>escape_html=False</em>)<a class="headerlink" href="api.html#django.forms.Form.errors.as_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="37">返回JSON 序列化后的错误。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">as_json</span><span class="p">()</span>
+<span class="go">{"sender": [{"message": "Enter a valid email address.", "code": "invalid"}],</span>
+<span class="go">"subject": [{"message": "This field is required.", "code": "required"}]}</span>
+</pre></div>
+</div>
+<p><font id="38">默认情况下，<tt class="docutils literal"><span class="pre">as_json()</span></tt> 不会转义它的输出。</font><font id="39">如果你正在使用AJAX 请求表单视图，而客户端会解析响应并将错误插入到页面中，你必须在客户端对结果进行转义以避免可能的跨站脚本攻击。</font><font id="40">使用一个JavaScript 库比如jQuery 来做这件事很简单 —— 只要使用<tt class="docutils literal"><span class="pre">$(el).text(errorText)</span></tt> 而不是<tt class="docutils literal"><span class="pre">.html()</span></tt> 就可以。</font></p>
+<p><font id="41">如果由于某种原因你不想使用客户端的转义，你还可以设置<tt class="docutils literal"><span class="pre">escape_html=True</span></tt>，这样错误消息将被转义而你可以直接在HTML 中使用它们。</font></p>
+<dl class="method">
+<dt id="django.forms.Form.add_error">
+<tt class="descclassname">Form.</tt><tt class="descname">add_error</tt>(<em>field</em>, <em>error</em>)<a class="headerlink" href="api.html#django.forms.Form.add_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="42">这个方法允许在<tt class="docutils literal"><span class="pre">Form.clean()</span></tt> 方法内部或从表单的外部一起给字段添加错误信息；</font><font id="43">例如从一个视图中。</font></p>
+<p><font id="44"><tt class="docutils literal"><span class="pre">field</span></tt> 参数为字段的名称。</font><font id="45">如果值为<tt class="docutils literal"><span class="pre">None</span></tt>，error 将作为<a class="reference internal" href="api.html#django.forms.Form.non_field_errors" title="django.forms.Form.non_field_errors"><tt class="xref py py-meth docutils literal"><span class="pre">Form.non_field_errors()</span></tt></a> 返回的一个非字段错误。</font></p>
+<p><font id="46"><tt class="docutils literal"><span class="pre">error</span></tt> 参数可以是一个简单的字符串，或者最好是一个<tt class="docutils literal"><span class="pre">ValidationError</span></tt> 实例。</font><font id="47"><a class="reference internal" href="validation.html#raising-validation-error"><em>引发ValidationError</em></a> 中可以看到定义表单错误时的最佳实践。</font></p>
+<p><font id="48">注意，<tt class="docutils literal"><span class="pre">Form.add_error()</span></tt> 会自动删除<tt class="docutils literal"><span class="pre">cleaned_data</span></tt> 中的相关字段。</font></p>
+<dl class="method">
+<dt id="django.forms.Form.has_error">
+<tt class="descclassname">Form.</tt><tt class="descname">has_error</tt>(<em>field</em>, <em>code=None</em>)<a class="headerlink" href="api.html#django.forms.Form.has_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="49">这个方法返回一个布尔值，指示一个字段是否具有指定错误<tt class="docutils literal"><span class="pre">code</span></tt> 的错误。</font><font id="50">当<tt class="docutils literal"><span class="pre">code</span></tt> 为<tt class="docutils literal"><span class="pre">None</span></tt> 时，如果字段有任何错误它都将返回<tt class="docutils literal"><span class="pre">True</span></tt>。</font></p>
+<p><font id="51">若要检查非字段错误，使用<a class="reference internal" href="../exceptions.html#django.core.exceptions.NON_FIELD_ERRORS" title="django.core.exceptions.NON_FIELD_ERRORS"><tt class="xref py py-data docutils literal"><span class="pre">NON_FIELD_ERRORS</span></tt></a> 作为<tt class="docutils literal"><span class="pre">field</span></tt> 参数。</font></p>
+<dl class="method">
+<dt id="django.forms.Form.non_field_errors">
+<tt class="descclassname">Form.</tt><tt class="descname">non_field_errors</tt>()<a class="headerlink" href="api.html#django.forms.Form.non_field_errors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="52">这个方法返回<a class="reference internal" href="api.html#django.forms.Form.errors" title="django.forms.Form.errors"><tt class="xref py py-attr docutils literal"><span class="pre">Form.errors</span></tt></a> 中不是与特定字段相关联的错误。</font><font id="253">它包含在<a class="reference internal" href="api.html#django.forms.Form.clean" title="django.forms.Form.clean"><tt class="xref py py-meth docutils literal"><span class="pre">Form.clean()</span></tt></a> 中引发的<tt class="docutils literal"><span class="pre">ValidationError</span></tt> 和使用<a class="reference internal" href="api.html#django.forms.Form.add_error" title="django.forms.Form.add_error"><tt class="xref py py-meth docutils literal"><span class="pre">Form.add_error(None,</span> <span class="pre">"...")</span></tt></a> 添加的错误。</font></p>
+<div class="section" id="s-behavior-of-unbound-forms">
+<span id="behavior-of-unbound-forms"></span><h3><font id="193">未绑定表单的行为</font><a class="headerlink" href="api.html#behavior-of-unbound-forms" title="Permalink to this headline">¶</a></h3>
+<p><font id="53">验证没有绑定数据的表单是没有意义的，下面的例子展示了这种情况：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">errors</span>
+<span class="go">{}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-dynamic-initial-values">
+<span id="dynamic-initial-values"></span><h2><font id="186">动态的初始值</font><a class="headerlink" href="api.html#dynamic-initial-values" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="django.forms.Form.initial">
+<tt class="descclassname">Form.</tt><tt class="descname">initial</tt><a class="headerlink" href="api.html#django.forms.Form.initial" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="54">表单字段的初始值使用<a class="reference internal" href="api.html#django.forms.Form.initial" title="django.forms.Form.initial"><tt class="xref py py-attr docutils literal"><span class="pre">initial</span></tt></a>声明。</font><font id="55">例如，你可能希望使用当前会话的用户名填充<tt class="docutils literal"><span class="pre">username</span></tt>字段。</font></p>
+<p><font id="56">使用<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">Form</span></tt></a>的<a class="reference internal" href="api.html#django.forms.Form.initial" title="django.forms.Form.initial"><tt class="xref py py-attr docutils literal"><span class="pre">initial</span></tt></a>参数可以实现。</font><font id="57">该参数是字段名到初始值的一个字典。</font><font id="58">只需要包含你期望给出初始值的字段；</font><font id="59">不需要包含表单中的所有字段。</font><font id="60">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'Hi there!'</span><span class="p">})</span>
+</pre></div>
+</div>
+<p><font id="61">这些值只显示在没有绑定的表单中，即使没有提供特定值它们也不会作为后备的值。</font></p>
+<p><font id="62">注意，如果<a class="reference internal" href="fields.html#django.forms.Field" title="django.forms.Field"><tt class="xref py py-class docutils literal"><span class="pre">字段</span></tt></a>有定义<a class="reference internal" href="api.html#django.forms.Form.initial" title="django.forms.Form.initial"><tt class="xref py py-attr docutils literal"><span class="pre">initial</span></tt></a>， <em>而</em>实例化<tt class="docutils literal"><span class="pre">表单</span></tt>时也提供<tt class="docutils literal"><span class="pre">initial</span></tt>，那么后面的<tt class="docutils literal"><span class="pre">initial</span></tt> 将优先。</font><font id="63">在下面的例子中，<tt class="docutils literal"><span class="pre">initial</span></tt> 在字段和表单实例化中都有定义，此时后者具有优先权：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">CommentForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="s">'class'</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">url</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">comment</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">CommentForm</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s">'name'</span><span class="p">:</span> <span class="s">'instance'</span><span class="p">},</span> <span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Name:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="name" value="instance" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Url:&lt;/th&gt;&lt;td&gt;&lt;input type="url" name="url" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Comment:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="comment" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-checking-if-form-data-has-changed">
+<span id="checking-if-form-data-has-changed"></span><h2><font id="187">检查表单数据是否改变</font><a class="headerlink" href="api.html#checking-if-form-data-has-changed" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="django.forms.Form.has_changed">
+<tt class="descclassname">Form.</tt><tt class="descname">has_changed</tt>()<a class="headerlink" href="api.html#django.forms.Form.has_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="64">当你需要检查表单的数据是否从初始数据发生改变时，可以使用<tt class="docutils literal"><span class="pre">表单</span></tt>的<tt class="docutils literal"><span class="pre">has_changed()</span></tt> 方法。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'hello'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'foo@example.com'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">has_changed</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p><font id="65">当提交表单时，我们可以重新构建表单并提供初始值，这样可以实现比较：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">has_changed</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="66">如果<tt class="docutils literal"><span class="pre">request.POST</span></tt> 中的数据与<a class="reference internal" href="api.html#django.forms.Form.initial" title="django.forms.Form.initial"><tt class="xref py py-attr docutils literal"><span class="pre">initial</span></tt></a> 中的不同，<tt class="docutils literal"><span class="pre">has_changed()</span></tt> 将为<tt class="docutils literal"><span class="pre">True</span></tt>，否则为<tt class="docutils literal"><span class="pre">False</span></tt>。 </font><font id="68">计算的结果是通过调用表单每个字段的<a class="reference internal" href="fields.html#django.forms.Field.has_changed" title="django.forms.Field.has_changed"><tt class="xref py py-meth docutils literal"><span class="pre">Field.has_changed()</span></tt></a> 得到的。</font></p>
+</div>
+<div class="section" id="s-accessing-the-fields-from-the-form">
+<span id="accessing-the-fields-from-the-form"></span><h2><font id="188">从表单中访问字段</font><a class="headerlink" href="api.html#accessing-the-fields-from-the-form" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="django.forms.Form.fields">
+<tt class="descclassname">Form.</tt><tt class="descname">fields</tt><a class="headerlink" href="api.html#django.forms.Form.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="69">你可以从<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例的<tt class="docutils literal"><span class="pre">fields</span></tt>属性访问字段：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span> <span class="k">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&lt;django.forms.fields.CharField object at 0x7ffaac632510&gt;</span>
+<span class="go">&lt;django.forms.fields.URLField object at 0x7ffaac632f90&gt;</span>
+<span class="go">&lt;django.forms.fields.CharField object at 0x7ffaac3aa050&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s">'name'</span><span class="p">]</span>
+<span class="go">&lt;django.forms.fields.CharField object at 0x7ffaac6324d0&gt;</span>
+</pre></div>
+</div>
+<p><font id="70">可你可以修改<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例的字段来改变字段在表单中的表示：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">'&lt;tr&gt;&lt;th&gt;Name:&lt;/th&gt;&lt;td&gt;&lt;input name="name" type="text" value="instance" /&gt;&lt;/td&gt;&lt;/tr&gt;'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s">'name'</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s">"Username"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">'&lt;tr&gt;&lt;th&gt;Username:&lt;/th&gt;&lt;td&gt;&lt;input name="name" type="text" value="instance" /&gt;&lt;/td&gt;&lt;/tr&gt;'</span>
+</pre></div>
+</div>
+<p><font id="71">注意不要改变<tt class="docutils literal"><span class="pre">base_fields</span></tt> 属性，因为一旦修改将影响同一个Python 进程中接下来所有的<tt class="docutils literal"><span class="pre">ContactForm</span></tt> 实例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">base_fields</span><span class="p">[</span><span class="s">'name'</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s">"Username"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">another_f</span> <span class="o">=</span> <span class="n">CommentForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">another_f</span><span class="o">.</span><span class="n">as_table</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">'&lt;tr&gt;&lt;th&gt;Username:&lt;/th&gt;&lt;td&gt;&lt;input name="name" type="text" value="class" /&gt;&lt;/td&gt;&lt;/tr&gt;'</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-accessing-clean-data">
+<span id="accessing-clean-data"></span><h2><font id="262">访问“清洁”的数据</font><a class="headerlink" href="api.html#accessing-clean-data" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="django.forms.Form.cleaned_data">
+<tt class="descclassname">Form.</tt><tt class="descname">cleaned_data</tt><a class="headerlink" href="api.html#django.forms.Form.cleaned_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="72"><a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>类中的每个字段不仅负责验证数据，还负责“清洁”它们 —— 将它们转换为正确的格式。</font><font id="73">这是个非常好用的功能，因为它允许字段以多种方式输入数据，并总能得到一致的输出。</font></p>
+<p><font id="74">例如，<a class="reference internal" href="fields.html#django.forms.DateField" title="django.forms.DateField"><tt class="xref py py-class docutils literal"><span class="pre">DateField</span></tt></a> 将输入转换为Python 的 <tt class="docutils literal"><span class="pre">datetime.date</span></tt> 对象。</font><font id="75">无论你传递的是<tt class="docutils literal"><span class="pre">'1994-07-15'</span></tt> 格式的字符串、<tt class="docutils literal"><span class="pre">datetime.date</span></tt> 对象、还是其它格式的数字，<tt class="docutils literal"><span class="pre">DateField</span></tt> 将始终将它们转换成<tt class="docutils literal"><span class="pre">datetime.date</span></tt> 对象，只要它们是合法的。</font></p>
+<p><font id="76">一旦你创建一个<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例并通过验证后，你就可以通过它的<tt class="docutils literal"><span class="pre">cleaned_data</span></tt> 属性访问清洁的数据：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'hello'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'foo@example.com'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">cleaned_data</span>
+<span class="go">{'cc_myself': True, 'message': 'Hi there', 'sender': 'foo@example.com', 'subject': 'hello'}</span>
+</pre></div>
+</div>
+<p><font id="77">注意，文本字段 —— 例如，<tt class="docutils literal"><span class="pre">CharField</span></tt> 和<tt class="docutils literal"><span class="pre">EmailField</span></tt> —— 始终将输入转换为Unicode 字符串。</font><font id="78">我们将在这篇文档的后面将是编码的影响。</font></p>
+<p><font id="79">如果你的数据<em>没有</em> 通过验证，<tt class="docutils literal"><span class="pre">cleaned_data</span></tt> 字典中只包含合法的字段：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'invalid email address'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">cleaned_data</span>
+<span class="go">{'cc_myself': True, 'message': 'Hi there'}</span>
+</pre></div>
+</div>
+<p><font id="80"><tt class="docutils literal"><span class="pre">cleaned_data</span></tt> 始终<em>只</em> 包含<tt class="docutils literal"><span class="pre">表单</span></tt>中定义的字段，即使你在构建<tt class="docutils literal"><span class="pre">表单</span></tt> 时传递了额外的数据。</font><font id="81">在下面的例子中，我们传递一组额外的字段给<tt class="docutils literal"><span class="pre">ContactForm</span></tt> 构造函数，但是<tt class="docutils literal"><span class="pre">cleaned_data</span></tt> 将只包含表单的字段：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'hello'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'foo@example.com'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'extra_field_1'</span><span class="p">:</span> <span class="s">'foo'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'extra_field_2'</span><span class="p">:</span> <span class="s">'bar'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'extra_field_3'</span><span class="p">:</span> <span class="s">'baz'</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">cleaned_data</span> <span class="c"># Doesn't contain extra_field_1, etc.</span>
+<span class="go">{'cc_myself': True, 'message': 'Hi there', 'sender': 'foo@example.com', 'subject': 'hello'}</span>
+</pre></div>
+</div>
+<p><font id="82">当<tt class="docutils literal"><span class="pre">表单</span></tt>合法时，<tt class="docutils literal"><span class="pre">cleaned_data</span></tt> 将包含<em>所有</em>字段的键和值，即使传递的数据不包含某些可选字段的值。</font><font id="83">在下面的例子中，传递的数据字典不包含<tt class="docutils literal"><span class="pre">nick_name</span></tt> 字段的值，但是<tt class="docutils literal"><span class="pre">cleaned_data</span></tt> 任然包含它，只是值为空：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.forms</span> <span class="kn">import</span> <span class="n">Form</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">OptionalPersonForm</span><span class="p">(</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">first_name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">last_name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">nick_name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'first_name'</span><span class="p">:</span> <span class="s">'John'</span><span class="p">,</span> <span class="s">'last_name'</span><span class="p">:</span> <span class="s">'Lennon'</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">OptionalPersonForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">cleaned_data</span>
+<span class="go">{'nick_name': '', 'first_name': 'John', 'last_name': 'Lennon'}</span>
+</pre></div>
+</div>
+<p><font id="84">在上面的例子中，<tt class="docutils literal"><span class="pre">cleaned_data</span></tt> 中<tt class="docutils literal"><span class="pre">nick_name</span></tt> 设置为一个空字符串，这是因为<tt class="docutils literal"><span class="pre">nick_name</span></tt> 是<tt class="docutils literal"><span class="pre">CharField</span></tt>而 <tt class="docutils literal"><span class="pre">CharField</span></tt> 将空值作为一个空字符串。</font><font id="85">每个字段都知道自己的“空”值 —— 例如，<tt class="docutils literal"><span class="pre">DateField</span></tt> 的空值是<tt class="docutils literal"><span class="pre">None</span></tt> 而不是一个空字符串。</font><font id="86">关于每个字段空值的完整细节，参见“内建的<tt class="docutils literal"><span class="pre">Field</span></tt> 类”一节中每个字段的“空值”提示。</font></p>
+<p><font id="87">你可以自己编写代码来对特定的字段（根据它们的名字）或者表单整体（考虑到不同字段的组合）进行验证。</font><font id="88">更多信息参见<a class="reference internal" href="validation.html"><em>表单和字段验证</em></a>。</font></p>
+</div>
+<div class="section" id="s-outputting-forms-as-html">
+<span id="s-ref-forms-api-outputting-html"></span><span id="outputting-forms-as-html"></span><span id="ref-forms-api-outputting-html"></span><h2><font id="189">输出表单为HTML</font><a class="headerlink" href="api.html#outputting-forms-as-html" title="Permalink to this headline">¶</a></h2>
+<p><font id="89"><tt class="docutils literal"><span class="pre">表单</span></tt>对象的第二个任务是将它渲染成HTML。</font><font id="90">很简单，<tt class="docutils literal"><span class="pre">print</span></tt> 它：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_subject"&gt;Subject:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_message"&gt;Message:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" id="id_message" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_sender"&gt;Sender:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="email" name="sender" id="id_sender" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="checkbox" name="cc_myself" id="id_cc_myself" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+</pre></div>
+</div>
+<p><font id="91">如果表单是绑定的，输出的HTML 将包含数据。</font><font id="254">例如，如果字段是<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type="text"&gt;</span></tt> 的形式，其数据将位于<tt class="docutils literal"><span class="pre">value</span></tt> 属性中。</font><font id="255">如果字段是<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type="checkbox"&gt;</span></tt> 的形式，HTML 将包含<tt class="docutils literal"><span class="pre">checked="checked"</span></tt>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'hello'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'foo@example.com'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_subject"&gt;Subject:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input id="id_subject" type="text" name="subject" maxlength="100" value="hello" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_message"&gt;Message:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" id="id_message" value="Hi there" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_sender"&gt;Sender:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="email" name="sender" id="id_sender" value="foo@example.com" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="checkbox" name="cc_myself" id="id_cc_myself" checked="checked" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+</pre></div>
+</div>
+<p><font id="92">默认的输出时具有两个列的HTML 表格，每个字段对应一个<tt class="docutils literal"><span class="pre">&lt;tr&gt;</span></tt>。</font><font id="93">注意事项：</font></p>
+<ul class="simple">
+<li><font id="211">为了灵活性，输出<em>不</em>包含<tt class="docutils literal"><span class="pre">&lt;table&gt;</span></tt> 和<tt class="docutils literal"><span class="pre">&lt;/table&gt;</span></tt>、<tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> 和<tt class="docutils literal"><span class="pre">&lt;/form&gt;</span></tt>&nbsp;以及<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type="submit"&gt;</span></tt> 标签。</font><font id="258">你需要添加它们。</font></li>
+<li><font id="212">每个字段类型有一个默认的HTML 表示。<tt class="docutils literal"><span class="pre">CharField</span></tt> 表示为一个<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type="text"&gt;</span></tt>，<tt class="docutils literal"><span class="pre">EmailField</span></tt> 表示为一个<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type="email"&gt;</span></tt>。</font><font id="259"><tt class="docutils literal"><span class="pre">BooleanField</span></tt> 表示为一个<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type="checkbox"&gt;</span></tt>。</font><font id="260">注意，这些只是默认的表示；你可以使用Widget 指定字段使用哪种HTML，我们将稍后解释。</font></li>
+<li><font id="213">每个标签的HTML <tt class="docutils literal"><span class="pre">name</span></tt> 直接从<tt class="docutils literal"><span class="pre">ContactForm</span></tt> 类中获取。</font></li>
+<li><font id="214">每个字段的文本标签 —— 例如<tt class="docutils literal"><span class="pre">'Subject:'</span></tt>、<tt class="docutils literal"><span class="pre">'Message:'</span></tt> 和<tt class="docutils literal"><span class="pre">'Cc</span> <span class="pre">myself:'</span></tt> 通过将所有的下划线转换成空格并大写第一个字母生成。</font><font id="215">再次提醒，这些只是默认的表示；</font><font id="216">你可以手工指定标签。</font></li>
+<li><font id="217">每个文本标签周围有一个HTML <tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签，它指向表单字段的<tt class="docutils literal"><span class="pre">id</span></tt>。</font><font id="218">这个<tt class="docutils literal"><span class="pre">id</span></tt>，是通过在字段名称前面加上<tt class="docutils literal"><span class="pre">'id_'</span></tt> 前缀生成。</font><font id="219"><tt class="docutils literal"><span class="pre">id</span></tt> 属性和<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签默认包含在输出中，但你可以改变这一行为。</font></li>
+</ul>
+<p><font id="94">虽然<tt class="docutils literal"><span class="pre">print</span></tt> 表单时<tt class="docutils literal"><span class="pre">&lt;table&gt;</span></tt> 是默认的输出格式，但是还有其它格式可用。</font><font id="95">每个格式对应于表单对象的一个方法，每个方法都返回一个Unicode 对象。</font></p>
+<div class="section" id="s-as-p">
+<span id="as-p"></span><h3><font id="194">as_p()</font><a class="headerlink" href="api.html#as-p" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.forms.Form.as_p">
+<tt class="descclassname">Form.</tt><tt class="descname">as_p</tt>()<a class="headerlink" href="api.html#django.forms.Form.as_p" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="96"><tt class="docutils literal"><span class="pre">as_p()</span></tt> 渲染表单为一系列的<tt class="docutils literal"><span class="pre">&lt;p&gt;</span></tt> 标签，每个<tt class="docutils literal"><span class="pre">&lt;p&gt;</span></tt> 标签包含一个字段：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">()</span>
+<span class="go">'&lt;p&gt;&lt;label for="id_subject"&gt;Subject:&lt;/label&gt; &lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/p&gt;\n&lt;p&gt;&lt;label for="id_message"&gt;Message:&lt;/label&gt; &lt;input type="text" name="message" id="id_message" /&gt;&lt;/p&gt;\n&lt;p&gt;&lt;label for="id_sender"&gt;Sender:&lt;/label&gt; &lt;input type="text" name="sender" id="id_sender" /&gt;&lt;/p&gt;\n&lt;p&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="id_cc_myself" /&gt;&lt;/p&gt;'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">())</span>
+<span class="go">&lt;p&gt;&lt;label for="id_subject"&gt;Subject:&lt;/label&gt; &lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="id_message"&gt;Message:&lt;/label&gt; &lt;input type="text" name="message" id="id_message" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="id_sender"&gt;Sender:&lt;/label&gt; &lt;input type="email" name="sender" id="id_sender" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="id_cc_myself" /&gt;&lt;/p&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-as-ul">
+<span id="as-ul"></span><h3><font id="195">as_ul()</font><a class="headerlink" href="api.html#as-ul" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.forms.Form.as_ul">
+<tt class="descclassname">Form.</tt><tt class="descname">as_ul</tt>()<a class="headerlink" href="api.html#django.forms.Form.as_ul" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="97"><tt class="docutils literal"><span class="pre">as_ul()</span></tt> 渲染表单为一系列的<tt class="docutils literal"><span class="pre">&lt;li&gt;</span></tt>标签，每个<tt class="docutils literal"><span class="pre">&lt;li&gt;</span></tt> 标签包含一个字段。</font><font id="98">它<em>不</em>包含<tt class="docutils literal"><span class="pre">&lt;ul&gt;</span></tt> 和<tt class="docutils literal"><span class="pre">&lt;/ul&gt;</span></tt>，所以你可以自己指定<tt class="docutils literal"><span class="pre">&lt;ul&gt;</span></tt> 的任何HTML 属性：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">()</span>
+<span class="go">'&lt;li&gt;&lt;label for="id_subject"&gt;Subject:&lt;/label&gt; &lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;\n&lt;li&gt;&lt;label for="id_message"&gt;Message:&lt;/label&gt; &lt;input type="text" name="message" id="id_message" /&gt;&lt;/li&gt;\n&lt;li&gt;&lt;label for="id_sender"&gt;Sender:&lt;/label&gt; &lt;input type="email" name="sender" id="id_sender" /&gt;&lt;/li&gt;\n&lt;li&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="id_cc_myself" /&gt;&lt;/li&gt;'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;&lt;label for="id_subject"&gt;Subject:&lt;/label&gt; &lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_message"&gt;Message:&lt;/label&gt; &lt;input type="text" name="message" id="id_message" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_sender"&gt;Sender:&lt;/label&gt; &lt;input type="email" name="sender" id="id_sender" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="id_cc_myself" /&gt;&lt;/li&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-as-table">
+<span id="as-table"></span><h3><font id="196">as_table()</font><a class="headerlink" href="api.html#as-table" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.forms.Form.as_table">
+<tt class="descclassname">Form.</tt><tt class="descname">as_table</tt>()<a class="headerlink" href="api.html#django.forms.Form.as_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="99">最后，<tt class="docutils literal"><span class="pre">as_table()</span></tt>输出表单为一个HTML <tt class="docutils literal"><span class="pre">&lt;table&gt;</span></tt>。</font><font id="100">它与<tt class="docutils literal"><span class="pre">print</span></tt> 完全相同。</font><font id="101">事实上，当你<tt class="docutils literal"><span class="pre">print</span></tt> 一个表单对象时，在后台调用的就是<tt class="docutils literal"><span class="pre">as_table()</span></tt> 方法：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">()</span>
+<span class="go">'&lt;tr&gt;&lt;th&gt;&lt;label for="id_subject"&gt;Subject:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/td&gt;&lt;/tr&gt;\n&lt;tr&gt;&lt;th&gt;&lt;label for="id_message"&gt;Message:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" id="id_message" /&gt;&lt;/td&gt;&lt;/tr&gt;\n&lt;tr&gt;&lt;th&gt;&lt;label for="id_sender"&gt;Sender:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="email" name="sender" id="id_sender" /&gt;&lt;/td&gt;&lt;/tr&gt;\n&lt;tr&gt;&lt;th&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="checkbox" name="cc_myself" id="id_cc_myself" /&gt;&lt;/td&gt;&lt;/tr&gt;'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">())</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_subject"&gt;Subject:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_message"&gt;Message:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" id="id_message" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_sender"&gt;Sender:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="email" name="sender" id="id_sender" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="checkbox" name="cc_myself" id="id_cc_myself" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-styling-required-or-erroneous-form-rows">
+<span id="s-ref-forms-api-styling-form-rows"></span><span id="styling-required-or-erroneous-form-rows"></span><span id="ref-forms-api-styling-form-rows"></span><h3><font id="197">表单必填行和错误行的样式</font><a class="headerlink" href="api.html#styling-required-or-erroneous-form-rows" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Form.error_css_class">
+<tt class="descclassname">Form.</tt><tt class="descname">error_css_class</tt><a class="headerlink" href="api.html#django.forms.Form.error_css_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="attribute">
+<dt id="django.forms.Form.required_css_class">
+<tt class="descclassname">Form.</tt><tt class="descname">required_css_class</tt><a class="headerlink" href="api.html#django.forms.Form.required_css_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="102">将必填的表单行和有错误的表单行定义不同的样式特别常见。</font><font id="103">例如，你想将必填的表单行以粗体显示、将错误以红色显示。</font></p>
+<p><font id="104"><a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>类具有一对钩子，可以使用它们来添加<tt class="docutils literal"><span class="pre">class</span></tt> 属性给必填的行或有错误的行：只需简单地设置<a class="reference internal" href="api.html#django.forms.Form.error_css_class" title="django.forms.Form.error_css_class"><tt class="xref py py-attr docutils literal"><span class="pre">Form.error_css_class</span></tt></a> 和/或 <a class="reference internal" href="api.html#django.forms.Form.required_css_class" title="django.forms.Form.required_css_class"><tt class="xref py py-attr docutils literal"><span class="pre">Form.required_css_class</span></tt></a> 属性：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.forms</span> <span class="kn">import</span> <span class="n">Form</span>
+
+<span class="k">class</span> <span class="nc">ContactForm</span><span class="p">(</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">error_css_class</span> <span class="o">=</span> <span class="s">'error'</span>
+    <span class="n">required_css_class</span> <span class="o">=</span> <span class="s">'required'</span>
+
+    <span class="c"># ... and the rest of your fields here</span>
+</pre></div>
+</div>
+<p><font id="105">一旦你设置好，将根据需要设置行的<tt class="docutils literal"><span class="pre">"error"</span></tt> 和/或<tt class="docutils literal"><span class="pre">"required"</span></tt> CSS 类型。 </font><font id="256">其HTML 看上去将类似：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">())</span>
+<span class="go">&lt;tr class="required"&gt;&lt;th&gt;&lt;label class="required" for="id_subject"&gt;Subject:&lt;/label&gt;    ...</span>
+<span class="go">&lt;tr class="required"&gt;&lt;th&gt;&lt;label class="required" for="id_message"&gt;Message:&lt;/label&gt;    ...</span>
+<span class="go">&lt;tr class="required error"&gt;&lt;th&gt;&lt;label class="required" for="id_sender"&gt;Sender:&lt;/label&gt;      ...</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_cc_myself"&gt;Cc myself:&lt;label&gt; ...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[</span><span class="s">'subject'</span><span class="p">]</span><span class="o">.</span><span class="n">label_tag</span><span class="p">()</span>
+<span class="go">&lt;label class="required" for="id_subject"&gt;Subject:&lt;/label&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[</span><span class="s">'subject'</span><span class="p">]</span><span class="o">.</span><span class="n">label_tag</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">'class'</span><span class="p">:</span> <span class="s">'foo'</span><span class="p">})</span>
+<span class="go">&lt;label for="id_subject" class="foo required"&gt;Subject:&lt;/label&gt;</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="106"><tt class="docutils literal"><span class="pre">required_css_class</span></tt> 添加到<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签，如上面所看到的。</font></p>
+</div>
+</div>
+<div class="section" id="s-configuring-form-elements-html-id-attributes-and-label-tags">
+<span id="s-ref-forms-api-configuring-label"></span><span id="configuring-form-elements-html-id-attributes-and-label-tags"></span><span id="ref-forms-api-configuring-label"></span><h3><font id="261">配置表单元素的HTML <tt class="docutils literal"><span class="pre">id</span></tt> 属性和 <tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签</font><a class="headerlink" href="api.html#configuring-form-elements-html-id-attributes-and-label-tags" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Form.auto_id">
+<tt class="descclassname">Form.</tt><tt class="descname">auto_id</tt><a class="headerlink" href="api.html#django.forms.Form.auto_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="107">默认情况下，表单的渲染方法包含：</font></p>
+<ul class="simple">
+<li><font id="220">表单元素的HTML <tt class="docutils literal"><span class="pre">id</span></tt> 属性</font></li>
+<li><font id="221">对应的<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签。</font><font id="222">HTML <tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签指示标签文本关联的表单元素。</font><font id="223">这个小小的改进让表单在辅助设备上具有更高的可用性。</font><font id="224">使用<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签始终是个好想法。</font></li>
+</ul>
+<p><font id="108"><tt class="docutils literal"><span class="pre">id</span></tt> 属性值通过在表单字段名称的前面加上<tt class="docutils literal"><span class="pre">id_</span></tt> 生成。</font><font id="109">但是如果你想改变<tt class="docutils literal"><span class="pre">id</span></tt> 的生成方式或者完全删除 HTML <tt class="docutils literal"><span class="pre">id</span></tt> 属性和<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt>标签，这个行为是可配置的。</font></p>
+<p><font id="110">&nbsp;<tt class="docutils literal"><span class="pre">id</span></tt> 和label 的行为使用<tt class="docutils literal"><span class="pre">表单</span></tt>构造函数的<tt class="docutils literal"><span class="pre">auto_id</span></tt> 参数控制。</font><font id="111">这个参数必须为<tt class="docutils literal"><span class="pre">True</span></tt>、<tt class="docutils literal"><span class="pre">False</span></tt> 或者一个字符串。</font></p>
+<p><font id="112">如果<tt class="docutils literal"><span class="pre">auto_id</span></tt> 为<tt class="docutils literal"><span class="pre">False</span></tt>，那么表单的输出将不包含<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签和<tt class="docutils literal"><span class="pre">id</span></tt> 属性：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">())</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Subject:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="subject" maxlength="100" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Message:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Sender:&lt;/th&gt;&lt;td&gt;&lt;input type="email" name="sender" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Cc myself:&lt;/th&gt;&lt;td&gt;&lt;input type="checkbox" name="cc_myself" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;Subject: &lt;input type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Message: &lt;input type="text" name="message" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Sender: &lt;input type="email" name="sender" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Cc myself: &lt;input type="checkbox" name="cc_myself" /&gt;&lt;/li&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">())</span>
+<span class="go">&lt;p&gt;Subject: &lt;input type="text" name="subject" maxlength="100" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Message: &lt;input type="text" name="message" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Sender: &lt;input type="email" name="sender" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Cc myself: &lt;input type="checkbox" name="cc_myself" /&gt;&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p><font id="113">如果<tt class="docutils literal"><span class="pre">auto_id</span></tt> 设置为<tt class="docutils literal"><span class="pre">True</span></tt>，那么输出的表示<em>将</em> 包含<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签并简单地使用字典名称作为每个表单字段的<tt class="docutils literal"><span class="pre">id</span></tt>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">())</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="subject"&gt;Subject:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input id="subject" type="text" name="subject" maxlength="100" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="message"&gt;Message:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" id="message" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="sender"&gt;Sender:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="email" name="sender" id="sender" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="cc_myself"&gt;Cc myself:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="checkbox" name="cc_myself" id="cc_myself" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;&lt;label for="subject"&gt;Subject:&lt;/label&gt; &lt;input id="subject" type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="message"&gt;Message:&lt;/label&gt; &lt;input type="text" name="message" id="message" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="sender"&gt;Sender:&lt;/label&gt; &lt;input type="email" name="sender" id="sender" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="cc_myself"&gt;Cc myself:&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="cc_myself" /&gt;&lt;/li&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">())</span>
+<span class="go">&lt;p&gt;&lt;label for="subject"&gt;Subject:&lt;/label&gt; &lt;input id="subject" type="text" name="subject" maxlength="100" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="message"&gt;Message:&lt;/label&gt; &lt;input type="text" name="message" id="message" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="sender"&gt;Sender:&lt;/label&gt; &lt;input type="email" name="sender" id="sender" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="cc_myself"&gt;Cc myself:&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="cc_myself" /&gt;&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p><font id="114">如果<tt class="docutils literal"><span class="pre">auto_id</span></tt> 设置为包含格式字符<tt class="docutils literal"><span class="pre">'%s'</span></tt> 的字符串，那么表单的输出将包含<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签，并将根据格式字符串生成<tt class="docutils literal"><span class="pre">id</span></tt> 属性。</font><font id="115">例如，对于格式字符串<tt class="docutils literal"><span class="pre">'field_%s'</span></tt>，名为<tt class="docutils literal"><span class="pre">subject</span></tt> 的字段的<tt class="docutils literal"><span class="pre">id</span></tt> 值将是<tt class="docutils literal"><span class="pre">'field_subject'</span></tt>。</font><font id="116">继续我们的例子：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="s">'id_for_</span><span class="si">%s</span><span class="s">'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">())</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_for_subject"&gt;Subject:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input id="id_for_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_for_message"&gt;Message:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" id="id_for_message" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_for_sender"&gt;Sender:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="email" name="sender" id="id_for_sender" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;&lt;label for="id_for_cc_myself"&gt;Cc myself:&lt;/label&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="checkbox" name="cc_myself" id="id_for_cc_myself" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_subject"&gt;Subject:&lt;/label&gt; &lt;input id="id_for_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_message"&gt;Message:&lt;/label&gt; &lt;input type="text" name="message" id="id_for_message" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_sender"&gt;Sender:&lt;/label&gt; &lt;input type="email" name="sender" id="id_for_sender" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_cc_myself"&gt;Cc myself:&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="id_for_cc_myself" /&gt;&lt;/li&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">())</span>
+<span class="go">&lt;p&gt;&lt;label for="id_for_subject"&gt;Subject:&lt;/label&gt; &lt;input id="id_for_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="id_for_message"&gt;Message:&lt;/label&gt; &lt;input type="text" name="message" id="id_for_message" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="id_for_sender"&gt;Sender:&lt;/label&gt; &lt;input type="email" name="sender" id="id_for_sender" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="id_for_cc_myself"&gt;Cc myself:&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="id_for_cc_myself" /&gt;&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p><font id="117">如果<tt class="docutils literal"><span class="pre">auto_id</span></tt> 设置为任何其它的真值 —— 例如不包含<tt class="docutils literal"><span class="pre">%s</span></tt> 的字符串 —— 那么其行为将类似<tt class="docutils literal"><span class="pre">auto_id</span></tt> 等于<tt class="docutils literal"><span class="pre">True</span></tt>。</font></p>
+<p><font id="118">默认情况下，<tt class="docutils literal"><span class="pre">auto_id</span></tt> 设置为<tt class="docutils literal"><span class="pre">'id_%s'</span></tt>。</font></p>
+<dl class="attribute">
+<dt id="django.forms.Form.label_suffix">
+<tt class="descclassname">Form.</tt><tt class="descname">label_suffix</tt><a class="headerlink" href="api.html#django.forms.Form.label_suffix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="119">一个字符串（默认为英文的<tt class="docutils literal"><span class="pre">:</span></tt>），表单渲染时将附加在每个label 名称的后面。</font></p>
+<p><font id="120">使用<tt class="docutils literal"><span class="pre">label_suffix</span></tt> 参数可以自定义这个字符，或者完全删除它：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="s">'id_for_</span><span class="si">%s</span><span class="s">'</span><span class="p">,</span> <span class="n">label_suffix</span><span class="o">=</span><span class="s">''</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_subject"&gt;Subject&lt;/label&gt; &lt;input id="id_for_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_message"&gt;Message&lt;/label&gt; &lt;input type="text" name="message" id="id_for_message" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_sender"&gt;Sender&lt;/label&gt; &lt;input type="email" name="sender" id="id_for_sender" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_cc_myself"&gt;Cc myself&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="id_for_cc_myself" /&gt;&lt;/li&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="s">'id_for_</span><span class="si">%s</span><span class="s">'</span><span class="p">,</span> <span class="n">label_suffix</span><span class="o">=</span><span class="s">' -&gt;'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_subject"&gt;Subject -&gt;&lt;/label&gt; &lt;input id="id_for_subject" type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_message"&gt;Message -&gt;&lt;/label&gt; &lt;input type="text" name="message" id="id_for_message" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_sender"&gt;Sender -&gt;&lt;/label&gt; &lt;input type="email" name="sender" id="id_for_sender" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_for_cc_myself"&gt;Cc myself -&gt;&lt;/label&gt; &lt;input type="checkbox" name="cc_myself" id="id_for_cc_myself" /&gt;&lt;/li&gt;</span>
+</pre></div>
+</div>
+<p><font id="121">注意，该标签后缀只有当label 的最后一个字符不是表单符号（<tt class="docutils literal"><span class="pre">.</span></tt>, <tt class="docutils literal"><span class="pre">!</span></tt>, <tt class="docutils literal"><span class="pre">?</span></tt> 和<tt class="docutils literal"><span class="pre">:</span></tt>）时才添加。</font></p>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="122">字段可以定义自己的<a class="reference internal" href="fields.html#django.forms.Field.label_suffix" title="django.forms.Field.label_suffix"><tt class="xref py py-attr docutils literal"><span class="pre">label_suffix</span></tt></a>。</font><font id="123">而且将优先于<a class="reference internal" href="api.html#django.forms.Form.label_suffix" title="django.forms.Form.label_suffix"><tt class="xref py py-attr docutils literal"><span class="pre">Form.label_suffix</span></tt></a>。</font><font id="124">在运行时刻，后缀可以使用<a class="reference internal" href="api.html#django.forms.BoundField.label_tag" title="django.forms.BoundField.label_tag"><tt class="xref py py-meth docutils literal"><span class="pre">label_tag()</span></tt></a> 的<tt class="docutils literal"><span class="pre">label_suffix</span></tt> 参数覆盖。</font></p>
+</div>
+<div class="section" id="s-notes-on-field-ordering">
+<span id="notes-on-field-ordering"></span><h3><font id="198">字段的顺序</font><a class="headerlink" href="api.html#notes-on-field-ordering" title="Permalink to this headline">¶</a></h3>
+<p><font id="125">在<tt class="docutils literal"><span class="pre">as_p()</span></tt>、<tt class="docutils literal"><span class="pre">as_ul()</span></tt> 和<tt class="docutils literal"><span class="pre">as_table()</span></tt> 中，字段以表单类中定义的顺序显示。</font><font id="126">例如，在<tt class="docutils literal"><span class="pre">ContactForm</span></tt> 示例中，字段定义的顺序为<tt class="docutils literal"><span class="pre">subject</span></tt>, <tt class="docutils literal"><span class="pre">message</span></tt>, <tt class="docutils literal"><span class="pre">sender</span></tt>, <tt class="docutils literal"><span class="pre">cc_myself</span></tt>。</font><font id="127">若要重新排序HTML 中的输出，只需改变字段在类中列出的顺序。</font></p>
+</div>
+<div class="section" id="s-how-errors-are-displayed">
+<span id="how-errors-are-displayed"></span><h3><font id="199">错误如何显示</font><a class="headerlink" href="api.html#how-errors-are-displayed" title="Permalink to this headline">¶</a></h3>
+<p><font id="128">如果你渲染一个绑定的<tt class="docutils literal"><span class="pre">表单</span></tt>对象，渲染时将自动运行表单的验证，HTML 输出将在出错字段的附近以<tt class="docutils literal"><span class="pre">&lt;ul</span> <span class="pre">class="errorlist"&gt;</span></tt> 形式包含验证的错误。</font><font id="257">错误信息的位置与你使用的输出方法有关：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'message'</span><span class="p">:</span> <span class="s">'Hi there'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'sender'</span><span class="p">:</span> <span class="s">'invalid email address'</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">'cc_myself'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">())</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Subject:&lt;/th&gt;&lt;td&gt;&lt;ul class="errorlist"&gt;&lt;li&gt;This field is required.&lt;/li&gt;&lt;/ul&gt;&lt;input type="text" name="subject" maxlength="100" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Message:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" value="Hi there" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Sender:&lt;/th&gt;&lt;td&gt;&lt;ul class="errorlist"&gt;&lt;li&gt;Enter a valid email address.&lt;/li&gt;&lt;/ul&gt;&lt;input type="email" name="sender" value="invalid email address" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Cc myself:&lt;/th&gt;&lt;td&gt;&lt;input checked="checked" type="checkbox" name="cc_myself" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;&lt;ul class="errorlist"&gt;&lt;li&gt;This field is required.&lt;/li&gt;&lt;/ul&gt;Subject: &lt;input type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Message: &lt;input type="text" name="message" value="Hi there" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;ul class="errorlist"&gt;&lt;li&gt;Enter a valid email address.&lt;/li&gt;&lt;/ul&gt;Sender: &lt;input type="email" name="sender" value="invalid email address" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Cc myself: &lt;input checked="checked" type="checkbox" name="cc_myself" /&gt;&lt;/li&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">())</span>
+<span class="go">&lt;p&gt;&lt;ul class="errorlist"&gt;&lt;li&gt;This field is required.&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Subject: &lt;input type="text" name="subject" maxlength="100" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Message: &lt;input type="text" name="message" value="Hi there" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;ul class="errorlist"&gt;&lt;li&gt;Enter a valid email address.&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Sender: &lt;input type="email" name="sender" value="invalid email address" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Cc myself: &lt;input checked="checked" type="checkbox" name="cc_myself" /&gt;&lt;/p&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-customizing-the-error-list-format">
+<span id="customizing-the-error-list-format"></span><h3><font id="200">自定义错误清单的格式</font><a class="headerlink" href="api.html#customizing-the-error-list-format" title="Permalink to this headline">¶</a></h3>
+<p><font id="129">默认情况下，表单使用<tt class="docutils literal"><span class="pre">django.forms.utils.ErrorList</span></tt> 来格式化验证时的错误。</font><font id="130">如果你希望使用另外一种类来显示错误，可以在构造时传递（在Python 2 中将 <tt class="docutils literal"><span class="pre">__str__</span></tt> 替换为<tt class="docutils literal"><span class="pre">__unicode__</span></tt>）：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.forms.utils</span> <span class="kn">import</span> <span class="n">ErrorList</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">DivErrorList</span><span class="p">(</span><span class="n">ErrorList</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c"># __unicode__ on Python 2</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_divs</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">as_divs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span> <span class="k">return</span> <span class="s">''</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s">'&lt;div class="errorlist"&gt;</span><span class="si">%s</span><span class="s">&lt;/div&gt;'</span> <span class="o">%</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">'&lt;div class="error"&gt;</span><span class="si">%s</span><span class="s">&lt;/div&gt;'</span> <span class="o">%</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error_class</span><span class="o">=</span><span class="n">DivErrorList</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">()</span>
+<span class="go">&lt;div class="errorlist"&gt;&lt;div class="error"&gt;This field is required.&lt;/div&gt;&lt;/div&gt;</span>
+<span class="go">&lt;p&gt;Subject: &lt;input type="text" name="subject" maxlength="100" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Message: &lt;input type="text" name="message" value="Hi there" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;div class="errorlist"&gt;&lt;div class="error"&gt;Enter a valid email address.&lt;/div&gt;&lt;/div&gt;</span>
+<span class="go">&lt;p&gt;Sender: &lt;input type="email" name="sender" value="invalid email address" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Cc myself: &lt;input checked="checked" type="checkbox" name="cc_myself" /&gt;&lt;/p&gt;</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="131"><tt class="docutils literal"><span class="pre">django.forms.util</span></tt> 重命名为<tt class="docutils literal"><span class="pre">django.forms.utils</span></tt>。</font></p>
+</div>
+</div>
+<div class="section" id="s-more-granular-output">
+<span id="more-granular-output"></span><h3><font id="201">更细粒度的输出</font><a class="headerlink" href="api.html#more-granular-output" title="Permalink to this headline">¶</a></h3>
+<p><font id="132"><tt class="docutils literal"><span class="pre">as_p()</span></tt>、<tt class="docutils literal"><span class="pre">as_ul()</span></tt> 和<tt class="docutils literal"><span class="pre">as_table()</span></tt> 方法是为懒惰的程序员准备的简单快捷方法 —— 它们不是显示表单的唯一方式。</font></p>
+<dl class="class">
+<dt id="django.forms.BoundField">
+<em class="property">class </em><tt class="descname">BoundField</tt><a class="headerlink" href="api.html#django.forms.BoundField" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="133">用于显示HTML 表单或者访问<a class="reference internal" href="api.html#django.forms.Form" title="django.forms.Form"><tt class="xref py py-class docutils literal"><span class="pre">表单</span></tt></a>实例的一个属性。</font></p>
+<p><font id="134">其<tt class="docutils literal"><span class="pre">__str__()</span></tt>（Python 2 上为<tt class="docutils literal"><span class="pre">__unicode__</span></tt>）方法显示该字段的HTML。</font></p>
+</dd></dl>
+<p><font id="135">以字段的名称为键，用字典查询语法查询表单，可以获取一个 <tt class="docutils literal"><span class="pre">BoundField</span></tt>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">form</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">form</span><span class="p">[</span><span class="s">'subject'</span><span class="p">])</span>
+<span class="go">&lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;</span>
+</pre></div>
+</div>
+<p><font id="136">迭代表单可以获取所有的<tt class="docutils literal"><span class="pre">BoundField</span></tt>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">form</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">boundfield</span> <span class="ow">in</span> <span class="n">form</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">boundfield</span><span class="p">)</span>
+<span class="go">&lt;input id="id_subject" type="text" name="subject" maxlength="100" /&gt;</span>
+<span class="go">&lt;input type="text" name="message" id="id_message" /&gt;</span>
+<span class="go">&lt;input type="email" name="sender" id="id_sender" /&gt;</span>
+<span class="go">&lt;input type="checkbox" name="cc_myself" id="id_cc_myself" /&gt;</span>
+</pre></div>
+</div>
+<p><font id="137">字段的输出与表单的<tt class="docutils literal"><span class="pre">auto_id</span></tt> 设置有关：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'message'</span><span class="p">])</span>
+<span class="go">&lt;input type="text" name="message" /&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="s">'id_</span><span class="si">%s</span><span class="s">'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'message'</span><span class="p">])</span>
+<span class="go">&lt;input type="text" name="message" id="id_message" /&gt;</span>
+</pre></div>
+</div>
+<p><font id="138">若要获取字段的错误列表，可以访问字段的<tt class="docutils literal"><span class="pre">errors</span></tt> 属性。</font></p>
+<dl class="attribute">
+<dt id="django.forms.BoundField.errors">
+<tt class="descclassname">BoundField.</tt><tt class="descname">errors</tt><a class="headerlink" href="api.html#django.forms.BoundField.errors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="139">一个类列表对象，打印时以HTML <tt class="docutils literal"><span class="pre">&lt;ul</span> <span class="pre">class="errorlist"&gt;</span></tt> 形式显示：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'hi'</span><span class="p">,</span> <span class="s">'message'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span> <span class="s">'sender'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span> <span class="s">'cc_myself'</span><span class="p">:</span> <span class="s">''</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'message'</span><span class="p">])</span>
+<span class="go">&lt;input type="text" name="message" /&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[</span><span class="s">'message'</span><span class="p">]</span><span class="o">.</span><span class="n">errors</span>
+<span class="go">['This field is required.']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'message'</span><span class="p">]</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+<span class="go">&lt;ul class="errorlist"&gt;&lt;li&gt;This field is required.&lt;/li&gt;&lt;/ul&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[</span><span class="s">'subject'</span><span class="p">]</span><span class="o">.</span><span class="n">errors</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'subject'</span><span class="p">]</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'subject'</span><span class="p">]</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+<span class="go">''</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="django.forms.BoundField.label_tag">
+<tt class="descclassname">BoundField.</tt><tt class="descname">label_tag</tt>(<em>contents=None</em>, <em>attrs=None</em>, <em>label_suffix=None</em>)<a class="headerlink" href="api.html#django.forms.BoundField.label_tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="140">可以调用<tt class="docutils literal"><span class="pre">label_tag</span></tt> 方法单独渲染表单字段的label 标签：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">'message'</span><span class="p">]</span><span class="o">.</span><span class="n">label_tag</span><span class="p">())</span>
+<span class="go">&lt;label for="id_message"&gt;Message:&lt;/label&gt;</span>
+</pre></div>
+</div>
+<p><font id="141">如果你提供一个可选的<tt class="docutils literal"><span class="pre">contents</span></tt> 参数，它将替换自动生成的label 标签。</font><font id="142">另外一个可选的<tt class="docutils literal"><span class="pre">attrs</span></tt> &nbsp;参数可以包含<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签额外的属性。</font></p>
+<p><font id="143">生成的HTML 包含表单的<a class="reference internal" href="api.html#django.forms.Form.label_suffix" title="django.forms.Form.label_suffix"><tt class="xref py py-attr docutils literal"><span class="pre">label_suffix</span></tt></a>（默认为一个冒号），或者当前字段的<a class="reference internal" href="fields.html#django.forms.Field.label_suffix" title="django.forms.Field.label_suffix"><tt class="xref py py-attr docutils literal"><span class="pre">label_suffix</span></tt></a>。</font><font id="144">可选的<tt class="docutils literal"><span class="pre">label_suffix</span></tt> 参数允许你覆盖之前设置的后缀。</font><font id="145">例如，你可以使用一个空字符串来隐藏已选择字段的label。</font><font id="146">如果在模板中需要这样做，你可以编写一个自定义的过滤器来允许传递参数给<tt class="docutils literal"><span class="pre">label_tag</span></tt>。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="147">如果可用，label 将包含<a class="reference internal" href="api.html#django.forms.Form.required_css_class" title="django.forms.Form.required_css_class"><tt class="xref py py-attr docutils literal"><span class="pre">required_css_class</span></tt></a>。</font></p>
+</div>
+<dl class="method">
+<dt id="django.forms.BoundField.css_classes">
+<tt class="descclassname">BoundField.</tt><tt class="descname">css_classes</tt>()<a class="headerlink" href="api.html#django.forms.BoundField.css_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="148">当你使用Django 的快捷的渲染方法时，习惯使用CSS &nbsp;类型来表示必填的表单字段和有错误的字段。</font><font id="149">如果你是手工渲染一个表单，你可以使用<tt class="docutils literal"><span class="pre">css_classes</span></tt> 方法访问这些CSS 类型：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[</span><span class="s">'message'</span><span class="p">]</span><span class="o">.</span><span class="n">css_classes</span><span class="p">()</span>
+<span class="go">'required'</span>
+</pre></div>
+</div>
+<p><font id="150">除了错误和必填的类型之外，如果你还想提供额外的类型，你可以用参数传递它们：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[</span><span class="s">'message'</span><span class="p">]</span><span class="o">.</span><span class="n">css_classes</span><span class="p">(</span><span class="s">'foo bar'</span><span class="p">)</span>
+<span class="go">'foo bar required'</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="django.forms.BoundField.value">
+<tt class="descclassname">BoundField.</tt><tt class="descname">value</tt>()<a class="headerlink" href="api.html#django.forms.BoundField.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="151">这个方法用于渲染字段的原始值，与用<tt class="docutils literal"><span class="pre">Widget</span></tt> 渲染的值相同：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">initial</span> <span class="o">=</span> <span class="p">{</span><span class="s">'subject'</span><span class="p">:</span> <span class="s">'welcome'</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unbound_form</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bound_form</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">unbound_form</span><span class="p">[</span><span class="s">'subject'</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+<span class="go">welcome</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">bound_form</span><span class="p">[</span><span class="s">'subject'</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+<span class="go">hi</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="django.forms.BoundField.id_for_label">
+<tt class="descclassname">BoundField.</tt><tt class="descname">id_for_label</tt><a class="headerlink" href="api.html#django.forms.BoundField.id_for_label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="152">使用这个属性渲染字段的ID。</font><font id="153">例如，如果你在模板中手工构造一个<tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt>（尽管 <a class="reference internal" href="api.html#django.forms.BoundField.label_tag" title="django.forms.BoundField.label_tag"><tt class="xref py py-meth docutils literal"><span class="pre">label_tag()</span></tt></a> 将为你这么做）：</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"</span><span class="cp">{{</span> <span class="nv">form.my_field.id_for_label</span> <span class="cp">}}</span><span class="s">"</span><span class="nt">&gt;</span>...<span class="nt">&lt;/label&gt;</span><span class="cp">{{</span> <span class="nv">my_field</span> <span class="cp">}}</span>
+</pre></div>
+</div>
+<p><font id="154">默认情况下，它是在字段名称的前面加上<tt class="docutils literal"><span class="pre">id_</span></tt> （上面的例子中将是“<tt class="docutils literal"><span class="pre">id_my_field</span></tt>”）。</font><font id="155">你可以通过设置字段Widget 的<a class="reference internal" href="widgets.html#django.forms.Widget.attrs" title="django.forms.Widget.attrs"><tt class="xref py py-attr docutils literal"><span class="pre">attrs</span></tt></a> 来修改ID。</font><font id="156">例如，像这样声明一个字段：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">my_field</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">'id'</span><span class="p">:</span> <span class="s">'myFIELD'</span><span class="p">}))</span>
+</pre></div>
+</div>
+<p><font id="157">使用上面的模板，将渲染成：</font></p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"myFIELD"</span><span class="nt">&gt;</span>...<span class="nt">&lt;/label&gt;&lt;input</span> <span class="na">id=</span><span class="s">"myFIELD"</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"my_field"</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-binding-uploaded-files-to-a-form">
+<span id="s-binding-uploaded-files"></span><span id="binding-uploaded-files-to-a-form"></span><span id="binding-uploaded-files"></span><h2><font id="190">绑定上传的文件到表单</font><a class="headerlink" href="api.html#binding-uploaded-files-to-a-form" title="Permalink to this headline">¶</a></h2>
+<p><font id="158">处理带有<tt class="docutils literal"><span class="pre">FileField</span></tt> 和<tt class="docutils literal"><span class="pre">ImageField</span></tt> 字段的表单比普通的表单要稍微复杂一点。</font></p>
+<p><font id="159">首先，为了上传文件，你需要确保你的<tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> 元素正确定义<tt class="docutils literal"><span class="pre">enctype</span></tt> 为<tt class="docutils literal"><span class="pre">"multipart/form-data"</span></tt>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;form enctype="multipart/form-data" method="post" action="/foo/"&gt;
+</pre></div>
+</div>
+<p><font id="160">其次，当你使用表单时，你需要绑定文件数据。</font><font id="161">文件数据的处理与普通的表单数据是分开的，所以如果表单包含<tt class="docutils literal"><span class="pre">FileField</span></tt> 和<tt class="docutils literal"><span class="pre">ImageField</span></tt>，绑定表单时你需要指定第二个参数。</font><font id="162">所以，如果我们扩展ContactForm 并包含一个名为<tt class="docutils literal"><span class="pre">mugshot</span></tt> 的<tt class="docutils literal"><span class="pre">ImageField</span></tt>，我们需要绑定包含mugshot 图片的文件数据：</font></p>
+<div class="highlight-python"><div class="highlight"><pre># Bound form with an image field
+&gt;&gt;&gt; from django.core.files.uploadedfile import SimpleUploadedFile
+&gt;&gt;&gt; data = {'subject': 'hello',
+...         'message': 'Hi there',
+...         'sender': 'foo@example.com',
+...         'cc_myself': True}
+&gt;&gt;&gt; file_data = {'mugshot': SimpleUploadedFile('face.jpg', &lt;file data&gt;)}
+&gt;&gt;&gt; f = ContactFormWithMugshot(data, file_data)
+</pre></div>
+</div>
+<p><font id="163">实际上，你一般将使用<tt class="docutils literal"><span class="pre">request.FILES</span></tt> 作为文件数据的源（和使用<tt class="docutils literal"><span class="pre">request.POST</span></tt> 作为表单数据的源一样）：</font></p>
+<div class="highlight-python"><div class="highlight"><pre># Bound form with an image field, data from the request
+&gt;&gt;&gt; f = ContactFormWithMugshot(request.POST, request.FILES)
+</pre></div>
+</div>
+<p><font id="166">构造一个未绑定的表单和往常一样 —— 将表单数据<em>和</em>文件数据同时省略：</font></p>
+<div class="highlight-python"><div class="highlight"><pre># Unbound form with an image field
+&gt;&gt;&gt; f = ContactFormWithMugshot()
+</pre></div>
+</div>
+<div class="section" id="s-testing-for-multipart-forms">
+<span id="testing-for-multipart-forms"></span><h3><font id="202">测试multipart 表单</font><a class="headerlink" href="api.html#testing-for-multipart-forms" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.forms.Form.is_multipart">
+<tt class="descclassname">Form.</tt><tt class="descname">is_multipart</tt>()<a class="headerlink" href="api.html#django.forms.Form.is_multipart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="167">如果你正在编写可重用的视图或模板，你可能事先不知道你的表单是否是一个multipart 表单。</font><font id="168"><tt class="docutils literal"><span class="pre">is_multipart()</span></tt> 方法告诉你表单提交时是否要求multipart：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactFormWithMugshot</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_multipart</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p><font id="169">下面是如何在模板中使用它的一个示例：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>{% if form.is_multipart %}
+    &lt;form enctype="multipart/form-data" method="post" action="/foo/"&gt;
+{% else %}
+    &lt;form method="post" action="/foo/"&gt;
+{% endif %}
+{{ form }}
+&lt;/form&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-subclassing-forms">
+<span id="subclassing-forms"></span><h2><font id="191">子类化表单</font><a class="headerlink" href="api.html#subclassing-forms" title="Permalink to this headline">¶</a></h2>
+<p><font id="170">如果你有多个<tt class="docutils literal"><span class="pre">表单</span></tt>类共享相同的字段，你可以使用子类化来减少冗余。</font></p>
+<p><font id="171">当你子类化一个自定义的<tt class="docutils literal"><span class="pre">表单</span></tt>类时，生成的子类将包含父类中的所有字段，以及在子类中定义的字段。</font></p>
+<p><font id="172">在下面的例子中，<tt class="docutils literal"><span class="pre">ContactFormWithPriority</span></tt> 包含<tt class="docutils literal"><span class="pre">ContactForm</span></tt> 中的所有字段，以及另外一个字段<tt class="docutils literal"><span class="pre">priority</span></tt>。</font><font id="173">排在前面的是<tt class="docutils literal"><span class="pre">ContactForm</span></tt> 中的字段：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ContactFormWithPriority</span><span class="p">(</span><span class="n">ContactForm</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">priority</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactFormWithPriority</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;Subject: &lt;input type="text" name="subject" maxlength="100" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Message: &lt;input type="text" name="message" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Sender: &lt;input type="email" name="sender" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Cc myself: &lt;input type="checkbox" name="cc_myself" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Priority: &lt;input type="text" name="priority" /&gt;&lt;/li&gt;</span>
+</pre></div>
+</div>
+<p><font id="174">可以子类化多个表单，将表单作为“mix-ins”。</font><font id="175">在下面的例子中，<tt class="docutils literal"><span class="pre">BeatleForm</span></tt> 子类化<tt class="docutils literal"><span class="pre">PersonForm</span></tt> 和 <tt class="docutils literal"><span class="pre">InstrumentForm</span></tt> ，所以它的字段列表包含两个父类的所有字段：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.forms</span> <span class="kn">import</span> <span class="n">Form</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">PersonForm</span><span class="p">(</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">first_name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">last_name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">InstrumentForm</span><span class="p">(</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">instrument</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">BeatleForm</span><span class="p">(</span><span class="n">PersonForm</span><span class="p">,</span> <span class="n">InstrumentForm</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">haircut_type</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">BeatleForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;First name: &lt;input type="text" name="first_name" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Last name: &lt;input type="text" name="last_name" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Instrument: &lt;input type="text" name="instrument" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Haircut type: &lt;input type="text" name="haircut_type" /&gt;&lt;/li&gt;</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<ul>
+<li><p class="first"><font id="176">在子类中，可以通过设置名字为<tt class="docutils literal"><span class="pre">None</span></tt> 来删除从父类中继承的<tt class="docutils literal"><span class="pre">字段</span></tt>。</font><font id="177">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ParentForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">age</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">()</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ChildForm</span><span class="p">(</span><span class="n">ParentForm</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ChildForm</span><span class="p">()</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="gp">... </span><span class="p">[</span><span class="s">'age'</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="s-prefixes-for-forms">
+<span id="s-form-prefix"></span><span id="prefixes-for-forms"></span><span id="form-prefix"></span><h2><font id="192">表单前缀</font><a class="headerlink" href="api.html#prefixes-for-forms" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="django.forms.Form.prefix">
+<tt class="descclassname">Form.</tt><tt class="descname">prefix</tt><a class="headerlink" href="api.html#django.forms.Form.prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="178">你可以将几个Django 表单放在一个<tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> 标签中。</font><font id="179">为了给每个<tt class="docutils literal"><span class="pre">表单</span></tt>一个自己的命名空间，可以使用<tt class="docutils literal"><span class="pre">prefix</span></tt> 关键字参数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">mother</span> <span class="o">=</span> <span class="n">PersonForm</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s">"mother"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">father</span> <span class="o">=</span> <span class="n">PersonForm</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s">"father"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">mother</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;&lt;label for="id_mother-first_name"&gt;First name:&lt;/label&gt; &lt;input type="text" name="mother-first_name" id="id_mother-first_name" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_mother-last_name"&gt;Last name:&lt;/label&gt; &lt;input type="text" name="mother-last_name" id="id_mother-last_name" /&gt;&lt;/li&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">father</span><span class="o">.</span><span class="n">as_ul</span><span class="p">())</span>
+<span class="go">&lt;li&gt;&lt;label for="id_father-first_name"&gt;First name:&lt;/label&gt; &lt;input type="text" name="father-first_name" id="id_father-first_name" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;&lt;label for="id_father-last_name"&gt;Last name:&lt;/label&gt; &lt;input type="text" name="father-last_name" id="id_father-last_name" /&gt;&lt;/li&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="203">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="api.html#"><font id="225">表单 API</font></a><ul>
+<li><a class="reference internal" href="api.html#bound-and-unbound-forms"><font id="226">绑定的表单和未绑定的表单</font></a></li>
+<li><a class="reference internal" href="api.html#using-forms-to-validate-data"><font id="227">使用表单来验证数据</font></a><ul>
+<li><a class="reference internal" href="api.html#behavior-of-unbound-forms"><font id="228">未绑定表单的行为</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="api.html#dynamic-initial-values"><font id="229">动态的初始值</font></a></li>
+<li><a class="reference internal" href="api.html#checking-if-form-data-has-changed"><font id="230">检查表单数据是否改变</font></a></li>
+<li><a class="reference internal" href="api.html#accessing-the-fields-from-the-form"><font id="231">从表单中访问字段</font></a></li>
+<li><a class="reference internal" href="api.html#accessing-clean-data"><font id="263">访问“清洁”的数据</font></a></li>
+<li><a class="reference internal" href="api.html#outputting-forms-as-html"><font id="232">输出表单为HTML</font></a><ul>
+<li><a class="reference internal" href="api.html#as-p"><font id="233">as_p()</font></a></li>
+<li><a class="reference internal" href="api.html#as-ul"><font id="234">as_ul()</font></a></li>
+<li><a class="reference internal" href="api.html#as-table"><font id="235">as_table()</font></a></li>
+<li><a class="reference internal" href="api.html#styling-required-or-erroneous-form-rows"><font id="236">表单必填行和错误行的样式</font></a></li>
+<li><a class="reference internal" href="api.html#configuring-form-elements-html-id-attributes-and-label-tags"><font id="237">配置表单元素的HTML <tt class="docutils literal"><span class="pre">id</span></tt> 属性和 <tt class="docutils literal"><span class="pre">&lt;label&gt;</span></tt> 标签</font></a></li>
+<li><a class="reference internal" href="api.html#notes-on-field-ordering"><font id="238">字段的顺序</font></a></li>
+<li><a class="reference internal" href="api.html#how-errors-are-displayed"><font id="239">错误如何显示</font></a></li>
+<li><a class="reference internal" href="api.html#customizing-the-error-list-format"><font id="240">自定义错误清单的格式</font></a></li>
+<li><a class="reference internal" href="api.html#more-granular-output"><font id="241">更细粒度的输出</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="api.html#binding-uploaded-files-to-a-form"><font id="242">绑定上传的文件到表单</font></a><ul>
+<li><a class="reference internal" href="api.html#testing-for-multipart-forms"><font id="243">测试multipart 表单</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="api.html#subclassing-forms"><font id="244">子类化表单</font></a></li>
+<li><a class="reference internal" href="api.html#prefixes-for-forms"><font id="245">表单前缀</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="204">浏览</font></h3>
+<ul>
+<li><font id="246">上一页：<a href="index.html">表单</a></font></li>
+<li><font id="247">下一页：<a href="fields.html">表单字段</a></font></li>
+</ul>
+<h3><font id="205">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="248">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="249">API 参考</font></a>
+<ul><li><a href="index.html"><font id="250">表单</font></a>
+<ul><li><font id="251">表单 API</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="206">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/forms/api.txt" rel="nofollow"><font id="252">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="207">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="180"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="208">最后更新：</font></h3>
+<p class="topless"><font id="181">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="index.html" title="Forms">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="fields.html" title="Form fields">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/forms/api.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

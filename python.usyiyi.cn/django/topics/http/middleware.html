@@ -1,0 +1,400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>中间件 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Handling HTTP requests"/>
+<link href="sessions.html" rel="next" title="How to use sessions"/>
+<link href="generic-views.html" rel="prev" title="Generic views"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/http/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/http/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="85">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="generic-views.html" title="Generic views">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="sessions.html" title="How to use sessions">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-http-middleware">
+<div class="section" id="s-middleware">
+<span id="middleware"></span><h1><font id="86">中间件</font><a class="headerlink" href="middleware.html#middleware" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">中间件是一个介入Django的请求和响应的处理过程中的钩子框架。</font><font id="2">它是一个轻量级，底层的“插件”系统，用于在全局修改Django的输入或输出。</font></p>
+<p><font id="3">每个中间件组件负责处理某些特殊的功能。</font><font id="4">例如，Django包含一个中间件组件，<a class="reference internal" href="../../ref/middleware.html#django.contrib.auth.middleware.AuthenticationMiddleware" title="django.contrib.auth.middleware.AuthenticationMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">AuthenticationMiddleware</span></tt></a> ，使用会话将用户和请求关联。</font></p>
+<p><font id="5">这篇文档讲解了中间件如何工作，如何激活中间件，以及如何编写自己的中间件。</font><font id="6">Django集成了一些内置的中间件可以直接开箱即用。</font><font id="7">它们被归档在 <a class="reference internal" href="../../ref/middleware.html"><em>内置中间件参考</em></a>.</font></p>
+<div class="section" id="s-activating-middleware">
+<span id="activating-middleware"></span><h2><font id="87">激活中间件</font><a class="headerlink" href="middleware.html#activating-middleware" title="Permalink to this headline">¶</a></h2>
+<p><font id="8">要激活一个中间件组件，需要把它添加到你Django配置文件中的<a class="reference internal" href="../../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a> 列表中。</font></p>
+<p><font id="9">在<a class="reference internal" href="../../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>中，每一个中间件组件用字符串的方式描述：一个完整的Python全路径加上中间件的类名称。</font><font id="10">例如，使用 <a class="reference internal" href="../../ref/django-admin.html#django-admin-startproject"><tt class="xref std std-djadmin docutils literal"><span class="pre">django-admin</span> <span class="pre">startproject</span></tt></a>创建工程的时候生成的默认值：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MIDDLEWARE_CLASSES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">'django.contrib.sessions.middleware.SessionMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.middleware.common.CommonMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.middleware.csrf.CsrfViewMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.contrib.auth.middleware.AuthenticationMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.contrib.auth.middleware.SessionAuthenticationMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.contrib.messages.middleware.MessageMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.middleware.clickjacking.XFrameOptionsMiddleware'</span><span class="p">,</span>
+    <span class="s">'django.middleware.security.SecurityMiddleware'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="11">Django的程序中，中间件不是必需的 —— 只要你喜欢，<a class="reference internal" href="../../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>可以为空 —— 但是强烈推荐你至少使用<a class="reference internal" href="../../ref/middleware.html#django.middleware.common.CommonMiddleware" title="django.middleware.common.CommonMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">CommonMiddleware</span></tt></a>。</font></p>
+<p><font id="12"><a class="reference internal" href="../../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>中的顺序非常重要，因为一个中间件可能依赖于另外一个。</font><font id="13">例如，<a class="reference internal" href="../../ref/middleware.html#django.contrib.auth.middleware.AuthenticationMiddleware" title="django.contrib.auth.middleware.AuthenticationMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">AuthenticationMiddleware</span></tt></a>在会话中储存已认证的用户。</font><font id="14">所以它必须在<a class="reference internal" href="../../ref/middleware.html#django.contrib.sessions.middleware.SessionMiddleware" title="django.contrib.sessions.middleware.SessionMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">SessionMiddleware</span></tt></a>之后运行。</font><font id="15">一些关于Django中间件类的顺序的常见提示，请见<a class="reference internal" href="../../ref/middleware.html#middleware-ordering"><em>中间件排序</em></a>。</font></p>
+</div>
+<div class="section" id="s-hooks-and-application-order">
+<span id="hooks-and-application-order"></span><h2><font id="88">钩子和应用的顺序</font><a class="headerlink" href="middleware.html#hooks-and-application-order" title="Permalink to this headline">¶</a></h2>
+<p><font id="16">在请求阶段中，调用视图之前，Django会按照<a class="reference internal" href="../../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>中定义的顺序自顶向下应用中间件。</font><font id="17">会用到两个钩子：</font></p>
+<ul class="simple">
+<li><a class="reference internal" href="middleware.html#process_request" title="process_request"><font id="105">process_request()</font></a></li>
+<li><a class="reference internal" href="middleware.html#process_view" title="process_view"><font id="106">process_view()</font></a></li>
+</ul>
+<p><font id="18">在响应阶段中，调用视图之后，中间件会按照相反的顺序应用，自底向上。</font><font id="19">会用到三个钩子：</font></p>
+<ul class="simple">
+<li><font id="107"><a class="reference internal" href="middleware.html#process_exception" title="process_exception"><tt class="xref py py-meth docutils literal"><span class="pre">process_exception()</span></tt></a> </font><font id="108">（仅当视图抛出异常的时候）</font></li>
+<li><font id="109"><a class="reference internal" href="middleware.html#process_template_response" title="process_template_response"><tt class="xref py py-meth docutils literal"><span class="pre">process_template_response()</span></tt></a> </font><font id="110">（仅用于模板响应）</font></li>
+<li><a class="reference internal" href="middleware.html#process_response" title="process_response"><font id="111">process_response()</font></a></li>
+</ul>
+<a class="reference internal image-reference" href="../../_images/middleware.svg"><img alt="middleware application order" height="409" src="../../_images/middleware.svg" width="481"/></a>
+<p><font id="20">如果你愿意的话，你可以把它想象成一颗洋葱：每个中间件都是包裹视图的一层“皮”。</font></p>
+<p><font id="21">每个钩子的行为接下来会描述。</font></p>
+</div>
+<div class="section" id="s-writing-your-own-middleware">
+<span id="writing-your-own-middleware"></span><h2><font id="89">编写自己的中间件</font><a class="headerlink" href="middleware.html#writing-your-own-middleware" title="Permalink to this headline">¶</a></h2>
+<p><font id="22">编写自己的中间件很容易的。</font><font id="23">每个中间件组件是一个单独的Python的class，你可以定义一个或多个下面的这些方法：</font></p>
+<div class="section" id="s-process-request">
+<span id="s-request-middleware"></span><span id="process-request"></span><span id="request-middleware"></span><h3><font id="90">process_request</font><a class="headerlink" href="middleware.html#process-request" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="process_request">
+<tt class="descname">process_request</tt>(<em>request</em>)<a class="headerlink" href="middleware.html#process_request" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="24"><tt class="docutils literal"><span class="pre">request</span></tt>是一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a> 对象。</font></p>
+<p><font id="25">在Django决定执行哪个视图之前，<tt class="docutils literal"><span class="pre">process_request()</span></tt>会在每个请求上调用。</font></p>
+<p><font id="26">它应该返回一个<tt class="docutils literal"><span class="pre">None</span></tt> 或一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>对象。</font><font id="27">如果返回<tt class="docutils literal"><span class="pre">None</span></tt>，Django会继续处理这个请求，执行其它<tt class="docutils literal"><span class="pre">process_request()</span></tt>中间件，然后<tt class="docutils literal"><span class="pre">process_view()</span></tt>中间件，最后是对应的视图。</font><font id="28">如果它返回一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>对象，Django 就不用再去调用其它的request、view 或exception 中间件，或对应的视图；</font><font id="29">它将对<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a> 运用响应阶段的中间件，并返回结果。</font></p>
+</div>
+<div class="section" id="s-process-view">
+<span id="s-view-middleware"></span><span id="process-view"></span><span id="view-middleware"></span><h3><font id="91">process_view</font><a class="headerlink" href="middleware.html#process-view" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="process_view">
+<tt class="descname">process_view</tt>(<em>request</em>, <em>view_func</em>, <em>view_args</em>, <em>view_kwargs</em>)<a class="headerlink" href="middleware.html#process_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="30"><tt class="docutils literal"><span class="pre">request</span></tt>是一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a>对象。</font><font id="31"><tt class="docutils literal"><span class="pre">view_func</span></tt>是
+Django会调用的一个Python的函数。</font><font id="32">（它是一个真实的函数对象，不是函数的字符名称。) </font><font id="33"><tt class="docutils literal"><span class="pre">view_args</span></tt>是一个会被传递到视图的位置参数列表，而<tt class="docutils literal"><span class="pre">view_kwargs</span></tt> 是一个会被传递到视图的关键字参数字典。</font><font id="34"> <tt class="docutils literal"><span class="pre">view_args</span></tt>和 <tt class="docutils literal"><span class="pre">view_kwargs</span></tt> 都不包括第一个视图参数(<tt class="docutils literal"><span class="pre">request</span></tt>)。</font></p>
+<p><font id="35"><tt class="docutils literal"><span class="pre">process_view()</span></tt>会在Django 调用视图之前被调用。</font></p>
+<p><font id="36">它将返回<tt class="docutils literal"><span class="pre">None</span></tt> 或一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a> 对象。</font><font id="37">如果返回<tt class="docutils literal"><span class="pre">None</span></tt>，Django 将会继续处理这个请求，执行其它的<tt class="docutils literal"><span class="pre">process_view()</span></tt> 中间件，然后调用对应的视图。</font><font id="38">如果返回一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>对象，Django 就不用再去调用其它的view 或exception 中间件，或对应的视图；</font><font id="39">它将对<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a> 运用响应阶段的中间件，并返回结果。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="40">注意</font></p>
+<p><font id="41">在中间件内部，从<tt class="docutils literal"><span class="pre">process_request</span></tt> 或<tt class="docutils literal"><span class="pre">process_view</span></tt> 中访问<a class="reference internal" href="http://python.usyiyi.cn/ref/request-response/#django.http.HttpRequest.POST" title="django.http.HttpRequest.POST"><tt class="xref py py-attr docutils literal"><span class="pre">request.POST</span></tt></a> 或<a class="reference internal" href="http://python.usyiyi.cn/ref/request-response/#django.http.HttpRequest.REQUEST" title="django.http.HttpRequest.REQUEST"><tt class="xref py py-attr docutils literal"><span class="pre">request.REQUEST</span></tt></a> 将阻碍该中间件之后的所有视图无法<a class="reference internal" href="http://python.usyiyi.cn/django/topics/file-uploads/#modifying-upload-handlers-on-the-fly"><em>修改请求的上传处理程序</em></a>，一般情况下要避免这样使用。</font></p>
+<p class="last"><font id="44">类<a class="reference internal" href="../../ref/middleware.html#django.middleware.csrf.CsrfViewMiddleware" title="django.middleware.csrf.CsrfViewMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">CsrfViewMiddleware</span></tt></a>可以被认为是个例外，因为它提供<a class="reference internal" href="../../ref/csrf.html#django.views.decorators.csrf.csrf_exempt" title="django.views.decorators.csrf.csrf_exempt"><tt class="xref py py-func docutils literal"><span class="pre">csrf_exempt()</span></tt></a> 和<a class="reference internal" href="../../ref/csrf.html#django.views.decorators.csrf.csrf_protect" title="django.views.decorators.csrf.csrf_protect"><tt class="xref py py-func docutils literal"><span class="pre">csrf_protect()</span></tt></a>两个装饰器，允许视图显式控制在哪个点需要开启CSRF验证。</font></p>
+</div>
+</div>
+<div class="section" id="s-process-template-response">
+<span id="s-template-response-middleware"></span><span id="process-template-response"></span><span id="template-response-middleware"></span><h3><font id="92">process_template_response</font><a class="headerlink" href="middleware.html#process-template-response" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="process_template_response">
+<tt class="descname">process_template_response</tt>(<em>request</em>, <em>response</em>)<a class="headerlink" href="middleware.html#process_template_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="45"><tt class="docutils literal"><span class="pre">request</span></tt>是一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a>对象。</font><font id="46"><tt class="docutils literal"><span class="pre">response</span></tt>是一个<a class="reference internal" href="../../ref/template-response.html#django.template.response.TemplateResponse" title="django.template.response.TemplateResponse"><tt class="xref py py-class docutils literal"><span class="pre">TemplateResponse</span></tt></a>对象（或等价的对象），由Django视图或者中间件返回。</font></p>
+<p><font id="47">如果响应的实例有<tt class="docutils literal"><span class="pre">render()</span></tt>方法，<tt class="docutils literal"><span class="pre">process_template_response()</span></tt>在视图刚好执行完毕之后被调用，这表明了它是一个<a class="reference internal" href="../../ref/template-response.html#django.template.response.TemplateResponse" title="django.template.response.TemplateResponse"><tt class="xref py py-class docutils literal"><span class="pre">TemplateResponse</span></tt></a>对象（或等价的对象）。</font></p>
+<p><font id="48">这个方法必须返回一个实现了<tt class="docutils literal"><span class="pre">render</span></tt>方法的响应对象。</font><font id="49">它可以修改给定的<tt class="docutils literal"><span class="pre">response</span></tt>对象，通过修改&nbsp;<tt class="docutils literal"><span class="pre">response.template_name</span></tt>和<tt class="docutils literal"><span class="pre">response.context_data</span></tt>或者它可以创建一个全新的&nbsp;<a class="reference internal" href="../../ref/template-response.html#django.template.response.TemplateResponse" title="django.template.response.TemplateResponse"><tt class="xref py py-class docutils literal"><span class="pre">TemplateResponse</span></tt></a>或等价的对象。</font></p>
+<p><font id="50">你不需要显式渲染响应 —— 一旦所有的模板响应中间件被调用，响应会自动被渲染。</font></p>
+<p><font id="51">在一个响应的处理期间，中间件以相反的顺序运行，这包括<tt class="docutils literal"><span class="pre">process_template_response()</span></tt>。</font></p>
+</div>
+<div class="section" id="s-process-response">
+<span id="s-response-middleware"></span><span id="process-response"></span><span id="response-middleware"></span><h3><font id="93">process_response</font><a class="headerlink" href="middleware.html#process-response" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="process_response">
+<tt class="descname">process_response</tt>(<em>request</em>, <em>response</em>)<a class="headerlink" href="middleware.html#process_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="52"><tt class="docutils literal"><span class="pre">request</span></tt>是一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a>对象。</font><font id="53"><tt class="docutils literal"><span class="pre">response</span></tt>是Django视图或者中间件返回的<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>或者<a class="reference internal" href="../../ref/request-response.html#django.http.StreamingHttpResponse" title="django.http.StreamingHttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">StreamingHttpResponse</span></tt></a>对象。</font></p>
+<p><font id="54"><tt class="docutils literal"><span class="pre">process_response()</span></tt>在所有响应返回浏览器之前被调用。</font></p>
+<p><font id="55">这个方法必须返回<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>或者<a class="reference internal" href="../../ref/request-response.html#django.http.StreamingHttpResponse" title="django.http.StreamingHttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">StreamingHttpResponse</span></tt></a>对象。</font><font id="56">它可以改变已有的<tt class="docutils literal"><span class="pre">response</span></tt>，或者创建并返回新的<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>或<a class="reference internal" href="../../ref/request-response.html#django.http.StreamingHttpResponse" title="django.http.StreamingHttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">StreamingHttpResponse</span></tt></a>对象。</font></p>
+<p><font id="57">不像&nbsp;<tt class="docutils literal"><span class="pre">process_request()</span></tt>和<tt class="docutils literal"><span class="pre">process_view()</span></tt>方法，即使同一个中间件类中的<tt class="docutils literal"><span class="pre">process_request()</span></tt>和<tt class="docutils literal"><span class="pre">process_view()</span></tt>方法会因为前面的一个中间件返回<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>而被跳过，<tt class="docutils literal"><span class="pre">process_response()</span></tt>方法总是会被调用。</font><font id="58">特别是，这意味着你的<tt class="docutils literal"><span class="pre">process_response()</span></tt>方法不能依赖于<tt class="docutils literal"><span class="pre">process_request()</span></tt>方法中的设置。</font></p>
+<p><font id="59">最后，记住在响应阶段中，中间件以相反的顺序被应用，自底向上。</font><font id="60">意思是定义在<a class="reference internal" href="../../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>最底下的类会最先被运行。</font></p>
+<div class="section" id="s-dealing-with-streaming-responses">
+<span id="dealing-with-streaming-responses"></span><h4><font id="103">处理流式响应</font><a class="headerlink" href="middleware.html#dealing-with-streaming-responses" title="Permalink to this headline">¶</a></h4>
+<p><font id="61">不像<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>，<a class="reference internal" href="../../ref/request-response.html#django.http.StreamingHttpResponse" title="django.http.StreamingHttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">StreamingHttpResponse</span></tt></a>并没有<tt class="docutils literal"><span class="pre">content</span></tt>属性。</font><font id="62">所以，中间件再也不能假设所有响应都带有<tt class="docutils literal"><span class="pre">content</span></tt>属性。</font><font id="63">如果它们需要访问内容，他们必须测试是否为流式响应，并相应地调整自己的行为。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">streaming</span><span class="p">:</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">streaming_content</span> <span class="o">=</span> <span class="n">wrap_streaming_content</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">streaming_content</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">alter_content</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="64">注意</font></p>
+<p><font id="65">我们需要假设<tt class="docutils literal"><span class="pre">streaming_content</span></tt>可能会大到在内存中无法容纳。</font><font id="66">响应中间件可能会把它封装在新的生成器中，但是一定不要销毁它。</font><font id="67">封装一般会实现成这样：</font></p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">wrap_streaming_content</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">alter_content</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="s-process-exception">
+<span id="s-exception-middleware"></span><span id="process-exception"></span><span id="exception-middleware"></span><h3><font id="94">process_exception</font><a class="headerlink" href="middleware.html#process-exception" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="process_exception">
+<tt class="descname">process_exception</tt>(<em>request</em>, <em>exception</em>)<a class="headerlink" href="middleware.html#process_exception" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="68"><tt class="docutils literal"><span class="pre">request</span></tt>是一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpRequest" title="django.http.HttpRequest"><tt class="xref py py-class docutils literal"><span class="pre">HttpRequest</span></tt></a>对象。</font><font id="69"><tt class="docutils literal"><span class="pre">exception</span></tt>是一个被视图中的方法抛出来的
+<tt class="docutils literal"><span class="pre">Exception</span></tt>对象。</font></p>
+<p><font id="70">当一个视图抛出异常时，Django会调用<tt class="docutils literal"><span class="pre">process_exception()</span></tt>来处理。</font><font id="71"><tt class="docutils literal"><span class="pre">process_exception()</span></tt>应该返回一个<tt class="docutils literal"><span class="pre">None</span></tt> 或者一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>对象。</font><font id="72">如果它返回一个<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponse" title="django.http.HttpResponse"><tt class="xref py py-class docutils literal"><span class="pre">HttpResponse</span></tt></a>对象，模型响应和响应中间件会被应用，响应结果会返回给浏览器。</font><font id="73">Otherwise, default exception handling kicks in.</font></p>
+<p><font id="74">再次提醒，在处理响应期间，中间件的执行顺序是倒序执行的，这包括<tt class="docutils literal"><span class="pre">process_exception</span></tt>。</font><font id="75">如果一个异常处理的中间件返回了一个响应，那这个中间件上面的中间件都将不会被调用。</font></p>
+</div>
+<div class="section" id="s-init">
+<span id="init"></span><h3><font id="95">__init__</font><a class="headerlink" href="middleware.html#init" title="Permalink to this headline">¶</a></h3>
+<p><font id="76">大多数的中间件类都不需要一个初始化方法，因为中间件的类定义仅仅是为<tt class="docutils literal"><span class="pre">process_*</span></tt>提供一个占位符。</font><font id="77">如果你确实需要一个全局的状态那就可以通过<tt class="docutils literal"><span class="pre">__init__</span></tt>来加载。</font><font id="78">然后要铭记如下两个警告：</font></p>
+<ul class="simple">
+<li><font id="112">Django初始化你的中间件无需任何参数，因此不要定义一个有参数的<tt class="docutils literal"><span class="pre">__init__</span></tt>方法。</font></li>
+<li><font id="113">不像<tt class="docutils literal"><span class="pre">process_*</span></tt> 对每个请求都要调用，<tt class="docutils literal"><span class="pre">__init__</span></tt> 只会被调用<em>一次</em>，就是在Web 服务器响应第一个请求的时候。</font></li>
+</ul>
+<div class="section" id="s-marking-middleware-as-unused">
+<span id="marking-middleware-as-unused"></span><h4><font id="104">标记中间件不被使用</font><a class="headerlink" href="middleware.html#marking-middleware-as-unused" title="Permalink to this headline">¶</a></h4>
+<p><font id="79">有时在运行时决定是否一个中间件需要被加载是很有用的。 </font><font id="80">在这种情况下，你的中间件中的&nbsp;<tt class="docutils literal"><span class="pre">__init__</span></tt>方法可以抛出一个<a class="reference internal" href="../../ref/exceptions.html#django.core.exceptions.MiddlewareNotUsed" title="django.core.exceptions.MiddlewareNotUsed"><tt class="xref py py-exc docutils literal"><span class="pre">django.core.exceptions.MiddlewareNotUsed</span></tt></a>异常。</font><font id="81">Django会从中间件处理过程中移除这部分中间件，并且当<a class="reference internal" href="../../ref/settings.html#std:setting-DEBUG"><tt class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></tt></a>为<tt class="docutils literal"><span class="pre">True</span></tt>的时候在<tt class="docutils literal"><span class="pre">django.request</span></tt>记录器中记录调试信息。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="82">之前 <a class="reference internal" href="../../ref/exceptions.html#django.core.exceptions.MiddlewareNotUsed" title="django.core.exceptions.MiddlewareNotUsed"><tt class="xref py py-exc docutils literal"><span class="pre">MiddlewareNotUsed</span></tt></a>异常不会被记录。</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-guidelines">
+<span id="guidelines"></span><h3><font id="96">指导准则</font><a class="headerlink" href="middleware.html#guidelines" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><font id="114">中间件的类不能是任何类的子类。</font></li>
+<li><font id="115">中间件可以存在与你Python路径中的任何位置。 </font><font id="116">Django所关心的只是被包含在<a class="reference internal" href="../../ref/settings.html#std:setting-MIDDLEWARE_CLASSES"><tt class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></tt></a>中的配置。</font></li>
+<li><font id="117">将<a class="reference internal" href="../../ref/middleware.html"><em>Django 中可用的中间件</em></a>作为例子随便看看。</font></li>
+<li><font id="118">如果你认为你写的中间件组建可能会对其他人有用，那就把它共享到社区！ </font><font id="119"><a class="reference internal" href="http://python.usyiyi.cn/django/internals/contributing/index.html"><em>让我们知道它</em></a>，我们会考虑把它添加到Django中。</font></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="97">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="middleware.html#"><font id="120">中间件</font></a><ul>
+<li><a class="reference internal" href="middleware.html#activating-middleware"><font id="121">激活中间件</font></a></li>
+<li><a class="reference internal" href="middleware.html#hooks-and-application-order"><font id="122">钩子和应用的顺序</font></a></li>
+<li><a class="reference internal" href="middleware.html#writing-your-own-middleware"><font id="123">编写你自己的中间件</font></a><ul>
+<li><a class="reference internal" href="middleware.html#process-request"><font id="124">process_request</font></a></li>
+<li><a class="reference internal" href="middleware.html#process-view"><font id="125">process_view</font></a></li>
+<li><a class="reference internal" href="middleware.html#process-template-response"><font id="126">process_template_response</font></a></li>
+<li><a class="reference internal" href="middleware.html#process-response"><font id="127">process_response</font></a><ul>
+<li><a class="reference internal" href="middleware.html#dealing-with-streaming-responses"><font id="128">处理流式响应</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="middleware.html#process-exception"><font id="129">process_exception</font></a></li>
+<li><a class="reference internal" href="middleware.html#init"><font id="130">__init__</font></a><ul>
+<li><a class="reference internal" href="middleware.html#marking-middleware-as-unused"><font id="131">标记中间件为未使用</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="middleware.html#guidelines"><font id="132">指导准则</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="98">浏览</font></h3>
+<ul>
+<li><font id="133">上一页：<a href="generic-views.html">通用的视图</a></font></li>
+<li><font id="134">下一页：<a href="sessions.html">如何使用会话</a></font></li>
+</ul>
+<h3><font id="99">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="135">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="136">使用 Django</font></a>
+<ul><li><a href="index.html"><font id="137">处理HTTP 请求</font></a>
+<ul><li><font id="138">中间件</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="100">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/http/middleware.txt" rel="nofollow"><font id="139">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="101">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="83"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="102">最后更新：</font></h3>
+<p class="topless"><font id="84">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="generic-views.html" title="Generic views">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="sessions.html" title="How to use sessions">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/http/middleware.html
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Signals — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Using Django"/>
+<link href="checks.html" rel="next" title="System check framework"/>
+<link href="settings.html" rel="prev" title="Django settings"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="83">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="settings.html" title="Django settings">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="checks.html" title="System check framework">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-signals">
+<div class="section" id="s-module-django.dispatch">
+<span id="s-signals"></span><span id="module-django.dispatch"></span><span id="signals"></span><h1><font id="84">信号</font><a class="headerlink" href="signals.html#module-django.dispatch" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">Django提供一个“信号分发器”，允许解耦的应用在actions出现在框架的其他任何地方时，都会被通知到。</font><font id="2">简单来说，信号允许指定的&nbsp;<em>发送器</em>通知一系列的<em>接收器</em>，一些操作已经发生了。</font><font id="3">这在多处代码和同一事件有关联的情况下很有用。</font></p>
+<p><font id="4">Django 提供了<a class="reference internal" href="../ref/signals.html"><em>一系列的内建信号</em></a>，允许用户的代码获得DJango的特定操作的通知。</font><font id="5">这包含一些有用的通知：</font></p>
+<ul>
+<li><p class="first"><font id="6"><a class="reference internal" href="../ref/signals.html#django.db.models.signals.pre_save" title="django.db.models.signals.pre_save"><tt class="xref py py-data docutils literal"><span class="pre">django.db.models.signals.pre_save</span></tt></a> &amp; <a class="reference internal" href="../ref/signals.html#django.db.models.signals.post_save" title="django.db.models.signals.post_save"><tt class="xref py py-data docutils literal"><span class="pre">django.db.models.signals.post_save</span></tt></a></font></p>
+<p><font id="7">在模型&nbsp;<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model.save" title="django.db.models.Model.save"><tt class="xref py py-meth docutils literal"><span class="pre">save()</span></tt></a>方法调用之前或之后发送。</font></p>
+</li>
+<li><p class="first"><font id="8"><a class="reference internal" href="../ref/signals.html#django.db.models.signals.pre_delete" title="django.db.models.signals.pre_delete"><tt class="xref py py-data docutils literal"><span class="pre">django.db.models.signals.pre_delete</span></tt></a> &amp; <a class="reference internal" href="../ref/signals.html#django.db.models.signals.post_delete" title="django.db.models.signals.post_delete"><tt class="xref py py-data docutils literal"><span class="pre">django.db.models.signals.post_delete</span></tt></a></font></p>
+<p><font id="9">在模型<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model.delete" title="django.db.models.Model.delete"><tt class="xref py py-meth docutils literal"><span class="pre">delete()</span></tt></a>方法或查询集的<a class="reference internal" href="../ref/models/querysets.html#django.db.models.query.QuerySet.delete" title="django.db.models.query.QuerySet.delete"><tt class="xref py py-meth docutils literal"><span class="pre">delete()</span></tt></a> 方法调用之前或之后发送。</font></p>
+</li>
+<li><p class="first"><font id="10"><a class="reference internal" href="../ref/signals.html#django.db.models.signals.m2m_changed" title="django.db.models.signals.m2m_changed"><tt class="xref py py-data docutils literal"><span class="pre">django.db.models.signals.m2m_changed</span></tt></a></font></p>
+<p><font id="11">模型上的 <a class="reference internal" href="../ref/models/fields.html#django.db.models.ManyToManyField" title="django.db.models.ManyToManyField"><tt class="xref py py-class docutils literal"><span class="pre">ManyToManyField</span></tt></a> 修改时发送。</font></p>
+</li>
+<li><p class="first"><font id="12"><a class="reference internal" href="../ref/signals.html#django.core.signals.request_started" title="django.core.signals.request_started"><tt class="xref py py-data docutils literal"><span class="pre">django.core.signals.request_started</span></tt></a> &amp; <a class="reference internal" href="../ref/signals.html#django.core.signals.request_finished" title="django.core.signals.request_finished"><tt class="xref py py-data docutils literal"><span class="pre">django.core.signals.request_finished</span></tt></a></font></p>
+<p><font id="13">Django建立或关闭HTTP 请求时发送。</font></p>
+</li>
+</ul>
+<p><font id="14">关于完整列表以及每个信号的完整解释，请见<a class="reference internal" href="../ref/signals.html"><em>内建信号的文档</em></a> 。</font></p>
+<p><font id="15">你也可以<a class="reference internal" href="signals.html#defining-and-sending-signals">定义和发送你自己的自定义信号</a>；</font><font id="16">见下文。</font></p>
+<div class="section" id="s-listening-to-signals">
+<span id="listening-to-signals"></span><h2><font id="85">监听信号</font><a class="headerlink" href="signals.html#listening-to-signals" title="Permalink to this headline">¶</a></h2>
+<p><font id="17">你需要注册一个<em>接收器</em>函数来接受信号，它在信号使用<a class="reference internal" href="signals.html#django.dispatch.Signal.connect" title="django.dispatch.Signal.connect"><tt class="xref py py-meth docutils literal"><span class="pre">Signal.connect()</span></tt></a>发送时被调用：</font></p>
+<dl class="method">
+<dt id="django.dispatch.Signal.connect">
+<tt class="descclassname">Signal.</tt><tt class="descname">connect</tt>(<em>receiver</em><span class="optional">[</span>, <em>sender=None</em>, <em>weak=True</em>, <em>dispatch_uid=None</em><span class="optional">]</span>)<a class="headerlink" href="signals.html#django.dispatch.Signal.connect" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"></col>
+<col class="field-body"></col>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><font id="100"><strong>receiver</strong> – 和这个信号连接的回调函数。</font><font id="101">详见<a class="reference internal" href="signals.html#receiver-functions"><em>接收器函数</em></a>。</font></li>
+<li><font id="102"><strong>sender</strong> – 指定一个特定的发送器，来从它那里接受信号。</font><font id="103">详见<a class="reference internal" href="signals.html#connecting-to-specific-signals"><em>连接由指定发送器发送的信号</em></a>。</font></li>
+<li><font id="104"><strong>weak</strong> – DJango通常以弱引用储存信号处理器。</font><font id="105">这就是说，如果你的接收器是个局部变量，可能会被垃圾回收。</font><font id="106">当你调用信号的<tt class="docutils literal"><span class="pre">connect()</span></tt>方法是，传递&nbsp;<tt class="docutils literal"><span class="pre">weak=False</span></tt>来防止这样做。</font></li>
+<li><font id="107"><strong>dispatch_uid</strong> – 一个信号接收器的唯一标识符，以防信号多次发送。</font><font id="108">详见<a class="reference internal" href="signals.html#preventing-duplicate-signals"><em>防止重复的信号</em></a>。</font></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<p><font id="18">让我们来看一看它如何通过注册在每次在HTTP请求结束时调用的信号来工作。</font><font id="19">我们将会连接到<a class="reference internal" href="../ref/signals.html#django.core.signals.request_finished" title="django.core.signals.request_finished"><tt class="xref py py-data docutils literal"><span class="pre">request_finished</span></tt></a> 信号。</font></p>
+<div class="section" id="s-receiver-functions">
+<span id="s-id1"></span><span id="receiver-functions"></span><span id="id1"></span><h3><font id="88">接收器函数</font><a class="headerlink" href="signals.html#receiver-functions" title="Permalink to this headline">¶</a></h3>
+<p><font id="20">首先，我们需要定义接收器函数。</font><font id="21">接受器可以是Python函数或者方法：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_callback</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Request finished!"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="22">注意函数接受<tt class="docutils literal"><span class="pre">sender</span></tt>函数，以及通配符关键字参数(<tt class="docutils literal"><span class="pre">**kwargs</span></tt>)；</font><font id="23">所有信号处理器都必须接受这些参数。</font></p>
+<p><font id="24">我们<a class="reference internal" href="signals.html#connecting-to-signals-sent-by-specific-senders">过一会儿</a>再关注发送器，现在先看一看<tt class="docutils literal"><span class="pre">**kwargs</span></tt>参数。</font><font id="25">所有信号都发送关键字参数，并且可以在任何时候修改这些关键字参数。</font><font id="26">在&nbsp;<a class="reference internal" href="../ref/signals.html#django.core.signals.request_finished" title="django.core.signals.request_finished"><tt class="xref py py-data docutils literal"><span class="pre">request_finished</span></tt></a>的情况下，它被记录为不发送任何参数，这意味着我们可能需要像<tt class="docutils literal"><span class="pre">my_callback(sender)</span></tt>一样编写我们自己的信号处理器。</font></p>
+<p><font id="27">这是错误的 -- 实际上，如果你这么做了，Django会抛出异常。</font><font id="28">这是因为无论什么时候信号中添加了参数，你的接收器都必须能够处理这些新的参数。</font></p>
+</div>
+<div class="section" id="s-connecting-receiver-functions">
+<span id="s-id2"></span><span id="connecting-receiver-functions"></span><span id="id2"></span><h3><font id="89">连接接收器函数</font><a class="headerlink" href="signals.html#connecting-receiver-functions" title="Permalink to this headline">¶</a></h3>
+<p><font id="29">有两种方法可以将一个接收器连接到信号。</font><font id="30">你可以采用手动连接的方法：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.signals</span> <span class="kn">import</span> <span class="n">request_finished</span>
+
+<span class="n">request_finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">my_callback</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="31">或者使用<a class="reference internal" href="signals.html#django.dispatch.receiver" title="django.dispatch.receiver"><tt class="xref py py-func docutils literal"><span class="pre">receiver()</span></tt></a> 装饰器来自动连接：</font></p>
+<dl class="function">
+<dt id="django.dispatch.receiver">
+<tt class="descname">receiver</tt>(<em>signal</em>)<a class="headerlink" href="signals.html#django.dispatch.receiver" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"></col>
+<col class="field-body"></col>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>signal</strong> – A signal or a list of signals to connect a function to.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<p><font id="32">下面是使用装饰器连接的方法：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.signals</span> <span class="kn">import</span> <span class="n">request_finished</span>
+<span class="kn">from</span> <span class="nn">django.dispatch</span> <span class="kn">import</span> <span class="n">receiver</span>
+
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">request_finished</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_callback</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Request finished!"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="33">现在，我们的<tt class="docutils literal"><span class="pre">my_callback</span></tt>函数会在每次请求结束时调用。</font></p>
+<div class="admonition-where-should-this-code-live admonition">
+<p class="first admonition-title"><font id="34">这段代码应该放在哪里？</font></p>
+<p><font id="35">严格来说，信号处理和注册的代码应该放在你想要的任何地方，但是推荐避免放在应用的根模块和<tt class="docutils literal"><span class="pre">models</span></tt>模块中，以尽量减少产生导入代码的副作用。</font></p>
+<p><font id="36">实际上，信号处理通常定义在应用相关的<tt class="docutils literal"><span class="pre">signals</span></tt>子模块中。</font><font id="37">信号接收器在你应用配置类中的<a class="reference internal" href="../ref/applications.html#django.apps.AppConfig.ready" title="django.apps.AppConfig.ready"><tt class="xref py py-meth docutils literal"><span class="pre">ready()</span></tt></a> 方法中连接。</font><font id="38">如果你使用；额&nbsp;<a class="reference internal" href="signals.html#django.dispatch.receiver" title="django.dispatch.receiver"><tt class="xref py py-func docutils literal"><span class="pre">receiver()</span></tt></a>装饰器，只是在<a class="reference internal" href="../ref/applications.html#django.apps.AppConfig.ready" title="django.apps.AppConfig.ready"><tt class="xref py py-meth docutils literal"><span class="pre">ready()</span></tt></a>内部导入<tt class="docutils literal"><span class="pre">signals</span></tt>子模块就可以了。</font></p>
+<div class="last versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="39">由于<a class="reference internal" href="../ref/applications.html#django.apps.AppConfig.ready" title="django.apps.AppConfig.ready"><tt class="xref py py-meth docutils literal"><span class="pre">ready()</span></tt></a>并不在Django之前版本中存在，信号的注册通常在<tt class="docutils literal"><span class="pre">models</span></tt>模块中进行。</font></p>
+</div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title"><font id="40">注意</font></p>
+<p class="last"><font id="41"><a class="reference internal" href="../ref/applications.html#django.apps.AppConfig.ready" title="django.apps.AppConfig.ready"><tt class="xref py py-meth docutils literal"><span class="pre">ready()</span></tt></a> 方法会在测试期间执行多次，所以你可能想要<a class="reference internal" href="signals.html#preventing-duplicate-signals"><em>防止重复的信号</em></a>，尤其是打算在测试中发送它们的情况。</font></p>
+</div>
+</div>
+<div class="section" id="s-connecting-to-signals-sent-by-specific-senders">
+<span id="s-connecting-to-specific-signals"></span><span id="connecting-to-signals-sent-by-specific-senders"></span><span id="connecting-to-specific-signals"></span><h3><font id="90">连接由指定发送器发送的信号</font><a class="headerlink" href="signals.html#connecting-to-signals-sent-by-specific-senders" title="Permalink to this headline">¶</a></h3>
+<p><font id="42">一些信号会发送多次，但是你只想接收这些信号的一个确定的子集。</font><font id="43">例如，考虑 <a class="reference internal" href="../ref/signals.html#django.db.models.signals.pre_save" title="django.db.models.signals.pre_save"><tt class="xref py py-data docutils literal"><span class="pre">django.db.models.signals.pre_save</span></tt></a> 信号，它在模型保存之前发送。</font><font id="44">大多数情况下，你并不需要知道&nbsp;<em>任何</em>模型何时保存 -- 只需要知道一个<em>特定的</em>模型何时保存。</font></p>
+<p><font id="45">在这些情况下，你可以通过注册来接收只由特定发送器发出的信号。</font><font id="46">对于<a class="reference internal" href="../ref/signals.html#django.db.models.signals.pre_save" title="django.db.models.signals.pre_save"><tt class="xref py py-data docutils literal"><span class="pre">django.db.models.signals.pre_save</span></tt></a>的情况， 发送者是被保存的模型类，所以你可以认为你只需要由某些模型发出的信号：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">pre_save</span>
+<span class="kn">from</span> <span class="nn">django.dispatch</span> <span class="kn">import</span> <span class="n">receiver</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">MyModel</span>
+
+
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">pre_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">MyModel</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="47"><tt class="docutils literal"><span class="pre">my_handler</span></tt>函数只在<tt class="docutils literal"><span class="pre">MyModel</span></tt>实例保存时被调用。</font></p>
+<p><font id="48">不同的信号使用不同的对象作为他们的发送器；</font><font id="49">对于每个特定信号的细节，你需要查看<a class="reference internal" href="../ref/signals.html"><em>内建信号的文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-preventing-duplicate-signals">
+<span id="s-id3"></span><span id="preventing-duplicate-signals"></span><span id="id3"></span><h3><font id="91">防止重复的信号</font><a class="headerlink" href="signals.html#preventing-duplicate-signals" title="Permalink to this headline">¶</a></h3>
+<p><font id="50">在一些情况下，向接收者发送信号的代码可能会执行多次。</font><font id="51">这会使你的接收器函数被注册多次，并且导致它对于同一信号事件被调用多次。</font></p>
+<p><font id="52">如果这样的行为会导致问题（例如在任何时候模型保存时使用信号来发送邮件），传递一个唯一的标识符作为&nbsp;<tt class="docutils literal"><span class="pre">dispatch_uid</span></tt>参数来标识你的接收器函数。</font><font id="53">标识符通常是一个字符串，虽然任何可计算哈希的对象都可以。</font><font id="54">最后的结果是，对于每个唯一的<tt class="docutils literal"><span class="pre">dispatch_uid</span></tt>值，你的接收器函数都只被信号调用一次：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.signals</span> <span class="kn">import</span> <span class="n">request_finished</span>
+
+<span class="n">request_finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">my_callback</span><span class="p">,</span> <span class="n">dispatch_uid</span><span class="o">=</span><span class="s">"my_unique_identifier"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-defining-and-sending-signals">
+<span id="defining-and-sending-signals"></span><h2><font id="86">定义和发送信号</font><a class="headerlink" href="signals.html#defining-and-sending-signals" title="Permalink to this headline">¶</a></h2>
+<p><font id="55">你的应用可以利用信号功能来提供自己的信号。</font></p>
+<div class="section" id="s-defining-signals">
+<span id="defining-signals"></span><h3><font id="92">定义信号</font><a class="headerlink" href="signals.html#defining-signals" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.dispatch.Signal">
+<em class="property">class </em><tt class="descname">Signal</tt>(<span class="optional">[</span><em>providing_args=list</em><span class="optional">]</span>)<a class="headerlink" href="signals.html#django.dispatch.Signal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="56">所有信号都是&nbsp;<a class="reference internal" href="signals.html#django.dispatch.Signal" title="django.dispatch.Signal"><tt class="xref py py-class docutils literal"><span class="pre">django.dispatch.Signal</span></tt></a> 的实例。</font><font id="57"><tt class="docutils literal"><span class="pre">providing_args</span></tt>是一个列表，包含参数的名字，它们由信号提供给监听者。</font><font id="58">理论上是这样，但是实际上并没有任何检查来保证向监听者提供了这些参数。</font></p>
+<p><font id="59">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">django.dispatch</span>
+
+<span class="n">pizza_done</span> <span class="o">=</span> <span class="n">django</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">providing_args</span><span class="o">=</span><span class="p">[</span><span class="s">"toppings"</span><span class="p">,</span> <span class="s">"size"</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="60">这段代码声明了<tt class="docutils literal"><span class="pre">pizza_done</span></tt>信号，它向接受者提供<tt class="docutils literal"><span class="pre">toppings</span></tt>和&nbsp;<tt class="docutils literal"><span class="pre">size</span></tt> 参数。</font></p>
+<p><font id="61">要记住你可以在任何时候修改参数的列表，所以首次尝试的时候不需要完全确定API。</font></p>
+</div>
+<div class="section" id="s-sending-signals">
+<span id="sending-signals"></span><h3><font id="93">发送信号</font><a class="headerlink" href="signals.html#sending-signals" title="Permalink to this headline">¶</a></h3>
+<p><font id="62">Django中有两种方法用于发送信号。</font></p>
+<dl class="method">
+<dt id="django.dispatch.Signal.send">
+<tt class="descclassname">Signal.</tt><tt class="descname">send</tt>(<em>sender</em>, <em>**kwargs</em>)<a class="headerlink" href="signals.html#django.dispatch.Signal.send" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="method">
+<dt id="django.dispatch.Signal.send_robust">
+<tt class="descclassname">Signal.</tt><tt class="descname">send_robust</tt>(<em>sender</em>, <em>**kwargs</em>)<a class="headerlink" href="signals.html#django.dispatch.Signal.send_robust" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="63">调用&nbsp;<a class="reference internal" href="signals.html#django.dispatch.Signal.send" title="django.dispatch.Signal.send"><tt class="xref py py-meth docutils literal"><span class="pre">Signal.send()</span></tt></a>或者<a class="reference internal" href="signals.html#django.dispatch.Signal.send_robust" title="django.dispatch.Signal.send_robust"><tt class="xref py py-meth docutils literal"><span class="pre">Signal.send_robust()</span></tt></a>来发送信号。</font><font id="64">你必须提供<tt class="docutils literal"><span class="pre">sender</span></tt> 参数（大多数情况下它是一个类），并且可以提供尽可能多的关键字参数。</font></p>
+<p><font id="65">例如，这样来发送我们的<tt class="docutils literal"><span class="pre">pizza_done</span></tt>信号：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PizzaStore</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">send_pizza</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toppings</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">pizza_done</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">toppings</span><span class="o">=</span><span class="n">toppings</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="66"><tt class="docutils literal"><span class="pre">send()</span></tt> 和<tt class="docutils literal"><span class="pre">send_robust()</span></tt>都会返回一个含有二元组的列表 <tt class="docutils literal"><span class="pre">[(receiver,</span> <span class="pre">response),</span> <span class="pre">...</span> </tt></font><font id="67"><span class="pre">]</span>，它代表了被调用的接收器函数和他们的响应值。</font></p>
+<p><font id="68"><tt class="docutils literal"><span class="pre">send()</span></tt> 与 <tt class="docutils literal"><span class="pre">send_robust()</span></tt>在处理接收器函数产生的异常时有所不同。</font><font id="69"><tt class="docutils literal"><span class="pre">send()</span></tt> &nbsp;<em>不会</em> 捕获任何由接收器产生的异常。</font><font id="70">它会简单地让错误往上传递。</font><font id="71">所以在错误产生的情况，不是所有接收器都会获得通知。</font></p>
+<p><font id="72"><tt class="docutils literal"><span class="pre">send_robust()</span></tt>捕获所有继承自Python <tt class="docutils literal"><span class="pre">Exception</span></tt>类的异常，并且确保所有接收器都能得到信号的通知。</font><font id="73">如果发生了错误，错误的实例会在产生错误的接收器的二元组中返回。</font></p>
+<div class="versionadded">
+<span class="title">New in Django 1.8:</span> <p><font id="74">调用<tt class="docutils literal"><span class="pre">send_robust()</span></tt>的时候，所返回的错误的<tt class="docutils literal"><span class="pre">__traceback__</span></tt>属性上会带有&nbsp;traceback。</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-disconnecting-signals">
+<span id="disconnecting-signals"></span><h2><font id="87">断开信号</font><a class="headerlink" href="signals.html#disconnecting-signals" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="django.dispatch.Signal.disconnect">
+<tt class="descclassname">Signal.</tt><tt class="descname">disconnect</tt>(<span class="optional">[</span><em>receiver=None</em>, <em>sender=None</em>, <em>weak=True</em>, <em>dispatch_uid=None</em><span class="optional">]</span>)<a class="headerlink" href="signals.html#django.dispatch.Signal.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="75">调用<a class="reference internal" href="signals.html#django.dispatch.Signal.disconnect" title="django.dispatch.Signal.disconnect"><tt class="xref py py-meth docutils literal"><span class="pre">Signal.disconnect()</span></tt></a>来断开信号的接收器。</font><font id="76">&nbsp;<a class="reference internal" href="signals.html#django.dispatch.Signal.connect" title="django.dispatch.Signal.connect"><tt class="xref py py-meth docutils literal"><span class="pre">Signal.connect()</span></tt></a>中描述了所有参数。</font><font id="77">如果接收器成功断开，返回&nbsp;<tt class="docutils literal"><span class="pre">True</span></tt> ，否则返回<tt class="docutils literal"><span class="pre">False</span></tt>。</font></p>
+<p><font id="78"><tt class="docutils literal"><span class="pre">receiver</span></tt>参数表示要断开的已注册接收器。</font><font id="79">如果<tt class="docutils literal"><span class="pre">dispatch_uid</span></tt> 用于定义接收器，可以为<tt class="docutils literal"><span class="pre">None</span></tt>。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="80">增加了返回的布尔值。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="94">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="signals.html#"><font id="109">Signals</font></a><ul>
+<li><a class="reference internal" href="signals.html#listening-to-signals"><font id="110">Listening to signals</font></a><ul>
+<li><a class="reference internal" href="signals.html#receiver-functions"><font id="111">Receiver functions</font></a></li>
+<li><a class="reference internal" href="signals.html#connecting-receiver-functions"><font id="112">Connecting receiver functions</font></a></li>
+<li><a class="reference internal" href="signals.html#connecting-to-signals-sent-by-specific-senders"><font id="113">Connecting to signals sent by specific senders</font></a></li>
+<li><a class="reference internal" href="signals.html#preventing-duplicate-signals"><font id="114">Preventing duplicate signals</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="signals.html#defining-and-sending-signals"><font id="115">Defining and sending signals</font></a><ul>
+<li><a class="reference internal" href="signals.html#defining-signals"><font id="116">Defining signals</font></a></li>
+<li><a class="reference internal" href="signals.html#sending-signals"><font id="117">Sending signals</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="signals.html#disconnecting-signals"><font id="118">Disconnecting signals</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="95">Browse</font></h3>
+<ul>
+<li><font id="119">Prev: <a href="settings.html">Django settings</a></font></li>
+<li><font id="120">Next: <a href="checks.html">System check framework</a></font></li>
+</ul>
+<h3><font id="96">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="121">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="index.html"><font id="122">Using Django</font></a>
+<ul><li><font id="123">Signals</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="97">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/signals.txt" rel="nofollow"><font id="124">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="98">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="81"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="99">Last update:</font></h3>
+<p class="topless"><font id="82">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="settings.html" title="Django settings">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="checks.html" title="System check framework">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/signals';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

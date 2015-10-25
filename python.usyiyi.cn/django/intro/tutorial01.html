@@ -1,0 +1,705 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>编写你的第一个Django应用，第1部分 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Getting started"/>
+<link href="tutorial02.html" rel="next" title="Writing your first Django app, part 2"/>
+<link href="install.html" rel="prev" title="Quick install guide"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/intro/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/intro/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="187">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="install.html" title="Quick install guide">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Getting started">up</a>
+   |
+    <a href="tutorial02.html" title="Writing your first Django app, part 2">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="intro-tutorial01">
+<div class="section" id="s-writing-your-first-django-app-part-1">
+<span id="writing-your-first-django-app-part-1"></span><h1><font id="188">编写你的第一个Django应用，第1部分</font><a class="headerlink" href="tutorial01.html#writing-your-first-django-app-part-1" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">让我们通过例子来进行学习。</font></p>
+<p><font id="2">本教程中，我们将引导你创建一个基础的投票应用。</font></p>
+<p><font id="3">它包含两部分：</font></p>
+<ul class="simple">
+<li><font id="201">一个对外的网站，可以让人们查看投票的结果并让他们进行投票。</font></li>
+<li><font id="202">一个管理网站，可让你添加、修改和删除选票。</font></li>
+</ul>
+<p><font id="4">我们假设你已经<a class="reference internal" href="install.html"><em>安装Django</em></a>。 </font><font id="5">你可以运行以下命令来验证是否已经安装Django及其版本号：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python -c <span class="s2">"import django; print(django.get_version())"</span>
+</pre></div>
+</div>
+<p><font id="6">如果Django已经安装，你应该看到安装的版本。 </font><font id="7">如果没有安装，你将看到一个“No module named django”的错误。</font></p>
+<p><font id="8">本教程适用于Django 1.8加Python 3.2或更新版本。 </font><font id="9">如果Django版本不符，可以通过当前页面右下角的版本转换器查看适用于你所使用的版本的Django教程，或者把Django升级到最新的版本。 </font><font id="10">如果你还在使用2.7版本的Python，你将需要按照注释中的内容稍微调整一下示例代码。</font></p>
+<p><font id="11">关于如何删除旧版本的Django并安装一个新的，请参见<a class="reference internal" href="../topics/install.html"><em>如何安装 Django</em></a>中的建议。</font></p>
+<div class="admonition-where-to-get-help admonition">
+<p class="first admonition-title"><font id="12">在哪里可以获得帮助：</font></p>
+<p class="last"><font id="13">如果您在学习本教程的过程中遇到问题，请向<a class="reference internal" href="http://python.usyiyi.cn/django/internals/mailing-lists.html#django-users-mailing-list"><em>django-users</em></a>发送邮件或者访问<a class="reference external" href="irc://irc.freenode.net/django">#django on irc.freenode.net</a>以及与其他可能会帮助你的Django用户交流。</font></p>
+</div>
+<div class="section" id="s-creating-a-project">
+<span id="creating-a-project"></span><h2><font id="189">创建一个项目</font><a class="headerlink" href="tutorial01.html#creating-a-project" title="Permalink to this headline">¶</a></h2>
+<p><font id="14">如果这是你第一次使用Django，你需要完成一些初始化操作。 </font><font id="15">即，你需要自己用代码来创建一个Django<a class="reference internal" href="http://python.usyiyi.cn/django/glossary.html#term-project"><em class="xref std std-term">项目</em></a> ——一个Django实例所需的设置集合，包括数据库的配置、Django的配置选项和应用的配置选项。</font></p>
+<p><font id="16">在命令行中，<tt class="docutils literal"><span class="pre">cd</span></tt>到你想要用来保存代码的目录，然后运行如下命令：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> django-admin startproject mysite
+</pre></div>
+</div>
+<p><font id="17">这将会在你的当前目录下生成一个&nbsp;<tt class="docutils literal"><span class="pre">mysite</span></tt>目录。</font><font id="18">如果它不能正常工作，请查看<a class="reference internal" href="http://python.usyiyi.cn/django/faq/troubleshooting.html#troubleshooting-django-admin"><em>运行django-admin遇到的问题</em></a>。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="19">注</font></p>
+<p class="last"><font id="20">你需要避免将项目命名为Python或Django的内建组件。 </font><font id="21">特别地，你应该避免使用类似<tt class="docutils literal"><span class="pre">django</span></tt>（与Django自身冲突）或 <tt class="docutils literal"><span class="pre">test</span></tt>（与Python内建的包冲突）这样的名称。</font></p>
+</div>
+<div class="admonition-where-should-this-code-live admonition">
+<p class="first admonition-title"><font id="22">代码应该存在哪里？</font></p>
+<p><font id="23">如果你的背景是普通的旧式的PHP（没有使用过现代的框架），你可能习惯于将代码放在Web服务器的文档根目录下（例如<tt class="docutils literal"><span class="pre">/var/www</span></tt>）。</font><font id="24">使用Django，你不需要这么做。 </font><font id="25">将Python代码放在你的Web服务器的根目录不是个好主意，因为它可能会产生让人们在网上看到你的代码的风险。 </font><font id="26">这样不安全。</font></p>
+<p class="last"><font id="27">将你的代码放置在Web服务器根目录<strong>以外</strong>的地方，例如<tt class="file docutils literal"><span class="pre">/home/mycode</span></tt>。</font></p>
+</div>
+<p><font id="28">让我们看一下<a class="reference internal" href="../ref/django-admin.html#django-admin-startproject"><tt class="xref std std-djadmin docutils literal"><span class="pre">startproject</span></tt></a>生成了什么：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>mysite/
+    manage.py
+    mysite/
+        __init__.py
+        settings.py
+        urls.py
+        wsgi.py
+</pre></div>
+</div>
+<p><font id="29">这些文件是：</font></p>
+<ul class="simple">
+<li><font id="203">外层的<tt class="file docutils literal"><span class="pre">mysite/</span></tt>根目录仅仅是的项目的一个容器。</font><font id="204">它的命名对Django无关紧要；</font><font id="205">你可以把它重新命名为任何你喜欢的名字。</font></li>
+<li><font id="206"><tt class="file docutils literal"><span class="pre">manage.py</span></tt>：一个命令行工具，可以使你用多种方式对Django项目进行交互。 </font><font id="207">你可以在<a class="reference internal" href="../ref/django-admin.html"><em>django-admin和manage.py</em></a>中读到关于<tt class="file docutils literal"><span class="pre">manage.py</span></tt>的所有细节。</font></li>
+<li><font id="208">内层的<tt class="file docutils literal"><span class="pre">mysite/</span></tt>目录是你的项目的真正的Python包。</font><font id="209">它是你导入任何东西时将需要使用的Python包的名字（例如 <tt class="docutils literal"><span class="pre">mysite.urls</span></tt>）。</font></li>
+<li><font id="210"><tt class="file docutils literal"><span class="pre">mysite/__init__.py</span></tt>：一个空文件，它告诉Python这个目录应该被看做一个Python包。 </font><font id="211">（如果你是一个Python初学者，<a class="reference external" href="https://docs.python.org/tutorial/modules.html#packages">关于包的更多内容</a>请阅读Python的官方文档）。</font></li>
+<li><font id="212"><tt class="file docutils literal"><span class="pre">mysite/settings.py</span></tt>：该Django 项目的设置/配置。</font><font id="213"><a class="reference internal" href="../topics/settings.html"><em>Django 设置</em></a> 将告诉你这些设置如何工作。</font></li>
+<li><font id="214"><tt class="file docutils literal"><span class="pre">mysite/urls.py</span></tt>：该Django项目的URL声明；</font><font id="215">你的Django站点的“目录”。 </font><font id="216">你可以在<a class="reference internal" href="../topics/http/urls.html"><em>URL 分配器</em></a> 中阅读到关于URL的更多内容。</font></li>
+<li><font id="217"><tt class="file docutils literal"><span class="pre">mysite/wsgi.py</span></tt>：用于你的项目的与WSGI兼容的Web服务器入口。 </font><font id="218">更多细节请参见<a class="reference internal" href="../howto/deployment/wsgi/index.html"><em>如何利用WSGI进行部署</em></a>。</font></li>
+</ul>
+<div class="section" id="s-database-setup">
+<span id="database-setup"></span><h3><font id="193">数据库的建立</font><a class="headerlink" href="tutorial01.html#database-setup" title="Permalink to this headline">¶</a></h3>
+<p><font id="30">现在，请编辑<tt class="file docutils literal"><span class="pre">mysite/settings.py</span></tt>。</font><font id="31">它是一个普通的Python模块，带有模块级别的变量，用来表示Django的配置。</font></p>
+<p><font id="32">默认情况下，该配置使用SQLite。</font><font id="33">如果你是数据库初学者，或者你仅仅是想要试用一下Django，它是最简单的选择。 </font><font id="34">SQLite包含在Python中，所以你不需要另外安装其他任何东西来支持你的数据库。 </font><font id="35">然而，当你开始第一个真正的项目时，你可能想使用一个更健壮的数据库比如PostgreSQL来避免在未来遇到切换数据库的令人头疼的问题。</font></p>
+<p><font id="36">如果你希望使用另外一种数据库，请安装合适的<a class="reference internal" href="../topics/install.html#database-installation"><em>database binding</em></a>，并在 <a class="reference internal" href="../ref/settings.html#std:setting-DATABASES"><tt class="xref std std-setting docutils literal"><span class="pre">DATABASES</span></tt></a> <tt class="docutils literal"><span class="pre">'default'</span></tt>条目中修改以下的配置以匹配你的数据库连接的设置：</font></p>
+<ul class="simple">
+<li><font id="219"><a class="reference internal" href="../ref/settings.html#std:setting-DATABASE-ENGINE"><tt class="xref std std-setting docutils literal"><span class="pre">ENGINE</span></tt></a> – <tt class="docutils literal"><span class="pre">'django.db.backends.sqlite3'</span></tt>, <tt class="docutils literal"><span class="pre">'django.db.backends.postgresql_psycopg2'</span></tt>, <tt class="docutils literal"><span class="pre">'django.db.backends.mysql'</span></tt>或<tt class="docutils literal"><span class="pre">'django.db.backends.oracle'</span></tt>。</font><font id="220">其它的后台<a class="reference internal" href="../ref/databases.html#third-party-notes"><em>也可以支持</em></a>。</font></li>
+<li><font id="221"><a class="reference internal" href="../ref/settings.html#std:setting-NAME"><tt class="xref std std-setting docutils literal"><span class="pre">NAME</span></tt></a> – &nbsp;数据库的名称。</font><font id="222">如果你使用SQLite，数据库将是你计算机上的一个文件； </font><font id="223">如果是这样的话，<a class="reference internal" href="../ref/settings.html#std:setting-NAME"><tt class="xref std std-setting docutils literal"><span class="pre">NAME</span></tt></a>应该是这个文件的绝对路径，包括文件名。</font><font id="224">默认值是<tt class="docutils literal"><span class="pre">os.path.join(BASE_DIR,</span> <span class="pre">'db.sqlite3')</span></tt>，它将文件保存在你项目的目录中。</font></li>
+</ul>
+<p><font id="37">如果你不使用SQLite作为你的数据库，必须添加<a class="reference internal" href="../ref/settings.html#std:setting-USER"><tt class="xref std std-setting docutils literal"><span class="pre">USER</span></tt></a>、 <a class="reference internal" href="../ref/settings.html#std:setting-PASSWORD"><tt class="xref std std-setting docutils literal"><span class="pre">PASSWORD</span></tt></a>、<a class="reference internal" href="../ref/settings.html#std:setting-HOST"><tt class="xref std std-setting docutils literal"><span class="pre">HOST</span></tt></a>等额外的设置。 </font><font id="38">更多的细节，请参见<a class="reference internal" href="../ref/settings.html#std:setting-DATABASES"><tt class="xref std std-setting docutils literal"><span class="pre">DATABASES</span></tt></a>的参考文档。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="39">注</font></p>
+<p><font id="40">如果你使用PostgreSQL或者MySQL，确保到此你已经建立好一个数据库。 </font><font id="41">可以在你的数据库的交互式提示命令下，使用“<tt class="docutils literal"><span class="pre">CREATE</span> <span class="pre">DATABASE</span> <span class="pre">database_name;</span></tt>”创建它。</font></p>
+<p class="last"><font id="42">如果你使用SQLite，你不需要事先创建任何东西 —— 数据库文件将会在需要的时候自动创建。</font></p>
+</div>
+<p><font id="43">当你编辑<tt class="file docutils literal"><span class="pre">mysite/settings.py</span></tt>时，请设置<a class="reference internal" href="../ref/settings.html#std:setting-TIME_ZONE"><tt class="xref std std-setting docutils literal"><span class="pre">TIME_ZONE</span></tt></a>为你自己的时区。</font></p>
+<p><font id="44">另外，请注意文件顶端的<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>设置。</font><font id="45">它保存这个Django实例中激活的所有的Django应用的名字。 </font><font id="46">应用可以使用在多个项目中，而且你可以将这些应用打包和分发给其他人在他们的项目中使用。</font></p>
+<p><font id="47">默认情况下，<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>包含下面的应用，它们都是Django 与生俱来的：</font></p>
+<ul class="simple">
+<li><font id="225"><a class="reference internal" href="../ref/contrib/admin/index.html#module-django.contrib.admin" title="django.contrib.admin: Django's admin site."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.admin</span></tt></a> —— 管理站点。</font><font id="226">你将在<a class="reference internal" href="tutorial02.html"><em>本教程的第2部分</em></a>使用到它。</font></li>
+<li><font id="227"><a class="reference internal" href="../topics/auth/index.html#module-django.contrib.auth" title="django.contrib.auth: Django's authentication framework."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.auth</span></tt></a> —— 认证系统。</font></li>
+<li><font id="228"><a class="reference internal" href="../ref/contrib/contenttypes.html#module-django.contrib.contenttypes" title="django.contrib.contenttypes: Provides generic interface to installed models."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.contenttypes</span></tt></a> —— 用于内容类型的框架。</font></li>
+<li><font id="229"><a class="reference internal" href="../topics/http/sessions.html#module-django.contrib.sessions" title="django.contrib.sessions: Provides session management for Django projects."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.sessions</span></tt></a> —— 会话框架。</font></li>
+<li><font id="230"><a class="reference internal" href="../ref/contrib/messages.html#module-django.contrib.messages" title="django.contrib.messages: Provides cookie- and session-based temporary message storage."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.messages</span></tt></a> —— 消息框架。</font></li>
+<li><font id="231"><a class="reference internal" href="../ref/contrib/staticfiles.html#module-django.contrib.staticfiles" title="django.contrib.staticfiles: An app for handling static files."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.staticfiles</span></tt></a> —— 管理静态文件的框架。</font></li>
+</ul>
+<p><font id="48">这些应用默认包含以方便通用场景的使用。</font></p>
+<p><font id="49">然而上面的部分应用至少需要使用一个数据库表，因此我们需要在使用它们之前先在数据库中创建相应的表。</font><font id="50">要做到这一点，请运行以下命令：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py migrate
+</pre></div>
+</div>
+<p><font id="51"><a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>查看<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>设置并根据<tt class="file docutils literal"><span class="pre">mysite/settings.py</span></tt>文件中的数据库设置创建任何必要的数据库表，数据库的迁移还会跟踪应用的变化（我们稍后会讲到）。</font><font id="264">你会看到对每次迁移有一条信息。</font><font id="265">如果你有兴趣，可以运行你的数据库的命令行客户端并输入<tt class="docutils literal"><span class="pre">dt</span></tt> (PostgreSQL), <tt class="docutils literal"><span class="pre">SHOW</span> <span class="pre">TABLES;</span></tt> (MySQL)或<tt class="docutils literal"><span class="pre">.schema</span></tt> (SQLite)来显示Django创建的表。</font></p>
+<div class="admonition-for-the-minimalists admonition">
+<p class="first admonition-title"><font id="52">极简主义者</font></p>
+<p class="last"><font id="53">就像我们上面说到的，以上包含的默认应用用于常见的场景，但并不是每个人都需要它们。 </font><font id="54">如果你不需要它们中的任何一个或所有应用，可以在运行<a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>之前从<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>中自由地注释或删除相应的行。</font><font id="55"><a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a> 命令将只为<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>中的应用运行数据库的迁移。</font></p>
+</div>
+</div>
+<div class="section" id="s-the-development-server">
+<span id="the-development-server"></span><h3><font id="194">开发服务器</font><a class="headerlink" href="tutorial01.html#the-development-server" title="Permalink to this headline">¶</a></h3>
+<p><font id="56">让我们验证一下你的Django项目是否工作。 </font><font id="57">如果你没在外层的<tt class="file docutils literal"><span class="pre">mysite</span></tt>目录下，那么进入这个目录，然后运行以下命令：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py runserver
+</pre></div>
+</div>
+<p><font id="58">你将看到命令行下输出了以下内容：</font></p>
+<pre class="literal-block">
+Performing system checks...
+
+0 errors found
+May 13, 2015 - 15:50:53
+Django version 1.8, using settings 'mysite.settings'
+Starting development server at <a class="reference external" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>
+Quit the server with CONTROL-C.
+</pre>
+<p><font id="59">这表明你已经启动了Django开发服务器，一个用纯Python写的轻量级Web服务器。 </font><font id="60">我们在Django中内置了它，这样你就可以在不配置用于生产环境的服务器 —— 例如Apache —— 的情况下快速开发出产品，直到你准备好上生产环境。</font></p>
+<p><font id="61">现在是个很好的时机来说明这一点：<strong>不要</strong>在任何类似于生产环境的环境下使用这个服务器。 </font><font id="62">它仅仅是用于在开发中使用。</font><font id="63">（我们的重点是编写Web框架，非Web服务器。）</font></p>
+<p><font id="64">既然服务器已经运行，请用你的浏览器访问 <a class="reference external" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>。</font><font id="65">在淡蓝色背景下，你将看到一个“Welcome to Django”的页面。 </font><font id="66">它运行成功了！</font></p>
+<div class="admonition-changing-the-port admonition">
+<p class="first admonition-title"><font id="67">更改端口</font></p>
+<p><font id="68">默认情况下，<a class="reference internal" href="../ref/django-admin.html#django-admin-runserver"><tt class="xref std std-djadmin docutils literal"><span class="pre">runserver</span></tt></a>命令在内部IP的8000端口启动开发服务器。</font></p>
+<p><font id="69">如果你想改变服务器的端口，把要使用的端口作为一个命令行参数传递给它。 </font><font id="70">例如，这个命令在8080端口启动服务器：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py runserver 8080
+</pre></div>
+</div>
+<p><font id="71">如果你想改变服务器的IP地址，把IP地址和端口号放到一起。 </font><font id="72">因此若要监听所有的外网IP，请使用（如果你想在另外一台电脑上展示你的工作，会非常有用）：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py runserver 0.0.0.0:8000
+</pre></div>
+</div>
+<p class="last"><font id="73">开发服务器的所有文档可以在<a class="reference internal" href="../ref/django-admin.html#django-admin-runserver"><tt class="xref std std-djadmin docutils literal"><span class="pre">runserver</span></tt></a>的参考手册中找到。</font></p>
+</div>
+<div class="admonition-automatic-reloading-of-djadmin-runserver admonition">
+<p class="first admonition-title"><font id="74"><a class="reference internal" href="../ref/django-admin.html#django-admin-runserver"><tt class="xref std std-djadmin docutils literal"><span class="pre">runserver</span></tt></a>的自动重载</font></p>
+<p class="last"><font id="75">开发服务器会根据需要自动重新载入Python代码。 </font><font id="76">你不必为了使更改的代码生效而重启服务器。 </font><font id="77">然而，一些行为比如添加文件，不会触发服务器的重启，所以在这种情况下你需要手动重启服务器。</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-creating-models">
+<span id="s-id1"></span><span id="creating-models"></span><span id="id1"></span><h2><font id="190">创建模型</font><a class="headerlink" href="tutorial01.html#creating-models" title="Permalink to this headline">¶</a></h2>
+<p><font id="78">现在，你的开发环境 —— 一个“项目” —— 已经建立起来，你将开始在上面做一些东西。</font></p>
+<p><font id="79">你编写的每个Django应用都是一个遵循特定约定的Python包。 </font><font id="80">Django自带一个工具，它可以自动生成应用的基本目录结构，这样你就能专心于书写代码而不是创建目录。</font></p>
+<div class="admonition-projects-vs-apps admonition">
+<p class="first admonition-title"><font id="81">项目 vs. 应用</font></p>
+<p class="last"><font id="82">项目和应用之间有什么不同？ </font><font id="83">应用是一个Web应用程序，它完成具体的事项 —— 比如一个博客系统、一个存储公共档案的数据库或者一个简单的投票应用。 </font><font id="84">项目是一个特定网站中相关配置和应用的集合。</font><font id="85">一个项目可以包含多个应用。</font><font id="86">一个应用可以运用到多个项目中。</font></p>
+</div>
+<p><font id="87">你的应用可以放在<a class="reference external" href="https://docs.python.org/tutorial/modules.html#the-module-search-path">Python path</a>上的任何位置。</font><font id="88">在本教程中，我们将在你的<tt class="file docutils literal"><span class="pre">manage.py</span></tt>文件同级目录创建我们的投票应用，以便可以将它作为顶层模块导入，而不是<tt class="docutils literal"><span class="pre">mysite</span></tt>的子模块。</font></p>
+<p><font id="89">确保你在与<tt class="file docutils literal"><span class="pre">manage.py</span></tt>相同的目录下，并且键入以下命令来创建你的应用：&nbsp;</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py startapp polls
+</pre></div>
+</div>
+<p><font id="90">这将创建一个目录<tt class="file docutils literal"><span class="pre">polls</span></tt>，它的结构如下：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>polls/
+    __init__.py
+    admin.py
+    migrations/
+        __init__.py
+    models.py
+    tests.py
+    views.py
+</pre></div>
+</div>
+<p><font id="91">我们的投票应用将基于这个目录结构。</font></p>
+<p><font id="92">编写数据库驱动的Web应用的第一步是定义你的模型 —— 本质上就是你的数据库设计和额外的元数据。</font></p>
+<div class="admonition-philosophy admonition">
+<p class="first admonition-title"><font id="93">理念</font></p>
+<p><font id="94">模型是你的数据的唯一、明确的来源。 </font><font id="95">它包含你正在存储的数据的基本字段和行为。 </font><font id="96">Django遵循<a class="reference internal" href="http://python.usyiyi.cn/django/misc/design-philosophies.html#dry"><em>DRY 原则</em></a>。</font><font id="97">这个原则的目标是在一个地方定义你的数据模型，并从它自动获得需要的信息。</font></p>
+<p class="last"><font id="98">迁移工具也符合以上哲学 —— 这不同于Ruby On Rails中的迁移；例如，迁移完全依照于你的模型文件且本质上只是一个历史记录，Django通过这个历史记录更新你的数据库模式使它与你现在的模型文件保持一致。</font></p>
+</div>
+<p><font id="99">在我们这个简单的应用中，我们将创建两个模型： <tt class="docutils literal"><span class="pre">Question</span></tt>和<tt class="docutils literal"><span class="pre">Choice</span></tt>。</font><font id="100"><tt class="docutils literal"><span class="pre">Question</span></tt>具有一个投票的问题和一个发布时间。 </font><font id="101"><tt class="docutils literal"><span class="pre">Choice</span></tt>有两个字段：选项的内容和选项的得票统计。 </font><font id="102">每个<tt class="docutils literal"><span class="pre">Choice</span></tt>与一个<tt class="docutils literal"><span class="pre">Question</span></tt>关联。</font></p>
+<p><font id="103">这些概念通过简单的Python类来表示。 </font><font id="104">编辑<tt class="file docutils literal"><span class="pre">polls/models.py</span></tt>文件，并让它看起来像这样：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/models.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<span class="k">class</span> <span class="nc">Question</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">question_text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">pub_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s">'date published'</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Choice</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">question</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Question</span><span class="p">)</span>
+    <span class="n">choice_text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">votes</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="105">代码很直接了当。</font><font id="106">每个模型通过继承自<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model" title="django.db.models.Model"><tt class="xref py py-class docutils literal"><span class="pre">django.db.models.Model</span></tt></a>的一个子类表示。</font><font id="107">每个模型都有多个类变量，其中的每一个变量表示数据库的一个字段。</font></p>
+<p><font id="108">每个字段通过<a class="reference internal" href="../ref/models/fields.html#django.db.models.Field" title="django.db.models.Field"><tt class="xref py py-class docutils literal"><span class="pre">Field</span></tt></a>类的一个实例表示 —— 例如字符字段<a class="reference internal" href="../ref/models/fields.html#django.db.models.CharField" title="django.db.models.CharField"><tt class="xref py py-class docutils literal"><span class="pre">CharField</span></tt></a>和日期字段<a class="reference internal" href="../ref/models/fields.html#django.db.models.DateTimeField" title="django.db.models.DateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></tt></a>。</font><font id="109">这种方法告诉Django每个字段中保存着什么类型的数据。</font></p>
+<p><font id="110">每个<a class="reference internal" href="../ref/models/fields.html#django.db.models.Field" title="django.db.models.Field"><tt class="xref py py-class docutils literal"><span class="pre">Field</span></tt></a> 实例的名字（例如<tt class="docutils literal"><span class="pre">question_text</span></tt> 或 <tt class="docutils literal"><span class="pre">pub_date</span></tt>）就是字段的名字，并且是机器可读的格式。</font><font id="111">你将在Python代码中使用到它的值，并且你的数据库将把它用作表的列名。</font></p>
+<p><font id="112">你可以使用<a class="reference internal" href="../ref/models/fields.html#django.db.models.Field" title="django.db.models.Field"><tt class="xref py py-class docutils literal"><span class="pre">Field</span></tt></a>的第一个可选的位置参数来指定一个人类可读的名字。</font><font id="113">它在Django的内省机制中有使用，而且可以兼作文档。 </font><font id="114">如果没有提供这个参数，Django将使用那个机器可读的名字。 </font><font id="115">在这个例子中，我们只为<tt class="docutils literal"><span class="pre">Question.pub_date</span></tt>定义一个人类可读的名字。&nbsp;</font><font id="116">对于这个模型中其他的字段，机器可读的名字足以充分地表达出它的含义。</font></p>
+<p><font id="117">某些<a class="reference internal" href="../ref/models/fields.html#django.db.models.Field" title="django.db.models.Field"><tt class="xref py py-class docutils literal"><span class="pre">Field</span></tt></a> 类具有必选的参数。</font><font id="118">例如，<a class="reference internal" href="../ref/models/fields.html#django.db.models.CharField" title="django.db.models.CharField"><tt class="xref py py-class docutils literal"><span class="pre">CharField</span></tt></a>要求你给它一个<a class="reference internal" href="../ref/models/fields.html#django.db.models.CharField.max_length" title="django.db.models.CharField.max_length"><tt class="xref py py-attr docutils literal"><span class="pre">max_length</span></tt></a>。</font><font id="119">这个参数不仅用于数据库模式，而且数据验证中也会用到，我们稍后会看到。</font></p>
+<p><font id="120"><a class="reference internal" href="../ref/models/fields.html#django.db.models.Field" title="django.db.models.Field"><tt class="xref py py-class docutils literal"><span class="pre">Field</span></tt></a> 还具有各种可选参数。</font><font id="121">在这个例子中，我们设置<tt class="docutils literal"><span class="pre">votes</span></tt>字段的<a class="reference internal" href="../ref/models/fields.html#django.db.models.Field.default" title="django.db.models.Field.default"><tt class="xref py py-attr docutils literal"><span class="pre">默认值</span></tt></a> 为0。</font></p>
+<p><font id="122">最后，注意我们使用<a class="reference internal" href="../ref/models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>定义了一个关联。</font><font id="123">它告诉Django 每个<tt class="docutils literal"><span class="pre">Choice</span></tt>与唯一一个<tt class="docutils literal"><span class="pre">Question</span></tt>关联。</font><font id="124">Django支持所有常见的数据库关联：多对一、多对多和一对一。</font></p>
+</div>
+<div class="section" id="s-activating-models">
+<span id="activating-models"></span><h2><font id="191">激活模型</font><a class="headerlink" href="tutorial01.html#activating-models" title="Permalink to this headline">¶</a></h2>
+<p><font id="125">上面那段简短的模型代码给了Django很多信息。 </font><font id="126">有了这些代码，Django就能够：</font></p>
+<ul class="simple">
+<li><font id="232">为这个应用创建数据库表（<tt class="docutils literal"><span class="pre">CREATE</span> <span class="pre">TABLE</span></tt> 语句）。</font></li>
+<li><font id="233">为<tt class="docutils literal"><span class="pre">Question</span></tt>对象和<tt class="docutils literal"><span class="pre">Choice</span></tt>对象创建一个Python 数据库访问的API。</font></li>
+</ul>
+<p><font id="127">但是，首先我们得告诉我们的项目<tt class="docutils literal"><span class="pre">polls</span></tt>应用已经安装。&nbsp;</font></p>
+<div class="admonition-philosophy admonition">
+<p class="first admonition-title"><font id="128">理念</font></p>
+<p class="last"><font id="129">Django 应用是可以“热插拔”的：你可以在多个项目中使用同一个应用，你也可以分发应用，&nbsp;因为它们不需要和一个给定的Django绑定。</font></p>
+</div>
+<p><font id="130">再次编辑<tt class="file docutils literal"><span class="pre">mysite/settings.py</span></tt>文件，并修改<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>设置以包含字符串<tt class="docutils literal"><span class="pre">'polls'</span></tt>。</font><font id="131">所以它现在是这样的：</font></p>
+<div class="highlight-python"><div class="snippet-filename">mysite/settings.py</div>
+<div class="highlight"><pre><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">'django.contrib.admin'</span><span class="p">,</span>
+    <span class="s">'django.contrib.auth'</span><span class="p">,</span>
+    <span class="s">'django.contrib.contenttypes'</span><span class="p">,</span>
+    <span class="s">'django.contrib.sessions'</span><span class="p">,</span>
+    <span class="s">'django.contrib.messages'</span><span class="p">,</span>
+    <span class="s">'django.contrib.staticfiles'</span><span class="p">,</span>
+    <span class="s">'polls'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="132">现在Django知道要包含<tt class="docutils literal"><span class="pre">polls</span></tt>应用。&nbsp;</font><font id="133">让我们运行另外一个命令：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py makemigrations polls
+</pre></div>
+</div>
+<p><font id="134">你应该看到类似下面的内容：</font></p>
+<div class="highlight-text"><div class="highlight"><pre>Migrations for 'polls':
+  0001_initial.py:
+    - Create model Question
+    - Create model Choice
+    - Add field question to choice
+</pre></div>
+</div>
+<p><font id="135">通过运行<tt class="docutils literal"><span class="pre">makemigrations</span></tt>，你告诉Django你已经对模型做了一些更改（在这个例子中，你新建了新的模型）并且愿意将这些更改存储为<em>迁移文件</em>。</font></p>
+<p><font id="136">迁移文件是Django 用于保存你的模型（同时也是你的数据库模式）的改动的方法—— 它们其实就是磁盘上的文件。 </font><font id="137">如果你喜欢，你可以阅读新模型的迁移文件； </font><font id="138">这个文件是<tt class="docutils literal"><span class="pre">polls/migrations/0001_initial.py</span></tt>。</font><font id="139">不用担心，你不必每次都阅读Django生成的迁移文件，它们被设计成人类可以进行编辑的格式，以便你可以手工稍微修改Django的一些具体行为。</font></p>
+<p><font id="140">有一个命令可以运行这些迁移文件并自动管理你的数据库模式 —— 它叫做<a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>，我们一会儿会用到它 ——&nbsp;但是首先，让我们看一下迁移行为将会执行哪些SQL语句。</font><font id="141"><a class="reference internal" href="../ref/django-admin.html#django-admin-sqlmigrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">sqlmigrate</span></tt></a>命令接收迁移文件的名字并返回它们的SQL语句：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py sqlmigrate polls 0001
+</pre></div>
+</div>
+<p><font id="142">你应该会看到类似如下的内容（为了便于阅读我们对它重新编排了格式）：</font></p>
+<div class="highlight-sql"><div class="highlight"><pre><span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">"polls_choice"</span> <span class="p">(</span>
+    <span class="ss">"id"</span> <span class="nb">serial</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="ss">"choice_text"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="ss">"votes"</span> <span class="nb">integer</span> <span class="k">NOT</span> <span class="k">NULL</span>
+<span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">"polls_question"</span> <span class="p">(</span>
+    <span class="ss">"id"</span> <span class="nb">serial</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="ss">"question_text"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="ss">"pub_date"</span> <span class="k">timestamp</span> <span class="k">with</span> <span class="n">time</span> <span class="k">zone</span> <span class="k">NOT</span> <span class="k">NULL</span>
+<span class="p">);</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="ss">"polls_choice"</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="ss">"question_id"</span> <span class="nb">integer</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="ss">"polls_choice"</span> <span class="k">ALTER</span> <span class="k">COLUMN</span> <span class="ss">"question_id"</span> <span class="k">DROP</span> <span class="k">DEFAULT</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="ss">"polls_choice_7aa0f6ee"</span> <span class="k">ON</span> <span class="ss">"polls_choice"</span> <span class="p">(</span><span class="ss">"question_id"</span><span class="p">);</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="ss">"polls_choice"</span>
+  <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="ss">"polls_choice_question_id_246c99a640fbbd72_fk_polls_question_id"</span>
+    <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="ss">"question_id"</span><span class="p">)</span>
+    <span class="k">REFERENCES</span> <span class="ss">"polls_question"</span> <span class="p">(</span><span class="ss">"id"</span><span class="p">)</span>
+    <span class="k">DEFERRABLE</span> <span class="k">INITIALLY</span> <span class="k">DEFERRED</span><span class="p">;</span>
+
+<span class="k">COMMIT</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><font id="143">请注意以下几点：</font></p>
+<ul class="simple">
+<li><font id="234">输出的具体内容会依据你使用的数据库而不同。 </font><font id="235">以上例子使用的数据库是PostgreSQL。</font></li>
+<li><font id="236">表的名称是自动生成的，由app的名字（<tt class="docutils literal"><span class="pre">polls</span></tt>）和模型名字的小写字母组合而成 ——&nbsp;<tt class="docutils literal"><span class="pre">question</span></tt>和<tt class="docutils literal"><span class="pre">choice</span></tt>。</font><font id="237">（你可以重写这个行为。)</font></li>
+<li><font id="238">主键（IDs）是自动添加的。 </font><font id="239">（你也可以重写这个行为。)</font></li>
+<li><font id="240">按照惯例，Django会在外键的字段名后面添加 <tt class="docutils literal"><span class="pre">"_id"</span></tt>。（是的，你依然可以重写这个行为。）</font></li>
+<li><font id="241">外键关系由<tt class="docutils literal"><span class="pre">FOREIGN</span> <span class="pre">KEY</span></tt>约束显示声明。</font><font id="242">不用在意<tt class="docutils literal"><span class="pre">DEFERRABLE</span></tt>部分；</font><font id="243">它只是告诉PostgreSQL直到事务的最后再执行外键关联。</font></li>
+<li><font id="244">这些SQL语句是针对你所使用的数据库定制的，所以会为你自动处理某些数据库所特有的字段例如<tt class="docutils literal"><span class="pre">auto_increment</span></tt> (MySQL)、 <tt class="docutils literal"><span class="pre">serial</span></tt> (PostgreSQL)或<tt class="docutils literal"><span class="pre">integer</span> <span class="pre">primary</span> <span class="pre">key</span> <span class="pre">autoincrement</span></tt> (SQLite) 。</font><font id="245">在处理字段名的引号时也是如此 —— 例如，使用双引号还是单引号。</font></li>
+<li><font id="246"><a class="reference internal" href="../ref/django-admin.html#django-admin-sqlmigrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">sqlmigrate</span></tt></a>命令并不会在你的数据库上真正运行迁移文件 —— 它只是把Django 认为需要的SQL打印在屏幕上以让你能够看到。 </font><font id="247">这对于检查Django将要进行的数据库操作或者你的数据库管理员需要这些SQL脚本是非常有用的。</font></li>
+</ul>
+<p><font id="144">如果有兴趣，你还可以运行<a class="reference internal" href="../ref/django-admin.html#django-admin-check"><tt class="xref std std-djadmin docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">check</span></tt></a>；</font><font id="145">它会检查你的项目中是否存在问题，而不用执行迁移或者接触数据库。</font></p>
+<p><font id="146">现在，再次运行<a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>以在你的数据库中创建模型所对应的表：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py migrate
+<span class="go">Operations to perform:</span>
+<span class="go">  Synchronize unmigrated apps: staticfiles, messages</span>
+<span class="go">  Apply all migrations: admin, contenttypes, polls, auth, sessions</span>
+<span class="go">Synchronizing apps without migrations:</span>
+<span class="go">  Creating tables...</span>
+<span class="go">    Running deferred SQL...</span>
+<span class="go">  Installing custom SQL...</span>
+<span class="go">Running migrations:</span>
+<span class="go">  Rendering model states... DONE</span>
+<span class="go">  Applying &lt;migration name&gt;... OK</span>
+</pre></div>
+</div>
+<p><font id="147"><a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>命令会找出所有还没有被应用的迁移文件（Django使用数据库中一个叫做<tt class="docutils literal"><span class="pre">django_migrations</span></tt>的特殊表来追踪哪些迁移文件已经被应用过），并且运行在你的数据库上运行它们 —— 本质上来讲，就是使你的数据库模式和你改动后的模型进行同步。</font></p>
+<p><font id="148">迁移功能非常强大，可以让你在开发过程中不断修改你的模型而不用删除数据库或者表然后生成一个新的 —— 它专注于升级你的数据库且不丢失数据。 </font><font id="149">我们将在教程后面的章节中深入地对它进行讲解，但是现在，记住这三步来实现模型的变更：</font></p>
+<ul class="simple">
+<li><font id="248">修改你的模型（在<tt class="docutils literal"><span class="pre">models.py</span></tt>中）。</font></li>
+<li><font id="249">运行<a class="reference internal" href="../ref/django-admin.html#django-admin-makemigrations"><tt class="xref std std-djadmin docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">makemigrations</span></tt></a> 来为这些修改创建迁移文件</font></li>
+<li><font id="250">运行<a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">migrate</span></tt></a> 以运用这些改变到数据库中。</font></li>
+</ul>
+<p><font id="150">将生成和应用迁移文件的命令分成好几个命令来执行是因为你可能需要将迁移文件提交到你的版本控制系统中并跟随你的应用一起变化； </font><font id="151">它们不仅可以使你的开发变得简单，对其他开发者和生产环境中也非常有用。</font></p>
+<p><font id="152">阅读<a class="reference internal" href="../ref/django-admin.html"><em>django-admin 的文档</em></a>来了解<tt class="docutils literal"><span class="pre">manage.py</span></tt>&nbsp;工具能做的所有事情。</font></p>
+</div>
+<div class="section" id="s-playing-with-the-api">
+<span id="playing-with-the-api"></span><h2><font id="192">玩转API</font><a class="headerlink" href="tutorial01.html#playing-with-the-api" title="Permalink to this headline">¶</a></h2>
+<p><font id="153">现在，让我们进入Python的交互式shell，玩转这些Django提供给你的API。 </font><font id="154">使用如下命令来调用Python shell：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py shell
+</pre></div>
+</div>
+<p><font id="155">我们使用这个命令而不是简单地使用“python”，是因为<tt class="file docutils literal"><span class="pre">manage.py</span></tt> 设置了<tt class="docutils literal"><span class="pre">DJANGO_SETTINGS_MODULE</span></tt> 环境变量，它给出Django导入<tt class="file docutils literal"><span class="pre">mysite/settings.py</span></tt>文件所需的路径。</font></p>
+<div class="admonition-bypassing-manage-py admonition">
+<p class="first admonition-title"><font id="156">绕开 manage.py</font></p>
+<p><font id="157">如果你不想使用<tt class="file docutils literal"><span class="pre">manage.py</span></tt>，也没问题。</font><font id="158">只要设置<span class="target" id="index-0"></span><a class="reference internal" href="../topics/settings.html#envvar-DJANGO_SETTINGS_MODULE"><tt class="xref std std-envvar docutils literal"><span class="pre">DJANGO_SETTINGS_MODULE</span></tt></a> 环境变量为 <tt class="docutils literal"><span class="pre">mysite.settings</span></tt>，启动一个普通的Python shell，然后建立Django：</font></p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">django</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="159">如果以上命令引发了一个<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">AttributeError</span></tt></a>，可能是你使用了一个和本教程不匹配的Django版本。 </font><font id="160">你可能需要换一个老一点的教程或者换一个新一点的Django版本。</font></p>
+<p><font id="161">你必须在与<tt class="file docutils literal"><span class="pre">manage.py</span></tt>相同的目录下运行<tt class="docutils literal"><span class="pre">python</span></tt>，或确保你的目录在Python 的路径中，这样<tt class="docutils literal"><span class="pre">import</span> <span class="pre">mysite</span></tt>才可以工作。</font></p>
+<p class="last"><font id="162">所有这些信息，请参见<a class="reference internal" href="../ref/django-admin.html"><em>django-admin 的文档</em></a>。</font></p>
+</div>
+<p><font id="163">一旦你进入这个shell，请自由探索这些<a class="reference internal" href="../topics/db/queries.html"><em>数据库 API</em></a>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">polls.models</span> <span class="kn">import</span> <span class="n">Question</span><span class="p">,</span> <span class="n">Choice</span>   <span class="c"># Import the model classes we just wrote.</span>
+
+<span class="go"># No questions are in the system yet.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">[]</span>
+
+<span class="go"># Create a new Question.</span>
+<span class="go"># Support for time zones is enabled in the default settings file, so</span>
+<span class="go"># Django expects a datetime with tzinfo for pub_date. Use timezone.now()</span>
+<span class="go"># instead of datetime.datetime.now() and it will do the right thing.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">Question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">"What's new?"</span><span class="p">,</span> <span class="n">pub_date</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+
+<span class="go"># Save the object into the database. You have to call save() explicitly.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="go"># Now it has an ID. Note that this might say "1L" instead of "1", depending</span>
+<span class="go"># on which database you're using. That's no biggie; it just means your</span>
+<span class="go"># database backend prefers to return integers as Python long integer</span>
+<span class="go"># objects.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">id</span>
+<span class="go">1</span>
+
+<span class="go"># Access model field values via Python attributes.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">question_text</span>
+<span class="go">"What's new?"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">pub_date</span>
+<span class="go">datetime.datetime(2012, 2, 26, 13, 0, 0, 775217, tzinfo=&lt;UTC&gt;)</span>
+
+<span class="go"># Change values by changing the attributes, then calling save().</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">question_text</span> <span class="o">=</span> <span class="s">"What's up?"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="go"># objects.all() displays all the questions in the database.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">[&lt;Question: Question object&gt;]</span>
+</pre></div>
+</div>
+<p><font id="164">先等一下。</font><font id="165"><tt class="docutils literal"><span class="pre">&lt;Question:</span> <span class="pre">Question</span> <span class="pre">object&gt;</span></tt>对于这个对象是一个完全没有意义的表示。 </font><font id="166">让我们来修复这个问题，编辑<tt class="docutils literal"><span class="pre">Question</span></tt>模型（在<tt class="docutils literal"><span class="pre">polls/models.py</span></tt>文件中）并添加一个<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model.__str__" title="django.db.models.Model.__str__"><tt class="xref py py-meth docutils literal"><span class="pre">__str__()</span></tt></a>方法给<tt class="docutils literal"><span class="pre">Question</span></tt>和<tt class="docutils literal"><span class="pre">Choice</span></tt>：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/models.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Question</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c"># __unicode__ on Python 2</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">question_text</span>
+
+<span class="k">class</span> <span class="nc">Choice</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c"># __unicode__ on Python 2</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">choice_text</span>
+</pre></div>
+</div>
+<p><font id="167">给你的模型添加<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model.__str__" title="django.db.models.Model.__str__"><tt class="xref py py-meth docutils literal"><span class="pre">__str__()</span></tt></a>方法很重要，不仅会使你自己在使用交互式命令行时看得更加方便，而且会在Django自动生成的管理界面中使用对象的这种表示。</font></p>
+<div class="admonition-str-or-unicode admonition">
+<p class="first admonition-title"><font id="168"><tt class="docutils literal"><span class="pre">__str__</span></tt> 还是 <tt class="docutils literal"><span class="pre">__unicode__</span></tt>?</font></p>
+<p><font id="169">对于Python 3来说，这很简单，只需使用<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model.__str__" title="django.db.models.Model.__str__"><tt class="xref py py-meth docutils literal"><span class="pre">__str__()</span></tt></a>。</font></p>
+<p><font id="170">对于Python 2来说，你应该定义<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model.__unicode__" title="django.db.models.Model.__unicode__"><tt class="xref py py-meth docutils literal"><span class="pre">__unicode__()</span></tt></a>方法并返回<tt class="docutils literal"><span class="pre">unicode</span></tt> 值。</font><font id="171">Django 模型具有一个默认的<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model.__str__" title="django.db.models.Model.__str__"><tt class="xref py py-meth docutils literal"><span class="pre">__str__()</span></tt></a> 方法，它会调用<a class="reference internal" href="../ref/models/instances.html#django.db.models.Model.__unicode__" title="django.db.models.Model.__unicode__"><tt class="xref py py-meth docutils literal"><span class="pre">__unicode__()</span></tt></a>并将结果转换为UTF-8 字节字符串。</font><font id="172">这意味着<tt class="docutils literal"><span class="pre">unicode(p)</span></tt>将返回一个Unicode 字符串，而<tt class="docutils literal"><span class="pre">str(p)</span></tt>将返回一个字节字符串，其字符以UTF-8编码。</font><font id="173">Python 的行为则相反：<tt class="docutils literal"><span class="pre">对象</span></tt>的<tt class="docutils literal"><span class="pre">__unicode__</span></tt>方法调用 <tt class="docutils literal"><span class="pre">__str__</span></tt>方法并将结果理解为ASCII 字节字符串。</font><font id="174">这个不同点可能会产生困惑。</font></p>
+<p class="last"><font id="175">如果以上这些令你费解的话，那就使用Python 3吧。</font></p>
+</div>
+<p><font id="176">请注意这些都是普通的Python方法。 </font><font id="177">让我们演示一下如何添加一个自定义的方法：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/models.py</div>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+
+
+<span class="k">class</span> <span class="nc">Question</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">def</span> <span class="nf">was_published_recently</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pub_date</span> <span class="o">&gt;=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="178">注意<tt class="docutils literal"><span class="pre">import</span> <span class="pre">datetime</span></tt> 和<tt class="docutils literal"><span class="pre">from</span> <span class="pre">django.utils</span> <span class="pre">import</span> <span class="pre">timezone</span></tt>分别引用Python 的标准<a class="reference external" href="https://docs.python.org/3/library/datetime.html#module-datetime" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">datetime</span></tt></a> 模块和Django <a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#module-django.utils.timezone" title="django.utils.timezone: Timezone support."><tt class="xref py py-mod docutils literal"><span class="pre">django.utils.timezone</span></tt></a>中时区相关的工具。</font><font id="179">如果你不了解Python中时区的处理方法，你可以在<a class="reference internal" href="../topics/i18n/timezones.html"><em>时区支持的文档</em></a> 中了解更多的知识。</font></p>
+<p><font id="180">保存这些改动，然后通过<tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">shell</span></tt>再次打开一个新的Python 交互式shell：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">polls.models</span> <span class="kn">import</span> <span class="n">Question</span><span class="p">,</span> <span class="n">Choice</span>
+
+<span class="go"># Make sure our __str__() addition worked.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">[&lt;Question: What's up?&gt;]</span>
+
+<span class="go"># Django provides a rich database lookup API that's entirely driven by</span>
+<span class="go"># keyword arguments.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">[&lt;Question: What's up?&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">question_text__startswith</span><span class="o">=</span><span class="s">'What'</span><span class="p">)</span>
+<span class="go">[&lt;Question: What's up?&gt;]</span>
+
+<span class="go"># Get the question that was published this year.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">current_year</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pub_date__year</span><span class="o">=</span><span class="n">current_year</span><span class="p">)</span>
+<span class="go">&lt;Question: What's up?&gt;</span>
+
+<span class="go"># Request an ID that doesn't exist, this will raise an exception.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+    <span class="o">...</span>
+<span class="gr">DoesNotExist</span>: <span class="n">Question matching query does not exist.</span>
+
+<span class="go"># Lookup by a primary key is the most common case, so Django provides a</span>
+<span class="go"># shortcut for primary-key exact lookups.</span>
+<span class="go"># The following is identical to Question.objects.get(id=1).</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">&lt;Question: What's up?&gt;</span>
+
+<span class="go"># Make sure our custom method worked.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">was_published_recently</span><span class="p">()</span>
+<span class="go">True</span>
+
+<span class="go"># Give the Question a couple of Choices. The create call constructs a new</span>
+<span class="go"># Choice object, does the INSERT statement, adds the choice to the set</span>
+<span class="go"># of available choices and returns the new Choice object. Django creates</span>
+<span class="go"># a set to hold the "other side" of a ForeignKey relation</span>
+<span class="go"># (e.g. a question's choice) which can be accessed via the API.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="go"># Display any choices from the related object set -- none so far.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">choice_set</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">[]</span>
+
+<span class="go"># Create three choices.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">choice_set</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">choice_text</span><span class="o">=</span><span class="s">'Not much'</span><span class="p">,</span> <span class="n">votes</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">&lt;Choice: Not much&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">choice_set</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">choice_text</span><span class="o">=</span><span class="s">'The sky'</span><span class="p">,</span> <span class="n">votes</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">&lt;Choice: The sky&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">choice_set</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">choice_text</span><span class="o">=</span><span class="s">'Just hacking again'</span><span class="p">,</span> <span class="n">votes</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="go"># Choice objects have API access to their related Question objects.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">question</span>
+<span class="go">&lt;Question: What's up?&gt;</span>
+
+<span class="go"># And vice versa: Question objects get access to Choice objects.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">choice_set</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">[&lt;Choice: Not much&gt;, &lt;Choice: The sky&gt;, &lt;Choice: Just hacking again&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">choice_set</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="go">3</span>
+
+<span class="go"># The API automatically follows relationships as far as you need.</span>
+<span class="go"># Use double underscores to separate relationships.</span>
+<span class="go"># This works as many levels deep as you want; there's no limit.</span>
+<span class="go"># Find all Choices for any question whose pub_date is in this year</span>
+<span class="go"># (reusing the 'current_year' variable we created above).</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Choice</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">question__pub_date__year</span><span class="o">=</span><span class="n">current_year</span><span class="p">)</span>
+<span class="go">[&lt;Choice: Not much&gt;, &lt;Choice: The sky&gt;, &lt;Choice: Just hacking again&gt;]</span>
+
+<span class="go"># Let's delete one of the choices. Use delete() for that.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">choice_set</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">choice_text__startswith</span><span class="o">=</span><span class="s">'Just hacking'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="181">更多关于模型关联的信息，请查看<a class="reference internal" href="../ref/models/relations.html"><em>访问关联的对象</em></a>。</font><font id="182">更多关于如何在这些API中使用双下划线来执行字段查询的信息，请查看 <a class="reference internal" href="../topics/db/queries.html#field-lookups-intro"><em>字段查询</em></a>。</font><font id="183">更多关于数据库API的信息，请查看我们的 <a class="reference internal" href="../topics/db/queries.html"><em>数据库API参考</em></a>。</font></p>
+<p><font id="184">如果你适应了这些API，可以阅读<a class="reference internal" href="tutorial02.html"><em>本教程的第2部分</em></a>来让Django的自动管理界面工作起来。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="195">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="tutorial01.html#"><font id="251">编写你的第一个Django应用，第1部分</font></a><ul>
+<li><a class="reference internal" href="tutorial01.html#creating-a-project"><font id="252">创建一个项目</font></a><ul>
+<li><a class="reference internal" href="tutorial01.html#database-setup"><font id="253">数据库的建立</font></a></li>
+<li><a class="reference internal" href="tutorial01.html#the-development-server"><font id="254">开发服务器</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="tutorial01.html#creating-models"><font id="255">创建模型</font></a></li>
+<li><a class="reference internal" href="tutorial01.html#activating-models"><font id="256">激活模型</font></a></li>
+<li><a class="reference internal" href="tutorial01.html#playing-with-the-api"><font id="257">玩转API</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="196">浏览</font></h3>
+<ul>
+<li><font id="258">上一页： <a href="install.html">快速安装指南</a></font></li>
+<li><font id="259">下一页：<a href="tutorial02.html">编写你的第一个Django应用，第2部分</a></font></li>
+</ul>
+<h3><font id="197">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="260">Django 1.8.2 文档</font></a>
+<ul><li><a href="index.html"><font id="261">开始</font></a>
+<ul><li><font id="262">编写你的第一个Django应用，第1部分</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="198">当前页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/intro/tutorial01.txt" rel="nofollow"><font id="263">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="199">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="185"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="200">最后更新：</font></h3>
+<p class="topless"><font id="186">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="install.html" title="Quick install guide">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Getting started">up</a>
+   |
+    <a href="tutorial02.html" title="Writing your first Django app, part 2">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/intro/tutorial01';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

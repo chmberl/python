@@ -1,0 +1,422 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>System check 框架 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Using Django"/>
+<link href="http://python.usyiyi.cn/django/howto/index.html" rel="next" title="“How-to” guides"/>
+<link href="signals.html" rel="prev" title="Signals"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="51">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="signals.html" title="Signals">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-checks">
+<div class="section" id="s-system-check-framework">
+<span id="system-check-framework"></span><h1><font id="52">系统检查框架</font><a class="headerlink" href="checks.html#system-check-framework" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<span class="target" id="module-django.core.checks"></span><p><font id="1">系统检查框架是为了验证Django项目的一系列静态检查。</font><font id="2">它可以检测到普遍的问题，并且提供如何修复的提示。</font><font id="3">这个框架可以被扩展，所以你可以轻易地添加你自己的检查。</font></p>
+<p><font id="4">检查可以由<a class="reference internal" href="../ref/django-admin.html#django-admin-check"><tt class="xref std std-djadmin docutils literal"><span class="pre">check</span></tt></a>命令显式触发。</font><font id="5">检查会在大多数命令之前隐式触发，包括<a class="reference internal" href="../ref/django-admin.html#django-admin-runserver"><tt class="xref std std-djadmin docutils literal"><span class="pre">runserver</span></tt></a> 和 <a class="reference internal" href="../ref/django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>。</font><font id="6">由于性能因素，检查不作为在部署中使用的WSGI栈的一部分运行。</font><font id="7">如果你需要在你的部署服务器上运行系统检查，显式使用<a class="reference internal" href="../ref/django-admin.html#django-admin-check"><tt class="xref std std-djadmin docutils literal"><span class="pre">check</span></tt></a>来触发它们。</font></p>
+<p><font id="8">严重的错误会完全阻止Django命令(像<a class="reference internal" href="../ref/django-admin.html#django-admin-runserver"><tt class="xref std std-djadmin docutils literal"><span class="pre">runserver</span></tt></a>)的运行。</font><font id="9">少数问题会通过控制台来报告。</font><font id="10">如果你检查了警告的原因，并且愿意无视它，你可以使用你项目设置文件中的<a class="reference internal" href="../ref/settings.html#std:setting-SILENCED_SYSTEM_CHECKS"><tt class="xref std std-setting docutils literal"><span class="pre">SILENCED_SYSTEM_CHECKS</span></tt></a> 设置，来隐藏特定的警告。</font></p>
+<p><font id="11"><a class="reference internal" href="../ref/checks.html"><em>系统检查参考</em></a>中列出了所有Django可执行的所有检查。
+</font></p>
+<div class="section" id="s-writing-your-own-checks">
+<span id="writing-your-own-checks"></span><h2><font id="53">编写你自己的检查</font><a class="headerlink" href="checks.html#writing-your-own-checks" title="Permalink to this headline">¶</a></h2>
+<p><font id="12">这个框架十分灵活，允许你编写函数，执行任何其他类型的所需检查。</font><font id="13">下面是一个桩（stub）检查函数的例子：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.checks</span> <span class="kn">import</span> <span class="n">register</span>
+
+<span class="nd">@register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">example_check</span><span class="p">(</span><span class="n">app_configs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c"># ... your check logic here</span>
+    <span class="k">return</span> <span class="n">errors</span>
+</pre></div>
+</div>
+<p><font id="14">检查函数<em>必须</em>接受 <tt class="docutils literal"><span class="pre">app_configs</span></tt>参数；</font><font id="15">这个参数是要被检查的应用列表。</font><font id="16">如果是None，检查会运行在项目中<em>所有</em>安装的应用上。</font><font id="17"><tt class="docutils literal"><span class="pre">**kwargs</span></tt>参数用于进一步的扩展。</font></p>
+<div class="section" id="s-messages">
+<span id="messages"></span><h3><font id="54">消息</font><a class="headerlink" href="checks.html#messages" title="Permalink to this headline">¶</a></h3>
+<p><font id="18">这个函数必须返回消息的列表。</font><font id="19">如果检查的结果中没有发现问题，检查函数必须返回一个空列表。</font></p>
+<dl class="class">
+<dt id="django.core.checks.CheckMessage">
+<em class="property">class </em><tt class="descname">CheckMessage</tt>(<em>level</em>, <em>msg</em>, <em>hint</em>, <em>obj=None</em>, <em>id=None</em>)<a class="headerlink" href="checks.html#django.core.checks.CheckMessage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="20">由检查方法产生的警告和错误必须是<a class="reference internal" href="checks.html#django.core.checks.CheckMessage" title="django.core.checks.CheckMessage"><tt class="xref py py-class docutils literal"><span class="pre">CheckMessage</span></tt></a>的示例。</font><font id="21"><a class="reference internal" href="checks.html#django.core.checks.CheckMessage" title="django.core.checks.CheckMessage"><tt class="xref py py-class docutils literal"><span class="pre">CheckMessage</span></tt></a>的实例封装了一个可报告的错误或者警告。</font><font id="22">它同时也提供了可应用到消息的上下文或者提示，以及一个用于过滤的唯一的标识符。</font></p>
+<p><font id="23">它的概念非常类似于<a class="reference internal" href="../ref/contrib/messages.html"><em>消息框架</em></a>或者 <a class="reference internal" href="logging.html"><em>日志框架</em></a>中的消息。</font><font id="24">消息使用表明其严重性的<tt class="docutils literal"><span class="pre">level</span></tt> 来标记。</font></p>
+<p><font id="25">构造器的参数是：</font></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">level</span></tt></dt>
+<dd>The severity of the message. Use one of the
+predefined values: <tt class="docutils literal"><span class="pre">DEBUG</span></tt>, <tt class="docutils literal"><span class="pre">INFO</span></tt>, <tt class="docutils literal"><span class="pre">WARNING</span></tt>, <tt class="docutils literal"><span class="pre">ERROR</span></tt>,
+<tt class="docutils literal"><span class="pre">CRITICAL</span></tt>. If the level is greater or equal to <tt class="docutils literal"><span class="pre">ERROR</span></tt>, then Django
+will prevent management commands from executing. Messages with
+level lower than <tt class="docutils literal"><span class="pre">ERROR</span></tt> (i.e. warnings) are reported to the console,
+but can be silenced.</dd>
+<dt><tt class="docutils literal"><span class="pre">msg</span></tt></dt>
+<dd>A short (less than 80 characters) string describing the problem. The string
+should <em>not</em> contain newlines.</dd>
+<dt><tt class="docutils literal"><span class="pre">hint</span></tt></dt>
+<dd>A single-line string providing a hint for fixing the problem. If no hint
+can be provided, or the hint is self-evident from the error message, the
+hint can be omitted, or a value of <tt class="docutils literal"><span class="pre">None</span></tt> can be used.</dd>
+<dt><tt class="docutils literal"><span class="pre">obj</span></tt></dt>
+<dd>Optional. An object providing context for the message (for example, the
+model where the problem was discovered). The object should be a model, field,
+or manager or any other object that defines <tt class="docutils literal"><span class="pre">__str__</span></tt> method (on
+Python 2 you need to define <tt class="docutils literal"><span class="pre">__unicode__</span></tt> method). The method is used while
+reporting all messages and its result precedes the message.</dd>
+<dt><tt class="docutils literal"><span class="pre">id</span></tt></dt>
+<dd>Optional string. A unique identifier for the issue. Identifiers should
+follow the pattern <tt class="docutils literal"><span class="pre">applabel.X001</span></tt>, where <tt class="docutils literal"><span class="pre">X</span></tt> is one of the letters
+<tt class="docutils literal"><span class="pre">CEWID</span></tt>, indicating the message severity (<tt class="docutils literal"><span class="pre">C</span></tt> for criticals,
+<tt class="docutils literal"><span class="pre">E</span></tt> for errors and so). The number can be allocated by the application,
+but should be unique within that application.</dd>
+</dl>
+<p><font id="26">也有一些快捷方式，使得创建通用级别的消息变得简单。</font><font id="27">当使用这些方法时你可以忽略<tt class="docutils literal"><span class="pre">level</span></tt>参数，因为它由类名称暗示。</font></p>
+<dl class="class">
+<dt id="django.core.checks.Debug">
+<em class="property">class </em><tt class="descname">Debug</tt>(<em>msg</em>, <em>hint</em>, <em>obj=None</em>, <em>id=None</em>)<a class="headerlink" href="checks.html#django.core.checks.Debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="class">
+<dt id="django.core.checks.Info">
+<em class="property">class </em><tt class="descname">Info</tt>(<em>msg</em>, <em>hint</em>, <em>obj=None</em>, <em>id=None</em>)<a class="headerlink" href="checks.html#django.core.checks.Info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="class">
+<dt id="django.core.checks.Warning">
+<em class="property">class </em><tt class="descname">Warning</tt>(<em>msg</em>, <em>hint</em>, <em>obj=None</em>, <em>id=None</em>)<a class="headerlink" href="checks.html#django.core.checks.Warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="class">
+<dt id="django.core.checks.Error">
+<em class="property">class </em><tt class="descname">Error</tt>(<em>msg</em>, <em>hint</em>, <em>obj=None</em>, <em>id=None</em>)<a class="headerlink" href="checks.html#django.core.checks.Error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="class">
+<dt id="django.core.checks.Critical">
+<em class="property">class </em><tt class="descname">Critical</tt>(<em>msg</em>, <em>hint</em>, <em>obj=None</em>, <em>id=None</em>)<a class="headerlink" href="checks.html#django.core.checks.Critical" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="28">消息是可比较的。</font><font id="29">你可以轻易地编写测试：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.checks</span> <span class="kn">import</span> <span class="n">Error</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="n">checked_object</span><span class="o">.</span><span class="n">check</span><span class="p">()</span>
+<span class="n">expected_errors</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Error</span><span class="p">(</span>
+        <span class="s">'an error'</span><span class="p">,</span>
+        <span class="n">hint</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">=</span><span class="n">checked_object</span><span class="p">,</span>
+        <span class="nb">id</span><span class="o">=</span><span class="s">'myapp.E001'</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">expected_errors</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-registering-and-labeling-checks">
+<span id="registering-and-labeling-checks"></span><h3><font id="55">注册和标记检查</font><a class="headerlink" href="checks.html#registering-and-labeling-checks" title="Permalink to this headline">¶</a></h3>
+<p><font id="30">最后，你的检查函数必须使用系统检查登记处来显式注册。</font></p>
+<dl class="function">
+<dt id="django.core.checks.register">
+<tt class="descname">register</tt>(<em>*tags)(function</em>)<a class="headerlink" href="checks.html#django.core.checks.register" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="31">你可以向&nbsp;<tt class="docutils literal"><span class="pre">register</span></tt>传递任意数量的标签来标记你的检查。</font><font id="32">Tagging checks is useful since it allows you to run only a certain group of checks. </font><font id="33">For example, to register a compatibility check, you would make the following call:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.checks</span> <span class="kn">import</span> <span class="n">register</span><span class="p">,</span> <span class="n">Tags</span>
+
+<span class="nd">@register</span><span class="p">(</span><span class="n">Tags</span><span class="o">.</span><span class="n">compatibility</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_check</span><span class="p">(</span><span class="n">app_configs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c"># ... perform compatibility checks and collect errors</span>
+    <span class="k">return</span> <span class="n">errors</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="34">你可以注册“部署的检查”，它们只和产品配置文件相关，像这样：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@register</span><span class="p">(</span><span class="n">Tags</span><span class="o">.</span><span class="n">security</span><span class="p">,</span> <span class="n">deploy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_check</span><span class="p">(</span><span class="n">app_configs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><font id="35">这些检查只在 <a class="reference internal" href="../ref/django-admin.html#django-admin-option---deploy"><tt class="xref std std-djadminopt docutils literal"><span class="pre">--deploy</span></tt></a> 选项传递给<a class="reference internal" href="../ref/django-admin.html#django-admin-check"><tt class="xref std std-djadmin docutils literal"><span class="pre">check</span></tt></a> 命令的情况下运行。</font></p>
+<p><font id="36">你也可以通过向<tt class="docutils literal"><span class="pre">register</span></tt>传递一个可调用对象（通常是个函数）作为第一个函数，将&nbsp;<tt class="docutils literal"><span class="pre">register</span></tt>作为函数使用，而不是一个装饰器。</font></p>
+<p><font id="37">下面的代码和上面等价：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_check</span><span class="p">(</span><span class="n">app_configs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="o">...</span>
+<span class="n">register</span><span class="p">(</span><span class="n">my_check</span><span class="p">,</span> <span class="n">Tags</span><span class="o">.</span><span class="n">security</span><span class="p">,</span> <span class="n">deploy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="38">添加了将注册用作函数的功能。</font></p>
+</div>
+</div>
+<div class="section" id="s-field-model-and-manager-checks">
+<span id="s-field-checking"></span><span id="field-model-and-manager-checks"></span><span id="field-checking"></span><h3><font id="56">字段、模型和管理器检查</font><a class="headerlink" href="checks.html#field-model-and-manager-checks" title="Permalink to this headline">¶</a></h3>
+<p><font id="39">在一些情况下，你并不需要注册检查函数 -- 你可以直接使用现有的注册。</font></p>
+<p><font id="40">字段、方法和模型管理器都实现了<tt class="docutils literal"><span class="pre">check()</span></tt> 方法，它已经使用检查框架注册。</font><font id="41">如果你想要添加额外的检查，你可以扩展基类中的实现，进行任何你需要的额外检查，并且将任何消息附加到基类生成的消息中。</font><font id="42">强烈推荐你将每个检查分配到单独的方法中。</font></p>
+<p><font id="43">考虑一个例子，其中你要实现一个叫做<tt class="docutils literal"><span class="pre">RangedIntegerField</span></tt>的自定义字段。</font><font id="44">这个字段向<tt class="docutils literal"><span class="pre">IntegerField</span></tt>的构造器中添加<tt class="docutils literal"><span class="pre">min</span></tt> 和 <tt class="docutils literal"><span class="pre">max</span></tt> 参数。</font><font id="45">你可能想添加一个检查，来确保用户提供了小于等于最大值的最小值。</font><font id="46">下面的代码段展示了如何实现这个检查：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core</span> <span class="kn">import</span> <span class="n">checks</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">RangedIntegerField</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RangedIntegerField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="nb">min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">max</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># Call the superclass</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">RangedIntegerField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c"># Do some custom checks and add messages to `errors`:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_min_max_values</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+
+        <span class="c"># Return all errors and warnings</span>
+        <span class="k">return</span> <span class="n">errors</span>
+
+    <span class="k">def</span> <span class="nf">_check_min_max_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">checks</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span>
+                    <span class="s">'min greater than max.'</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s">'Decrease min or increase max.'</span><span class="p">,</span>
+                    <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="s">'myapp.E001'</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+        <span class="c"># When no error, return an empty list</span>
+        <span class="k">return</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p><font id="47">如果你想要向模型管理器添加检查，应该在你的<a class="reference internal" href="db/managers.html#django.db.models.Manager" title="django.db.models.Manager"><tt class="xref py py-class docutils literal"><span class="pre">Manager</span></tt></a>的子类上执行同样的方法。</font></p>
+<p><font id="48">如果你想要向模型类添加检查，方法也<em>大致</em>相同：唯一的不同是检查是类方法，并不是实例方法：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c"># ... your own checks ...</span>
+        <span class="k">return</span> <span class="n">errors</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="57">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="checks.html#"><font id="63">System check framework</font></a><ul>
+<li><a class="reference internal" href="checks.html#writing-your-own-checks"><font id="64">Writing your own checks</font></a><ul>
+<li><a class="reference internal" href="checks.html#messages"><font id="65">Messages</font></a></li>
+<li><a class="reference internal" href="checks.html#registering-and-labeling-checks"><font id="66">Registering and labeling checks</font></a></li>
+<li><a class="reference internal" href="checks.html#field-model-and-manager-checks"><font id="67">Field, Model, and Manager checks</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="58">Browse</font></h3>
+<ul>
+<li><font id="68">Prev: <a href="signals.html">Signals</a></font></li>
+<li><font id="69">Next: <a href="http://python.usyiyi.cn/django/howto/index.html">“How-to” guides</a></font></li>
+</ul>
+<h3><font id="59">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="70">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="index.html"><font id="71">Using Django</font></a>
+<ul><li><font id="72">System check framework</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="60">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/checks.txt" rel="nofollow"><font id="73">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="61">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="49"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="62">Last update:</font></h3>
+<p class="topless"><font id="50">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="signals.html" title="Signals">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Using Django">up</a>
+   |
+    <a href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/checks';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

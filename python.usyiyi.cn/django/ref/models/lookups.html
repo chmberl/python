@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Lookup API 参考 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Models"/>
+<link href="expressions.html" rel="next" title="Query Expressions"/>
+<link href="querysets.html" rel="prev" title="QuerySet API reference"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/models/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/models/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="73">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="querysets.html" title="QuerySet API reference">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="expressions.html" title="Query Expressions">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-models-lookups">
+<div class="section" id="s-module-django.db.models.lookups">
+<span id="s-lookup-api-reference"></span><span id="module-django.db.models.lookups"></span><span id="lookup-api-reference"></span><h1><font id="74">查找 API 参考</font><a class="headerlink" href="lookups.html#module-django.db.models.lookups" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="1">这篇文档是查找 API 的参考，Django 用这些API 构建数据库查询的<tt class="docutils literal"><span class="pre">WHERE</span></tt> 子句。</font><font id="2">若要学习如何<em>使用</em> 查找，参见<a class="reference internal" href="../../topics/db/queries.html"><em>执行查询</em></a>；</font><font id="3">若要了解如何<em>创建</em> 新的查找，参见<a class="reference internal" href="../../howto/custom-lookups.html"><em>自定义查找</em></a>。</font></p>
+<p><font id="4">查找 API 由两个部分组成：<a class="reference internal" href="lookups.html#django.db.models.lookups.RegisterLookupMixin" title="django.db.models.lookups.RegisterLookupMixin"><tt class="xref py py-class docutils literal"><span class="pre">RegisterLookupMixin</span></tt></a> 类，它用于注册查找；<a class="reference internal" href="lookups.html#query-expression"><em>查询表达式API</em></a>，它是一个方法集，类必须实现它们才可以注册成一个查找。</font></p>
+<p><font id="5">Django 有两个类遵循查询表达式API，且Django 所有内建的查找都继承自它们：</font></p>
+<ul class="simple">
+<li><font id="85"><a class="reference internal" href="lookups.html#django.db.models.Lookup" title="django.db.models.Lookup"><tt class="xref py py-class docutils literal"><span class="pre">Lookup</span></tt></a>：用于查找一个字段（例如<tt class="docutils literal"><span class="pre">field_name__exact</span></tt> 中的<tt class="docutils literal"><span class="pre">exact</span></tt>）</font></li>
+<li><font id="86"><a class="reference internal" href="lookups.html#django.db.models.Transform" title="django.db.models.Transform"><tt class="xref py py-class docutils literal"><span class="pre">Transform</span></tt></a>：用于转换一个字段</font></li>
+</ul>
+<p><font id="6">查找表达式由三部分组成：</font></p>
+<ul class="simple">
+<li><font id="87">字段部分（例如， <tt class="docutils literal"><span class="pre">Book.objects.filter(author__best_friends__first_name...)</span></tt>；</font></li>
+<li><font id="88">转换部分（可以省略）（例如， <tt class="docutils literal"><span class="pre">__lower__first3chars__reversed</span></tt>）；</font></li>
+<li><font id="89">查找部分（例如，<tt class="docutils literal"><span class="pre">__icontains</span></tt>），如果省略则默认为<tt class="docutils literal"><span class="pre">__exact</span></tt>。</font></li>
+</ul>
+<div class="section" id="s-registration-api">
+<span id="s-lookup-registration-api"></span><span id="registration-api"></span><span id="lookup-registration-api"></span><h2><font id="75">注册 API</font><a class="headerlink" href="lookups.html#registration-api" title="Permalink to this headline">¶</a></h2>
+<p><font id="7">Django 使用<a class="reference internal" href="lookups.html#django.db.models.lookups.RegisterLookupMixin" title="django.db.models.lookups.RegisterLookupMixin"><tt class="xref py py-class docutils literal"><span class="pre">RegisterLookupMixin</span></tt></a> 来为类提供接口，注册它自己的查找。</font><font id="8">两个最突出的例子是<a class="reference internal" href="fields.html#django.db.models.Field" title="django.db.models.Field"><tt class="xref py py-class docutils literal"><span class="pre">Field</span></tt></a>（所有模型字段的基类）和 <tt class="docutils literal"><span class="pre">Aggregate</span></tt>（Django 所有聚合函数的基类）。</font></p>
+<dl class="class">
+<dt id="django.db.models.lookups.RegisterLookupMixin">
+<em class="property">class </em><tt class="descclassname">lookups.</tt><tt class="descname">RegisterLookupMixin</tt><a class="headerlink" href="lookups.html#django.db.models.lookups.RegisterLookupMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="9">一个mixin，实现一个类上的查找API。</font></p>
+<dl class="classmethod">
+<dt id="django.db.models.lookups.RegisterLookupMixin.register_lookup">
+<em class="property">classmethod </em><tt class="descname">register_lookup</tt>(<em>lookup</em>)<a class="headerlink" href="lookups.html#django.db.models.lookups.RegisterLookupMixin.register_lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="10">在类中注册一个新的查找。</font><font id="11">例如，<tt class="docutils literal"><span class="pre">DateField.register_lookup(YearExact)</span></tt> 将在<tt class="docutils literal"><span class="pre">DateField</span></tt> 上注册一个 <tt class="docutils literal"><span class="pre">YearExact</span></tt>查找。</font><font id="12">它会覆盖已存在的同名查找。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.lookups.RegisterLookupMixin.get_lookup">
+<tt class="descname">get_lookup</tt>(<em>lookup_name</em>)<a class="headerlink" href="lookups.html#django.db.models.lookups.RegisterLookupMixin.get_lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="13">返回类中注册的名为<tt class="docutils literal"><span class="pre">lookup_name</span></tt> 的 <a class="reference internal" href="lookups.html#django.db.models.Lookup" title="django.db.models.Lookup"><tt class="xref py py-class docutils literal"><span class="pre">Lookup</span></tt></a>。</font><font id="14">默认的实现会递归查询所有的父类，并检查它们中的任何一个是否具有名称为<tt class="docutils literal"><span class="pre">lookup_name</span></tt>的查找，并返回第一个匹配。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.lookups.RegisterLookupMixin.get_transform">
+<tt class="descname">get_transform</tt>(<em>transform_name</em>)<a class="headerlink" href="lookups.html#django.db.models.lookups.RegisterLookupMixin.get_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="15">返回一个名为<tt class="docutils literal"><span class="pre">transform_name</span></tt> 的<a class="reference internal" href="lookups.html#django.db.models.Transform" title="django.db.models.Transform"><tt class="xref py py-class docutils literal"><span class="pre">Transform</span></tt></a>。</font><font id="16">默认的实现会递归查找所有的父类，并检查它们中的任何一个是否具有名称为<tt class="docutils literal"><span class="pre">transform_name</span></tt>的查找，并返回第一个匹配。</font></p>
+</dd></dl>
+</dd></dl>
+<p><font id="17">一个类如果想要成为查找，它必须实现<a class="reference internal" href="lookups.html#query-expression"><em>查询表达式API</em></a>。</font><font id="18"><a class="reference internal" href="lookups.html#django.db.models.Lookup" title="django.db.models.Lookup"><tt class="xref py py-class docutils literal"><span class="pre">Lookup</span></tt></a> 和<a class="reference internal" href="lookups.html#django.db.models.Transform" title="django.db.models.Transform"><tt class="xref py py-class docutils literal"><span class="pre">Transform</span></tt></a>一开始就遵循这个API。</font></p>
+</div>
+<div class="section" id="s-the-query-expression-api">
+<span id="s-query-expression"></span><span id="the-query-expression-api"></span><span id="query-expression"></span><h2><font id="76">查询表达式API</font><a class="headerlink" href="lookups.html#the-query-expression-api" title="Permalink to this headline">¶</a></h2>
+<p><font id="19">查询表达式API是一个通用的方法集，在查询表达式中可以使用定义了这些方法的类，来将它们自身转换为SQL表达式。</font><font id="20">直接的字段引用，聚合，以及<tt class="docutils literal"><span class="pre">Transform</span></tt>类都是遵循这个API的示例。</font><font id="21">当一个对象实现以下方法时，就被称为遵循查询表达式API：</font></p>
+<dl class="method">
+<dt id="django.db.models.as_sql">
+<tt class="descname">as_sql</tt>(<em>self</em>, <em>compiler</em>, <em>connection</em>)<a class="headerlink" href="lookups.html#django.db.models.as_sql" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="22">负责从表达式中产生查询字符串和参数。</font><font id="23"><tt class="docutils literal"><span class="pre">compiler</span></tt>是一个<tt class="docutils literal"><span class="pre">SQLCompiler</span></tt>对象，它拥有可以编译其它表达式的<tt class="docutils literal"><span class="pre">compile()</span></tt>方法。</font><font id="24"><tt class="docutils literal"><span class="pre">connection</span></tt>是用于执行查询的连接。</font></p>
+<p><font id="25">调用<tt class="docutils literal"><span class="pre">expression.as_sql()</span></tt>一般是不对的 -- 而是应该调用<tt class="docutils literal"><span class="pre">compiler.compile(expression)</span></tt>。 </font><font id="26"><tt class="docutils literal"><span class="pre">compiler.compile()</span></tt>方法应该在调用表达式的供应商特定方法时格外小心。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.as_vendorname">
+<tt class="descname">as_vendorname</tt>(<em>self</em>, <em>compiler</em>, <em>connection</em>)<a class="headerlink" href="lookups.html#django.db.models.as_vendorname" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="27">和<tt class="docutils literal"><span class="pre">as_sql()</span></tt>的工作方式类似。</font><font id="28">当一个表达式经过<tt class="docutils literal"><span class="pre">compiler.compile()</span></tt>编译之后， Django会首先尝试调用<tt class="docutils literal"><span class="pre">as_vendorname()</span></tt>，其中<tt class="docutils literal"><span class="pre">vendorname</span></tt>是用于执行查询的后端供应商。</font><font id="29">对于Django内建的后端，<tt class="docutils literal"><span class="pre">vendorname</span></tt>是<tt class="docutils literal"><span class="pre">postgresql</span></tt>，<tt class="docutils literal"><span class="pre">oracle</span></tt>，<tt class="docutils literal"><span class="pre">sqlite</span></tt>，或者<tt class="docutils literal"><span class="pre">mysql</span></tt>之一。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.get_lookup">
+<tt class="descname">get_lookup</tt>(<em>lookup_name</em>)<a class="headerlink" href="lookups.html#django.db.models.get_lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="30">必须返回名称为<tt class="docutils literal"><span class="pre">lookup_name</span></tt>的查找。</font><font id="31">例如，通过返回<tt class="docutils literal"><span class="pre">self.output_field.get_lookup(lookup_name)</span></tt>来实现。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.get_transform">
+<tt class="descname">get_transform</tt>(<em>transform_name</em>)<a class="headerlink" href="lookups.html#django.db.models.get_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="32">必须返回名称为<tt class="docutils literal"><span class="pre">transform_name</span></tt>的查找。</font><font id="33">例如，通过返回<tt class="docutils literal"><span class="pre">self.output_field.get_transform(transform_name)</span></tt>来实现。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.db.models.output_field">
+<tt class="descname">output_field</tt><a class="headerlink" href="lookups.html#django.db.models.output_field" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="34">定义<tt class="docutils literal"><span class="pre">get_lookup()</span></tt>方法所返回的类的类型。</font><font id="35">必须为<a class="reference internal" href="fields.html#django.db.models.Field" title="django.db.models.Field"><tt class="xref py py-class docutils literal"><span class="pre">Field</span></tt></a>的实例。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-transform-reference">
+<span id="transform-reference"></span><h2><font id="77">Transform 类参考</font><a class="headerlink" href="lookups.html#transform-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.Transform">
+<em class="property">class </em><tt class="descname">Transform</tt><a class="headerlink" href="lookups.html#django.db.models.Transform" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="36"><tt class="docutils literal"><span class="pre">Transform</span></tt>是用于实现字段转换的通用类。</font><font id="37">一个显然的例子是<tt class="docutils literal"><span class="pre">__year</span></tt>会把<tt class="docutils literal"><span class="pre">DateField</span></tt>转换为<tt class="docutils literal"><span class="pre">IntegerField</span></tt>。</font></p>
+<p><font id="38">在表达式中执行查找的标记是<tt class="docutils literal"><span class="pre">Transform</span></tt><tt class="docutils literal"><span class="pre">&lt;expression&gt;__&lt;transformation&gt;</span></tt> (例如 <tt class="docutils literal"><span class="pre">date__year</span></tt>)。</font></p>
+<p><font id="39">这个类遵循<a class="reference internal" href="lookups.html#query-expression"><em>查询表达式API</em></a>，也就是说你可以使用 <tt class="docutils literal"><span class="pre">&lt;expression&gt;__&lt;transform1&gt;__&lt;transform2&gt;</span></tt>。</font></p>
+<dl class="attribute">
+<dt id="django.db.models.Transform.bilateral">
+<tt class="descname">bilateral</tt><a class="headerlink" href="lookups.html#django.db.models.Transform.bilateral" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="40">一个布尔值，表明是否对<tt class="docutils literal"><span class="pre">lhs</span></tt>和 <tt class="docutils literal"><span class="pre">rhs</span></tt>都应用这个转换。</font><font id="41">如果对两侧都应用转换，应用在<tt class="docutils literal"><span class="pre">rhs</span></tt>的顺序和在查找表达式中的出现顺序相同。</font><font id="42">默认这个属性为<tt class="docutils literal"><span class="pre">False</span></tt>。</font><font id="43">使用方法的实例请见<a class="reference internal" href="../../howto/custom-lookups.html"><em>自定义查找</em></a>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.db.models.Transform.lhs">
+<tt class="descname">lhs</tt><a class="headerlink" href="lookups.html#django.db.models.Transform.lhs" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="44">在左边，也就是被转换的东西。</font><font id="45">必须遵循<a class="reference internal" href="lookups.html#query-expression"><em>查询表达式API</em></a>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.db.models.Transform.lookup_name">
+<tt class="descname">lookup_name</tt><a class="headerlink" href="lookups.html#django.db.models.Transform.lookup_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="46">查找的名称，用于在解析查询表达式的时候识别它。 </font><font id="102"></font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.db.models.Transform.output_field">
+<tt class="descname">output_field</tt><a class="headerlink" href="lookups.html#django.db.models.Transform.output_field" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="47">为这个类定义转换后的输出。</font><font id="48">必须为<a class="reference internal" href="fields.html#django.db.models.Field" title="django.db.models.Field"><tt class="xref py py-class docutils literal"><span class="pre">Field</span></tt></a>的实例。</font><font id="49">默认情况下和<tt class="docutils literal"><span class="pre">lhs.output_field</span></tt>相同。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.Transform.as_sql">
+<tt class="descname">as_sql</tt>()<a class="headerlink" href="lookups.html#django.db.models.Transform.as_sql" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="50">需要被覆写；</font><font id="51">否则抛出<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.4)"><tt class="xref py py-exc docutils literal"><span class="pre">NotImplementedError</span></tt></a>异常。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.Transform.get_lookup">
+<tt class="descname">get_lookup</tt>(<em>lookup_name</em>)<a class="headerlink" href="lookups.html#django.db.models.Transform.get_lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="52">和<a class="reference internal" href="lookups.html#django.db.models.lookups.RegisterLookupMixin.get_lookup" title="django.db.models.lookups.RegisterLookupMixin.get_lookup"><tt class="xref py py-meth docutils literal"><span class="pre">get_lookup()</span></tt></a>相同。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.Transform.get_transform">
+<tt class="descname">get_transform</tt>(<em>transform_name</em>)<a class="headerlink" href="lookups.html#django.db.models.Transform.get_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="53">和<a class="reference internal" href="lookups.html#django.db.models.lookups.RegisterLookupMixin.get_transform" title="django.db.models.lookups.RegisterLookupMixin.get_transform"><tt class="xref py py-meth docutils literal"><span class="pre">get_transform()</span></tt></a>相同。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-lookup-reference">
+<span id="lookup-reference"></span><h2><font id="78">Lookup 类参考</font><a class="headerlink" href="lookups.html#lookup-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.Lookup">
+<em class="property">class </em><tt class="descname">Lookup</tt><a class="headerlink" href="lookups.html#django.db.models.Lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="54"><tt class="docutils literal"><span class="pre">Lookup</span></tt>是实现查找的通用的类。</font><font id="55">查找是一个查询表达式，它的左边是<a class="reference internal" href="lookups.html#django.db.models.Lookup.lhs" title="django.db.models.Lookup.lhs"><tt class="xref py py-attr docutils literal"><span class="pre">lhs</span></tt></a>，</font><font id="56">右边是<a class="reference internal" href="lookups.html#django.db.models.Lookup.rhs" title="django.db.models.Lookup.rhs"><tt class="xref py py-attr docutils literal"><span class="pre">rhs</span></tt></a>；</font><font id="57"><tt class="docutils literal"><span class="pre">lookup_name</span></tt>用于构造<tt class="docutils literal"><span class="pre">lhs</span></tt>和<tt class="docutils literal"><span class="pre">rhs</span></tt>之间的比较，来产生布尔值，例如<tt class="docutils literal"><span class="pre">lhs</span> <span class="pre">in</span> <span class="pre">rhs</span></tt>或者<tt class="docutils literal"><span class="pre">lhs</span> <span class="pre">&gt;</span> <span class="pre">rhs</span></tt>。</font></p>
+<p><font id="58">在表达式中执行查找的标记是<tt class="docutils literal"><span class="pre">&lt;lhs&gt;__&lt;lookup_name&gt;=&lt;rhs&gt;</span></tt>。</font></p>
+<p><font id="59">这个类并不遵循<a class="reference internal" href="lookups.html#query-expression"><em>查询表达式API</em></a>，因为在它构造的时候出现了<tt class="docutils literal"><span class="pre">=&lt;rhs&gt;</span></tt>：查找总是在查找表达式的最后。</font></p>
+<dl class="attribute">
+<dt id="django.db.models.Lookup.lhs">
+<tt class="descname">lhs</tt><a class="headerlink" href="lookups.html#django.db.models.Lookup.lhs" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="60">在左边，也就是被查找的东西。</font><font id="61">这个对象必须遵循<a class="reference internal" href="lookups.html#query-expression"><em>查询表达式API</em></a>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.db.models.Lookup.rhs">
+<tt class="descname">rhs</tt><a class="headerlink" href="lookups.html#django.db.models.Lookup.rhs" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="62">在右边，也就是用来和<tt class="docutils literal"><span class="pre">lhs</span></tt>比较的东西。</font><font id="63">它可以是个简单的值，也可以是在SQL中编译的一些东西，比如 <tt class="docutils literal"><span class="pre">F()</span></tt> 对象或者<tt class="docutils literal"><span class="pre">QuerySet</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.db.models.Lookup.lookup_name">
+<tt class="descname">lookup_name</tt><a class="headerlink" href="lookups.html#django.db.models.Lookup.lookup_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="64">查找的名称，用于在解析查询表达式的时候识别它。</font><font id="103"></font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.Lookup.process_lhs">
+<tt class="descname">process_lhs</tt>(<em>compiler</em>, <em>connection</em><span class="optional">[</span>, <em>lhs=None</em><span class="optional">]</span>)<a class="headerlink" href="lookups.html#django.db.models.Lookup.process_lhs" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="65">返回元组<tt class="docutils literal"><span class="pre">(lhs_string,</span> <span class="pre">lhs_params)</span></tt>，和<tt class="docutils literal"><span class="pre">compiler.compile(lhs)</span></tt>所返回的一样。</font><font id="66">这个方法可以被覆写，来调整<tt class="docutils literal"><span class="pre">lhs</span></tt>的处理方式。</font></p>
+<p><font id="67"><tt class="docutils literal"><span class="pre">compiler</span></tt>是一个<tt class="docutils literal"><span class="pre">SQLCompiler</span></tt>对象，可以像 <tt class="docutils literal"><span class="pre">compiler.compile(lhs)</span></tt>这样使用来编译<tt class="docutils literal"><span class="pre">lhs</span></tt>。</font><font id="68"><tt class="docutils literal"><span class="pre">connection</span></tt>可以用于编译供应商特定的SQL语句。</font><font id="69"><tt class="docutils literal"><span class="pre">lhs</span></tt>如果不为<tt class="docutils literal"><span class="pre">None</span></tt>, 会代替<tt class="docutils literal"><span class="pre">self.lhs</span></tt>作为处理后的<tt class="docutils literal"><span class="pre">lhs</span></tt>使用。</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.db.models.Lookup.process_rhs">
+<tt class="descname">process_rhs</tt>(<em>compiler</em>, <em>connection</em>)<a class="headerlink" href="lookups.html#django.db.models.Lookup.process_rhs" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="70">对于右边的东西，和<a class="reference internal" href="lookups.html#django.db.models.Lookup.process_lhs" title="django.db.models.Lookup.process_lhs"><tt class="xref py py-meth docutils literal"><span class="pre">process_lhs()</span></tt></a>的行为相同。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="79">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="lookups.html#"><font id="90">Lookup API reference</font></a><ul>
+<li><a class="reference internal" href="lookups.html#registration-api"><font id="91">Registration API</font></a></li>
+<li><a class="reference internal" href="lookups.html#the-query-expression-api"><font id="92">The Query Expression API</font></a></li>
+<li><a class="reference internal" href="lookups.html#transform-reference"><font id="93">Transform reference</font></a></li>
+<li><a class="reference internal" href="lookups.html#lookup-reference"><font id="94">Lookup reference</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="80">Browse</font></h3>
+<ul>
+<li><font id="95">Prev: <a href="querysets.html">QuerySet API reference</a></font></li>
+<li><font id="96">Next: <a href="expressions.html">Query Expressions</a></font></li>
+</ul>
+<h3><font id="81">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="97">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../index.html"><font id="98">API Reference</font></a>
+<ul><li><a href="index.html"><font id="99">Models</font></a>
+<ul><li><font id="100">Lookup API reference</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="82">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/models/lookups.txt" rel="nofollow"><font id="101">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="83">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="71"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="84">Last update:</font></h3>
+<p class="topless"><font id="72">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="querysets.html" title="QuerySet API reference">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="expressions.html" title="Query Expressions">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/models/lookups';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

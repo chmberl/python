@@ -1,0 +1,697 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>编写你的第一个Django应用，第5部分 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Getting started"/>
+<link href="tutorial06.html" rel="next" title="Writing your first Django app, part 6"/>
+<link href="tutorial04.html" rel="prev" title="Writing your first Django app, part 4"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/intro/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/intro/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="157">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="tutorial04.html" title="Writing your first Django app, part 4">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Getting started">up</a>
+   |
+    <a href="tutorial06.html" title="Writing your first Django app, part 6">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="intro-tutorial05">
+<div class="section" id="s-writing-your-first-django-app-part-5">
+<span id="writing-your-first-django-app-part-5"></span><h1><font id="158">编写你的第一个Django应用，第5部分</font><a class="headerlink" href="tutorial05.html#writing-your-first-django-app-part-5" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">本教程上接<a class="reference internal" href="tutorial04.html"><em>教程第4部分</em></a>。 </font><font id="2">我们已经建立一个网页投票应用，现在我们将为它创建一些自动化测试。</font></p>
+<div class="section" id="s-introducing-automated-testing">
+<span id="introducing-automated-testing"></span><h2><font id="159">自动化测试简介</font><a class="headerlink" href="tutorial05.html#introducing-automated-testing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-what-are-automated-tests">
+<span id="what-are-automated-tests"></span><h3><font id="165">什么是自动化测试？</font><a class="headerlink" href="tutorial05.html#what-are-automated-tests" title="Permalink to this headline">¶</a></h3>
+<p><font id="3">测试是检查你的代码是否正常运行的简单程序。</font></p>
+<p><font id="4">测试可以划分为不同的级别。 </font><font id="5">一些测试可能专注于小细节（<em>某一个模型的方法是否会返回预期的值？</em>）， 其他的测试可能会检查软件的整体运行是否正常（<em>用户在对网站进行了一系列的操作后，是否返回了正确的结果？</em>）。</font><font id="6">这些其实和你早前在<a class="reference internal" href="tutorial01.html"><em>教程 1中</em></a>做的差不多， 使用<a class="reference internal" href="../ref/django-admin.html#django-admin-shell"><tt class="xref std std-djadmin docutils literal"><span class="pre">shell</span></tt></a>来检测一个方法的行为，或者运行程序并输入数据来检查它的行为方式。</font></p>
+<p><font id="7"><em>自动化</em>测试的不同之处就在于这些测试会由系统来帮你完成。</font><font id="8">你创建了一组测试程序，当你修改了你的应用，你就可以用这组测试程序来检查你的代码是否仍然同预期的那样运行，而无需执行耗时的手动测试。</font></p>
+</div>
+<div class="section" id="s-why-you-need-to-create-tests">
+<span id="why-you-need-to-create-tests"></span><h3><font id="166">为什么你需要创建测试&nbsp;</font><a class="headerlink" href="tutorial05.html#why-you-need-to-create-tests" title="Permalink to this headline">¶</a></h3>
+<p><font id="9">那么，为什么要创建测试？而且为什么是现在？</font></p>
+<p><font id="10">你可能感觉学习Python/Django已经足够，再去学习其他的东西也许需要付出巨大的努力而且没有必要。 </font><font id="11">毕竟，我们的投票应用已经活蹦乱跳了； </font><font id="12">将时间运用在自动化测试上还不如运用在改进我们的应用上。 </font><font id="13">如果你学习Django就是为了创建一个投票应用，那么创建自动化测试显然没有必要。 </font><font id="14">但如果不是这样，现在是一个很好的学习机会。</font></p>
+<div class="section" id="s-tests-will-save-you-time">
+<span id="tests-will-save-you-time"></span><h4><font id="184">测试将节省你的时间</font><a class="headerlink" href="tutorial05.html#tests-will-save-you-time" title="Permalink to this headline">¶</a></h4>
+<p><font id="15">在某种程度上， ‘检查起来似乎正常工作’将是一种令人满意的测试。 </font><font id="16">在更复杂的应用中，你可能有几十种组件之间的复杂的相互作用。</font></p>
+<p><font id="17">这些组件的任何一个小的变化，都可能对应用的行为产生意想不到的影响。 </font><font id="18">检查起来‘似乎正常工作’可能意味着你需要运用二十种不同的测试数据来测试你代码的功能，仅仅是为了确保你没有搞砸某些事 —— 这不是对时间的有效利用。</font></p>
+<p><font id="19">尤其是当自动化测试只需要数秒就可以完成以上的任务时。 </font><font id="20">如果出现了错误，测试程序还能够帮助找出引发这个异常行为的代码。</font></p>
+<p><font id="21">有时候你可能会觉得编写测试程序将你从有价值的、创造性的编程工作里带出，带到了单调乏味、无趣的编写测试中，尤其是当你的代码工作正常时。</font></p>
+<p><font id="22">然而，比起用几个小时的时间来手动测试你的程序，或者试图找出代码中一个新引入的问题的原因，编写测试程序还是令人惬意的。</font></p>
+</div>
+<div class="section" id="s-tests-don-t-just-identify-problems-they-prevent-them">
+<span id="tests-don-t-just-identify-problems-they-prevent-them"></span><h4><font id="225">测试不仅仅可以发现问题，它们还能防止问题</font><a class="headerlink" href="tutorial05.html#tests-don-t-just-identify-problems-they-prevent-them" title="Permalink to this headline">¶</a></h4>
+<p><font id="23">将测试看做只是开发过程中消极的一面是错误的。</font></p>
+<p><font id="24">没有测试，应用的目的和意图将会变得相当模糊。 </font><font id="25">甚至在你查看自己的代码时，也不会发现这些代码真正干了些什么。</font></p>
+<p><font id="26">测试改变了这一切； </font><font id="27">它们使你的代码内部变得明晰，当错误出现后，它们会明确地指出哪部分代码出了问题 —— <em>甚至你自己都不会料到问题会出现在那里</em>。</font></p>
+</div>
+<div class="section" id="s-tests-make-your-code-more-attractive">
+<span id="tests-make-your-code-more-attractive"></span><h4><font id="185">测试使你的代码更受欢迎&nbsp;</font><a class="headerlink" href="tutorial05.html#tests-make-your-code-more-attractive" title="Permalink to this headline">¶</a></h4>
+<p><font id="28">你可能已经创建了一个堪称辉煌的软件，但是你会发现许多其他的开发者会由于它缺少测试程序而拒绝查看它一眼；</font><font id="29">没有测试程序，他们不会信任它。 </font><font id="30">Jacob Kaplan-Moss，Django最初的几个开发者之一，说过“不具有测试程序的代码是设计上的错误。”</font></p>
+<p><font id="31">你需要开始编写测试的另一个原因就是其他的开发者在他们认真研读你的代码前可能想要查看一下它有没有测试。</font></p>
+</div>
+<div class="section" id="s-tests-help-teams-work-together">
+<span id="tests-help-teams-work-together"></span><h4><font id="186">测试有助于团队合作</font><a class="headerlink" href="tutorial05.html#tests-help-teams-work-together" title="Permalink to this headline">¶</a></h4>
+<p><font id="32">之前的观点是从单个开发人员来维护一个程序这个方向来阐述的。 </font><font id="33">复杂的应用将会被一个团队来维护。 </font><font id="34">测试能够减少同事在无意间破坏你的代码的机会（和你在不知情的情况下破坏别人的代码的机会）。 </font><font id="35">如果你想在团队中做一个好的Django开发者，你必须擅长测试！</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-basic-testing-strategies">
+<span id="basic-testing-strategies"></span><h2><font id="160">基本的测试策略</font><a class="headerlink" href="tutorial05.html#basic-testing-strategies" title="Permalink to this headline">¶</a></h2>
+<p><font id="36">编写测试有很多种方法。</font></p>
+<p><font id="37">一些开发者遵循一种叫做“<a class="reference external" href="http://en.wikipedia.org/wiki/Test-driven_development">由测试驱动的开发</a>”的规则；</font><font id="38">他们在编写代码前会先编好测试。 </font><font id="39">这似乎与直觉不符，尽管这种方法与大多数人经常的做法很相似：人们先描述一个问题，然后创建一些代码来解决这个问题。 </font><font id="40">由测试驱动的开发可以用Python测试用例将这个问题简单地形式化。</font></p>
+<p><font id="41">更常见的情况是，刚接触测试的人会先编写一些代码，然后才决定为这些代码创建一些测试。 </font><font id="42">也许在之前就编写一些测试会好一点，但什么时候开始都不算晚。</font></p>
+<p><font id="43">有时候很难解决从什么地方开始编写测试。 </font><font id="44">如果你已经编写了数千行Python代码，挑选它们中的一些来进行测试不会是太容易的。 </font><font id="45">这种情况下，在下次你对代码进行变更，或者添加一个新功能或者修复一个bug时，编写你的第一个测试，效果会非常好。</font></p>
+<p><font id="46">现在，让我们马上来编写一个测试。</font></p>
+</div>
+<div class="section" id="s-writing-our-first-test">
+<span id="writing-our-first-test"></span><h2><font id="161">编写我们的第一个测试&nbsp;</font><a class="headerlink" href="tutorial05.html#writing-our-first-test" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-we-identify-a-bug">
+<span id="we-identify-a-bug"></span><h3><font id="167">我们找出一个错误</font><a class="headerlink" href="tutorial05.html#we-identify-a-bug" title="Permalink to this headline">¶</a></h3>
+<p><font id="47">幸运的是，<tt class="docutils literal"><span class="pre">polls</span></tt>应用中有一个小错误让我们可以马上来修复它：如果<tt class="docutils literal"><span class="pre">Question</span></tt>在最近一天发布，<tt class="docutils literal"><span class="pre">Question.was_published_recently()</span></tt> 方法返回<tt class="docutils literal"><span class="pre">True</span></tt>（这是对的），但是如果<tt class="docutils literal"><span class="pre">Question</span></tt>的<tt class="docutils literal"><span class="pre">pub_date</span></tt> 字段是在未来，它还返回True（这肯定是不对的）。</font></p>
+<p><font id="48">你可以在管理站点中看到这一点； </font><font id="49">创建一个发布时间在未来的一个Question； </font><font id="50">你可以看到<tt class="docutils literal"><span class="pre">Question</span></tt> 的变更列表声称它是最近发布的。</font></p>
+<p><font id="51">你还可以使用<a class="reference internal" href="../ref/django-admin.html#django-admin-shell"><tt class="xref std std-djadmin docutils literal"><span class="pre">shell</span></tt></a>看到这点：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">polls.models</span> <span class="kn">import</span> <span class="n">Question</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># create a Question instance with pub_date 30 days in the future</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">future_question</span> <span class="o">=</span> <span class="n">Question</span><span class="p">(</span><span class="n">pub_date</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># was it published recently?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">future_question</span><span class="o">.</span><span class="n">was_published_recently</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p><font id="52">由于将来的事情并不能称之为‘最近’，这确实是一个错误。</font></p>
+</div>
+<div class="section" id="s-create-a-test-to-expose-the-bug">
+<span id="create-a-test-to-expose-the-bug"></span><h3><font id="168">创建一个测试来暴露这个错误</font><a class="headerlink" href="tutorial05.html#create-a-test-to-expose-the-bug" title="Permalink to this headline">¶</a></h3>
+<p><font id="53">我们需要在自动化测试里做的和刚才在<a class="reference internal" href="../ref/django-admin.html#django-admin-shell"><tt class="xref std std-djadmin docutils literal"><span class="pre">shell</span></tt></a>里做的差不多，让我们来将它转换成一个自动化测试。</font></p>
+<p><font id="54">应用的测试用例安装惯例一般放在该应用的<tt class="docutils literal"><span class="pre">tests.py</span></tt>文件中；</font><font id="55">测试系统将自动在任何以<tt class="docutils literal"><span class="pre">test</span></tt>开头的文件中查找测试用例。&nbsp;</font></p>
+<p><font id="56">将下面的代码放入<tt class="docutils literal"><span class="pre">polls</span></tt>应用下的<tt class="docutils literal"><span class="pre">tests.py</span></tt>文件中：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/tests.py</div>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Question</span>
+
+
+<span class="k">class</span> <span class="nc">QuestionMethodTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_was_published_recently_with_future_question</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        was_published_recently() should return False for questions whose</span>
+<span class="sd">        pub_date is in the future.</span>
+<span class="sd">        """</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">future_question</span> <span class="o">=</span> <span class="n">Question</span><span class="p">(</span><span class="n">pub_date</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">future_question</span><span class="o">.</span><span class="n">was_published_recently</span><span class="p">(),</span> <span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="57">我们在这里做的是创建一个<a class="reference internal" href="../topics/testing/tools.html#django.test.TestCase" title="django.test.TestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.test.TestCase</span></tt></a>子类，它具有一个方法可以创建一个<tt class="docutils literal"><span class="pre">pub_date</span></tt>在未来的<tt class="docutils literal"><span class="pre">Question</span></tt>实例。</font><font id="58">然后我们检查<tt class="docutils literal"><span class="pre">was_published_recently()</span></tt>的输出 —— 它<em>应该</em>是 False.</font></p>
+</div>
+<div class="section" id="s-running-tests">
+<span id="running-tests"></span><h3><font id="169">运行测试</font><a class="headerlink" href="tutorial05.html#running-tests" title="Permalink to this headline">¶</a></h3>
+<p><font id="59">在终端中，我们可以运行我们的测试：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>$ python manage.py test polls
+</pre></div>
+</div>
+<p><font id="60">你将看到类似下面的输出：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>Creating test database for alias 'default'...
+F
+======================================================================
+FAIL: test_was_published_recently_with_future_question (polls.tests.QuestionMethodTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/path/to/mysite/polls/tests.py", line 16, in test_was_published_recently_with_future_question
+    self.assertEqual(future_question.was_published_recently(), False)
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)
+Destroying test database for alias 'default'...
+</pre></div>
+</div>
+<p><font id="61">发生了如下这些事：</font></p>
+<ul class="simple">
+<li><font id="187"><tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">test</span> <span class="pre">polls</span></tt>查找<tt class="docutils literal"><span class="pre">polls</span></tt> 应用下的测试用例</font></li>
+<li><font id="188">它找到 <a class="reference internal" href="../topics/testing/tools.html#django.test.TestCase" title="django.test.TestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.test.TestCase</span></tt></a> 类的一个子类</font></li>
+<li><font id="189">它为测试创建了一个特定的数据库</font></li>
+<li><font id="190">它查找用于测试的方法 —— 名字以<tt class="docutils literal"><span class="pre">test</span></tt>开始</font></li>
+<li><font id="191">它运行<tt class="docutils literal"><span class="pre">test_was_published_recently_with_future_question</span></tt>创建一个<tt class="docutils literal"><span class="pre">pub_date</span></tt>为未来30天的 <tt class="docutils literal"><span class="pre">Question</span></tt>实例</font></li>
+<li><font id="192">... 然后利用<tt class="docutils literal"><span class="pre">assertEqual()</span></tt>方法，它发现<tt class="docutils literal"><span class="pre">was_published_recently()</span></tt> 返回<tt class="docutils literal"><span class="pre">True</span></tt>，尽管我们希望它返回<tt class="docutils literal"><span class="pre">False</span></tt></font></li>
+</ul>
+<p><font id="62">这个测试通知我们哪个测试失败，甚至是错误出现在哪一行。</font></p>
+</div>
+<div class="section" id="s-fixing-the-bug">
+<span id="fixing-the-bug"></span><h3><font id="170">修复这个错误</font><a class="headerlink" href="tutorial05.html#fixing-the-bug" title="Permalink to this headline">¶</a></h3>
+<p><font id="63">我们已经知道问题是什么：<tt class="docutils literal"><span class="pre">Question.was_published_recently()</span></tt> 应该返回 <tt class="docutils literal"><span class="pre">False</span></tt>，如果它的<tt class="docutils literal"><span class="pre">pub_date</span></tt>是在未来。</font><font id="64">在<tt class="docutils literal"><span class="pre">models.py</span></tt>中修复这个方法，让它只有当日期是在过去时才返回<tt class="docutils literal"><span class="pre">True</span></tt> ：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/models.py</div>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">was_published_recently</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">now</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pub_date</span> <span class="o">&lt;=</span> <span class="n">now</span>
+</pre></div>
+</div>
+<p><font id="65">再次运行测试：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>Creating test database for alias 'default'...
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+Destroying test database for alias 'default'...
+</pre></div>
+</div>
+<p><font id="66">在找出一个错误之后，我们编写一个测试来暴露这个错误，然后在代码中更正这个错误让我们的测试通过。</font></p>
+<p><font id="67">未来，我们的应用可能会出许多其它的错误，但是我们可以保证我们不会无意中再次引入这个错误，因为简单地运行一下这个测试就会立即提醒我们。 </font><font id="68">我们可以认为这个应用的这一小部分会永远安全了。</font></p>
+</div>
+<div class="section" id="s-more-comprehensive-tests">
+<span id="more-comprehensive-tests"></span><h3><font id="171">更加综合的测试</font><a class="headerlink" href="tutorial05.html#more-comprehensive-tests" title="Permalink to this headline">¶</a></h3>
+<p><font id="69">在这里，我们可以使<tt class="docutils literal"><span class="pre">was_published_recently()</span></tt> 方法更加稳定；</font><font id="70">事实上，在修复一个错误的时候引入一个新的错误将是一件很令人尴尬的事。</font></p>
+<p><font id="71">在同一个类中添加两个其它的测试方法，来更加综合地测试这个方法：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/tests.py</div>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_was_published_recently_with_old_question</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    was_published_recently() should return False for questions whose</span>
+<span class="sd">    pub_date is older than 1 day.</span>
+<span class="sd">    """</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">old_question</span> <span class="o">=</span> <span class="n">Question</span><span class="p">(</span><span class="n">pub_date</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">old_question</span><span class="o">.</span><span class="n">was_published_recently</span><span class="p">(),</span> <span class="bp">False</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_was_published_recently_with_recent_question</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    was_published_recently() should return True for questions whose</span>
+<span class="sd">    pub_date is within the last day.</span>
+<span class="sd">    """</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">recent_question</span> <span class="o">=</span> <span class="n">Question</span><span class="p">(</span><span class="n">pub_date</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">recent_question</span><span class="o">.</span><span class="n">was_published_recently</span><span class="p">(),</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="72">现在我们有三个测试来保证无论发布时间是在过去、现在还是未来 <tt class="docutils literal"><span class="pre">Question.was_published_recently()</span></tt>都将返回合理的数据。</font></p>
+<p><font id="73">再说一次，<tt class="docutils literal"><span class="pre">polls</span></tt> 应用虽然简单，但是无论它今后会变得多么复杂以及会和多少其它的应用产生相互作用，我们都能保证我们刚刚为它编写过测试的那个方法会按照预期的那样工作。</font></p>
+</div>
+</div>
+<div class="section" id="s-test-a-view">
+<span id="test-a-view"></span><h2><font id="162">测试一个视图&nbsp;</font><a class="headerlink" href="tutorial05.html#test-a-view" title="Permalink to this headline">¶</a></h2>
+<p><font id="74">这个投票应用没有区分能力：它将会发布任何一个Question，包括 <tt class="docutils literal"><span class="pre">pub_date</span></tt>字段位于未来。</font><font id="75">我们应该改进这一点。 </font><font id="76">设定<tt class="docutils literal"><span class="pre">pub_date</span></tt>在未来应该表示Question在此刻发布，但是直到那个时间点才会变得可见。</font></p>
+<div class="section" id="s-a-test-for-a-view">
+<span id="a-test-for-a-view"></span><h3><font id="172">视图的一个测试</font><a class="headerlink" href="tutorial05.html#a-test-for-a-view" title="Permalink to this headline">¶</a></h3>
+<p><font id="77">当我们修复上面的错误时，我们先写测试，然后修改代码来修复它。 </font><font id="78">事实上，这是测试驱动开发的一个简单的例子，但做的顺序并不真的重要。</font></p>
+<p><font id="79">在我们的第一个测试中，我们专注于代码内部的行为。 </font><font id="80">在这个测试中，我们想要通过浏览器从用户的角度来检查它的行为。</font></p>
+<p><font id="81">在我们试着修复任何事情之前，让我们先查看一下我们能用到的工具。</font></p>
+</div>
+<div class="section" id="s-the-django-test-client">
+<span id="the-django-test-client"></span><h3><font id="173">Django测试客户端</font><a class="headerlink" href="tutorial05.html#the-django-test-client" title="Permalink to this headline">¶</a></h3>
+<p><font id="82">Django提供了一个测试<a class="reference internal" href="../topics/testing/tools.html#django.test.Client" title="django.test.Client"><tt class="xref py py-class docutils literal"><span class="pre">客户端</span></tt></a>来模拟用户和代码的交互。</font><font id="83">我们可以在<tt class="docutils literal"><span class="pre">tests.py</span></tt> 甚至在<a class="reference internal" href="../ref/django-admin.html#django-admin-shell"><tt class="xref std std-djadmin docutils literal"><span class="pre">shell</span></tt></a> 中使用它。</font></p>
+<p><font id="84">我们将再次以<a class="reference internal" href="../ref/django-admin.html#django-admin-shell"><tt class="xref std std-djadmin docutils literal"><span class="pre">shell</span></tt></a>开始，但是我们需要做很多在<tt class="docutils literal"><span class="pre">tests.py</span></tt>中不必做的事。</font><font id="85">首先是在&nbsp;<a class="reference internal" href="../ref/django-admin.html#django-admin-shell"><tt class="xref std std-djadmin docutils literal"><span class="pre">shell</span></tt></a>中设置测试环境：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.test.utils</span> <span class="kn">import</span> <span class="n">setup_test_environment</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">setup_test_environment</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="86"><a class="reference internal" href="../topics/testing/advanced.html#django.test.utils.setup_test_environment" title="django.test.utils.setup_test_environment"><tt class="xref py py-meth docutils literal"><span class="pre">setup_test_environment()</span></tt></a>安装一个模板渲染器，可以使我们来检查响应的一些额外属性比如<tt class="docutils literal"><span class="pre">response.context</span></tt>，否则是访问不到的。</font><font id="87">请注意，这种方法<em>不会</em>建立一个测试数据库，所以以下命令将运行在现有的数据库上，输出的内容也会根据你已经创建的Question不同而稍有不同。</font></p>
+<p><font id="88">下一步我们需要导入测试客户端类（在之后的<tt class="docutils literal"><span class="pre">tests.py</span></tt>&nbsp;中，我们将使用<a class="reference internal" href="../topics/testing/tools.html#django.test.TestCase" title="django.test.TestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.test.TestCase</span></tt></a>类，它具有自己的客户端，将不需要导入这个类）：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># create an instance of the client for our use</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><font id="89">这些都做完之后，我们可以让这个客户端来为我们做一些事：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># get a response from '/'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'/'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># we should expect a 404 from that address</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+<span class="go">404</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># on the other hand we should expect to find something at '/polls/'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># we'll use 'reverse()' rather than a hardcoded URL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:index'</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+<span class="go">200</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">content</span>
+<span class="go">'\n\n\n    &lt;p&gt;No polls are available.&lt;/p&gt;\n\n'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># note - you might get unexpected results if your ``TIME_ZONE``</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># in ``settings.py`` is not correct. If you need to change it,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># you will also need to restart your shell session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">polls.models</span> <span class="kn">import</span> <span class="n">Question</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># create a Question and save it</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">Question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">"Who is your favorite Beatle?"</span><span class="p">,</span> <span class="n">pub_date</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># check the response once again</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'/polls/'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">content</span>
+<span class="go">'\n\n\n    &lt;ul&gt;\n    \n        &lt;li&gt;&lt;a href="/polls/1/"&gt;Who is your favorite Beatle?&lt;/a&gt;&lt;/li&gt;\n    \n    &lt;/ul&gt;\n\n'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># If the following doesn't work, you probably omitted the call to</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># setup_test_environment() described above</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">'latest_question_list'</span><span class="p">]</span>
+<span class="go">[&lt;Question: Who is your favorite Beatle?&gt;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-improving-our-view">
+<span id="improving-our-view"></span><h3><font id="174">改进我们的视图</font><a class="headerlink" href="tutorial05.html#improving-our-view" title="Permalink to this headline">¶</a></h3>
+<p><font id="90">投票的列表显示还没有发布的投票（即<tt class="docutils literal"><span class="pre">pub_date</span></tt>在未来的投票）。</font><font id="91">让我们来修复它。</font></p>
+<p><font id="92">在<a class="reference internal" href="tutorial04.html#tutorial04-amend-views"><em>教程 4</em></a>中，我们介绍了一个继承<a class="reference internal" href="../ref/class-based-views/generic-display.html#django.views.generic.list.ListView" title="django.views.generic.list.ListView"><tt class="xref py py-class docutils literal"><span class="pre">ListView</span></tt></a>的基于类的视图：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/views.py</div>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">IndexView</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s">'polls/index.html'</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s">'latest_question_list'</span>
+
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Return the last five published questions."""</span>
+        <span class="k">return</span> <span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-pub_date'</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="93"><tt class="docutils literal"><span class="pre">response.context_data['latest_question_list']</span></tt> 取出由视图放置在context 中的数据。</font></p>
+<p><font id="94">我们需要修改<tt class="docutils literal"><span class="pre">get_queryset</span></tt>方法并让它将日期与<tt class="docutils literal"><span class="pre">timezone.now()</span></tt>进行比较。</font><font id="95">首先我们需要添加一行导入：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/views.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+</pre></div>
+</div>
+<p><font id="96">然后我们必须像这样修改<tt class="docutils literal"><span class="pre">get_queryset</span></tt>方法：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/views.py</div>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Return the last five published questions (not including those set to be</span>
+<span class="sd">    published in the future).</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">pub_date__lte</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-pub_date'</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="97"><tt class="docutils literal"><span class="pre">Question.objects.filter(pub_date__lte=timezone.now())</span></tt> 返回一个查询集，包含<tt class="docutils literal"><span class="pre">pub_date</span></tt>小于等于<tt class="docutils literal"><span class="pre">timezone.now</span></tt>的<tt class="docutils literal"><span class="pre">Question</span></tt>。</font></p>
+</div>
+<div class="section" id="s-testing-our-new-view">
+<span id="testing-our-new-view"></span><h3><font id="175">测试我们的新视图</font><a class="headerlink" href="tutorial05.html#testing-our-new-view" title="Permalink to this headline">¶</a></h3>
+<p><font id="98">启动服务器、在浏览器中载入站点、创建一些发布时间在过去和将来的<tt class="docutils literal"><span class="pre">Questions</span></tt> ，然后检验只有已经发布的Question会展示出来，现在你可以对自己感到满意了。</font><font id="99">你不想<em>每次修改可能与这相关的代码时都重复这样做</em> —— 所以让我们基于以上<a class="reference internal" href="../ref/django-admin.html#django-admin-shell"><tt class="xref std std-djadmin docutils literal"><span class="pre">shell</span></tt></a>会话中的内容，再编写一个测试。</font></p>
+<p><font id="100">将下面的代码添加到<tt class="docutils literal"><span class="pre">polls/tests.py</span></tt>：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/tests.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
+</pre></div>
+</div>
+<p><font id="101">我们将创建一个快捷函数来创建Question，同时我们要创建一个新的测试类：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/tests.py</div>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="p">,</span> <span class="n">days</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Creates a question with the given `question_text` published the given</span>
+<span class="sd">    number of `days` offset to now (negative for questions published</span>
+<span class="sd">    in the past, positive for questions that have yet to be published).</span>
+<span class="sd">    """</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="n">question_text</span><span class="p">,</span>
+                                   <span class="n">pub_date</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">QuestionViewTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_index_view_with_no_questions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        If no questions exist, an appropriate message should be displayed.</span>
+<span class="sd">        """</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:index'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s">"No polls are available."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertQuerysetEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">'latest_question_list'</span><span class="p">],</span> <span class="p">[])</span>
+
+    <span class="k">def</span> <span class="nf">test_index_view_with_a_past_question</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Questions with a pub_date in the past should be displayed on the</span>
+<span class="sd">        index page.</span>
+<span class="sd">        """</span>
+        <span class="n">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">"Past question."</span><span class="p">,</span> <span class="n">days</span><span class="o">=-</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:index'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertQuerysetEqual</span><span class="p">(</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">'latest_question_list'</span><span class="p">],</span>
+            <span class="p">[</span><span class="s">'&lt;Question: Past question.&gt;'</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_index_view_with_a_future_question</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Questions with a pub_date in the future should not be displayed on</span>
+<span class="sd">        the index page.</span>
+<span class="sd">        """</span>
+        <span class="n">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">"Future question."</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:index'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s">"No polls are available."</span><span class="p">,</span>
+                            <span class="n">status_code</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertQuerysetEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">'latest_question_list'</span><span class="p">],</span> <span class="p">[])</span>
+
+    <span class="k">def</span> <span class="nf">test_index_view_with_future_question_and_past_question</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Even if both past and future questions exist, only past questions</span>
+<span class="sd">        should be displayed.</span>
+<span class="sd">        """</span>
+        <span class="n">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">"Past question."</span><span class="p">,</span> <span class="n">days</span><span class="o">=-</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">"Future question."</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:index'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertQuerysetEqual</span><span class="p">(</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">'latest_question_list'</span><span class="p">],</span>
+            <span class="p">[</span><span class="s">'&lt;Question: Past question.&gt;'</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_index_view_with_two_past_questions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        The questions index page may display multiple questions.</span>
+<span class="sd">        """</span>
+        <span class="n">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">"Past question 1."</span><span class="p">,</span> <span class="n">days</span><span class="o">=-</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">"Past question 2."</span><span class="p">,</span> <span class="n">days</span><span class="o">=-</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:index'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertQuerysetEqual</span><span class="p">(</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">'latest_question_list'</span><span class="p">],</span>
+            <span class="p">[</span><span class="s">'&lt;Question: Past question 2.&gt;'</span><span class="p">,</span> <span class="s">'&lt;Question: Past question 1.&gt;'</span><span class="p">]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="102">让我们更详细地看下以上这些内容。</font></p>
+<p><font id="103">第一个是Question的快捷函数<tt class="docutils literal"><span class="pre">create_question</span></tt>，将重复创建Question的过程封装在一起。</font></p>
+<p><font id="104"><tt class="docutils literal"><span class="pre">test_index_view_with_no_questions</span></tt>不创建任何Question，但会检查消息“No polls are available.” 并验证<tt class="docutils literal"><span class="pre">latest_question_list</span></tt>为空。</font><font id="105">注意<a class="reference internal" href="../topics/testing/tools.html#django.test.TestCase" title="django.test.TestCase"><tt class="xref py py-class docutils literal"><span class="pre">django.test.TestCase</span></tt></a>类提供一些额外的断言方法。</font><font id="106">在这些例子中，我们使用<a class="reference internal" href="../topics/testing/tools.html#django.test.SimpleTestCase.assertContains" title="django.test.SimpleTestCase.assertContains"><tt class="xref py py-meth docutils literal"><span class="pre">assertContains()</span></tt></a> 和 <a class="reference internal" href="../topics/testing/tools.html#django.test.TransactionTestCase.assertQuerysetEqual" title="django.test.TransactionTestCase.assertQuerysetEqual"><tt class="xref py py-meth docutils literal"><span class="pre">assertQuerysetEqual()</span></tt></a>。</font></p>
+<p><font id="107">在<tt class="docutils literal"><span class="pre">test_index_view_with_a_past_question</span></tt>中，我们创建一个Question并验证它是否出现在列表中。</font></p>
+<p><font id="108">在<tt class="docutils literal"><span class="pre">test_index_view_with_a_future_question</span></tt>中，我们创建一个<tt class="docutils literal"><span class="pre">pub_date</span></tt> 在未来的Question。</font><font id="109">数据库会为每一个测试方法进行重置，所以第一个Question已经不在那里，因此首页面里不应该有任何Question。</font></p>
+<p><font id="110">等等。 </font><font id="111">事实上，我们是在用测试模拟站点上的管理员输入和用户体验，检查针对系统每一个状态和状态的新变化，发布的是预期的结果。</font></p>
+</div>
+<div class="section" id="s-testing-the-detailview">
+<span id="testing-the-detailview"></span><h3><font id="176">测试 <tt class="docutils literal"><span class="pre">DetailView</span></tt></font><a class="headerlink" href="tutorial05.html#testing-the-detailview" title="Permalink to this headline">¶</a></h3>
+<p><font id="112">一切都运行得很好； </font><font id="113">然而，即使未来发布的Question不会出现在<em>index</em>中，如果用户知道或者猜出正确的URL依然可以访问它们。</font><font id="114">所以我们需要给<tt class="docutils literal"><span class="pre">DetailView</span></tt>添加一个这样的约束：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/views.py</div>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">DetailView</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Excludes any questions that aren't published yet.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pub_date__lte</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><font id="115">当然，我们将增加一些测试来检验<tt class="docutils literal"><span class="pre">pub_date</span></tt> 在过去的<tt class="docutils literal"><span class="pre">Question</span></tt> 可以显示出来，而<tt class="docutils literal"><span class="pre">pub_date</span></tt>在未来的不可以：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/tests.py</div>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">QuestionIndexDetailTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_detail_view_with_a_future_question</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        The detail view of a question with a pub_date in the future should</span>
+<span class="sd">        return a 404 not found.</span>
+<span class="sd">        """</span>
+        <span class="n">future_question</span> <span class="o">=</span> <span class="n">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">'Future question.'</span><span class="p">,</span>
+                                          <span class="n">days</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:detail'</span><span class="p">,</span>
+                                   <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">future_question</span><span class="o">.</span><span class="n">id</span><span class="p">,)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">404</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_detail_view_with_a_past_question</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        The detail view of a question with a pub_date in the past should</span>
+<span class="sd">        display the question's text.</span>
+<span class="sd">        """</span>
+        <span class="n">past_question</span> <span class="o">=</span> <span class="n">create_question</span><span class="p">(</span><span class="n">question_text</span><span class="o">=</span><span class="s">'Past Question.'</span><span class="p">,</span>
+                                        <span class="n">days</span><span class="o">=-</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'polls:detail'</span><span class="p">,</span>
+                                   <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">past_question</span><span class="o">.</span><span class="n">id</span><span class="p">,)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">past_question</span><span class="o">.</span><span class="n">question_text</span><span class="p">,</span>
+                            <span class="n">status_code</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-ideas-for-more-tests">
+<span id="ideas-for-more-tests"></span><h3><font id="177">更多的测试思路</font><a class="headerlink" href="tutorial05.html#ideas-for-more-tests" title="Permalink to this headline">¶</a></h3>
+<p><font id="116">我们应该添加一个类似<tt class="docutils literal"><span class="pre">get_queryset</span></tt>的方法到<tt class="docutils literal"><span class="pre">ResultsView</span></tt>并为该视图创建一个新的类。</font><font id="117">这将与我们刚刚创建的非常类似；</font><font id="118">实际上将会有许多重复。</font></p>
+<p><font id="119">我们还可以在其它方面改进我们的应用，并随之不断增加测试。</font><font id="120">例如，发布一个没有<tt class="docutils literal"><span class="pre">Choices</span></tt>的<tt class="docutils literal"><span class="pre">Questions</span></tt>就显得傻傻的。</font><font id="121">所以，我们的视图应该检查这点并排除这些 <tt class="docutils literal"><span class="pre">Questions</span></tt>。</font><font id="122">我们的测试应该创建一个不带<tt class="docutils literal"><span class="pre">Choices</span></tt> 的 <tt class="docutils literal"><span class="pre">Question</span></tt>然后测试它不会发布出来， 同时创建一个类似的<em>带有</em> <tt class="docutils literal"><span class="pre">Choices</span></tt>的<tt class="docutils literal"><span class="pre">Question</span></tt> 并验证它<em>会</em> 发布出来。</font></p>
+<p><font id="123">也许登陆的用户应该被允许查看还没发布的 <tt class="docutils literal"><span class="pre">Questions</span></tt>，但普通游客不行。 </font><font id="124">再说一次：无论添加什么代码来完成这个要求，需要提供相应的测试代码，无论你是否是先编写测试然后让这些代码通过测试，还是先用代码解决其中的逻辑然后编写测试来证明它。</font></p>
+<p><font id="125">从某种程度上来说，你一定会查看你的测试，然后想知道是否你的测试程序过于臃肿，这将我们带向下面的内容：</font></p>
+</div>
+</div>
+<div class="section" id="s-when-testing-more-is-better">
+<span id="when-testing-more-is-better"></span><h2><font id="163">测试越多越好</font><a class="headerlink" href="tutorial05.html#when-testing-more-is-better" title="Permalink to this headline">¶</a></h2>
+<p><font id="126">看起来我们的测试代码的增长正在失去控制。 </font><font id="127">以这样的速度，测试的代码量将很快超过我们的应用，对比我们其它优美简洁的代码，重复毫无美感。</font></p>
+<p><font id="128"><strong>没关系</strong>。</font><font id="129">让它们继续增长。</font><font id="130">最重要的是，你可以写一个测试一次，然后忘了它。 </font><font id="131">当你继续开发你的程序时，它将继续执行有用的功能。</font></p>
+<p><font id="132">有时，测试需要更新。 </font><font id="133">假设我们修改我们的视图使得只有具有<tt class="docutils literal"><span class="pre">Choices</span></tt>的 <tt class="docutils literal"><span class="pre">Questions</span></tt> 才会发布。</font><font id="134">在这种情况下，我们许多已经存在的测试都将失败 —— <em>这会告诉我们哪些测试需要被修改来使得它们保持最新</em>，所以从某种程度上讲，测试可以自己照顾自己。</font></p>
+<p><font id="135">在最坏的情况下，在你的开发过程中，你会发现许多测试现在变得冗余。 </font><font id="136">即使这样，也不是问题；</font><font id="137">对测试来说，冗余是一件<em>好</em>&nbsp;事。</font></p>
+<p><font id="138">只要你的测试被合理地组织，它们就不会变得难以管理。 </font><font id="139">从经验上来说，好的做法是：</font></p>
+<ul class="simple">
+<li><font id="193">每个模型或视图具有一个单独的<tt class="docutils literal"><span class="pre">TestClass</span></tt></font></li>
+<li><font id="194">为你想测试的每一种情况建立一个单独的测试方法</font></li>
+<li><font id="195">测试方法的名字可以描述它们的功能</font></li>
+</ul>
+</div>
+<div class="section" id="s-further-testing">
+<span id="further-testing"></span><h2><font id="164">进一步的测试</font><a class="headerlink" href="tutorial05.html#further-testing" title="Permalink to this headline">¶</a></h2>
+<p><font id="140">本教程只介绍了一些基本的测试。 </font><font id="141">还有很多你可以做，有许多非常有用的工具可以随便使用来你实现一些非常聪明的做法。</font></p>
+<p><font id="142">例如，虽然我们的测试覆盖了模型的内部逻辑和视图发布信息的方式，你可以使用一个“浏览器”框架例如<a class="reference external" href="http://seleniumhq.org/">Selenium</a>来测试你的HTML文件在浏览器中真实渲染的样子。 </font><font id="143">这些工具不仅可以让你检查你的Django代码的行为，还能够检查你的JavaScript的行为。 </font><font id="144">它会启动一个浏览器，并开始与你的网站进行交互，就像有一个人在操纵一样，非常值得一看！ </font><font id="145">Django 包含一个<a class="reference internal" href="../topics/testing/tools.html#django.test.LiveServerTestCase" title="django.test.LiveServerTestCase"><tt class="xref py py-class docutils literal"><span class="pre">LiveServerTestCase</span></tt></a>来帮助与Selenium 这样的工具集成。</font></p>
+<p><font id="146">如果你有一个复杂的应用，你可能为了实现<a class="reference external" href="http://en.wikipedia.org/wiki/Continuous_integration">continuous integration</a>，想在每次提交代码后对代码进行自动化测试，让代码自动 —— 至少是部分自动 —— 地来控制它的质量。</font></p>
+<p><font id="147">发现你应用中未经测试的代码的一个好方法是检查测试代码的覆盖率。 </font><font id="148">这也有助于识别脆弱的甚至死代码。 </font><font id="149">如果你不能测试一段代码，这通常意味着这些代码需要被重构或者移除。 </font><font id="150">Coverage将帮助我们识别死代码。 </font><font id="151">查看<a class="reference internal" href="../topics/testing/advanced.html#topics-testing-code-coverage"><em>与coverage.py 集成</em></a>来了解更多细节。</font></p>
+<p><font id="152"><a class="reference internal" href="../topics/testing/index.html"><em>Django 中的测试</em></a>有关于测试更加全面的信息。</font></p>
+</div>
+<div class="section" id="s-what-s-next">
+<span id="what-s-next"></span><h2><font id="228">下一步？</font><a class="headerlink" href="tutorial05.html#what-s-next" title="Permalink to this headline">¶</a></h2>
+<p><font id="153">关于测试的完整细节，请查看<a class="reference internal" href="../topics/testing/index.html"><em>Django 中的测试</em></a>。</font></p>
+<p><font id="154">当你对Django 视图的测试感到满意后，请阅读<a class="reference internal" href="tutorial06.html"><em>本教程的第6部分</em></a>来 了解静态文件的管理。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="178">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="tutorial05.html#"><font id="196">编写你的第一个Django应用，第5部分</font></a><ul>
+<li><a class="reference internal" href="tutorial05.html#introducing-automated-testing"><font id="197">自动化测试简介</font></a><ul>
+<li><a class="reference internal" href="tutorial05.html#what-are-automated-tests"><font id="198">什么是自动化测试？</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#why-you-need-to-create-tests"><font id="199">为什么你需要创建测试</font></a><ul>
+<li><a class="reference internal" href="tutorial05.html#tests-will-save-you-time"><font id="200">测试将节省你的时间</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#tests-don-t-just-identify-problems-they-prevent-them"><font id="226">测试不仅仅可以发现问题，它们还能防止问题</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#tests-make-your-code-more-attractive"><font id="201">测试使你的代码更受欢迎</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#tests-help-teams-work-together"><font id="202">测试有助于团队合作</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="tutorial05.html#basic-testing-strategies"><font id="203">基本的测试策略</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#writing-our-first-test"><font id="204">编写我们的第一个测试</font></a><ul>
+<li><a class="reference internal" href="tutorial05.html#we-identify-a-bug"><font id="205">我们找出一个错误</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#create-a-test-to-expose-the-bug"><font id="206">创建一个测试来暴露这个错误</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#running-tests"><font id="207">运行测试</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#fixing-the-bug"><font id="208">修复错误</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#more-comprehensive-tests"><font id="209">更加综合的测试</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="tutorial05.html#test-a-view"><font id="210">测试一个视图&nbsp;</font></a><ul>
+<li><a class="reference internal" href="tutorial05.html#a-test-for-a-view"><font id="211">视图的一个测试</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#the-django-test-client"><font id="212">Django 测试客户端</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#improving-our-view"><font id="213">改进我们的视图</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#testing-our-new-view"><font id="214">测试我们新的视图</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#testing-the-detailview"><font id="215">测试 <tt class="docutils literal"><span class="pre">DetailView</span></tt></font></a></li>
+<li><a class="reference internal" href="tutorial05.html#ideas-for-more-tests"><font id="216">更多的测试思路</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="tutorial05.html#when-testing-more-is-better"><font id="217">测试越多越好</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#further-testing"><font id="218">进一步的测试&nbsp;</font></a></li>
+<li><a class="reference internal" href="tutorial05.html#what-s-next"><font id="227">下一步？</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="179">浏览</font></h3>
+<ul>
+<li><font id="219">上一页：<a href="tutorial04.html">编写你的第一个Django应用，第4部分</a></font></li>
+<li><font id="220">下一页：<a href="tutorial06.html">编写你的第一个Django应用，第6部分</a></font></li>
+</ul>
+<h3><font id="180">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="221">Django 1.8.2 文档</font></a>
+<ul><li><a href="index.html"><font id="222">开始</font></a>
+<ul><li><font id="223">编写你的第一个Django应用，第5部分</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="181">当前页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/intro/tutorial05.txt" rel="nofollow"><font id="224">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="182">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="155"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="183">最后更新：</font></h3>
+<p class="topless"><font id="156">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="tutorial04.html" title="Writing your first Django app, part 4">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Getting started">up</a>
+   |
+    <a href="tutorial06.html" title="Writing your first Django app, part 6">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/intro/tutorial05';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

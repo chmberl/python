@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Writing a custom storage system — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="http://python.usyiyi.cn/django/howto/index.html" rel="up" title="“How-to” guides"/>
+<link href="deployment/index.html" rel="next" title="Deploying Django"/>
+<link href="custom-template-tags.html" rel="prev" title="Custom template tags and filters"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/howto/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="40">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="custom-template-tags.html" title="Custom template tags and filters">previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="deployment/index.html" title="Deploying Django">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="howto-custom-file-storage">
+<div class="section" id="s-writing-a-custom-storage-system">
+<span id="writing-a-custom-storage-system"></span><h1><font id="41">编写自定义存储系统</font><a class="headerlink" href="custom-file-storage.html#writing-a-custom-storage-system" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">如果你需要提供自定义文件存储 – 一个普遍的例子是在某个远程系统上储存文件 – 你可以通过定义一个自定义的储存类来实现。</font><font id="2">你需要遵循以下步骤：</font></p>
+<ol class="arabic">
+<li><p class="first"><font id="3">你的自定义储存类必须是<tt class="docutils literal"><span class="pre">django.core.files.storage.Storage</span></tt>的子类：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.files.storage</span> <span class="kn">import</span> <span class="n">Storage</span>
+
+<span class="k">class</span> <span class="nc">MyStorage</span><span class="p">(</span><span class="n">Storage</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="4">Django必须能够不带任何参数来实例化你的储存类。</font><font id="5">这意味着任何设置都应该从<tt class="docutils literal"><span class="pre">django.conf.settings</span></tt>中获取。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.core.files.storage</span> <span class="kn">import</span> <span class="n">Storage</span>
+
+<span class="k">class</span> <span class="nc">MyStorage</span><span class="p">(</span><span class="n">Storage</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">option</span><span class="p">:</span>
+            <span class="n">option</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CUSTOM_STORAGE_OPTIONS</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><font id="6">你的储存类必须实现 <a class="reference internal" href="custom-file-storage.html#django.core.files.storage._open" title="django.core.files.storage._open"><tt class="xref py py-meth docutils literal"><span class="pre">_open()</span></tt></a> 和 <a class="reference internal" href="custom-file-storage.html#django.core.files.storage._save" title="django.core.files.storage._save"><tt class="xref py py-meth docutils literal"><span class="pre">_save()</span></tt></a>方法，以及任何适合于你的储存类的其它方法。</font><font id="7">更多这类方法请见下文。</font></p>
+<p><font id="8">另外，如果你的类提供本地文件存储，它必须覆写<tt class="docutils literal"><span class="pre">path()</span></tt>方法。</font></p>
+</li>
+<li><p class="first"><font id="9">你的储存类必须是 <a class="reference internal" href="../topics/migrations.html#custom-deconstruct-method"><em>可以析构的</em></a>，所以它在迁移中的一个字段上使用的时候可以被序列化。</font><font id="10">只要你的字段拥有自己可以<a class="reference internal" href="../topics/migrations.html#migration-serializing"><em>序列化</em></a>的参数，你就可以为它使用<tt class="docutils literal"><span class="pre">django.utils.deconstruct.deconstructible</span></tt>类装饰器（这也是Django用在FileSystemStorage上的东西）。</font></p>
+</li>
+</ol>
+<p><font id="11">默认情况下，下面的方法会抛出<cite>NotImplementedError</cite>异常，并且必须覆写它们。</font></p>
+<ul class="simple">
+<li><a class="reference internal" href="../ref/files/storage.html#django.core.files.storage.Storage.delete" title="django.core.files.storage.Storage.delete"><font id="47">Storage.delete()</font></a></li>
+<li><a class="reference internal" href="../ref/files/storage.html#django.core.files.storage.Storage.exists" title="django.core.files.storage.Storage.exists"><font id="48">Storage.exists()</font></a></li>
+<li><a class="reference internal" href="../ref/files/storage.html#django.core.files.storage.Storage.listdir" title="django.core.files.storage.Storage.listdir"><font id="49">Storage.listdir()</font></a></li>
+<li><a class="reference internal" href="../ref/files/storage.html#django.core.files.storage.Storage.size" title="django.core.files.storage.Storage.size"><font id="50">Storage.size()</font></a></li>
+<li><a class="reference internal" href="../ref/files/storage.html#django.core.files.storage.Storage.url" title="django.core.files.storage.Storage.url"><font id="51">Storage.url()</font></a></li>
+</ul>
+<p><font id="12">然而要注意，并不是这些方法全部都需要，可以故意省略一些。</font><font id="13">可以不必实现每个方法而仍然能拥有一个可以工作的储存类。</font></p>
+<p><font id="14">比如，如果在特定的储存后端中，列出内容的开销比较大，你可以决定不实现<cite>Storage.listdir</cite>。</font></p>
+<p><font id="15">另一个例子是只处理写入文件的后端。</font><font id="16">这种情况下，你不需要实现上面的任意一种方法。</font></p>
+<p><font id="17">根本上来说，需要实现哪种方法取决于你。</font><font id="18">如果不去实现一些方法，你会得到一个不完整（可能是不能用的）的接口。</font></p>
+<p><font id="19">你也会经常想要使用特意为自定义储存对象设计的钩子。</font><font id="20">它们是：</font></p>
+<dl class="method">
+<dt id="django.core.files.storage._open">
+<tt class="descname">_open</tt>(<em>name</em>, <em>mode='rb'</em>)<a class="headerlink" href="custom-file-storage.html#django.core.files.storage._open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="21"><strong>必需的</strong>。</font></p>
+<p><font id="22">被<tt class="docutils literal"><span class="pre">Storage.open()</span></tt>调用，这是储存类用于打开文件的实际工具。</font><font id="23">它必须返回<tt class="docutils literal"><span class="pre">File</span></tt>对象，在大多数情况下，你会想要返回一些子类，它们实现了后端储存系统特定的逻辑。</font></p>
+<dl class="method">
+<dt id="django.core.files.storage._save">
+<tt class="descname">_save</tt>(<em>name</em>, <em>content</em>)<a class="headerlink" href="custom-file-storage.html#django.core.files.storage._save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="24">被<tt class="docutils literal"><span class="pre">Storage.save()</span></tt>调用。</font><font id="25"><tt class="docutils literal"><span class="pre">name</span></tt>必须事先通过<tt class="docutils literal"><span class="pre">get_valid_name()</span></tt> 和 <tt class="docutils literal"><span class="pre">get_available_name()</span></tt>过滤，并且<tt class="docutils literal"><span class="pre">content</span></tt>自己必须是一个<tt class="docutils literal"><span class="pre">File</span></tt>对象。</font></p>
+<p><font id="26">应该返回被保存文件的真实名称（通常是传进来的<tt class="docutils literal"><span class="pre">name</span></tt>，但是如果储存需要修改文件名称，则返回新的名称来代替）。</font></p>
+<dl class="method">
+<dt id="django.core.files.storage.get_valid_name">
+<tt class="descname">get_valid_name</tt>(<em>name</em>)<a class="headerlink" href="custom-file-storage.html#django.core.files.storage.get_valid_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="27">返回适用于当前储存系统的文件名。</font><font id="28">传递给该方法的<tt class="docutils literal"><span class="pre">name</span></tt>参数是发送给服务器的原始文件名称，并移除了所有目录信息。</font><font id="29">你可以覆写这个方法，来自定义非标准的字符将会如何转换为安全的文件名称。</font></p>
+<p><font id="30"><tt class="docutils literal"><span class="pre">Storage</span></tt>提供的代码只会保留原始文件名中的数字和字母字符、英文句号和下划线，并移除其它字符。</font></p>
+<dl class="method">
+<dt id="django.core.files.storage.get_available_name">
+<tt class="descname">get_available_name</tt>(<em>name</em>, <em>max_length=None</em>)<a class="headerlink" href="custom-file-storage.html#django.core.files.storage.get_available_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="31">返回在储存系统中可用的文件名称，可能会顾及到提供的文件名称。</font><font id="32">传给这个方法的<tt class="docutils literal"><span class="pre">name</span></tt>参数需要事先过滤为储存系统有效的文件名称，根据上面描述的<tt class="docutils literal"><span class="pre">get_valid_name()</span></tt> 方法。</font></p>
+<p><font id="33">如果提供了<tt class="docutils literal"><span class="pre">max_length</span></tt>，文件名称长度不会超过它。</font><font id="34">如果不能找到可用的、唯一的文件名称，会抛出<a class="reference internal" href="../ref/exceptions.html#django.core.exceptions.SuspiciousOperation" title="django.core.exceptions.SuspiciousOperation"><tt class="xref py py-exc docutils literal"><span class="pre">SuspiciousFileOperation</span></tt></a> 异常。</font></p>
+<p><font id="35">如果<tt class="docutils literal"><span class="pre">name</span></tt>命名的文件已存在，一个下划线加上随机7个数字或字母的字符串会添加到文件名称的末尾，扩展名之前。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="57">之前，下划线和一位数字（比如<tt class="docutils literal"><span class="pre">"_1"</span></tt>, <tt class="docutils literal"><span class="pre">"_2"</span></tt>，以及其他）会添加到文件名称的末尾，直到目标目录中发现了可用的名称。</font><font id="58">一些恶意的用户会利用这一确定性的算法来进行dos攻击。 </font><font id="59">这一变化也在1.6.6， 1.5.9， 和 1.4.14中出现。</font></p>
+</div>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="37">新增了<tt class="docutils literal"><span class="pre">max_length</span></tt>参数。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="42">Browse</font></h3>
+<ul>
+<li><font id="52">Prev: <a href="custom-template-tags.html">Custom template tags and filters</a></font></li>
+<li><font id="53">Next: <a href="deployment/index.html">Deploying Django</a></font></li>
+</ul>
+<h3><font id="43">You are here:</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="54">Django 1.8.2 文档</font></a>
+<ul><li><a href="http://python.usyiyi.cn/django/howto/index.html">“How-to” guides</a>
+<ul><li><font id="55">Writing a custom storage system</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="44">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/howto/custom-file-storage.txt" rel="nofollow"><font id="56">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="45">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="38"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="46">Last update:</font></h3>
+<p class="topless"><font id="39">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="custom-template-tags.html" title="Custom template tags and filters">previous</a>
+     |
+    <a accesskey="U" href="http://python.usyiyi.cn/django/howto/index.html" title="&amp;#8220;How-to&amp;#8221; guides">up</a>
+   |
+    <a href="deployment/index.html" title="Deploying Django">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/howto/custom-file-storage.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

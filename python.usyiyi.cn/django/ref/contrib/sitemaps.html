@@ -1,0 +1,624 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Sitemap 框架 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="contrib packages"/>
+<link href="sites.html" rel="next" title="The “sites” framework"/>
+<link href="redirects.html" rel="prev" title="The redirects app"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/contrib/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/contrib/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="113">Django 1.8.2.dev20150513143415 documentation</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="redirects.html" title="The redirects app">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="sites.html" title="The &amp;#8220;sites&amp;#8221; framework">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-contrib-sitemaps">
+<div class="section" id="s-module-django.contrib.sitemaps">
+<span id="s-the-sitemap-framework"></span><span id="module-django.contrib.sitemaps"></span><span id="the-sitemap-framework"></span><h1><font id="114">The sitemap framework</font><a class="headerlink" href="sitemaps.html#module-django.contrib.sitemaps" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">Django comes with a high-level sitemap-generating framework that makes creating <a class="reference external" href="http://www.sitemaps.org/">sitemap</a> XML files easy.</font></p>
+<div class="section" id="s-overview">
+<span id="overview"></span><h2><font id="115">Overview</font><a class="headerlink" href="sitemaps.html#overview" title="Permalink to this headline">¶</a></h2>
+<p><font id="2">A sitemap is an XML file on your Web site that tells search-engine indexers how frequently your pages change and how “important” certain pages are in relation to other pages on your site. </font><font id="3">This information helps search engines index your site.</font></p>
+<p><font id="4">The Django sitemap framework automates the creation of this XML file by letting you express this information in Python code.</font></p>
+<p><font id="5">It works much like Django’s <a class="reference internal" href="syndication.html"><em>syndication framework</em></a>. </font><font id="6">To create a sitemap, just write a <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="django.contrib.sitemaps.Sitemap"><tt class="xref py py-class docutils literal"><span class="pre">Sitemap</span></tt></a> class and point to it in your <a class="reference internal" href="../../topics/http/urls.html"><em>URLconf</em></a>.</font></p>
+</div>
+<div class="section" id="s-installation">
+<span id="installation"></span><h2><font id="116">Installation</font><a class="headerlink" href="sitemaps.html#installation" title="Permalink to this headline">¶</a></h2>
+<p><font id="7">To install the sitemap app, follow these steps:</font></p>
+<ol class="arabic simple">
+<li><font id="137">Add <tt class="docutils literal"><span class="pre">'django.contrib.sitemaps'</span></tt> to your <a class="reference internal" href="../settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> setting.</font></li>
+<li><font id="138">Make sure your <a class="reference internal" href="../settings.html#std:setting-TEMPLATES"><tt class="xref std std-setting docutils literal"><span class="pre">TEMPLATES</span></tt></a> setting contains a <tt class="docutils literal"><span class="pre">DjangoTemplates</span></tt> backend whose <tt class="docutils literal"><span class="pre">APP_DIRS</span></tt> options is set to <tt class="docutils literal"><span class="pre">True</span></tt>. </font><font id="139">It’s in there by default, so you’ll only need to change this if you’ve changed that setting.</font></li>
+<li><font id="140">Make sure you’ve installed the <a class="reference internal" href="sites.html#module-django.contrib.sites" title="django.contrib.sites: Lets you operate multiple Web sites from the same database and Django project"><tt class="xref py py-mod docutils literal"><span class="pre">sites</span> <span class="pre">framework</span></tt></a>.</font></li>
+</ol>
+<p><font id="8">(Note: The sitemap application doesn’t install any database tables. </font><font id="9">The only reason it needs to go into <a class="reference internal" href="../settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a> is so that the <a class="reference internal" href="../templates/api.html#django.template.loaders.app_directories.Loader" title="django.template.loaders.app_directories.Loader"><tt class="xref py py-func docutils literal"><span class="pre">Loader()</span></tt></a> template loader can find the default templates.)</font></p>
+</div>
+<div class="section" id="s-initialization">
+<span id="initialization"></span><h2><font id="117">Initialization</font><a class="headerlink" href="sitemaps.html#initialization" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="django.contrib.sitemaps.views.sitemap">
+<tt class="descclassname">views.</tt><tt class="descname">sitemap</tt>(<em>request</em>, <em>sitemaps</em>, <em>section=None</em>, <em>template_name='sitemap.xml'</em>, <em>content_type='application/xml'</em>)<a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.views.sitemap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="10">To activate sitemap generation on your Django site, add this line to your <a class="reference internal" href="../../topics/http/urls.html"><em>URLconf</em></a>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.sitemaps.views</span> <span class="kn">import</span> <span class="n">sitemap</span>
+
+<span class="n">url</span><span class="p">(</span><span class="s">r'^sitemap\.xml$'</span><span class="p">,</span> <span class="n">sitemap</span><span class="p">,</span> <span class="p">{</span><span class="s">'sitemaps'</span><span class="p">:</span> <span class="n">sitemaps</span><span class="p">},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s">'django.contrib.sitemaps.views.sitemap'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="11">This tells Django to build a sitemap when a client accesses <tt class="file docutils literal"><span class="pre">/sitemap.xml</span></tt>.</font></p>
+<p><font id="12">The name of the sitemap file is not important, but the location is. </font><font id="13">Search engines will only index links in your sitemap for the current URL level and below. </font><font id="14">For instance, if <tt class="file docutils literal"><span class="pre">sitemap.xml</span></tt> lives in your root directory, it may reference any URL in your site. </font><font id="15">However, if your sitemap lives at <tt class="file docutils literal"><span class="pre">/content/sitemap.xml</span></tt>, it may only reference URLs that begin with <tt class="file docutils literal"><span class="pre">/content/</span></tt>.</font></p>
+<p><font id="16">The sitemap view takes an extra, required argument: <tt class="docutils literal"><span class="pre">{'sitemaps':</span> <span class="pre">sitemaps}</span></tt>. </font><font id="17"><tt class="docutils literal"><span class="pre">sitemaps</span></tt> should be a dictionary that maps a short section label (e.g., <tt class="docutils literal"><span class="pre">blog</span></tt> or <tt class="docutils literal"><span class="pre">news</span></tt>) to its <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="django.contrib.sitemaps.Sitemap"><tt class="xref py py-class docutils literal"><span class="pre">Sitemap</span></tt></a> class (e.g., <tt class="docutils literal"><span class="pre">BlogSitemap</span></tt> or <tt class="docutils literal"><span class="pre">NewsSitemap</span></tt>). </font><font id="18">It may also map to an <em>instance</em> of a <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="django.contrib.sitemaps.Sitemap"><tt class="xref py py-class docutils literal"><span class="pre">Sitemap</span></tt></a> class (e.g., <tt class="docutils literal"><span class="pre">BlogSitemap(some_var)</span></tt>).</font></p>
+</div>
+<div class="section" id="s-sitemap-classes">
+<span id="sitemap-classes"></span><h2><font id="118">Sitemap classes</font><a class="headerlink" href="sitemaps.html#sitemap-classes" title="Permalink to this headline">¶</a></h2>
+<p><font id="19">A <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="django.contrib.sitemaps.Sitemap"><tt class="xref py py-class docutils literal"><span class="pre">Sitemap</span></tt></a> class is a simple Python class that represents a “section” of entries in your sitemap. </font><font id="20">For example, one <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="django.contrib.sitemaps.Sitemap"><tt class="xref py py-class docutils literal"><span class="pre">Sitemap</span></tt></a> class could represent all the entries of your Weblog, while another could represent all of the events in your events calendar.</font></p>
+<p><font id="21">In the simplest case, all these sections get lumped together into one <tt class="file docutils literal"><span class="pre">sitemap.xml</span></tt>, but it’s also possible to use the framework to generate a sitemap index that references individual sitemap files, one per section. </font><font id="22">(See <a class="reference internal" href="sitemaps.html#creating-a-sitemap-index">Creating a sitemap index</a> below.)</font></p>
+<p><font id="23"><a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="django.contrib.sitemaps.Sitemap"><tt class="xref py py-class docutils literal"><span class="pre">Sitemap</span></tt></a> classes must subclass <tt class="docutils literal"><span class="pre">django.contrib.sitemaps.Sitemap</span></tt>. </font><font id="24">They can live anywhere in your codebase.</font></p>
+</div>
+<div class="section" id="s-a-simple-example">
+<span id="a-simple-example"></span><h2><font id="119">A simple example</font><a class="headerlink" href="sitemaps.html#a-simple-example" title="Permalink to this headline">¶</a></h2>
+<p><font id="25">Let’s assume you have a blog system, with an <tt class="docutils literal"><span class="pre">Entry</span></tt> model, and you want your sitemap to include all the links to your individual blog entries. </font><font id="26">Here’s how your sitemap class might look:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.sitemaps</span> <span class="kn">import</span> <span class="n">Sitemap</span>
+<span class="kn">from</span> <span class="nn">blog.models</span> <span class="kn">import</span> <span class="n">Entry</span>
+
+<span class="k">class</span> <span class="nc">BlogSitemap</span><span class="p">(</span><span class="n">Sitemap</span><span class="p">):</span>
+    <span class="n">changefreq</span> <span class="o">=</span> <span class="s">"never"</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Entry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_draft</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">lastmod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">pub_date</span>
+</pre></div>
+</div>
+<p><font id="27">Note:</font></p>
+<ul class="simple">
+<li><font id="141"><a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.changefreq" title="django.contrib.sitemaps.Sitemap.changefreq"><tt class="xref py py-attr docutils literal"><span class="pre">changefreq</span></tt></a> and <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.priority" title="django.contrib.sitemaps.Sitemap.priority"><tt class="xref py py-attr docutils literal"><span class="pre">priority</span></tt></a> are class attributes corresponding to <tt class="docutils literal"><span class="pre">&lt;changefreq&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;priority&gt;</span></tt> elements, respectively. </font><font id="142">They can be made callable as functions, as <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.lastmod" title="django.contrib.sitemaps.Sitemap.lastmod"><tt class="xref py py-attr docutils literal"><span class="pre">lastmod</span></tt></a> was in the example.</font></li>
+<li><font id="143"><a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a> is simply a method that returns a list of objects. </font><font id="144">The objects returned will get passed to any callable methods corresponding to a sitemap property (<a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.location" title="django.contrib.sitemaps.Sitemap.location"><tt class="xref py py-attr docutils literal"><span class="pre">location</span></tt></a>, <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.lastmod" title="django.contrib.sitemaps.Sitemap.lastmod"><tt class="xref py py-attr docutils literal"><span class="pre">lastmod</span></tt></a>, <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.changefreq" title="django.contrib.sitemaps.Sitemap.changefreq"><tt class="xref py py-attr docutils literal"><span class="pre">changefreq</span></tt></a>, and <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.priority" title="django.contrib.sitemaps.Sitemap.priority"><tt class="xref py py-attr docutils literal"><span class="pre">priority</span></tt></a>).</font></li>
+<li><font id="145"><a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.lastmod" title="django.contrib.sitemaps.Sitemap.lastmod"><tt class="xref py py-attr docutils literal"><span class="pre">lastmod</span></tt></a> should return a Python <tt class="docutils literal"><span class="pre">datetime</span></tt> object.</font></li>
+<li><font id="146">There is no <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.location" title="django.contrib.sitemaps.Sitemap.location"><tt class="xref py py-attr docutils literal"><span class="pre">location</span></tt></a> method in this example, but you can provide it in order to specify the URL for your object. </font><font id="147">By default, <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.location" title="django.contrib.sitemaps.Sitemap.location"><tt class="xref py py-attr docutils literal"><span class="pre">location()</span></tt></a> calls <tt class="docutils literal"><span class="pre">get_absolute_url()</span></tt> on each object and returns the result.</font></li>
+</ul>
+</div>
+<div class="section" id="s-sitemap-class-reference">
+<span id="sitemap-class-reference"></span><h2><font id="120">Sitemap class reference</font><a class="headerlink" href="sitemaps.html#sitemap-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.contrib.sitemaps.Sitemap">
+<em class="property">class </em><tt class="descname">Sitemap</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/sitemaps.html#Sitemap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="28">A <tt class="docutils literal"><span class="pre">Sitemap</span></tt> class can define the following methods/attributes:</font></p>
+<dl class="attribute">
+<dt id="django.contrib.sitemaps.Sitemap.items">
+<tt class="descname">items</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/sitemaps.html#Sitemap.items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="29"><strong>Required.</strong> </font><font id="30">A method that returns a list of objects. </font><font id="31">The framework doesn’t care what <em>type</em> of objects they are; </font><font id="32">all that matters is that these objects get passed to the <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.location" title="django.contrib.sitemaps.Sitemap.location"><tt class="xref py py-attr docutils literal"><span class="pre">location()</span></tt></a>, <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.lastmod" title="django.contrib.sitemaps.Sitemap.lastmod"><tt class="xref py py-attr docutils literal"><span class="pre">lastmod()</span></tt></a>, <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.changefreq" title="django.contrib.sitemaps.Sitemap.changefreq"><tt class="xref py py-attr docutils literal"><span class="pre">changefreq()</span></tt></a> and <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.priority" title="django.contrib.sitemaps.Sitemap.priority"><tt class="xref py py-attr docutils literal"><span class="pre">priority()</span></tt></a> methods.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.sitemaps.Sitemap.location">
+<tt class="descname">location</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/sitemaps.html#Sitemap.location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap.location" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="33"><strong>Optional.</strong> </font><font id="34">Either a method or attribute.</font></p>
+<p><font id="35">If it’s a method, it should return the absolute path for a given object as returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a>.</font></p>
+<p><font id="36">If it’s an attribute, its value should be a string representing an absolute path to use for <em>every</em> object returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a>.</font></p>
+<p><font id="37">In both cases, “absolute path” means a URL that doesn’t include the protocol or domain. </font><font id="38">Examples:</font></p>
+<ul class="simple">
+<li><font id="148">Good: <tt class="file docutils literal"><span class="pre">'/foo/bar/'</span></tt></font></li>
+<li><font id="149">Bad: <tt class="file docutils literal"><span class="pre">'example.com/foo/bar/'</span></tt></font></li>
+<li><font id="150">Bad: <tt class="file docutils literal"><span class="pre">'http://example.com/foo/bar/'</span></tt></font></li>
+</ul>
+<p><font id="39">If <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.location" title="django.contrib.sitemaps.Sitemap.location"><tt class="xref py py-attr docutils literal"><span class="pre">location</span></tt></a> isn’t provided, the framework will call the <tt class="docutils literal"><span class="pre">get_absolute_url()</span></tt> method on each object as returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a>.</font></p>
+<p><font id="40">To specify a protocol other than <tt class="docutils literal"><span class="pre">'http'</span></tt>, use <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.protocol" title="django.contrib.sitemaps.Sitemap.protocol"><tt class="xref py py-attr docutils literal"><span class="pre">protocol</span></tt></a>.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.sitemaps.Sitemap.lastmod">
+<tt class="descname">lastmod</tt><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap.lastmod" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="41"><strong>Optional.</strong> </font><font id="42">Either a method or attribute.</font></p>
+<p><font id="43">If it’s a method, it should take one argument – an object as returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a> – and return that object’s last-modified date/time, as a Python <tt class="docutils literal"><span class="pre">datetime.datetime</span></tt> object.</font></p>
+<p><font id="44">If it’s an attribute, its value should be a Python <tt class="docutils literal"><span class="pre">datetime.datetime</span></tt> object representing the last-modified date/time for <em>every</em> object returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a>.</font></p>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="45">If all items in a sitemap have a <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.lastmod" title="django.contrib.sitemaps.Sitemap.lastmod"><tt class="xref py py-attr docutils literal"><span class="pre">lastmod</span></tt></a>, the sitemap generated by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.views.sitemap" title="django.contrib.sitemaps.views.sitemap"><tt class="xref py py-func docutils literal"><span class="pre">views.sitemap()</span></tt></a> will have a <tt class="docutils literal"><span class="pre">Last-Modified</span></tt> header equal to the latest <tt class="docutils literal"><span class="pre">lastmod</span></tt>. </font><font id="46">You can activate the <a class="reference internal" href="../middleware.html#django.middleware.http.ConditionalGetMiddleware" title="django.middleware.http.ConditionalGetMiddleware"><tt class="xref py py-class docutils literal"><span class="pre">ConditionalGetMiddleware</span></tt></a> to make Django respond appropriately to requests with an <tt class="docutils literal"><span class="pre">If-Modified-Since</span></tt> header which will prevent sending the sitemap if it hasn’t changed.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.sitemaps.Sitemap.changefreq">
+<tt class="descname">changefreq</tt><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap.changefreq" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="47"><strong>Optional.</strong> </font><font id="48">Either a method or attribute.</font></p>
+<p><font id="49">If it’s a method, it should take one argument – an object as returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a> – and return that object’s change frequency, as a Python string.</font></p>
+<p><font id="50">If it’s an attribute, its value should be a string representing the change frequency of <em>every</em> object returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a>.</font></p>
+<p><font id="51">Possible values for <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.changefreq" title="django.contrib.sitemaps.Sitemap.changefreq"><tt class="xref py py-attr docutils literal"><span class="pre">changefreq</span></tt></a>, whether you use a method or attribute, are:</font></p>
+<ul class="simple">
+<li><font id="151"><tt class="docutils literal"><span class="pre">'always'</span></tt></font></li>
+<li><font id="152"><tt class="docutils literal"><span class="pre">'hourly'</span></tt></font></li>
+<li><font id="153"><tt class="docutils literal"><span class="pre">'daily'</span></tt></font></li>
+<li><font id="154"><tt class="docutils literal"><span class="pre">'weekly'</span></tt></font></li>
+<li><font id="155"><tt class="docutils literal"><span class="pre">'monthly'</span></tt></font></li>
+<li><font id="156"><tt class="docutils literal"><span class="pre">'yearly'</span></tt></font></li>
+<li><font id="157"><tt class="docutils literal"><span class="pre">'never'</span></tt></font></li>
+</ul>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.sitemaps.Sitemap.priority">
+<tt class="descname">priority</tt><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap.priority" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="52"><strong>Optional.</strong> </font><font id="53">Either a method or attribute.</font></p>
+<p><font id="54">If it’s a method, it should take one argument – an object as returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a> – and return that object’s priority, as either a string or float.</font></p>
+<p><font id="55">If it’s an attribute, its value should be either a string or float representing the priority of <em>every</em> object returned by <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a>.</font></p>
+<p><font id="56">Example values for <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.priority" title="django.contrib.sitemaps.Sitemap.priority"><tt class="xref py py-attr docutils literal"><span class="pre">priority</span></tt></a>: <tt class="docutils literal"><span class="pre">0.4</span></tt>, <tt class="docutils literal"><span class="pre">1.0</span></tt>. </font><font id="57">The default priority of a page is <tt class="docutils literal"><span class="pre">0.5</span></tt>. </font><font id="58">See the <a class="reference external" href="http://www.sitemaps.org/protocol.html#prioritydef">sitemaps.org documentation</a> for more.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.sitemaps.Sitemap.protocol">
+<tt class="descname">protocol</tt><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap.protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="59"><strong>Optional.</strong></font></p>
+<p><font id="60">This attribute defines the protocol (<tt class="docutils literal"><span class="pre">'http'</span></tt> or <tt class="docutils literal"><span class="pre">'https'</span></tt>) of the URLs in the sitemap. </font><font id="61">If it isn’t set, the protocol with which the sitemap was requested is used. </font><font id="62">If the sitemap is built outside the context of a request, the default is <tt class="docutils literal"><span class="pre">'http'</span></tt>.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.sitemaps.Sitemap.limit">
+<tt class="descname">limit</tt><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap.limit" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="63"><strong>Optional.</strong></font></p>
+<p><font id="64">This attribute defines the maximum number of URLs included on each page of the sitemap. </font><font id="65">Its value should not exceed the default value of <tt class="docutils literal"><span class="pre">50000</span></tt>, which is the upper limit allowed in the <a class="reference external" href="http://www.sitemaps.org/protocol.html#index">Sitemaps protocol</a>.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.contrib.sitemaps.Sitemap.i18n">
+<tt class="descname">i18n</tt><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.Sitemap.i18n" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="66"><strong>Optional.</strong></font></p>
+<p><font id="67">A boolean attribute that defines if the URLs of this sitemap should be generated using all of your <a class="reference internal" href="../settings.html#std:setting-LANGUAGES"><tt class="xref std std-setting docutils literal"><span class="pre">LANGUAGES</span></tt></a>. </font><font id="68">The default is <tt class="docutils literal"><span class="pre">False</span></tt>.</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-shortcuts">
+<span id="shortcuts"></span><h2><font id="121">Shortcuts</font><a class="headerlink" href="sitemaps.html#shortcuts" title="Permalink to this headline">¶</a></h2>
+<p><font id="69">The sitemap framework provides a couple convenience classes for common cases:</font></p>
+<dl class="class">
+<dt id="django.contrib.sitemaps.FlatPageSitemap">
+<em class="property">class </em><tt class="descname">FlatPageSitemap</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/sitemaps.html#FlatPageSitemap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.FlatPageSitemap" title="Permalink to this definition">¶</a></dt>
+<dd><div class="deprecated">
+<p><font id="70"><span class="versionmodified">Deprecated since version 1.8: </span></font><font id="71">Use <a class="reference internal" href="flatpages.html#django.contrib.flatpages.sitemaps.FlatPageSitemap" title="django.contrib.flatpages.sitemaps.FlatPageSitemap"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.flatpages.sitemaps.FlatPageSitemap</span></tt></a> instead.</font></p>
+</div>
+<p><font id="72">The <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.FlatPageSitemap" title="django.contrib.sitemaps.FlatPageSitemap"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.sitemaps.FlatPageSitemap</span></tt></a> class looks at all publicly visible <a class="reference internal" href="flatpages.html#module-django.contrib.flatpages" title="django.contrib.flatpages: A framework for managing simple ?flat? HTML content in a database."><tt class="xref py py-mod docutils literal"><span class="pre">flatpages</span></tt></a> defined for the current <a class="reference internal" href="../settings.html#std:setting-SITE_ID"><tt class="xref std std-setting docutils literal"><span class="pre">SITE_ID</span></tt></a> (see the <a class="reference internal" href="sites.html#module-django.contrib.sites" title="django.contrib.sites: Lets you operate multiple Web sites from the same database and Django project"><tt class="xref py py-mod docutils literal"><span class="pre">sites</span> <span class="pre">documentation</span></tt></a>) and creates an entry in the sitemap. </font><font id="73">These entries include only the <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.location" title="django.contrib.sitemaps.Sitemap.location"><tt class="xref py py-attr docutils literal"><span class="pre">location</span></tt></a> attribute – not <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.lastmod" title="django.contrib.sitemaps.Sitemap.lastmod"><tt class="xref py py-attr docutils literal"><span class="pre">lastmod</span></tt></a>, <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.changefreq" title="django.contrib.sitemaps.Sitemap.changefreq"><tt class="xref py py-attr docutils literal"><span class="pre">changefreq</span></tt></a> or <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.priority" title="django.contrib.sitemaps.Sitemap.priority"><tt class="xref py py-attr docutils literal"><span class="pre">priority</span></tt></a>.</font></p>
+</dd></dl>
+<dl class="class">
+<dt id="django.contrib.sitemaps.GenericSitemap">
+<em class="property">class </em><tt class="descname">GenericSitemap</tt><a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/sitemaps.html#GenericSitemap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.GenericSitemap" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="74">The <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.GenericSitemap" title="django.contrib.sitemaps.GenericSitemap"><tt class="xref py py-class docutils literal"><span class="pre">django.contrib.sitemaps.GenericSitemap</span></tt></a> class allows you to create a sitemap by passing it a dictionary which has to contain at least a <tt class="docutils literal"><span class="pre">queryset</span></tt> entry. </font><font id="75">This queryset will be used to generate the items of the sitemap. </font><font id="76">It may also have a <tt class="docutils literal"><span class="pre">date_field</span></tt> entry that specifies a date field for objects retrieved from the <tt class="docutils literal"><span class="pre">queryset</span></tt>. </font><font id="77">This will be used for the <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.lastmod" title="django.contrib.sitemaps.Sitemap.lastmod"><tt class="xref py py-attr docutils literal"><span class="pre">lastmod</span></tt></a> attribute in the generated sitemap. </font><font id="78">You may also pass <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.priority" title="django.contrib.sitemaps.Sitemap.priority"><tt class="xref py py-attr docutils literal"><span class="pre">priority</span></tt></a> and <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.changefreq" title="django.contrib.sitemaps.Sitemap.changefreq"><tt class="xref py py-attr docutils literal"><span class="pre">changefreq</span></tt></a> keyword arguments to the <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.GenericSitemap" title="django.contrib.sitemaps.GenericSitemap"><tt class="xref py py-class docutils literal"><span class="pre">GenericSitemap</span></tt></a> constructor to specify these attributes for all URLs.</font></p>
+</dd></dl>
+<div class="section" id="s-example">
+<span id="example"></span><h3><font id="126">Example</font><a class="headerlink" href="sitemaps.html#example" title="Permalink to this headline">¶</a></h3>
+<p><font id="79">Here’s an example of a <a class="reference internal" href="../../topics/http/urls.html"><em>URLconf</em></a> using <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.GenericSitemap" title="django.contrib.sitemaps.GenericSitemap"><tt class="xref py py-class docutils literal"><span class="pre">GenericSitemap</span></tt></a>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.contrib.sitemaps</span> <span class="kn">import</span> <span class="n">GenericSitemap</span>
+<span class="kn">from</span> <span class="nn">django.contrib.sitemaps.views</span> <span class="kn">import</span> <span class="n">sitemap</span>
+<span class="kn">from</span> <span class="nn">blog.models</span> <span class="kn">import</span> <span class="n">Entry</span>
+
+<span class="n">info_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'queryset'</span><span class="p">:</span> <span class="n">Entry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
+    <span class="s">'date_field'</span><span class="p">:</span> <span class="s">'pub_date'</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c"># some generic view using info_dict</span>
+    <span class="c"># ...</span>
+
+    <span class="c"># the sitemap</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^sitemap\.xml$'</span><span class="p">,</span> <span class="n">sitemap</span><span class="p">,</span>
+        <span class="p">{</span><span class="s">'sitemaps'</span><span class="p">:</span> <span class="p">{</span><span class="s">'blog'</span><span class="p">:</span> <span class="n">GenericSitemap</span><span class="p">(</span><span class="n">info_dict</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)}},</span>
+        <span class="n">name</span><span class="o">=</span><span class="s">'django.contrib.sitemaps.views.sitemap'</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-sitemap-for-static-views">
+<span id="sitemap-for-static-views"></span><h2><font id="122">Sitemap for static views</font><a class="headerlink" href="sitemaps.html#sitemap-for-static-views" title="Permalink to this headline">¶</a></h2>
+<p><font id="80">Often you want the search engine crawlers to index views which are neither object detail pages nor flatpages. </font><font id="81">The solution is to explicitly list URL names for these views in <tt class="docutils literal"><span class="pre">items</span></tt> and call <a class="reference internal" href="../urlresolvers.html#django.core.urlresolvers.reverse" title="django.core.urlresolvers.reverse"><tt class="xref py py-func docutils literal"><span class="pre">reverse()</span></tt></a> in the <tt class="docutils literal"><span class="pre">location</span></tt> method of the sitemap. </font><font id="82">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># sitemaps.py</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">sitemaps</span>
+<span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
+
+<span class="k">class</span> <span class="nc">StaticViewSitemap</span><span class="p">(</span><span class="n">sitemaps</span><span class="o">.</span><span class="n">Sitemap</span><span class="p">):</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">changefreq</span> <span class="o">=</span> <span class="s">'daily'</span>
+
+    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s">'main'</span><span class="p">,</span> <span class="s">'about'</span><span class="p">,</span> <span class="s">'license'</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+<span class="c"># urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.contrib.sitemaps.views</span> <span class="kn">import</span> <span class="n">sitemap</span>
+
+<span class="kn">from</span> <span class="nn">.sitemaps</span> <span class="kn">import</span> <span class="n">StaticViewSitemap</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">sitemaps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'static'</span><span class="p">:</span> <span class="n">StaticViewSitemap</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">main</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'main'</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'about'</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^license/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">license</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'license'</span><span class="p">),</span>
+    <span class="c"># ...</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^sitemap\.xml$'</span><span class="p">,</span> <span class="n">sitemap</span><span class="p">,</span> <span class="p">{</span><span class="s">'sitemaps'</span><span class="p">:</span> <span class="n">sitemaps</span><span class="p">},</span>
+        <span class="n">name</span><span class="o">=</span><span class="s">'django.contrib.sitemaps.views.sitemap'</span><span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-creating-a-sitemap-index">
+<span id="creating-a-sitemap-index"></span><h2><font id="123">Creating a sitemap index</font><a class="headerlink" href="sitemaps.html#creating-a-sitemap-index" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="django.contrib.sitemaps.views.index">
+<tt class="descclassname">views.</tt><tt class="descname">index</tt>(<em>request</em>, <em>sitemaps</em>, <em>template_name='sitemap_index.xml'</em>, <em>content_type='application/xml'</em>, <em>sitemap_url_name='django.contrib.sitemaps.views.sitemap'</em>)<a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.views.index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="83">The sitemap framework also has the ability to create a sitemap index that references individual sitemap files, one per each section defined in your <tt class="docutils literal"><span class="pre">sitemaps</span></tt> dictionary. </font><font id="84">The only differences in usage are:</font></p>
+<ul class="simple">
+<li><font id="158">You use two views in your URLconf: <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.views.index" title="django.contrib.sitemaps.views.index"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.sitemaps.views.index()</span></tt></a> and <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.views.sitemap" title="django.contrib.sitemaps.views.sitemap"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.sitemaps.views.sitemap()</span></tt></a>.</font></li>
+<li><font id="159">The <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.views.sitemap" title="django.contrib.sitemaps.views.sitemap"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.sitemaps.views.sitemap()</span></tt></a> view should take a <tt class="docutils literal"><span class="pre">section</span></tt> keyword argument.</font></li>
+</ul>
+<p><font id="85">Here’s what the relevant URLconf lines would look like for the example above:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.sitemaps</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^sitemap\.xml$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">{</span><span class="s">'sitemaps'</span><span class="p">:</span> <span class="n">sitemaps</span><span class="p">}),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^sitemap-(?P&lt;section&gt;.+)\.xml$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">sitemap</span><span class="p">,</span> <span class="p">{</span><span class="s">'sitemaps'</span><span class="p">:</span> <span class="n">sitemaps</span><span class="p">}),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="86">This will automatically generate a <tt class="file docutils literal"><span class="pre">sitemap.xml</span></tt> file that references both <tt class="file docutils literal"><span class="pre">sitemap-flatpages.xml</span></tt> and <tt class="file docutils literal"><span class="pre">sitemap-blog.xml</span></tt>. </font><font id="87">The <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="django.contrib.sitemaps.Sitemap"><tt class="xref py py-class docutils literal"><span class="pre">Sitemap</span></tt></a> classes and the <tt class="docutils literal"><span class="pre">sitemaps</span></tt> dict don’t change at all.</font></p>
+<p><font id="88">You should create an index file if one of your sitemaps has more than 50,000 URLs. </font><font id="89">In this case, Django will automatically paginate the sitemap, and the index will reflect that.</font></p>
+<p><font id="90">If you’re not using the vanilla sitemap view – for example, if it’s wrapped with a caching decorator – you must name your sitemap view and pass <tt class="docutils literal"><span class="pre">sitemap_url_name</span></tt> to the index view:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.sitemaps</span> <span class="kn">import</span> <span class="n">views</span> <span class="k">as</span> <span class="n">sitemaps_views</span>
+<span class="kn">from</span> <span class="nn">django.views.decorators.cache</span> <span class="kn">import</span> <span class="n">cache_page</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^sitemap\.xml$'</span><span class="p">,</span>
+        <span class="n">cache_page</span><span class="p">(</span><span class="mi">86400</span><span class="p">)(</span><span class="n">sitemaps_views</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
+        <span class="p">{</span><span class="s">'sitemaps'</span><span class="p">:</span> <span class="n">sitemaps</span><span class="p">,</span> <span class="s">'sitemap_url_name'</span><span class="p">:</span> <span class="s">'sitemaps'</span><span class="p">}),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^sitemap-(?P&lt;section&gt;.+)\.xml$'</span><span class="p">,</span>
+        <span class="n">cache_page</span><span class="p">(</span><span class="mi">86400</span><span class="p">)(</span><span class="n">sitemaps_views</span><span class="o">.</span><span class="n">sitemap</span><span class="p">),</span>
+        <span class="p">{</span><span class="s">'sitemaps'</span><span class="p">:</span> <span class="n">sitemaps</span><span class="p">},</span> <span class="n">name</span><span class="o">=</span><span class="s">'sitemaps'</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-template-customization">
+<span id="template-customization"></span><h2><font id="124">Template customization</font><a class="headerlink" href="sitemaps.html#template-customization" title="Permalink to this headline">¶</a></h2>
+<p><font id="91">If you wish to use a different template for each sitemap or sitemap index available on your site, you may specify it by passing a <tt class="docutils literal"><span class="pre">template_name</span></tt> parameter to the <tt class="docutils literal"><span class="pre">sitemap</span></tt> and <tt class="docutils literal"><span class="pre">index</span></tt> views via the URLconf:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.sitemaps</span> <span class="kn">import</span> <span class="n">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^custom-sitemap\.xml$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s">'sitemaps'</span><span class="p">:</span> <span class="n">sitemaps</span><span class="p">,</span>
+        <span class="s">'template_name'</span><span class="p">:</span> <span class="s">'custom_sitemap.html'</span>
+    <span class="p">}),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^custom-sitemap-(?P&lt;section&gt;.+)\.xml$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">sitemap</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s">'sitemaps'</span><span class="p">:</span> <span class="n">sitemaps</span><span class="p">,</span>
+        <span class="s">'template_name'</span><span class="p">:</span> <span class="s">'custom_sitemap.html'</span>
+    <span class="p">}),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="92">These views return <a class="reference internal" href="../template-response.html#django.template.response.TemplateResponse" title="django.template.response.TemplateResponse"><tt class="xref py py-class docutils literal"><span class="pre">TemplateResponse</span></tt></a> instances which allow you to easily customize the response data before rendering. </font><font id="93">For more details, see the <a class="reference internal" href="../template-response.html"><em>TemplateResponse documentation</em></a>.</font></p>
+<div class="section" id="s-context-variables">
+<span id="context-variables"></span><h3><font id="127">Context variables</font><a class="headerlink" href="sitemaps.html#context-variables" title="Permalink to this headline">¶</a></h3>
+<p><font id="94">When customizing the templates for the <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.views.index" title="django.contrib.sitemaps.views.index"><tt class="xref py py-func docutils literal"><span class="pre">index()</span></tt></a> and <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.views.sitemap" title="django.contrib.sitemaps.views.sitemap"><tt class="xref py py-func docutils literal"><span class="pre">sitemap()</span></tt></a> views, you can rely on the following context variables.</font></p>
+</div>
+<div class="section" id="s-index">
+<span id="index"></span><h3><font id="128">Index</font><a class="headerlink" href="sitemaps.html#index" title="Permalink to this headline">¶</a></h3>
+<p><font id="95">The variable <tt class="docutils literal"><span class="pre">sitemaps</span></tt> is a list of absolute URLs to each of the sitemaps.</font></p>
+</div>
+<div class="section" id="s-id1">
+<span id="id1"></span><h3><font id="129">Sitemap</font><a class="headerlink" href="sitemaps.html#id1" title="Permalink to this headline">¶</a></h3>
+<p><font id="96">The variable <tt class="docutils literal"><span class="pre">urlset</span></tt> is a list of URLs that should appear in the sitemap. </font><font id="97">Each URL exposes attributes as defined in the <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap" title="django.contrib.sitemaps.Sitemap"><tt class="xref py py-class docutils literal"><span class="pre">Sitemap</span></tt></a> class:</font></p>
+<ul class="simple">
+<li><font id="160"><tt class="docutils literal"><span class="pre">changefreq</span></tt></font></li>
+<li><font id="161"><tt class="docutils literal"><span class="pre">item</span></tt></font></li>
+<li><font id="162"><tt class="docutils literal"><span class="pre">lastmod</span></tt></font></li>
+<li><font id="163"><tt class="docutils literal"><span class="pre">location</span></tt></font></li>
+<li><font id="164"><tt class="docutils literal"><span class="pre">priority</span></tt></font></li>
+</ul>
+<p><font id="98">The <tt class="docutils literal"><span class="pre">item</span></tt> attribute has been added for each URL to allow more flexible customization of the templates, such as <a class="reference external" href="https://support.google.com/news/publisher/answer/74288?hl=en">Google news sitemaps</a>. </font><font id="99">Assuming Sitemap’s <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.Sitemap.items" title="django.contrib.sitemaps.Sitemap.items"><tt class="xref py py-attr docutils literal"><span class="pre">items()</span></tt></a> would return a list of items with <tt class="docutils literal"><span class="pre">publication_data</span></tt> and a <tt class="docutils literal"><span class="pre">tags</span></tt> field something like this would generate a Google News compatible sitemap:</font></p>
+<div class="highlight-xml+django"><div class="highlight"><pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;urlset</span>
+  <span class="na">xmlns=</span><span class="s">"http://www.sitemaps.org/schemas/sitemap/0.9"</span>
+  <span class="na">xmlns:news=</span><span class="s">"http://www.google.com/schemas/sitemap-news/0.9"</span><span class="nt">&gt;</span>
+<span class="cp">{%</span> <span class="k">spaceless</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">for</span> <span class="nv">url</span> <span class="k">in</span> <span class="nv">urlset</span> <span class="cp">%}</span>
+  <span class="nt">&lt;url&gt;</span>
+    <span class="nt">&lt;loc&gt;</span><span class="cp">{{</span> <span class="nv">url.location</span> <span class="cp">}}</span><span class="nt">&lt;/loc&gt;</span>
+    <span class="cp">{%</span> <span class="k">if</span> <span class="nv">url.lastmod</span> <span class="cp">%}</span><span class="nt">&lt;lastmod&gt;</span><span class="cp">{{</span> <span class="nv">url.lastmod</span><span class="o">|</span><span class="nf">date</span><span class="s2">:"Y-m-d"</span> <span class="cp">}}</span><span class="nt">&lt;/lastmod&gt;</span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+    <span class="cp">{%</span> <span class="k">if</span> <span class="nv">url.changefreq</span> <span class="cp">%}</span><span class="nt">&lt;changefreq&gt;</span><span class="cp">{{</span> <span class="nv">url.changefreq</span> <span class="cp">}}</span><span class="nt">&lt;/changefreq&gt;</span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+    <span class="cp">{%</span> <span class="k">if</span> <span class="nv">url.priority</span> <span class="cp">%}</span><span class="nt">&lt;priority&gt;</span><span class="cp">{{</span> <span class="nv">url.priority</span> <span class="cp">}}</span><span class="nt">&lt;/priority&gt;</span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+    <span class="nt">&lt;news:news&gt;</span>
+      <span class="cp">{%</span> <span class="k">if</span> <span class="nv">url.item.publication_date</span> <span class="cp">%}</span><span class="nt">&lt;news:publication_date&gt;</span><span class="cp">{{</span> <span class="nv">url.item.publication_date</span><span class="o">|</span><span class="nf">date</span><span class="s2">:"Y-m-d"</span> <span class="cp">}}</span><span class="nt">&lt;/news:publication_date&gt;</span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+      <span class="cp">{%</span> <span class="k">if</span> <span class="nv">url.item.tags</span> <span class="cp">%}</span><span class="nt">&lt;news:keywords&gt;</span><span class="cp">{{</span> <span class="nv">url.item.tags</span> <span class="cp">}}</span><span class="nt">&lt;/news:keywords&gt;</span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+    <span class="nt">&lt;/news:news&gt;</span>
+   <span class="nt">&lt;/url&gt;</span>
+<span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">endspaceless</span> <span class="cp">%}</span>
+<span class="nt">&lt;/urlset&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="s-pinging-google">
+<span id="pinging-google"></span><h2><font id="125">Pinging Google</font><a class="headerlink" href="sitemaps.html#pinging-google" title="Permalink to this headline">¶</a></h2>
+<p><font id="100">You may want to “ping” Google when your sitemap changes, to let it know to reindex your site. </font><font id="101">The sitemaps framework provides a function to do just that: <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.ping_google" title="django.contrib.sitemaps.ping_google"><tt class="xref py py-func docutils literal"><span class="pre">django.contrib.sitemaps.ping_google()</span></tt></a>.</font></p>
+<dl class="function">
+<dt id="django.contrib.sitemaps.ping_google">
+<tt class="descname">ping_google</tt>()<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/contrib/sitemaps.html#ping_google"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="sitemaps.html#django.contrib.sitemaps.ping_google" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="102"><a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.ping_google" title="django.contrib.sitemaps.ping_google"><tt class="xref py py-func docutils literal"><span class="pre">ping_google()</span></tt></a> takes an optional argument, <tt class="docutils literal"><span class="pre">sitemap_url</span></tt>, which should be the absolute path to your site’s sitemap (e.g., <tt class="file docutils literal"><span class="pre">'/sitemap.xml'</span></tt>). </font><font id="103">If this argument isn’t provided, <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.ping_google" title="django.contrib.sitemaps.ping_google"><tt class="xref py py-func docutils literal"><span class="pre">ping_google()</span></tt></a> will attempt to figure out your sitemap by performing a reverse looking in your URLconf.</font></p>
+<p><font id="104"><a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.ping_google" title="django.contrib.sitemaps.ping_google"><tt class="xref py py-func docutils literal"><span class="pre">ping_google()</span></tt></a> raises the exception <tt class="docutils literal"><span class="pre">django.contrib.sitemaps.SitemapNotFound</span></tt> if it cannot determine your sitemap URL.</font></p>
+</dd></dl>
+<div class="admonition-register-with-google-first admonition">
+<p class="first admonition-title"><font id="105">Register with Google first!</font></p>
+<p class="last"><font id="106">The <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.ping_google" title="django.contrib.sitemaps.ping_google"><tt class="xref py py-func docutils literal"><span class="pre">ping_google()</span></tt></a> command only works if you have registered your site with <a class="reference external" href="http://www.google.com/webmasters/tools/">Google Webmaster Tools</a>.</font></p>
+</div>
+<p><font id="107">One useful way to call <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.ping_google" title="django.contrib.sitemaps.ping_google"><tt class="xref py py-func docutils literal"><span class="pre">ping_google()</span></tt></a> is from a model’s <tt class="docutils literal"><span class="pre">save()</span></tt> method:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib.sitemaps</span> <span class="kn">import</span> <span class="n">ping_google</span>
+
+<span class="k">class</span> <span class="nc">Entry</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_insert</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Entry</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">force_insert</span><span class="p">,</span> <span class="n">force_update</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ping_google</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c"># Bare 'except' because we could get a variety</span>
+            <span class="c"># of HTTP-related exceptions.</span>
+            <span class="k">pass</span>
+</pre></div>
+</div>
+<p><font id="108">A more efficient solution, however, would be to call <a class="reference internal" href="sitemaps.html#django.contrib.sitemaps.ping_google" title="django.contrib.sitemaps.ping_google"><tt class="xref py py-func docutils literal"><span class="pre">ping_google()</span></tt></a> from a cron script, or some other scheduled task. </font><font id="109">The function makes an HTTP request to Google’s servers, so you may not want to introduce that network overhead each time you call <tt class="docutils literal"><span class="pre">save()</span></tt>.</font></p>
+<div class="section" id="s-pinging-google-via-manage-py">
+<span id="pinging-google-via-manage-py"></span><h3><font id="130">Pinging Google via </font><tt class="docutils literal"><span class="pre">manage.py</span></tt></h3>
+<dl class="django-admin">
+<dt id="django-admin-ping_google">
+<tt class="descname">django-admin ping_google</tt><a class="headerlink" href="sitemaps.html#django-admin-ping_google" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="110">Once the sitemaps application is added to your project, you may also ping Google using the <tt class="docutils literal"><span class="pre">ping_google</span></tt> management command:</font></p>
+<div class="highlight-python"><div class="highlight"><pre>python manage.py ping_google [/sitemap.xml]
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="131">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="sitemaps.html#"><font id="165">The sitemap framework</font></a><ul>
+<li><a class="reference internal" href="sitemaps.html#overview"><font id="166">Overview</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#installation"><font id="167">Installation</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#initialization"><font id="168">Initialization</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#sitemap-classes"><font id="169">Sitemap classes</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#a-simple-example"><font id="170">A simple example</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#sitemap-class-reference"><font id="171">Sitemap class reference</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#shortcuts"><font id="172">Shortcuts</font></a><ul>
+<li><a class="reference internal" href="sitemaps.html#example"><font id="173">Example</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="sitemaps.html#sitemap-for-static-views"><font id="174">Sitemap for static views</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#creating-a-sitemap-index"><font id="175">Creating a sitemap index</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#template-customization"><font id="176">Template customization</font></a><ul>
+<li><a class="reference internal" href="sitemaps.html#context-variables"><font id="177">Context variables</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#index"><font id="178">Index</font></a></li>
+<li><a class="reference internal" href="sitemaps.html#id1"><font id="179">Sitemap</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="sitemaps.html#pinging-google"><font id="180">Pinging Google</font></a><ul>
+<li><a class="reference internal" href="sitemaps.html#pinging-google-via-manage-py"><font id="181">None</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="132">Browse</font></h3>
+<ul>
+<li><font id="182">Prev: <a href="redirects.html">The redirects app</a></font></li>
+<li><font id="183">Next: <a href="sites.html">The “sites” framework</a></font></li>
+</ul>
+<h3><font id="133">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="184">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../index.html"><font id="185">API Reference</font></a>
+<ul><li><a href="index.html"><font id="186">None</font></a>
+<ul><li><font id="187">The sitemap framework</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="134">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/contrib/sitemaps.txt" rel="nofollow"><font id="188">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="135">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="111"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="136">Last update:</font></h3>
+<p class="topless"><font id="112">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="redirects.html" title="The redirects app">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="sites.html" title="The &amp;#8220;sites&amp;#8221; framework">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/contrib/sitemaps';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

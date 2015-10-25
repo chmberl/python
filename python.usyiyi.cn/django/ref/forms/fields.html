@@ -1,0 +1,1347 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>表单字段 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Forms"/>
+<link href="models.html" rel="next" title="Model Form Functions"/>
+<link href="api.html" rel="prev" title="The Forms API"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/forms/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/forms/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="224">Django 1.8.2.文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="api.html" title="The Forms API">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="models.html" title="Model Form Functions">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-forms-fields">
+<div class="section" id="s-module-django.forms.fields">
+<span id="s-form-fields"></span><span id="module-django.forms.fields"></span><span id="form-fields"></span><h1><font id="225">表单字段</font><a class="headerlink" href="fields.html#module-django.forms.fields" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="django.forms.Field">
+<em class="property">class </em><tt class="descname">Field</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.Field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="1">创建一个<tt class="docutils literal"><span class="pre">表单</span></tt>类时，最重要的部分是定义表单的字段。</font><font id="2">每个字段都可以有自定义的验证逻辑，以及一些其它的钩子。</font></p>
+<dl class="method">
+<dt id="django.forms.Field.clean">
+<tt class="descclassname">Field.</tt><tt class="descname">clean</tt>(<em>value</em>)<a class="headerlink" href="fields.html#django.forms.Field.clean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="3">虽然<tt class="docutils literal"><span class="pre">字段</span></tt>类主要使用在<tt class="docutils literal"><span class="pre">表单</span></tt>类中，但你也可以直接实例化它们来使用，以便更好地了解它们是如何工作的。</font><font id="4">每个<tt class="docutils literal"><span class="pre">字段</span></tt>实例都有一个<tt class="docutils literal"><span class="pre">clean()</span></tt>方法， 它接受一个参数，然后返回“清洁的”数据或者抛出一个<tt class="docutils literal"><span class="pre">django.forms.ValidationError</span></tt>异常：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">EmailField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">'foo@example.com'</span><span class="p">)</span>
+<span class="go">'foo@example.com'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">'invalid email address'</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValidationError</span>: <span class="n">['Enter a valid email address.']</span>
+</pre></div>
+</div>
+<div class="section" id="s-core-field-arguments">
+<span id="s-id1"></span><span id="core-field-arguments"></span><span id="id1"></span><h2><font id="226">字段的核心参数</font><a class="headerlink" href="fields.html#core-field-arguments" title="Permalink to this headline">¶</a></h2>
+<p><font id="5">每个<tt class="docutils literal"><span class="pre">字段</span></tt>类的构造函数至少接受这些参数。</font><font id="6">有些<tt class="docutils literal"><span class="pre">字段</span></tt>类接受额外的、字段特有的参数，但以下参数应该<em>总是</em>能接受：</font></p>
+<div class="section" id="s-required">
+<span id="required"></span><h3><font id="232">required</font><a class="headerlink" href="fields.html#required" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.required">
+<tt class="descclassname">Field.</tt><tt class="descname">required</tt><a class="headerlink" href="fields.html#django.forms.Field.required" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="7">默认情况下，每个<tt class="docutils literal"><span class="pre">字段</span></tt> 类都假设必需有值，所以如果你传递一个空的值 —— 不管是<tt class="docutils literal"><span class="pre">None</span></tt> 还是空字符串(<tt class="docutils literal"><span class="pre">""</span></tt>) —— <tt class="docutils literal"><span class="pre">clean()</span></tt> 将引发一个<tt class="docutils literal"><span class="pre">ValidationError</span></tt> 异常：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">'foo'</span><span class="p">)</span>
+<span class="go">'foo'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">''</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValidationError</span>: <span class="n">['This field is required.']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValidationError</span>: <span class="n">['This field is required.']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">' '</span><span class="p">)</span>
+<span class="go">' '</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">'0'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+<span class="go">'True'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="go">'False'</span>
+</pre></div>
+</div>
+<p><font id="8">若要表示一个字段<em>不</em>是必需的，请传递<tt class="docutils literal"><span class="pre">required=False</span></tt> 给<tt class="docutils literal"><span class="pre">字段</span></tt>的构造函数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">'foo'</span><span class="p">)</span>
+<span class="go">'foo'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">''</span><span class="p">)</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">'0'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+<span class="go">'True'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="go">'False'</span>
+</pre></div>
+</div>
+<p><font id="9">如果<tt class="docutils literal"><span class="pre">字段</span></tt> 具有<tt class="docutils literal"><span class="pre">required=False</span></tt>，而你传递给<tt class="docutils literal"><span class="pre">clean()</span></tt> 一个空值，<tt class="docutils literal"><span class="pre">clean()</span></tt> 将返回一个<em>转换后</em>的空值而不是引发<tt class="docutils literal"><span class="pre">ValidationError</span></tt>。</font><font id="10">例如<tt class="docutils literal"><span class="pre">CharField</span></tt>，它将是一个空的Unicode 字符串。</font><font id="11">对于其它<tt class="docutils literal"><span class="pre">字段</span></tt>类，它可能是<tt class="docutils literal"><span class="pre">None</span></tt>。</font><font id="12">（每个字段各不相同）。</font></p>
+</div>
+<div class="section" id="s-label">
+<span id="label"></span><h3><font id="233">label</font><a class="headerlink" href="fields.html#label" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.label">
+<tt class="descclassname">Field.</tt><tt class="descname">label</tt><a class="headerlink" href="fields.html#django.forms.Field.label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="13"><tt class="docutils literal"><span class="pre">label</span></tt> 参数让你指定字段“对人类友好”的label。</font><font id="14">在<tt class="docutils literal"><span class="pre">字段</span></tt>在<tt class="docutils literal"><span class="pre">表单</span></tt>中显示时将用到它。</font></p>
+<p><font id="15">正如在前面“输出表单为HTML”中解释的，<tt class="docutils literal"><span class="pre">字段</span></tt>默认label 是通过将字段名中所有的下划线转换成空格并大写第一个字母生成的。</font><font id="16">如果默认的标签不合适，可以指定<tt class="docutils literal"><span class="pre">label</span></tt>。</font></p>
+<p><font id="17">下面是一个完整示例，<tt class="docutils literal"><span class="pre">表单</span></tt>为它的两个字段实现了<tt class="docutils literal"><span class="pre">label</span></tt>。</font><font id="18">我们指定<tt class="docutils literal"><span class="pre">auto_id=False</span></tt>来让输出简单一些：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">CommentForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">'Your name'</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">url</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">'Your Web site'</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">comment</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">CommentForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Your name:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="name" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Your Web site:&lt;/th&gt;&lt;td&gt;&lt;input type="url" name="url" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Comment:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="comment" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-label-suffix">
+<span id="label-suffix"></span><h3><font id="234">label_suffix</font><a class="headerlink" href="fields.html#label-suffix" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.label_suffix">
+<tt class="descclassname">Field.</tt><tt class="descname">label_suffix</tt><a class="headerlink" href="fields.html#django.forms.Field.label_suffix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="19"><tt class="docutils literal"><span class="pre">label_suffix</span></tt> 参数让你基于每个字段覆盖表单的<a class="reference internal" href="api.html#django.forms.Form.label_suffix" title="django.forms.Form.label_suffix"><tt class="xref py py-attr docutils literal"><span class="pre">label_suffix</span></tt></a>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ContactForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">age</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">nationality</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">captcha_answer</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">'2 + 2'</span><span class="p">,</span> <span class="n">label_suffix</span><span class="o">=</span><span class="s">' ='</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ContactForm</span><span class="p">(</span><span class="n">label_suffix</span><span class="o">=</span><span class="s">'?'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">())</span>
+<span class="go">&lt;p&gt;&lt;label for="id_age"&gt;Age?&lt;/label&gt; &lt;input id="id_age" name="age" type="number" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="id_nationality"&gt;Nationality?&lt;/label&gt; &lt;input id="id_nationality" name="nationality" type="text" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;&lt;label for="id_captcha_answer"&gt;2 + 2 =&lt;/label&gt; &lt;input id="id_captcha_answer" name="captcha_answer" type="number" /&gt;&lt;/p&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-initial">
+<span id="initial"></span><h3><font id="235">initial</font><a class="headerlink" href="fields.html#initial" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.initial">
+<tt class="descclassname">Field.</tt><tt class="descname">initial</tt><a class="headerlink" href="fields.html#django.forms.Field.initial" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="20"><tt class="docutils literal"><span class="pre">initial</span></tt> 参数让你指定渲染未绑定的<tt class="docutils literal"><span class="pre">表单</span></tt>中的<tt class="docutils literal"><span class="pre">字段</span></tt>时使用的初始值。</font></p>
+<p><font id="21">若要指定动态的初始数据，参见<a class="reference internal" href="api.html#django.forms.Form.initial" title="django.forms.Form.initial"><tt class="xref py py-attr docutils literal"><span class="pre">Form.initial</span></tt></a> 参数。</font></p>
+<p><font id="22">这个参数的使用场景是当你想要显示一个“空”的表单，其某个字段初始化为一个特定的值。</font><font id="23">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">CommentForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="s">'Your name'</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">url</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="s">'http://'</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">comment</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">CommentForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Name:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="name" value="Your name" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Url:&lt;/th&gt;&lt;td&gt;&lt;input type="url" name="url" value="http://" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Comment:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="comment" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+</pre></div>
+</div>
+<p><font id="24">你可能正在想为什么不在显示表单的时候传递一个包含初始化值的字典？</font><font id="25">如果这么做，你将触发验证过程，此时HTML 输出将包含任何验证中产生的错误：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">CommentForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">url</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">URLField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">comment</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">default_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'name'</span><span class="p">:</span> <span class="s">'Your name'</span><span class="p">,</span> <span class="s">'url'</span><span class="p">:</span> <span class="s">'http://'</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">CommentForm</span><span class="p">(</span><span class="n">default_data</span><span class="p">,</span> <span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Name:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="name" value="Your name" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Url:&lt;/th&gt;&lt;td&gt;&lt;ul class="errorlist"&gt;&lt;li&gt;Enter a valid URL.&lt;/li&gt;&lt;/ul&gt;&lt;input type="url" name="url" value="http://" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Comment:&lt;/th&gt;&lt;td&gt;&lt;ul class="errorlist"&gt;&lt;li&gt;This field is required.&lt;/li&gt;&lt;/ul&gt;&lt;input type="text" name="comment" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+</pre></div>
+</div>
+<p><font id="26">这就是为什么<tt class="docutils literal"><span class="pre">initial</span></tt> 的值只在未绑定的表单中显示的原因。</font><font id="27">对于绑定的表单，HTML 输出将使用绑定的数据。</font></p>
+<p><font id="28">还要注意，如果某个字段的值没有给出，<tt class="docutils literal"><span class="pre">initial</span></tt> 值<em>不</em>会作为“后备”的数据。</font><font id="29"><tt class="docutils literal"><span class="pre">initial</span></tt> 值<em>只</em>用于原始表单的显示：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">CommentForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="s">'Your name'</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">url</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="s">'http://'</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">comment</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'name'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span> <span class="s">'url'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span> <span class="s">'comment'</span><span class="p">:</span> <span class="s">'Foo'</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">CommentForm</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="go"># The form does *not* fall back to using the initial values.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">errors</span>
+<span class="go">{'url': ['This field is required.'], 'name': ['This field is required.']}</span>
+</pre></div>
+</div>
+<p><font id="30">除了常数之外，你还可以传递一个可调用的对象：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">DateForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">day</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">DateField</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">DateForm</span><span class="p">())</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Day:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="day" value="12/23/2008" /&gt;&lt;td&gt;&lt;/tr&gt;</span>
+</pre></div>
+</div>
+<p><font id="31">可调用对象在未绑定的表单显示的时候才计算，不是在定义的时候。</font></p>
+</div>
+<div class="section" id="s-widget">
+<span id="widget"></span><h3><font id="236">widget</font><a class="headerlink" href="fields.html#widget" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.widget">
+<tt class="descclassname">Field.</tt><tt class="descname">widget</tt><a class="headerlink" href="fields.html#django.forms.Field.widget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="32"><tt class="docutils literal"><span class="pre">widget</span></tt> 参数让你指定渲染<tt class="docutils literal"><span class="pre">表单</span></tt>时使用的<tt class="docutils literal"><span class="pre">Widget</span></tt> 类。</font><font id="33">更多信息参见<a class="reference internal" href="widgets.html"><em>Widgets</em></a>。</font></p>
+</div>
+<div class="section" id="s-help-text">
+<span id="help-text"></span><h3><font id="237">help_text</font><a class="headerlink" href="fields.html#help-text" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.help_text">
+<tt class="descclassname">Field.</tt><tt class="descname">help_text</tt><a class="headerlink" href="fields.html#django.forms.Field.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="34"><tt class="docutils literal"><span class="pre">help_text</span></tt> 参数让你指定<tt class="docutils literal"><span class="pre">字段</span></tt>的描述文本。</font><font id="35">如果提供<tt class="docutils literal"><span class="pre">help_text</span></tt>，在通过<tt class="docutils literal"><span class="pre">表单</span></tt>的便捷方法（例如，<tt class="docutils literal"><span class="pre">as_ul()</span></tt>）渲染<tt class="docutils literal"><span class="pre">字段</span></tt>时，它将紧接着<tt class="docutils literal"><span class="pre">字段</span></tt>显示。</font></p>
+<p><font id="36">下面是一个完整的示例，<tt class="docutils literal"><span class="pre">表单</span></tt>为它的两个字段实现了<tt class="docutils literal"><span class="pre">help_text</span></tt>。 </font><font id="37">我们指定<tt class="docutils literal"><span class="pre">auto_id=False</span></tt>来让输出简单一些：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">HelpTextContactForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">subject</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s">'100 characters max.'</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">message</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">sender</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">help_text</span><span class="o">=</span><span class="s">'A valid email address, please.'</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">cc_myself</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">HelpTextContactForm</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_table</span><span class="p">())</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Subject:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="subject" maxlength="100" /&gt;&lt;br /&gt;&lt;span class="helptext"&gt;100 characters max.&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Message:&lt;/th&gt;&lt;td&gt;&lt;input type="text" name="message" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Sender:&lt;/th&gt;&lt;td&gt;&lt;input type="email" name="sender" /&gt;&lt;br /&gt;A valid email address, please.&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;Cc myself:&lt;/th&gt;&lt;td&gt;&lt;input type="checkbox" name="cc_myself" /&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_ul</span><span class="p">()))</span>
+<span class="go">&lt;li&gt;Subject: &lt;input type="text" name="subject" maxlength="100" /&gt; &lt;span class="helptext"&gt;100 characters max.&lt;/span&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Message: &lt;input type="text" name="message" /&gt;&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Sender: &lt;input type="email" name="sender" /&gt; A valid email address, please.&lt;/li&gt;</span>
+<span class="go">&lt;li&gt;Cc myself: &lt;input type="checkbox" name="cc_myself" /&gt;&lt;/li&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">())</span>
+<span class="go">&lt;p&gt;Subject: &lt;input type="text" name="subject" maxlength="100" /&gt; &lt;span class="helptext"&gt;100 characters max.&lt;/span&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Message: &lt;input type="text" name="message" /&gt;&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Sender: &lt;input type="email" name="sender" /&gt; A valid email address, please.&lt;/p&gt;</span>
+<span class="go">&lt;p&gt;Cc myself: &lt;input type="checkbox" name="cc_myself" /&gt;&lt;/p&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-error-messages">
+<span id="error-messages"></span><h3><font id="238">error_messages</font><a class="headerlink" href="fields.html#error-messages" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.error_messages">
+<tt class="descclassname">Field.</tt><tt class="descname">error_messages</tt><a class="headerlink" href="fields.html#django.forms.Field.error_messages" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="38"><tt class="docutils literal"><span class="pre">error_messages</span></tt> 参数让你覆盖字段引发的异常中的默认信息。</font><font id="39">传递的是一个字典，其键为你想覆盖的错误信息。</font><font id="40">例如，下面是默认的错误信息：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generic</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generic</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">''</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  <span class="c">...</span>
+<span class="gr">ValidationError</span>: <span class="n">['This field is required.']</span>
+</pre></div>
+</div>
+<p><font id="41">而下面是自定义的错误信息：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">error_messages</span><span class="o">=</span><span class="p">{</span><span class="s">'required'</span><span class="p">:</span> <span class="s">'Please enter your name'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">name</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">''</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  <span class="c">...</span>
+<span class="gr">ValidationError</span>: <span class="n">['Please enter your name']</span>
+</pre></div>
+</div>
+<p><font id="42">在下面的<a class="reference internal" href="fields.html#built-in-field-classes">内建的字段</a>一节中，每个<tt class="docutils literal"><span class="pre">字段</span></tt>都定义了它自己的错误信息。</font></p>
+</div>
+<div class="section" id="s-validators">
+<span id="validators"></span><h3><font id="239">validators</font><a class="headerlink" href="fields.html#validators" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.validators">
+<tt class="descclassname">Field.</tt><tt class="descname">validators</tt><a class="headerlink" href="fields.html#django.forms.Field.validators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="43"><tt class="docutils literal"><span class="pre">validators</span></tt> 参数让你可以为字段提供一个验证函数的列表。</font></p>
+<p><font id="44">更多的信息，参见<a class="reference internal" href="../validators.html"><em>validators 文档</em></a>。</font></p>
+</div>
+<div class="section" id="s-localize">
+<span id="localize"></span><h3><font id="240">localize</font><a class="headerlink" href="fields.html#localize" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.forms.Field.localize">
+<tt class="descclassname">Field.</tt><tt class="descname">localize</tt><a class="headerlink" href="fields.html#django.forms.Field.localize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="45"><tt class="docutils literal"><span class="pre">localize</span></tt> 参数启用表单数据的本地化，包括输入和输出。</font></p>
+<p><font id="46">更多信息，参见<a class="reference internal" href="../../topics/i18n/formatting.html#format-localization"><em>本地化格式</em></a>。</font></p>
+</div>
+</div>
+<div class="section" id="s-checking-if-the-field-data-has-changed">
+<span id="checking-if-the-field-data-has-changed"></span><h2><font id="227">检查字段数据是否已经改变</font><a class="headerlink" href="fields.html#checking-if-the-field-data-has-changed" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-has-changed">
+<span id="has-changed"></span><h3><font id="241">has_changed()</font><a class="headerlink" href="fields.html#has-changed" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="django.forms.Field.has_changed">
+<tt class="descclassname">Field.</tt><tt class="descname">has_changed</tt>()<a class="headerlink" href="fields.html#django.forms.Field.has_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="47">重命名<tt class="docutils literal"><span class="pre">_has_changed()</span></tt> 为该方法。</font></p>
+</div>
+<p><font id="48"><tt class="docutils literal"><span class="pre">has_changed()</span></tt> 方法用于决定字段的值是否从初始值发生了改变。</font><font id="49">返回<tt class="docutils literal"><span class="pre">True</span></tt> 或<tt class="docutils literal"><span class="pre">False</span></tt>。</font></p>
+<p><font id="50">更多信息，参见<a class="reference internal" href="api.html#django.forms.Form.has_changed" title="django.forms.Form.has_changed"><tt class="xref py py-class docutils literal"><span class="pre">Form.has_changed()</span></tt></a>。</font></p>
+</div>
+</div>
+<div class="section" id="s-built-in-field-classes">
+<span id="s-built-in-fields"></span><span id="built-in-field-classes"></span><span id="built-in-fields"></span><h2><font id="228">内建的<tt class="docutils literal"><span class="pre">字段</span></tt></font><a class="headerlink" href="fields.html#built-in-field-classes" title="Permalink to this headline">¶</a></h2>
+<p><font id="51">自然，<tt class="docutils literal"><span class="pre">表单</span></tt>的库会带有一系列表示常见需求的<tt class="docutils literal"><span class="pre">字段</span></tt>。 </font><font id="52">这一节记录每个内建字段。</font></p>
+<p><font id="53">对于每个字段，我们描述默认的<tt class="docutils literal"><span class="pre">widget</span></tt>。</font><font id="54">我们还会指出提供空值时的返回值（参见上文的<tt class="docutils literal"><span class="pre">required</span></tt> 以理解它的含义）。</font></p>
+<div class="section" id="s-booleanfield">
+<span id="booleanfield"></span><h3><font id="242">BooleanField</font><a class="headerlink" href="fields.html#booleanfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.BooleanField">
+<em class="property">class </em><tt class="descname">BooleanField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.BooleanField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="277">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.CheckboxInput" title="django.forms.CheckboxInput"><tt class="xref py py-class docutils literal"><span class="pre">CheckboxInput</span></tt></a></font></li>
+<li><font id="278">空值：<tt class="docutils literal"><span class="pre">False</span></tt></font></li>
+<li><font id="279">规范化为：Python 的<tt class="docutils literal"><span class="pre">True</span></tt> 或 <tt class="docutils literal"><span class="pre">False</span></tt>。</font></li>
+<li><font id="280">如果字段带有<tt class="docutils literal"><span class="pre">required=True</span></tt>，验证值是否为<tt class="docutils literal"><span class="pre">True</span></tt>（例如复选框被勾上）。&nbsp;</font></li>
+<li><font id="281">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt></font></li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title"><font id="55">注</font></p>
+<p class="last"><font id="56">因为所有的<tt class="docutils literal"><span class="pre">Field</span></tt> 子类都默认带有<tt class="docutils literal"><span class="pre">required=True</span></tt>，这里的验证条件很重要。</font><font id="57">如果你希望表单中包含一个既可以为<tt class="docutils literal"><span class="pre">True</span></tt> 也可以为<tt class="docutils literal"><span class="pre">False</span></tt> 的布尔值（例如，复选框可以勾上也可以不勾上），你必须要记住在创建<tt class="docutils literal"><span class="pre">BooleanField</span></tt>时传递<tt class="docutils literal"><span class="pre">required=False</span></tt>。</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-charfield">
+<span id="charfield"></span><h3><font id="243">CharField</font><a class="headerlink" href="fields.html#charfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.CharField">
+<em class="property">class </em><tt class="descname">CharField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.CharField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="282">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="283">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="284">规范化为：一个Unicode 对象。</font></li>
+<li><font id="285">如果提供，验证<tt class="docutils literal"><span class="pre">max_length</span></tt> 或<tt class="docutils literal"><span class="pre">min_length</span></tt>。 </font><font id="286">否则，所有的输入都是合法的。</font></li>
+<li><font id="287">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">max_length</span></tt>, <tt class="docutils literal"><span class="pre">min_length</span></tt></font></li>
+</ul>
+<p><font id="58">有两个参数用于验证：</font></p>
+<dl class="attribute">
+<dt id="django.forms.CharField.max_length">
+<tt class="descname">max_length</tt><a class="headerlink" href="fields.html#django.forms.CharField.max_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="attribute">
+<dt id="django.forms.CharField.min_length">
+<tt class="descname">min_length</tt><a class="headerlink" href="fields.html#django.forms.CharField.min_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="59">如果提供，这两个参数将确保字符串的最大和最小长度。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-choicefield">
+<span id="choicefield"></span><h3><font id="244">ChoiceField</font><a class="headerlink" href="fields.html#choicefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.ChoiceField">
+<em class="property">class </em><tt class="descname">ChoiceField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.ChoiceField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="288">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.Select" title="django.forms.Select"><tt class="xref py py-class docutils literal"><span class="pre">Select</span></tt></a></font></li>
+<li><font id="289">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="290">规范化为：一个Unicode 对象。</font></li>
+<li><font id="291">验证给定的值在选项列表中存在。</font></li>
+<li><font id="292">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid_choice</span></tt></font></li>
+</ul>
+<p><font id="60"><tt class="docutils literal"><span class="pre">invalid_choice</span></tt> 错误消息可能包含<tt class="docutils literal"><span class="pre">%(value)s</span></tt>，它将被选择的选项替换掉。</font></p>
+<p><font id="61">接收一个额外的必选参数：</font></p>
+<dl class="attribute">
+<dt id="django.forms.ChoiceField.choices">
+<tt class="descname">choices</tt><a class="headerlink" href="fields.html#django.forms.ChoiceField.choices" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="62">一个可迭代对象（例如，列表或元组）或者二元组，或者一个可调用对象。</font><font id="63">参数的格式与模型字段的<tt class="docutils literal"><span class="pre">choices</span></tt> 参数相同。</font><font id="64">更多细节参见<a class="reference internal" href="../models/fields.html#field-choices"><em>模型字段参考中关于选项的文档</em></a>。</font><font id="65">如果参数是可调用的，它在字段的表单初始化时求值。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="66">添加传递一个可调用对象给<tt class="docutils literal"><span class="pre">choices</span></tt> 的功能。</font></p>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-typedchoicefield">
+<span id="typedchoicefield"></span><h3><font id="245">TypedChoiceField</font><a class="headerlink" href="fields.html#typedchoicefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.TypedChoiceField">
+<em class="property">class </em><tt class="descname">TypedChoiceField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.TypedChoiceField" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="67">与<a class="reference internal" href="fields.html#django.forms.ChoiceField" title="django.forms.ChoiceField"><tt class="xref py py-class docutils literal"><span class="pre">ChoiceField</span></tt></a> 很像，只是<a class="reference internal" href="fields.html#django.forms.TypedChoiceField" title="django.forms.TypedChoiceField"><tt class="xref py py-class docutils literal"><span class="pre">TypedChoiceField</span></tt></a> 接受两个额外的参数<tt class="docutils literal"><span class="pre">coerce</span></tt> 和<tt class="docutils literal"><span class="pre">empty_value</span></tt>。</font></p>
+<ul class="simple">
+<li><font id="293">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.Select" title="django.forms.Select"><tt class="xref py py-class docutils literal"><span class="pre">Select</span></tt></a></font></li>
+<li><font id="294">空值：<tt class="docutils literal"><span class="pre">empty_value</span></tt></font></li>
+<li><font id="295">规范化为：<tt class="docutils literal"><span class="pre">coerce</span></tt> 参数类型的值。</font></li>
+<li><font id="296">验证给定的值在选项列表中存在并且可以被强制转换。</font></li>
+<li><font id="297">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid_choice</span></tt></font></li>
+</ul>
+<p><font id="68">接收的额外参数：</font></p>
+<dl class="attribute">
+<dt id="django.forms.TypedChoiceField.coerce">
+<tt class="descname">coerce</tt><a class="headerlink" href="fields.html#django.forms.TypedChoiceField.coerce" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="69">接收一个参数并返回强制转换后的值的一个函数。</font><font id="70">例如内建的<tt class="docutils literal"><span class="pre">int</span></tt>、<tt class="docutils literal"><span class="pre">float</span></tt>、<tt class="docutils literal"><span class="pre">bool</span></tt> 和其它类型。</font><font id="71">默认为id 函数。</font><font id="72">注意强制转换在输入验证结束后发生，所以它可能强制转换不在 <tt class="docutils literal"><span class="pre">choices</span></tt> 中的值。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.TypedChoiceField.empty_value">
+<tt class="descname">empty_value</tt><a class="headerlink" href="fields.html#django.forms.TypedChoiceField.empty_value" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="73">用于表示“空”的值。</font><font id="74">默认为空字符串；</font><font id="75"><tt class="docutils literal"><span class="pre">None</span></tt> 是另外一个常见的选项。</font><font id="76">注意这个值不会被<tt class="docutils literal"><span class="pre">coerce</span></tt> 参数中指定的函数强制转换，所以请根据情况进行选择。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-datefield">
+<span id="datefield"></span><h3><font id="246">DateField</font><a class="headerlink" href="fields.html#datefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.DateField">
+<em class="property">class </em><tt class="descname">DateField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.DateField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="298">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.DateInput" title="django.forms.DateInput"><tt class="xref py py-class docutils literal"><span class="pre">DateInput</span></tt></a></font></li>
+<li><font id="299">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="300">规范化为：一个Python <tt class="docutils literal"><span class="pre">datetime.date</span></tt> 对象。</font></li>
+<li><font id="301">验证给出的值是一个<tt class="docutils literal"><span class="pre">datetime.date</span></tt>、<tt class="docutils literal"><span class="pre">datetime.datetime</span></tt> 或指定日期格式的字符串。</font></li>
+<li><font id="302">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="77">接收一个可选的参数：</font></p>
+<dl class="attribute">
+<dt id="django.forms.DateField.input_formats">
+<tt class="descname">input_formats</tt><a class="headerlink" href="fields.html#django.forms.DateField.input_formats" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="78">一个格式的列表，用于转换一个字符串为<tt class="docutils literal"><span class="pre">datetime.date</span></tt> 对象。</font></p>
+</dd></dl>
+<p><font id="79">如果没有提供<tt class="docutils literal"><span class="pre">input_formats</span></tt>，默认的输入格式为：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">'%Y-%m-</span><span class="si">%d</span><span class="s">'</span><span class="p">,</span>      <span class="c"># '2006-10-25'</span>
+<span class="s">'%m/</span><span class="si">%d</span><span class="s">/%Y'</span><span class="p">,</span>       <span class="c"># '10/25/2006'</span>
+<span class="s">'%m/</span><span class="si">%d</span><span class="s">/%y'</span><span class="p">]</span>       <span class="c"># '10/25/06'</span>
+</pre></div>
+</div>
+<p><font id="80">另外，如果你在设置中指定<a class="reference internal" href="../settings.html#std:setting-USE_L10N"><tt class="xref std std-setting docutils literal"><span class="pre">USE_L10N=False</span></tt></a>，以下的格式也将包含在默认的输入格式中：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">'%b </span><span class="si">%d</span><span class="s"> %Y'</span><span class="p">,</span>      <span class="c"># 'Oct 25 2006'</span>
+<span class="s">'%b </span><span class="si">%d</span><span class="s">, %Y'</span><span class="p">,</span>      <span class="c"># 'Oct 25, 2006'</span>
+<span class="s">'</span><span class="si">%d</span><span class="s"> %b %Y'</span><span class="p">,</span>       <span class="c"># '25 Oct 2006'</span>
+<span class="s">'</span><span class="si">%d</span><span class="s"> %b, %Y'</span><span class="p">,</span>      <span class="c"># '25 Oct, 2006'</span>
+<span class="s">'%B </span><span class="si">%d</span><span class="s"> %Y'</span><span class="p">,</span>       <span class="c"># 'October 25 2006'</span>
+<span class="s">'%B </span><span class="si">%d</span><span class="s">, %Y'</span><span class="p">,</span>      <span class="c"># 'October 25, 2006'</span>
+<span class="s">'</span><span class="si">%d</span><span class="s"> %B %Y'</span><span class="p">,</span>       <span class="c"># '25 October 2006'</span>
+<span class="s">'</span><span class="si">%d</span><span class="s"> %B, %Y'</span><span class="p">]</span>      <span class="c"># '25 October, 2006'</span>
+</pre></div>
+</div>
+<p><font id="81">另见<a class="reference internal" href="../../topics/i18n/formatting.html#format-localization"><em>本地化格式</em></a>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-datetimefield">
+<span id="datetimefield"></span><h3><font id="247">DateTimeField</font><a class="headerlink" href="fields.html#datetimefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.DateTimeField">
+<em class="property">class </em><tt class="descname">DateTimeField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.DateTimeField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="303">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.DateTimeInput" title="django.forms.DateTimeInput"><tt class="xref py py-class docutils literal"><span class="pre">DateTimeInput</span></tt></a></font></li>
+<li><font id="304">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="305">规范化为：一个Python <tt class="docutils literal"><span class="pre">datetime.datetime</span></tt> 对象。</font></li>
+<li><font id="306">验证给出的值是一个<tt class="docutils literal"><span class="pre">datetime.date</span></tt>、<tt class="docutils literal"><span class="pre">datetime.datetime</span></tt> 或指定日期格式的字符串。</font></li>
+<li><font id="307">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="82">接收一个可选的参数：</font></p>
+<dl class="attribute">
+<dt id="django.forms.DateTimeField.input_formats">
+<tt class="descname">input_formats</tt><a class="headerlink" href="fields.html#django.forms.DateTimeField.input_formats" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="83">一个格式的列表，用于转换一个字符串为<tt class="docutils literal"><span class="pre">datetime.datetime</span></tt> 对象。</font></p>
+</dd></dl>
+<p><font id="84">如果没有提供<tt class="docutils literal"><span class="pre">input_formats</span></tt>，默认的输入格式为：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">'%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S'</span><span class="p">,</span>    <span class="c"># '2006-10-25 14:30:59'</span>
+<span class="s">'%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M'</span><span class="p">,</span>        <span class="c"># '2006-10-25 14:30'</span>
+<span class="s">'%Y-%m-</span><span class="si">%d</span><span class="s">'</span><span class="p">,</span>              <span class="c"># '2006-10-25'</span>
+<span class="s">'%m/</span><span class="si">%d</span><span class="s">/%Y %H:%M:%S'</span><span class="p">,</span>     <span class="c"># '10/25/2006 14:30:59'</span>
+<span class="s">'%m/</span><span class="si">%d</span><span class="s">/%Y %H:%M'</span><span class="p">,</span>        <span class="c"># '10/25/2006 14:30'</span>
+<span class="s">'%m/</span><span class="si">%d</span><span class="s">/%Y'</span><span class="p">,</span>              <span class="c"># '10/25/2006'</span>
+<span class="s">'%m/</span><span class="si">%d</span><span class="s">/%y %H:%M:%S'</span><span class="p">,</span>     <span class="c"># '10/25/06 14:30:59'</span>
+<span class="s">'%m/</span><span class="si">%d</span><span class="s">/%y %H:%M'</span><span class="p">,</span>        <span class="c"># '10/25/06 14:30'</span>
+<span class="s">'%m/</span><span class="si">%d</span><span class="s">/%y'</span><span class="p">]</span>              <span class="c"># '10/25/06'</span>
+</pre></div>
+</div>
+<p><font id="85">另见<a class="reference internal" href="../../topics/i18n/formatting.html#format-localization"><em>本地化格式</em></a>。</font></p>
+<div class="deprecated">
+<p><font id="86"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="87"><tt class="docutils literal"><span class="pre">DateTimeField</span></tt> 与<a class="reference internal" href="widgets.html#django.forms.SplitDateTimeWidget" title="django.forms.SplitDateTimeWidget"><tt class="xref py py-class docutils literal"><span class="pre">SplitDateTimeWidget</span></tt></a> 一起使用的功能被废弃并将在Django 1.9 中删除。</font><font id="88">Use <a class="reference internal" href="fields.html#django.forms.SplitDateTimeField" title="django.forms.SplitDateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">SplitDateTimeField</span></tt></a> instead.</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-decimalfield">
+<span id="decimalfield"></span><h3><font id="248">DecimalField</font><a class="headerlink" href="fields.html#decimalfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.DecimalField">
+<em class="property">class </em><tt class="descname">DecimalField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.DecimalField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="308">默认的Widget：当<a class="reference internal" href="fields.html#django.forms.Field.localize" title="django.forms.Field.localize"><tt class="xref py py-attr docutils literal"><span class="pre">Field.localize</span></tt></a> 是<tt class="docutils literal"><span class="pre">False</span></tt> 时为<a class="reference internal" href="widgets.html#django.forms.NumberInput" title="django.forms.NumberInput"><tt class="xref py py-class docutils literal"><span class="pre">NumberInput</span></tt></a>，否则为<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a>。</font></li>
+<li><font id="309">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="310">规范化为：一个Python <tt class="docutils literal"><span class="pre">decimal</span></tt>。</font></li>
+<li><font id="311">验证给定的值为一个十进制数。</font><font id="312">忽略前导和尾随的空白。</font></li>
+<li><font id="313">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt>, <tt class="docutils literal"><span class="pre">max_value</span></tt>, <tt class="docutils literal"><span class="pre">min_value</span></tt>, <tt class="docutils literal"><span class="pre">max_digits</span></tt>, <tt class="docutils literal"><span class="pre">max_decimal_places</span></tt>, <tt class="docutils literal"><span class="pre">max_whole_digits</span></tt></font></li>
+</ul>
+<p><font id="89"><tt class="docutils literal"><span class="pre">max_value</span></tt> 和<tt class="docutils literal"><span class="pre">min_value</span></tt> 错误信息可能包含<tt class="docutils literal"><span class="pre">%(limit_value)s</span></tt>，它们将被真正的限制值替换。</font><font id="90">类似地，<tt class="docutils literal"><span class="pre">max_digits</span></tt>、<tt class="docutils literal"><span class="pre">max_decimal_places</span></tt> 和 <tt class="docutils literal"><span class="pre">max_whole_digits</span></tt> 错误消息可能包含<tt class="docutils literal"><span class="pre">%(max)s</span></tt>。</font></p>
+<p><font id="91">接收四个可选的参数：</font></p>
+<dl class="attribute">
+<dt id="django.forms.DecimalField.max_value">
+<tt class="descname">max_value</tt><a class="headerlink" href="fields.html#django.forms.DecimalField.max_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="attribute">
+<dt id="django.forms.DecimalField.min_value">
+<tt class="descname">min_value</tt><a class="headerlink" href="fields.html#django.forms.DecimalField.min_value" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="92">它们控制字段中允许的值的范围，应该以<tt class="docutils literal"><span class="pre">decimal.Decimal</span></tt> 值给出。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.DecimalField.max_digits">
+<tt class="descname">max_digits</tt><a class="headerlink" href="fields.html#django.forms.DecimalField.max_digits" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="94">值允许的最大位数（小数点之前和之后的数字总共的位数，前导的零将被删除）。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.DecimalField.decimal_places">
+<tt class="descname">decimal_places</tt><a class="headerlink" href="fields.html#django.forms.DecimalField.decimal_places" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="95">允许的最大小数位。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-durationfield">
+<span id="durationfield"></span><h3><font id="249">DurationField</font><a class="headerlink" href="fields.html#durationfield" title="Permalink to this headline">¶</a></h3>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<dl class="class">
+<dt id="django.forms.DurationField">
+<em class="property">class </em><tt class="descname">DurationField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.DurationField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="314">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="315">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="316">规范化为：一个Python <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt></a>。</font></li>
+<li><font id="317">验证给出的值是一个字符串，而可以给转换为<tt class="docutils literal"><span class="pre">timedelta</span></tt>。</font></li>
+<li><font id="318">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt>.</font></li>
+</ul>
+<p><font id="96">接收任何可以被<a class="reference internal" href="http://python.usyiyi.cn/django/ref/utils.html#django.utils.dateparse.parse_duration" title="django.utils.dateparse.parse_duration"><tt class="xref py py-func docutils literal"><span class="pre">parse_duration()</span></tt></a> 理解的格式。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-emailfield">
+<span id="emailfield"></span><h3><font id="250">EmailField</font><a class="headerlink" href="fields.html#emailfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.EmailField">
+<em class="property">class </em><tt class="descname">EmailField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.EmailField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="319">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.EmailInput" title="django.forms.EmailInput"><tt class="xref py py-class docutils literal"><span class="pre">EmailInput</span></tt></a></font></li>
+<li><font id="320">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="321">规范化为：一个Unicode 对象。</font></li>
+<li><font id="322">验证给出的值是一个合法的邮件地址，使用一个适度复杂的正则表达式。</font></li>
+<li><font id="323">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="97">具有两个可选的参数用于验证，<tt class="docutils literal"><span class="pre">max_length</span></tt> 和<tt class="docutils literal"><span class="pre">min_length</span></tt>。</font><font id="98">如果提供，这两个参数确保字符串的最大和最小长度。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-filefield">
+<span id="filefield"></span><h3><font id="251">FileField</font><a class="headerlink" href="fields.html#filefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.FileField">
+<em class="property">class </em><tt class="descname">FileField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.FileField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="324">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.ClearableFileInput" title="django.forms.ClearableFileInput"><tt class="xref py py-class docutils literal"><span class="pre">ClearableFileInput</span></tt></a></font></li>
+<li><font id="325">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="326">规范化为：一个<tt class="docutils literal"><span class="pre">UploadedFile</span></tt> 对象，它封装文件内容和文件名为一个单独的对象。</font></li>
+<li><font id="327">可以验证非空的文件数据已经绑定到表单。</font></li>
+<li><font id="328">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt>, <tt class="docutils literal"><span class="pre">missing</span></tt>, <tt class="docutils literal"><span class="pre">empty</span></tt>, <tt class="docutils literal"><span class="pre">max_length</span></tt></font></li>
+</ul>
+<p><font id="99">具有两个可选的参数用于验证，<tt class="docutils literal"><span class="pre">max_length</span></tt> 和 <tt class="docutils literal"><span class="pre">allow_empty_file</span></tt>。</font><font id="100">如果提供，这两个参数确保文件名的最大长度，而且即使文件内容为空时验证也会成功。</font></p>
+<p><font id="101">若要了解<tt class="docutils literal"><span class="pre">UploadedFile</span></tt> 对象的更多内容，参见<a class="reference internal" href="../../topics/http/file-uploads.html"><em>文件上传的文档</em></a>。</font></p>
+<p><font id="102">当你在表单中使用<tt class="docutils literal"><span class="pre">FileField</span></tt> 时，必须要记住<a class="reference internal" href="api.html#binding-uploaded-files"><em>绑定文件数据到表单上</em></a>。</font></p>
+<p><font id="103"><tt class="docutils literal"><span class="pre">max_length</span></tt> 错误信息表示文件名的长度。</font><font id="104">在错误信息中，<tt class="docutils literal"><span class="pre">%(max)d</span></tt> 将替换为文件的最大长度，<tt class="docutils literal"><span class="pre">%(length)d</span></tt> 将替换为当前文件名的长度。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-filepathfield">
+<span id="filepathfield"></span><h3><font id="252">FilePathField</font><a class="headerlink" href="fields.html#filepathfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.FilePathField">
+<em class="property">class </em><tt class="descname">FilePathField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.FilePathField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="329">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.Select" title="django.forms.Select"><tt class="xref py py-class docutils literal"><span class="pre">Select</span></tt></a></font></li>
+<li><font id="330">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="331">规范化为：一个Unicode 对象。</font></li>
+<li><font id="332">验证选择的选项在选项列表中存在。</font></li>
+<li><font id="333">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid_choice</span></tt></font></li>
+</ul>
+<p><font id="105">这个字段允许从一个特定的目录选择文件。</font><font id="106">它接受三个额外的参数；</font><font id="107">只有<tt class="docutils literal"><span class="pre">path</span></tt> 是必需的：</font></p>
+<dl class="attribute">
+<dt id="django.forms.FilePathField.path">
+<tt class="descname">path</tt><a class="headerlink" href="fields.html#django.forms.FilePathField.path" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="108">你想要列出的目录的绝对路径。</font><font id="109">这个目录必须存在。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.FilePathField.recursive">
+<tt class="descname">recursive</tt><a class="headerlink" href="fields.html#django.forms.FilePathField.recursive" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="110">如果为<tt class="docutils literal"><span class="pre">False</span></tt>（默认值），只用直接位于<tt class="docutils literal"><span class="pre">path</span></tt> 下的文件或目录作为选项。</font><font id="111">如果为<tt class="docutils literal"><span class="pre">True</span></tt>，将递归访问这个目录，其所有的子目录和文件都将作为选项。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.FilePathField.match">
+<tt class="descname">match</tt><a class="headerlink" href="fields.html#django.forms.FilePathField.match" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="112">正则表达式表示的一个模式；</font><font id="113">只有匹配这个表达式的名称才允许作为选项。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.FilePathField.allow_files">
+<tt class="descname">allow_files</tt><a class="headerlink" href="fields.html#django.forms.FilePathField.allow_files" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="114">可选。</font><font id="115">为<tt class="docutils literal"><span class="pre">True</span></tt> 或<tt class="docutils literal"><span class="pre">False</span></tt>。</font><font id="116">默认为<tt class="docutils literal"><span class="pre">True</span></tt>。</font><font id="117">表示是否应该包含指定位置的文件。</font><font id="118">它和<a class="reference internal" href="fields.html#django.forms.FilePathField.allow_folders" title="django.forms.FilePathField.allow_folders"><tt class="xref py py-attr docutils literal"><span class="pre">allow_folders</span></tt></a> 必须有一个为<tt class="docutils literal"><span class="pre">True</span></tt>。</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.FilePathField.allow_folders">
+<tt class="descname">allow_folders</tt><a class="headerlink" href="fields.html#django.forms.FilePathField.allow_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="119">可选。</font><font id="120">为<tt class="docutils literal"><span class="pre">True</span></tt> 或<tt class="docutils literal"><span class="pre">False</span></tt>。 </font><font id="121">默认为<tt class="docutils literal"><span class="pre">False</span></tt>。</font><font id="122">表示是否应该包含指定位置的目录。 </font><font id="123">它和<a class="reference internal" href="fields.html#django.forms.FilePathField.allow_files" title="django.forms.FilePathField.allow_files"><tt class="xref py py-attr docutils literal"><span class="pre">allow_files</span></tt></a> 必须有一个为<tt class="docutils literal"><span class="pre">True</span></tt>。</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-floatfield">
+<span id="floatfield"></span><h3><font id="253">FloatField</font><a class="headerlink" href="fields.html#floatfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.FloatField">
+<em class="property">class </em><tt class="descname">FloatField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.FloatField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="334">默认的Widget：当 <a class="reference internal" href="fields.html#django.forms.Field.localize" title="django.forms.Field.localize"><tt class="xref py py-attr docutils literal"><span class="pre">Field.localize</span></tt></a> 是<tt class="docutils literal"><span class="pre">False</span></tt> 时为<a class="reference internal" href="widgets.html#django.forms.NumberInput" title="django.forms.NumberInput"><tt class="xref py py-class docutils literal"><span class="pre">NumberInput</span></tt></a>，否则为<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a>。</font></li>
+<li><font id="335">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="336">规范化为：一个Unicode 对象。</font></li>
+<li><font id="337">验证给出的值是一个浮点数。</font><font id="338">和Python 的<tt class="docutils literal"><span class="pre">float()</span></tt> 函数一样，允许前导和尾随的空白符。</font></li>
+<li><font id="339">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt>, <tt class="docutils literal"><span class="pre">max_value</span></tt>, <tt class="docutils literal"><span class="pre">min_value</span></tt></font></li>
+</ul>
+<p><font id="124">接收两个可选的参数用于验证，<tt class="docutils literal"><span class="pre">max_value</span></tt> 和<tt class="docutils literal"><span class="pre">min_value</span></tt>。</font><font id="125">它们控制字段中允许的值的范围。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-imagefield">
+<span id="imagefield"></span><h3><font id="254">ImageField</font><a class="headerlink" href="fields.html#imagefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.ImageField">
+<em class="property">class </em><tt class="descname">ImageField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.ImageField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="340">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.ClearableFileInput" title="django.forms.ClearableFileInput"><tt class="xref py py-class docutils literal"><span class="pre">ClearableFileInput</span></tt></a></font></li>
+<li><font id="341">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="342">Normalizes to: An <tt class="docutils literal"><span class="pre">UploadedFile</span></tt> object that wraps the file content and file name into a single object.</font></li>
+<li><font id="343">Validates that file data has been bound to the form, and that the file is of an image format understood by Pillow.</font></li>
+<li><font id="344">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt>, <tt class="docutils literal"><span class="pre">missing</span></tt>, <tt class="docutils literal"><span class="pre">empty</span></tt>, <tt class="docutils literal"><span class="pre">invalid_image</span></tt></font></li>
+</ul>
+<p><font id="126">Using an <tt class="docutils literal"><span class="pre">ImageField</span></tt> requires that <a class="reference external" href="http://pillow.readthedocs.org/en/latest/">Pillow</a> is installed with support for the image formats you use. </font><font id="127">If you encounter a <tt class="docutils literal"><span class="pre">corrupt</span> <span class="pre">image</span></tt> error when you upload an image, it usually means that Pillow doesn’t understand its format. </font><font id="128">To fix this, install the appropriate library and reinstall Pillow.</font></p>
+<p><font id="129">When you use an <tt class="docutils literal"><span class="pre">ImageField</span></tt> on a form, you must also remember to <a class="reference internal" href="api.html#binding-uploaded-files"><em>bind the file data to the form</em></a>.</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.8:</span> <p><font id="130">After the field has been cleaned and validated, the <tt class="docutils literal"><span class="pre">UploadedFile</span></tt> object will have an additional <tt class="docutils literal"><span class="pre">image</span></tt> attribute containing the Pillow <a class="reference external" href="https://pillow.readthedocs.org/en/latest/reference/Image.html">Image</a> instance used to check if the file was a valid image. </font><font id="131"><tt class="docutils literal"><span class="pre">UploadedFile.content_type</span></tt> is also updated with the image’s content type as determined by Pillow.</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-integerfield">
+<span id="integerfield"></span><h3><font id="255">IntegerField</font><a class="headerlink" href="fields.html#integerfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.IntegerField">
+<em class="property">class </em><tt class="descname">IntegerField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.IntegerField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="345">默认的Widget：当<a class="reference internal" href="fields.html#django.forms.Field.localize" title="django.forms.Field.localize"><tt class="xref py py-attr docutils literal"><span class="pre">Field.localize</span></tt></a> 是<tt class="docutils literal"><span class="pre">False</span></tt> 时为<a class="reference internal" href="widgets.html#django.forms.NumberInput" title="django.forms.NumberInput"><tt class="xref py py-class docutils literal"><span class="pre">NumberInput</span></tt></a>，否则为<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a>。</font></li>
+<li><font id="346">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="347">规范化为：一个Python 整数或长整数。</font></li>
+<li><font id="348">Validates that the given value is an integer. </font><font id="349">Leading and trailing whitespace is allowed, as in Python’s <tt class="docutils literal"><span class="pre">int()</span></tt> function.</font></li>
+<li><font id="350">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt>, <tt class="docutils literal"><span class="pre">max_value</span></tt>, <tt class="docutils literal"><span class="pre">min_value</span></tt></font></li>
+</ul>
+<p><font id="132">The <tt class="docutils literal"><span class="pre">max_value</span></tt> and <tt class="docutils literal"><span class="pre">min_value</span></tt> error messages may contain <tt class="docutils literal"><span class="pre">%(limit_value)s</span></tt>, which will be substituted by the appropriate limit.</font></p>
+<p><font id="133">Takes two optional arguments for validation:</font></p>
+<dl class="attribute">
+<dt id="django.forms.IntegerField.max_value">
+<tt class="descname">max_value</tt><a class="headerlink" href="fields.html#django.forms.IntegerField.max_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="attribute">
+<dt id="django.forms.IntegerField.min_value">
+<tt class="descname">min_value</tt><a class="headerlink" href="fields.html#django.forms.IntegerField.min_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="134">These control the range of values permitted in the field.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-ipaddressfield">
+<span id="ipaddressfield"></span><h3><font id="256">IPAddressField</font><a class="headerlink" href="fields.html#ipaddressfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.IPAddressField">
+<em class="property">class </em><tt class="descname">IPAddressField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.IPAddressField" title="Permalink to this definition">¶</a></dt>
+<dd><div class="deprecated">
+<p><font id="135"><span class="versionmodified">Deprecated since version 1.7: </span></font><font id="136">This field has been deprecated in favor of <a class="reference internal" href="fields.html#django.forms.GenericIPAddressField" title="django.forms.GenericIPAddressField"><tt class="xref py py-class docutils literal"><span class="pre">GenericIPAddressField</span></tt></a>.</font></p>
+</div>
+<ul class="simple">
+<li><font id="351">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="352">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="353">规范化为：一个Unicode 对象。</font></li>
+<li><font id="354">Validates that the given value is a valid IPv4 address, using a regular expression.</font></li>
+<li><font id="355">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+</dd></dl>
+</div>
+<div class="section" id="s-genericipaddressfield">
+<span id="genericipaddressfield"></span><h3><font id="257">GenericIPAddressField</font><a class="headerlink" href="fields.html#genericipaddressfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.GenericIPAddressField">
+<em class="property">class </em><tt class="descname">GenericIPAddressField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.GenericIPAddressField" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="137">A field containing either an IPv4 or an IPv6 address.</font></p>
+<ul class="simple">
+<li><font id="356">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="357">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="358">规范化为：一个Unicode 对象。 </font><font id="359">IPv6 addresses are normalized as described below.</font></li>
+<li><font id="360">Validates that the given value is a valid IP address.</font></li>
+<li><font id="361">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="138">The IPv6 address normalization follows <span class="target" id="index-0"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc4291.html#section-2.2"><strong>RFC 4291</strong></a> section 2.2, including using the IPv4 format suggested in paragraph 3 of that section, like <tt class="docutils literal"><span class="pre">::ffff:192.0.2.0</span></tt>. </font><font id="139">For example, <tt class="docutils literal"><span class="pre">2001:0::0:01</span></tt> would be normalized to <tt class="docutils literal"><span class="pre">2001::1</span></tt>, and <tt class="docutils literal"><span class="pre">::ffff:0a0a:0a0a</span></tt> to <tt class="docutils literal"><span class="pre">::ffff:10.10.10.10</span></tt>. </font><font id="140">All characters are converted to lowercase.</font></p>
+<p><font id="141">Takes two optional arguments:</font></p>
+<dl class="attribute">
+<dt id="django.forms.GenericIPAddressField.protocol">
+<tt class="descname">protocol</tt><a class="headerlink" href="fields.html#django.forms.GenericIPAddressField.protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="142">Limits valid inputs to the specified protocol. </font><font id="143">Accepted values are <tt class="docutils literal"><span class="pre">both</span></tt> (default), <tt class="docutils literal"><span class="pre">IPv4</span></tt> or <tt class="docutils literal"><span class="pre">IPv6</span></tt>. </font><font id="144">Matching is case insensitive.</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.GenericIPAddressField.unpack_ipv4">
+<tt class="descname">unpack_ipv4</tt><a class="headerlink" href="fields.html#django.forms.GenericIPAddressField.unpack_ipv4" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="145">Unpacks IPv4 mapped addresses like <tt class="docutils literal"><span class="pre">::ffff:192.0.2.1</span></tt>. </font><font id="146">If this option is enabled that address would be unpacked to <tt class="docutils literal"><span class="pre">192.0.2.1</span></tt>. </font><font id="147">Default is disabled. </font><font id="148">Can only be used when <tt class="docutils literal"><span class="pre">protocol</span></tt> is set to <tt class="docutils literal"><span class="pre">'both'</span></tt>.</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-multiplechoicefield">
+<span id="multiplechoicefield"></span><h3><font id="258">MultipleChoiceField</font><a class="headerlink" href="fields.html#multiplechoicefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.MultipleChoiceField">
+<em class="property">class </em><tt class="descname">MultipleChoiceField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.MultipleChoiceField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="362">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.SelectMultiple" title="django.forms.SelectMultiple"><tt class="xref py py-class docutils literal"><span class="pre">SelectMultiple</span></tt></a></font></li>
+<li><font id="363">空值：<tt class="docutils literal"><span class="pre">[]</span></tt>（一个空列表）</font></li>
+<li><font id="364">规范化为：一个Unicode 对象列表。</font></li>
+<li><font id="365">Validates that every value in the given list of values exists in the list of choices.</font></li>
+<li><font id="366">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid_choice</span></tt>, <tt class="docutils literal"><span class="pre">invalid_list</span></tt></font></li>
+</ul>
+<p><font id="149">The <tt class="docutils literal"><span class="pre">invalid_choice</span></tt> error message may contain <tt class="docutils literal"><span class="pre">%(value)s</span></tt>, which will be replaced with the selected choice.</font></p>
+<p><font id="150">Takes one extra required argument, <tt class="docutils literal"><span class="pre">choices</span></tt>, as for <tt class="docutils literal"><span class="pre">ChoiceField</span></tt>.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-typedmultiplechoicefield">
+<span id="typedmultiplechoicefield"></span><h3><font id="259">TypedMultipleChoiceField</font><a class="headerlink" href="fields.html#typedmultiplechoicefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.TypedMultipleChoiceField">
+<em class="property">class </em><tt class="descname">TypedMultipleChoiceField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.TypedMultipleChoiceField" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="151">Just like a <a class="reference internal" href="fields.html#django.forms.MultipleChoiceField" title="django.forms.MultipleChoiceField"><tt class="xref py py-class docutils literal"><span class="pre">MultipleChoiceField</span></tt></a>, except <a class="reference internal" href="fields.html#django.forms.TypedMultipleChoiceField" title="django.forms.TypedMultipleChoiceField"><tt class="xref py py-class docutils literal"><span class="pre">TypedMultipleChoiceField</span></tt></a> takes two extra arguments, <tt class="docutils literal"><span class="pre">coerce</span></tt> and <tt class="docutils literal"><span class="pre">empty_value</span></tt>.</font></p>
+<ul class="simple">
+<li><font id="367">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.SelectMultiple" title="django.forms.SelectMultiple"><tt class="xref py py-class docutils literal"><span class="pre">SelectMultiple</span></tt></a></font></li>
+<li><font id="368">空值：<tt class="docutils literal"><span class="pre">empty_value</span></tt></font></li>
+<li><font id="369">Normalizes to: A list of values of the type provided by the <tt class="docutils literal"><span class="pre">coerce</span></tt> argument.</font></li>
+<li><font id="370">Validates that the given values exists in the list of choices and can be coerced.</font></li>
+<li><font id="371">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid_choice</span></tt></font></li>
+</ul>
+<p><font id="152">The <tt class="docutils literal"><span class="pre">invalid_choice</span></tt> error message may contain <tt class="docutils literal"><span class="pre">%(value)s</span></tt>, which will be replaced with the selected choice.</font></p>
+<p><font id="153">Takes two extra arguments, <tt class="docutils literal"><span class="pre">coerce</span></tt> and <tt class="docutils literal"><span class="pre">empty_value</span></tt>, as for <tt class="docutils literal"><span class="pre">TypedChoiceField</span></tt>.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-nullbooleanfield">
+<span id="nullbooleanfield"></span><h3><font id="260">NullBooleanField</font><a class="headerlink" href="fields.html#nullbooleanfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.NullBooleanField">
+<em class="property">class </em><tt class="descname">NullBooleanField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.NullBooleanField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="372">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.NullBooleanSelect" title="django.forms.NullBooleanSelect"><tt class="xref py py-class docutils literal"><span class="pre">NullBooleanSelect</span></tt></a></font></li>
+<li><font id="373">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="374">规范化为：一个Python <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">False</span></tt> 或<tt class="docutils literal"><span class="pre">None</span></tt> 值。</font></li>
+<li><font id="375">Validates nothing (i.e., it never raises a <tt class="docutils literal"><span class="pre">ValidationError</span></tt>).</font></li>
+</ul>
+</dd></dl>
+</div>
+<div class="section" id="s-regexfield">
+<span id="regexfield"></span><h3><font id="261">RegexField</font><a class="headerlink" href="fields.html#regexfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.RegexField">
+<em class="property">class </em><tt class="descname">RegexField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.RegexField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="376">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="377">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="378">Normalizes to: A Unicode object.</font></li>
+<li><font id="379">Validates that the given value matches against a certain regular expression.</font></li>
+<li><font id="380">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="154">Takes one required argument:</font></p>
+<dl class="attribute">
+<dt id="django.forms.RegexField.regex">
+<tt class="descname">regex</tt><a class="headerlink" href="fields.html#django.forms.RegexField.regex" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="155">A regular expression specified either as a string or a compiled regular expression object.</font></p>
+</dd></dl>
+<p><font id="156">Also takes <tt class="docutils literal"><span class="pre">max_length</span></tt> and <tt class="docutils literal"><span class="pre">min_length</span></tt>, which work just as they do for <tt class="docutils literal"><span class="pre">CharField</span></tt>.</font></p>
+<div class="deprecated">
+<p><font id="157"><span class="versionmodified">Deprecated since version 1.8: </span></font><font id="158">The optional argument <tt class="docutils literal"><span class="pre">error_message</span></tt> is also accepted for backwards compatibility but will be removed in Django 2.0. </font><font id="159">The preferred way to provide an error message is to use the <a class="reference internal" href="fields.html#django.forms.Field.error_messages" title="django.forms.Field.error_messages"><tt class="xref py py-attr docutils literal"><span class="pre">error_messages</span></tt></a> argument, passing a dictionary with <tt class="docutils literal"><span class="pre">'invalid'</span></tt> as a key and the error message as the value.</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-slugfield">
+<span id="slugfield"></span><h3><font id="262">SlugField</font><a class="headerlink" href="fields.html#slugfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.SlugField">
+<em class="property">class </em><tt class="descname">SlugField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.SlugField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="381">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="382">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="383">规范化为：一个Unicode 对象。</font></li>
+<li><font id="384">Validates that the given value contains only letters, numbers, underscores, and hyphens.</font></li>
+<li><font id="385">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="160">This field is intended for use in representing a model <a class="reference internal" href="../models/fields.html#django.db.models.SlugField" title="django.db.models.SlugField"><tt class="xref py py-class docutils literal"><span class="pre">SlugField</span></tt></a> in forms.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-timefield">
+<span id="timefield"></span><h3><font id="263">TimeField</font><a class="headerlink" href="fields.html#timefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.TimeField">
+<em class="property">class </em><tt class="descname">TimeField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.TimeField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="386">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="387">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="388">规范化为：一个Python 的<tt class="docutils literal"><span class="pre">datetime.time</span></tt> 对象。</font></li>
+<li><font id="389">Validates that the given value is either a <tt class="docutils literal"><span class="pre">datetime.time</span></tt> or string formatted in a particular time format.</font></li>
+<li><font id="390">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="161">Takes one optional argument:</font></p>
+<dl class="attribute">
+<dt id="django.forms.TimeField.input_formats">
+<tt class="descname">input_formats</tt><a class="headerlink" href="fields.html#django.forms.TimeField.input_formats" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="162">A list of formats used to attempt to convert a string to a valid <tt class="docutils literal"><span class="pre">datetime.time</span></tt> object.</font></p>
+</dd></dl>
+<p><font id="163">If no <tt class="docutils literal"><span class="pre">input_formats</span></tt> argument is provided, the default input formats are:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">'%H:%M:%S'</span><span class="p">,</span>     <span class="c"># '14:30:59'</span>
+<span class="s">'%H:%M'</span><span class="p">,</span>        <span class="c"># '14:30'</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-urlfield">
+<span id="urlfield"></span><h3><font id="264">URLField</font><a class="headerlink" href="fields.html#urlfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.URLField">
+<em class="property">class </em><tt class="descname">URLField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.URLField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="391">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.URLInput" title="django.forms.URLInput"><tt class="xref py py-class docutils literal"><span class="pre">URLInput</span></tt></a></font></li>
+<li><font id="392">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="393">规范化为：一个Unicode 对象。</font></li>
+<li><font id="394">Validates that the given value is a valid URL.</font></li>
+<li><font id="395">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="164">Takes the following optional arguments:</font></p>
+<dl class="attribute">
+<dt id="django.forms.URLField.max_length">
+<tt class="descname">max_length</tt><a class="headerlink" href="fields.html#django.forms.URLField.max_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="attribute">
+<dt id="django.forms.URLField.min_length">
+<tt class="descname">min_length</tt><a class="headerlink" href="fields.html#django.forms.URLField.min_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p><font id="165">These are the same as <tt class="docutils literal"><span class="pre">CharField.max_length</span></tt> and <tt class="docutils literal"><span class="pre">CharField.min_length</span></tt>.</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-uuidfield">
+<span id="uuidfield"></span><h3><font id="265">UUIDField</font><a class="headerlink" href="fields.html#uuidfield" title="Permalink to this headline">¶</a></h3>
+<div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<dl class="class">
+<dt id="django.forms.UUIDField">
+<em class="property">class </em><tt class="descname">UUIDField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.UUIDField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="396">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="397">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="398">规范化为：一个<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">UUID</span></tt></a> 对象。</font></li>
+<li><font id="399">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="166">This field will accept any string format accepted as the <tt class="docutils literal"><span class="pre">hex</span></tt> argument to the <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">UUID</span></tt></a> constructor.</font></p>
+</dd></dl>
+</div>
+</div>
+<div class="section" id="s-slightly-complex-built-in-field-classes">
+<span id="slightly-complex-built-in-field-classes"></span><h2><font id="229">Slightly complex built-in <tt class="docutils literal"><span class="pre">Field</span></tt> classes</font><a class="headerlink" href="fields.html#slightly-complex-built-in-field-classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-combofield">
+<span id="combofield"></span><h3><font id="266">ComboField</font><a class="headerlink" href="fields.html#combofield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.ComboField">
+<em class="property">class </em><tt class="descname">ComboField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.ComboField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="400">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="401">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="402">规范化为：一个Unicode 对象。</font></li>
+<li><font id="403">Validates that the given value against each of the fields specified as an argument to the <tt class="docutils literal"><span class="pre">ComboField</span></tt>.</font></li>
+<li><font id="404">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt></font></li>
+</ul>
+<p><font id="167">Takes one extra required argument:</font></p>
+<dl class="attribute">
+<dt id="django.forms.ComboField.fields">
+<tt class="descname">fields</tt><a class="headerlink" href="fields.html#django.forms.ComboField.fields" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="168">The list of fields that should be used to validate the field’s value (in the order in which they are provided).</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.forms</span> <span class="kn">import</span> <span class="n">ComboField</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">ComboField</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span> <span class="n">EmailField</span><span class="p">()])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">'test@example.com'</span><span class="p">)</span>
+<span class="go">'test@example.com'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="s">'longemailaddress@example.com'</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValidationError</span>: <span class="n">['Ensure this value has at most 20 characters (it has 28).']</span>
+</pre></div>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-multivaluefield">
+<span id="multivaluefield"></span><h3><font id="267">MultiValueField</font><a class="headerlink" href="fields.html#multivaluefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.MultiValueField">
+<em class="property">class </em><tt class="descname">MultiValueField</tt>(<em>fields=()</em>, <em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.MultiValueField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="405">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a></font></li>
+<li><font id="406">空值：<tt class="docutils literal"><span class="pre">''</span></tt>（一个空字符串）</font></li>
+<li><font id="407">Normalizes to: the type returned by the <tt class="docutils literal"><span class="pre">compress</span></tt> method of the subclass.</font></li>
+<li><font id="408">Validates that the given value against each of the fields specified as an argument to the <tt class="docutils literal"><span class="pre">MultiValueField</span></tt>.</font></li>
+<li><font id="409">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt>, <tt class="docutils literal"><span class="pre">incomplete</span></tt></font></li>
+</ul>
+<p><font id="169">Aggregates the logic of multiple fields that together produce a single value.</font></p>
+<p><font id="170">This field is abstract and must be subclassed. </font><font id="171">In contrast with the single-value fields, subclasses of <a class="reference internal" href="fields.html#django.forms.MultiValueField" title="django.forms.MultiValueField"><tt class="xref py py-class docutils literal"><span class="pre">MultiValueField</span></tt></a> must not implement <a class="reference internal" href="fields.html#django.forms.Field.clean" title="django.forms.Field.clean"><tt class="xref py py-meth docutils literal"><span class="pre">clean()</span></tt></a> but instead - implement <a class="reference internal" href="fields.html#django.forms.MultiValueField.compress" title="django.forms.MultiValueField.compress"><tt class="xref py py-meth docutils literal"><span class="pre">compress()</span></tt></a>.</font></p>
+<p><font id="172">Takes one extra required argument:</font></p>
+<dl class="attribute">
+<dt id="django.forms.MultiValueField.fields">
+<tt class="descname">fields</tt><a class="headerlink" href="fields.html#django.forms.MultiValueField.fields" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="173">A tuple of fields whose values are cleaned and subsequently combined into a single value. </font><font id="174">Each value of the field is cleaned by the corresponding field in <tt class="docutils literal"><span class="pre">fields</span></tt> – the first value is cleaned by the first field, the second value is cleaned by the second field, etc. </font><font id="175">Once all fields are cleaned, the list of clean values is combined into a single value by <a class="reference internal" href="fields.html#django.forms.MultiValueField.compress" title="django.forms.MultiValueField.compress"><tt class="xref py py-meth docutils literal"><span class="pre">compress()</span></tt></a>.</font></p>
+</dd></dl>
+<p><font id="176">Also takes one extra optional argument:</font></p>
+<dl class="attribute">
+<dt id="django.forms.MultiValueField.require_all_fields">
+<tt class="descname">require_all_fields</tt><a class="headerlink" href="fields.html#django.forms.MultiValueField.require_all_fields" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="177">Defaults to <tt class="docutils literal"><span class="pre">True</span></tt>, in which case a <tt class="docutils literal"><span class="pre">required</span></tt> validation error will be raised if no value is supplied for any field.</font></p>
+<p><font id="178">When set to <tt class="docutils literal"><span class="pre">False</span></tt>, the <a class="reference internal" href="fields.html#django.forms.Field.required" title="django.forms.Field.required"><tt class="xref py py-attr docutils literal"><span class="pre">Field.required</span></tt></a> attribute can be set to <tt class="docutils literal"><span class="pre">False</span></tt> for individual fields to make them optional. </font><font id="179">If no value is supplied for a required field, an <tt class="docutils literal"><span class="pre">incomplete</span></tt> validation error will be raised.</font></p>
+<p><font id="180">A default <tt class="docutils literal"><span class="pre">incomplete</span></tt> error message can be defined on the <a class="reference internal" href="fields.html#django.forms.MultiValueField" title="django.forms.MultiValueField"><tt class="xref py py-class docutils literal"><span class="pre">MultiValueField</span></tt></a> subclass, or different messages can be defined on each individual field. </font><font id="181">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="kn">import</span> <span class="n">RegexValidator</span>
+
+<span class="k">class</span> <span class="nc">PhoneField</span><span class="p">(</span><span class="n">MultiValueField</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># Define one message for all fields.</span>
+        <span class="n">error_messages</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'incomplete'</span><span class="p">:</span> <span class="s">'Enter a country calling code and a phone number.'</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c"># Or define a different message for each field.</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">CharField</span><span class="p">(</span><span class="n">error_messages</span><span class="o">=</span><span class="p">{</span><span class="s">'incomplete'</span><span class="p">:</span> <span class="s">'Enter a country calling code.'</span><span class="p">},</span>
+                      <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">RegexValidator</span><span class="p">(</span><span class="s">r'^[0-9]+$'</span><span class="p">,</span> <span class="s">'Enter a valid country calling code.'</span><span class="p">)]),</span>
+            <span class="n">CharField</span><span class="p">(</span><span class="n">error_messages</span><span class="o">=</span><span class="p">{</span><span class="s">'incomplete'</span><span class="p">:</span> <span class="s">'Enter a phone number.'</span><span class="p">},</span>
+                      <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">RegexValidator</span><span class="p">(</span><span class="s">r'^[0-9]+$'</span><span class="p">,</span> <span class="s">'Enter a valid phone number.'</span><span class="p">)]),</span>
+            <span class="n">CharField</span><span class="p">(</span><span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">RegexValidator</span><span class="p">(</span><span class="s">r'^[0-9]+$'</span><span class="p">,</span> <span class="s">'Enter a valid extension.'</span><span class="p">)],</span>
+                      <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PhoneField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">error_messages</span><span class="o">=</span><span class="n">error_messages</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
+            <span class="n">require_all_fields</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.MultiValueField.widget">
+<tt class="descname">widget</tt><a class="headerlink" href="fields.html#django.forms.MultiValueField.widget" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="182">Must be a subclass of <a class="reference internal" href="widgets.html#django.forms.MultiWidget" title="django.forms.MultiWidget"><tt class="xref py py-class docutils literal"><span class="pre">django.forms.MultiWidget</span></tt></a>. </font><font id="183">Default value is <a class="reference internal" href="widgets.html#django.forms.TextInput" title="django.forms.TextInput"><tt class="xref py py-class docutils literal"><span class="pre">TextInput</span></tt></a>, which probably is not very useful in this case.</font></p>
+</dd></dl>
+<dl class="method">
+<dt id="django.forms.MultiValueField.compress">
+<tt class="descname">compress</tt>(<em>data_list</em>)<a class="headerlink" href="fields.html#django.forms.MultiValueField.compress" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="184">Takes a list of valid values and returns a “compressed” version of those values – in a single value. </font><font id="185">For example, <a class="reference internal" href="fields.html#django.forms.SplitDateTimeField" title="django.forms.SplitDateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">SplitDateTimeField</span></tt></a> is a subclass which combines a time field and a date field into a <tt class="docutils literal"><span class="pre">datetime</span></tt> object.</font></p>
+<p><font id="186">This method must be implemented in the subclasses.</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="s-splitdatetimefield">
+<span id="splitdatetimefield"></span><h3><font id="268">SplitDateTimeField</font><a class="headerlink" href="fields.html#splitdatetimefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.SplitDateTimeField">
+<em class="property">class </em><tt class="descname">SplitDateTimeField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.SplitDateTimeField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="410">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.SplitDateTimeWidget" title="django.forms.SplitDateTimeWidget"><tt class="xref py py-class docutils literal"><span class="pre">SplitDateTimeWidget</span></tt></a></font></li>
+<li><font id="411">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="412">规范化为：一个Python <tt class="docutils literal"><span class="pre">datetime.datetime</span></tt> 对象。</font></li>
+<li><font id="413">Validates that the given value is a <tt class="docutils literal"><span class="pre">datetime.datetime</span></tt> or string formatted in a particular datetime format.</font></li>
+<li><font id="414">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid</span></tt>, <tt class="docutils literal"><span class="pre">invalid_date</span></tt>, <tt class="docutils literal"><span class="pre">invalid_time</span></tt></font></li>
+</ul>
+<p><font id="187">Takes two optional arguments:</font></p>
+<dl class="attribute">
+<dt id="django.forms.SplitDateTimeField.input_date_formats">
+<tt class="descname">input_date_formats</tt><a class="headerlink" href="fields.html#django.forms.SplitDateTimeField.input_date_formats" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="188">A list of formats used to attempt to convert a string to a valid <tt class="docutils literal"><span class="pre">datetime.date</span></tt> object.</font></p>
+</dd></dl>
+<p><font id="189">If no <tt class="docutils literal"><span class="pre">input_date_formats</span></tt> argument is provided, the default input formats for <tt class="docutils literal"><span class="pre">DateField</span></tt> are used.</font></p>
+<dl class="attribute">
+<dt id="django.forms.SplitDateTimeField.input_time_formats">
+<tt class="descname">input_time_formats</tt><a class="headerlink" href="fields.html#django.forms.SplitDateTimeField.input_time_formats" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="190">A list of formats used to attempt to convert a string to a valid <tt class="docutils literal"><span class="pre">datetime.time</span></tt> object.</font></p>
+</dd></dl>
+<p><font id="191">If no <tt class="docutils literal"><span class="pre">input_time_formats</span></tt> argument is provided, the default input formats for <tt class="docutils literal"><span class="pre">TimeField</span></tt> are used.</font></p>
+</dd></dl>
+</div>
+</div>
+<div class="section" id="s-fields-which-handle-relationships">
+<span id="fields-which-handle-relationships"></span><h2><font id="230">Fields which handle relationships</font><a class="headerlink" href="fields.html#fields-which-handle-relationships" title="Permalink to this headline">¶</a></h2>
+<p><font id="192">Two fields are available for representing relationships between models: <a class="reference internal" href="fields.html#django.forms.ModelChoiceField" title="django.forms.ModelChoiceField"><tt class="xref py py-class docutils literal"><span class="pre">ModelChoiceField</span></tt></a> and <a class="reference internal" href="fields.html#django.forms.ModelMultipleChoiceField" title="django.forms.ModelMultipleChoiceField"><tt class="xref py py-class docutils literal"><span class="pre">ModelMultipleChoiceField</span></tt></a>. </font><font id="193">Both of these fields require a single <tt class="docutils literal"><span class="pre">queryset</span></tt> parameter that is used to create the choices for the field. </font><font id="194">Upon form validation, these fields will place either one model object (in the case of <tt class="docutils literal"><span class="pre">ModelChoiceField</span></tt>) or multiple model objects (in the case of <tt class="docutils literal"><span class="pre">ModelMultipleChoiceField</span></tt>) into the <tt class="docutils literal"><span class="pre">cleaned_data</span></tt> dictionary of the form.</font></p>
+<p><font id="195">For more complex uses, you can specify <tt class="docutils literal"><span class="pre">queryset=None</span></tt> when declaring the form field and then populate the <tt class="docutils literal"><span class="pre">queryset</span></tt> in the form’s <tt class="docutils literal"><span class="pre">__init__()</span></tt> method:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">FooMultipleChoiceForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">foo_select</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelMultipleChoiceField</span><span class="p">(</span><span class="n">queryset</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FooMultipleChoiceForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s">'foo_select'</span><span class="p">]</span><span class="o">.</span><span class="n">queryset</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="s-modelchoicefield">
+<span id="modelchoicefield"></span><h3><font id="269">ModelChoiceField</font><a class="headerlink" href="fields.html#modelchoicefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.ModelChoiceField">
+<em class="property">class </em><tt class="descname">ModelChoiceField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.ModelChoiceField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="415">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.Select" title="django.forms.Select"><tt class="xref py py-class docutils literal"><span class="pre">Select</span></tt></a></font></li>
+<li><font id="416">空值：<tt class="docutils literal"><span class="pre">None</span></tt></font></li>
+<li><font id="417">规范化为：一个模型实例。</font></li>
+<li><font id="418">Validates that the given id exists in the queryset.</font></li>
+<li><font id="419">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">invalid_choice</span></tt></font></li>
+</ul>
+<p><font id="196">Allows the selection of a single model object, suitable for representing a foreign key. </font><font id="197">Note that the default widget for <tt class="docutils literal"><span class="pre">ModelChoiceField</span></tt> becomes impractical when the number of entries increases. </font><font id="198">You should avoid using it for more than 100 items.</font></p>
+<p><font id="199">A single argument is required:</font></p>
+<dl class="attribute">
+<dt id="django.forms.ModelChoiceField.queryset">
+<tt class="descname">queryset</tt><a class="headerlink" href="fields.html#django.forms.ModelChoiceField.queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="200">A <tt class="docutils literal"><span class="pre">QuerySet</span></tt> of model objects from which the choices for the field will be derived, and which will be used to validate the user’s selection.</font></p>
+</dd></dl>
+<p><font id="201"><tt class="docutils literal"><span class="pre">ModelChoiceField</span></tt> also takes two optional arguments:</font></p>
+<dl class="attribute">
+<dt id="django.forms.ModelChoiceField.empty_label">
+<tt class="descname">empty_label</tt><a class="headerlink" href="fields.html#django.forms.ModelChoiceField.empty_label" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="478">By default the <tt class="docutils literal"><span class="pre">&lt;select&gt;</span></tt> widget used by <tt class="docutils literal"><span class="pre">ModelChoiceField</span></tt> will have an empty choice at the top of the list. </font><font id="479">You can change the text of this label (which is <tt class="docutils literal"><span class="pre">"---------"</span></tt> by default) with the <tt class="docutils literal"><span class="pre">empty_label</span></tt> attribute, or you can disable the empty label entirely by setting <tt class="docutils literal"><span class="pre">empty_label</span></tt> to <tt class="docutils literal"><span class="pre">None</span></tt>:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># A custom empty label</span>
+<span class="n">field1</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span><span class="n">queryset</span><span class="o">=...</span><span class="p">,</span> <span class="n">empty_label</span><span class="o">=</span><span class="s">"(Nothing)"</span><span class="p">)</span>
+
+<span class="c"># No empty label</span>
+<span class="n">field2</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span><span class="n">queryset</span><span class="o">=...</span><span class="p">,</span> <span class="n">empty_label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="203">Note that if a <tt class="docutils literal"><span class="pre">ModelChoiceField</span></tt> is required and has a default initial value, no empty choice is created (regardless of the value of <tt class="docutils literal"><span class="pre">empty_label</span></tt>).</font></p>
+</dd></dl>
+<dl class="attribute">
+<dt id="django.forms.ModelChoiceField.to_field_name">
+<tt class="descname">to_field_name</tt><a class="headerlink" href="fields.html#django.forms.ModelChoiceField.to_field_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="204">This optional argument is used to specify the field to use as the value of the choices in the field’s widget. </font><font id="205">Be sure it’s a unique field for the model, otherwise the selected value could match more than one object. </font><font id="206">By default it is set to <tt class="docutils literal"><span class="pre">None</span></tt>, in which case the primary key of each object will be used. </font><font id="207">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># No custom to_field_name</span>
+<span class="n">field1</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span><span class="n">queryset</span><span class="o">=...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="208">would yield:</font></p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"id_field1"</span> <span class="na">name=</span><span class="s">"field1"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"obj1.pk"</span><span class="nt">&gt;</span>Object1<span class="nt">&lt;/option&gt;</span>
+<span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"obj2.pk"</span><span class="nt">&gt;</span>Object2<span class="nt">&lt;/option&gt;</span>
+...
+<span class="nt">&lt;/select&gt;</span>
+</pre></div>
+</div>
+<p><font id="209">and:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># to_field_name provided</span>
+<span class="n">field2</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span><span class="n">queryset</span><span class="o">=...</span><span class="p">,</span> <span class="n">to_field_name</span><span class="o">=</span><span class="s">"name"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="210">would yield:</font></p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"id_field2"</span> <span class="na">name=</span><span class="s">"field2"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"obj1.name"</span><span class="nt">&gt;</span>Object1<span class="nt">&lt;/option&gt;</span>
+<span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"obj2.name"</span><span class="nt">&gt;</span>Object2<span class="nt">&lt;/option&gt;</span>
+...
+<span class="nt">&lt;/select&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+<p><font id="211">The <tt class="docutils literal"><span class="pre">__str__</span></tt> (<tt class="docutils literal"><span class="pre">__unicode__</span></tt> on Python 2) method of the model will be called to generate string representations of the objects for use in the field’s choices; </font><font id="212">to provide customized representations, subclass <tt class="docutils literal"><span class="pre">ModelChoiceField</span></tt> and override <tt class="docutils literal"><span class="pre">label_from_instance</span></tt>. </font><font id="213">This method will receive a model object, and should return a string suitable for representing it. </font><font id="214">For example:</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.forms</span> <span class="kn">import</span> <span class="n">ModelChoiceField</span>
+
+<span class="k">class</span> <span class="nc">MyModelChoiceField</span><span class="p">(</span><span class="n">ModelChoiceField</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">label_from_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">"My Object #</span><span class="si">%i</span><span class="s">"</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-modelmultiplechoicefield">
+<span id="modelmultiplechoicefield"></span><h3><font id="270">ModelMultipleChoiceField</font><a class="headerlink" href="fields.html#modelmultiplechoicefield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="django.forms.ModelMultipleChoiceField">
+<em class="property">class </em><tt class="descname">ModelMultipleChoiceField</tt>(<em>**kwargs</em>)<a class="headerlink" href="fields.html#django.forms.ModelMultipleChoiceField" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><font id="420">默认的Widget：<a class="reference internal" href="widgets.html#django.forms.SelectMultiple" title="django.forms.SelectMultiple"><tt class="xref py py-class docutils literal"><span class="pre">SelectMultiple</span></tt></a></font></li>
+<li><font id="421">空值：<tt class="docutils literal"><span class="pre">QuerySet</span></tt> (self.queryset.none())</font></li>
+<li><font id="422">规范化为： 模型实例的一个<tt class="docutils literal"><span class="pre">QuerySet</span></tt>。</font></li>
+<li><font id="423">Validates that every id in the given list of values exists in the queryset.</font></li>
+<li><font id="424">错误信息的键：<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">list</span></tt>, <tt class="docutils literal"><span class="pre">invalid_choice</span></tt>, <tt class="docutils literal"><span class="pre">invalid_pk_value</span></tt></font></li>
+</ul>
+<p><font id="215">The <tt class="docutils literal"><span class="pre">invalid_choice</span></tt> message may contain <tt class="docutils literal"><span class="pre">%(value)s</span></tt> and the <tt class="docutils literal"><span class="pre">invalid_pk_value</span></tt> message may contain <tt class="docutils literal"><span class="pre">%(pk)s</span></tt>, which will be substituted by the appropriate values.</font></p>
+<p><font id="216">Allows the selection of one or more model objects, suitable for representing a many-to-many relation. </font><font id="217">As with <a class="reference internal" href="fields.html#django.forms.ModelChoiceField" title="django.forms.ModelChoiceField"><tt class="xref py py-class docutils literal"><span class="pre">ModelChoiceField</span></tt></a>, you can use <tt class="docutils literal"><span class="pre">label_from_instance</span></tt> to customize the object representations, and <tt class="docutils literal"><span class="pre">queryset</span></tt> is a required parameter:</font></p>
+<dl class="attribute">
+<dt id="django.forms.ModelMultipleChoiceField.queryset">
+<tt class="descname">queryset</tt><a class="headerlink" href="fields.html#django.forms.ModelMultipleChoiceField.queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="218">A <tt class="docutils literal"><span class="pre">QuerySet</span></tt> of model objects from which the choices for the field will be derived, and which will be used to validate the user’s selection.</font></p>
+</dd></dl>
+</dd></dl>
+</div>
+</div>
+<div class="section" id="s-creating-custom-fields">
+<span id="creating-custom-fields"></span><h2><font id="231">创建自定义的字段</font><a class="headerlink" href="fields.html#creating-custom-fields" title="Permalink to this headline">¶</a></h2>
+<p><font id="219">如果内建的<tt class="docutils literal"><span class="pre">字段</span></tt>不能满足你的需求，你可以很容易地创建自定义的<tt class="docutils literal"><span class="pre">字段</span></tt>。</font><font id="220">你需要创建<tt class="docutils literal"><span class="pre">django.forms.Field</span></tt> 的一个子类。</font><font id="221">它只要求实现一个<tt class="docutils literal"><span class="pre">clean()</span></tt> 方法和接收上面核心参数的<tt class="docutils literal"><span class="pre">__init__()</span></tt> 方法(<tt class="docutils literal"><span class="pre">required</span></tt>, <tt class="docutils literal"><span class="pre">label</span></tt>, <tt class="docutils literal"><span class="pre">initial</span></tt>, <tt class="docutils literal"><span class="pre">widget</span></tt>, <tt class="docutils literal"><span class="pre">help_text</span></tt>)。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="271">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="fields.html#"><font id="425">表单字段</font></a><ul>
+<li><a class="reference internal" href="fields.html#core-field-arguments"><font id="426">字段的核心参数</font></a><ul>
+<li><a class="reference internal" href="fields.html#required"><font id="427">required</font></a></li>
+<li><a class="reference internal" href="fields.html#label"><font id="428">label</font></a></li>
+<li><a class="reference internal" href="fields.html#label-suffix"><font id="429">label_suffix</font></a></li>
+<li><a class="reference internal" href="fields.html#initial"><font id="430">initial</font></a></li>
+<li><a class="reference internal" href="fields.html#widget"><font id="431">widget</font></a></li>
+<li><a class="reference internal" href="fields.html#help-text"><font id="432">help_text</font></a></li>
+<li><a class="reference internal" href="fields.html#error-messages"><font id="433">error_messages</font></a></li>
+<li><a class="reference internal" href="fields.html#validators"><font id="434">validators</font></a></li>
+<li><a class="reference internal" href="fields.html#localize"><font id="435">localize</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="fields.html#checking-if-the-field-data-has-changed"><font id="436">检查字段数据是否已经改变</font></a><ul>
+<li><a class="reference internal" href="fields.html#has-changed"><font id="437">has_changed()</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="fields.html#built-in-field-classes"><font id="438">内建的<tt class="docutils literal"><span class="pre">字段</span></tt></font></a><ul>
+<li><a class="reference internal" href="fields.html#booleanfield"><font id="439">BooleanField</font></a></li>
+<li><a class="reference internal" href="fields.html#charfield"><font id="440">CharField</font></a></li>
+<li><a class="reference internal" href="fields.html#choicefield"><font id="441">ChoiceField</font></a></li>
+<li><a class="reference internal" href="fields.html#typedchoicefield"><font id="442">TypedChoiceField</font></a></li>
+<li><a class="reference internal" href="fields.html#datefield"><font id="443">DateField</font></a></li>
+<li><a class="reference internal" href="fields.html#datetimefield"><font id="444">DateTimeField</font></a></li>
+<li><a class="reference internal" href="fields.html#decimalfield"><font id="445">DecimalField</font></a></li>
+<li><a class="reference internal" href="fields.html#durationfield"><font id="446">DurationField</font></a></li>
+<li><a class="reference internal" href="fields.html#emailfield"><font id="447">EmailField</font></a></li>
+<li><a class="reference internal" href="fields.html#filefield"><font id="448">FileField</font></a></li>
+<li><a class="reference internal" href="fields.html#filepathfield"><font id="449">FilePathField</font></a></li>
+<li><a class="reference internal" href="fields.html#floatfield"><font id="450">FloatField</font></a></li>
+<li><a class="reference internal" href="fields.html#imagefield"><font id="451">ImageField</font></a></li>
+<li><a class="reference internal" href="fields.html#integerfield"><font id="452">IntegerField</font></a></li>
+<li><a class="reference internal" href="fields.html#ipaddressfield"><font id="453">IPAddressField</font></a></li>
+<li><a class="reference internal" href="fields.html#genericipaddressfield"><font id="454">GenericIPAddressField</font></a></li>
+<li><a class="reference internal" href="fields.html#multiplechoicefield"><font id="455">MultipleChoiceField</font></a></li>
+<li><a class="reference internal" href="fields.html#typedmultiplechoicefield"><font id="456">TypedMultipleChoiceField</font></a></li>
+<li><a class="reference internal" href="fields.html#nullbooleanfield"><font id="457">NullBooleanField</font></a></li>
+<li><a class="reference internal" href="fields.html#regexfield"><font id="458">RegexField</font></a></li>
+<li><a class="reference internal" href="fields.html#slugfield"><font id="459">SlugField</font></a></li>
+<li><a class="reference internal" href="fields.html#timefield"><font id="460">TimeField</font></a></li>
+<li><a class="reference internal" href="fields.html#urlfield"><font id="461">URLField</font></a></li>
+<li><a class="reference internal" href="fields.html#uuidfield"><font id="462">UUIDField</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="fields.html#slightly-complex-built-in-field-classes"><font id="463">Slightly complex built-in <tt class="docutils literal"><span class="pre">Field</span></tt> classes</font></a><ul>
+<li><a class="reference internal" href="fields.html#combofield"><font id="464">ComboField</font></a></li>
+<li><a class="reference internal" href="fields.html#multivaluefield"><font id="465">MultiValueField</font></a></li>
+<li><a class="reference internal" href="fields.html#splitdatetimefield"><font id="466">SplitDateTimeField</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="fields.html#fields-which-handle-relationships"><font id="467">Fields which handle relationships</font></a><ul>
+<li><a class="reference internal" href="fields.html#modelchoicefield"><font id="468">ModelChoiceField</font></a></li>
+<li><a class="reference internal" href="fields.html#modelmultiplechoicefield"><font id="469">ModelMultipleChoiceField</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="fields.html#creating-custom-fields"><font id="470">创建自定义的字段</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="272">Browse</font></h3>
+<ul>
+<li><font id="471">上一页：<a href="api.html">表单 API</a></font></li>
+<li><font id="472">下一页：<a href="models.html">模型表单函数</a></font></li>
+</ul>
+<h3><font id="273">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="473">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="474">API Reference</font></a>
+<ul><li><a href="index.html"><font id="475">表单</font></a>
+<ul><li><font id="476">表单字段</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="274">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/forms/fields.txt" rel="nofollow"><font id="477">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="275">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="222"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="276">最后更新：</font></h3>
+<p class="topless"><font id="223">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="api.html" title="The Forms API">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="models.html" title="Model Form Functions">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/forms/fields.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

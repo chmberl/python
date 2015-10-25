@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>视图装饰器 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Handling HTTP requests"/>
+<link href="file-uploads.html" rel="next" title="File Uploads"/>
+<link href="views.html" rel="prev" title="Writing views"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/http/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/http/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="25">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="views.html" title="Writing views">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="file-uploads.html" title="File Uploads">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-http-decorators">
+<div class="section" id="s-module-django.views.decorators.http">
+<span id="s-view-decorators"></span><span id="module-django.views.decorators.http"></span><span id="view-decorators"></span><h1><font id="26">视图装饰器</font><a class="headerlink" href="decorators.html#module-django.views.decorators.http" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">Django为视图提供了数个装饰器，用以支持相关的HTTP服务。</font></p>
+<div class="section" id="s-allowed-http-methods">
+<span id="allowed-http-methods"></span><h2><font id="27">限制 HTTP 的请求方法</font><a class="headerlink" href="decorators.html#allowed-http-methods" title="Permalink to this headline">¶</a></h2>
+<p><font id="2"><a class="reference internal" href="decorators.html#module-django.views.decorators.http" title="django.views.decorators.http"><tt class="xref py py-mod docutils literal"><span class="pre">django.views.decorators.http</span></tt></a> 包里的装饰器可以基于请求的方法来限制对视图的访问。</font><font id="3">若条件不满足会返回&nbsp;<a class="reference internal" href="../../ref/request-response.html#django.http.HttpResponseNotAllowed" title="django.http.HttpResponseNotAllowed"><tt class="xref py py-class docutils literal"><span class="pre">django.http.HttpResponseNotAllowed</span></tt></a>。</font></p>
+<dl class="function">
+<dt id="django.views.decorators.http.require_http_methods">
+<tt class="descname">require_http_methods</tt>(<em>request_method_list</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/decorators/http.html#require_http_methods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="decorators.html#django.views.decorators.http.require_http_methods" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="4">限制视图只能服务规定的http方法。</font><font id="5">用法：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.decorators.http</span> <span class="kn">import</span> <span class="n">require_http_methods</span>
+
+<span class="nd">@require_http_methods</span><span class="p">([</span><span class="s">"GET"</span><span class="p">,</span> <span class="s">"POST"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># I can assume now that only GET or POST requests make it this far</span>
+    <span class="c"># ...</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p><font id="6">注意，方法名必须大写。</font></p>
+</dd></dl>
+<dl class="function">
+<dt id="django.views.decorators.http.require_GET">
+<tt class="descname">require_GET</tt>()<a class="headerlink" href="decorators.html#django.views.decorators.http.require_GET" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="7">只允许视图接受GET方法的装饰器。</font></p>
+</dd></dl>
+<dl class="function">
+<dt id="django.views.decorators.http.require_POST">
+<tt class="descname">require_POST</tt>()<a class="headerlink" href="decorators.html#django.views.decorators.http.require_POST" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="8">只允许视图接受POST方法的装饰器。</font></p>
+</dd></dl>
+<dl class="function">
+<dt id="django.views.decorators.http.require_safe">
+<tt class="descname">require_safe</tt>()<a class="headerlink" href="decorators.html#django.views.decorators.http.require_safe" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="9">只允许视图接受 GET 和 HEAD 方法的装饰器。 </font><font id="10">这些方法通常被认为是安全的，因为方法不该有请求资源以外的目的。</font></p>
+<div class="admonition note">
+<p class="first admonition-title"><font id="11">注</font></p>
+<p class="last"><font id="12">Django 会自动清除对HEAD 请求的响应中的内容而只保留头部，所以在你的视图中你处理HEAD 请求的方式可以完全与GET 请求一致。</font><font id="13">因为某些软件，例如链接检查器，依赖于HEAD 请求，所以你可能应该使用<tt class="docutils literal"><span class="pre">require_safe</span></tt> 而不是<tt class="docutils literal"><span class="pre">require_GET</span></tt>。</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-conditional-view-processing">
+<span id="conditional-view-processing"></span><h2><font id="28">可控制的视图处理</font><a class="headerlink" href="decorators.html#conditional-view-processing" title="Permalink to this headline">¶</a></h2>
+<p><font id="14"><a class="reference internal" href="decorators.html#module-django.views.decorators.http" title="django.views.decorators.http"><tt class="xref py py-mod docutils literal"><span class="pre">django.views.decorators.http</span></tt></a> 中的以下装饰器可以用来控制特定视图的缓存行为。</font></p>
+<dl class="function">
+<dt id="django.views.decorators.http.condition">
+<tt class="descname">condition</tt>(<em>etag_func=None</em>, <em>last_modified_func=None</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/decorators/http.html#condition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="decorators.html#django.views.decorators.http.condition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="function">
+<dt id="django.views.decorators.http.etag">
+<tt class="descname">etag</tt>(<em>etag_func</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/decorators/http.html#etag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="decorators.html#django.views.decorators.http.etag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="function">
+<dt id="django.views.decorators.http.last_modified">
+<tt class="descname">last_modified</tt>(<em>last_modified_func</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/decorators/http.html#last_modified"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="decorators.html#django.views.decorators.http.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="15">这些装饰器可以用于生成<tt class="docutils literal"><span class="pre">ETag</span></tt> 和<tt class="docutils literal"><span class="pre">Last-Modified</span></tt> 头部；</font><font id="16">参考 <a class="reference internal" href="../conditional-view-processing.html"><em>conditional view processing</em></a>.</font></p>
+</dd></dl>
+<span class="target" id="module-django.views.decorators.gzip"></span></div>
+<div class="section" id="s-gzip-compression">
+<span id="gzip-compression"></span><h2><font id="29">GZip 压缩</font><a class="headerlink" href="decorators.html#gzip-compression" title="Permalink to this headline">¶</a></h2>
+<p><font id="17"><a class="reference internal" href="decorators.html#module-django.views.decorators.gzip" title="django.views.decorators.gzip"><tt class="xref py py-mod docutils literal"><span class="pre">django.views.decorators.gzip</span></tt></a> 里的装饰器基于每个视图控制其内容压缩。</font></p>
+<dl class="function">
+<dt id="django.views.decorators.gzip.gzip_page">
+<tt class="descname">gzip_page</tt>()<a class="headerlink" href="decorators.html#django.views.decorators.gzip.gzip_page" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="18">如果浏览器允许gzip 压缩，这个装饰器将对内容进行压缩。</font><font id="19">它设置相应的<tt class="docutils literal"><span class="pre">Vary</span></tt>头部，以使得缓存根据<tt class="docutils literal"><span class="pre">Accept-Encoding</span></tt>头来存储信息。</font></p>
+</dd></dl>
+<span class="target" id="module-django.views.decorators.vary"></span></div>
+<div class="section" id="s-vary-headers">
+<span id="vary-headers"></span><h2><font id="30">Vary 头部</font><a class="headerlink" href="decorators.html#vary-headers" title="Permalink to this headline">¶</a></h2>
+<p><font id="20"><a class="reference internal" href="decorators.html#module-django.views.decorators.vary" title="django.views.decorators.vary"><tt class="xref py py-mod docutils literal"><span class="pre">django.views.decorators.vary</span></tt></a> 可以用来基于特定的请求头部来控制缓存。</font></p>
+<dl class="function">
+<dt id="django.views.decorators.vary.vary_on_cookie">
+<tt class="descname">vary_on_cookie</tt>(<em>func</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/decorators/vary.html#vary_on_cookie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="decorators.html#django.views.decorators.vary.vary_on_cookie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="function">
+<dt id="django.views.decorators.vary.vary_on_headers">
+<tt class="descname">vary_on_headers</tt>(<em>*headers</em>)<a class="reference internal" href="http://python.usyiyi.cn/django/_modules/django/views/decorators/vary.html#vary_on_headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="decorators.html#django.views.decorators.vary.vary_on_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="21">到当构建缓存的键时，<tt class="docutils literal"><span class="pre">Vary</span></tt> 头部定义一个缓存机制应该考虑的请求头。</font></p>
+<p><font id="22">参见<a class="reference internal" href="../cache.html#using-vary-headers"><em>使用vary 头部</em></a>。</font></p>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="31">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="decorators.html#"><font id="37">视图装饰器</font></a><ul>
+<li><a class="reference internal" href="decorators.html#allowed-http-methods"><font id="38">允许的HTTP 方法</font></a></li>
+<li><a class="reference internal" href="decorators.html#conditional-view-processing"><font id="39">Conditional view processing</font></a></li>
+<li><a class="reference internal" href="decorators.html#gzip-compression"><font id="40">GZip 压缩</font></a></li>
+<li><a class="reference internal" href="decorators.html#vary-headers"><font id="41">Vary 头部</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="32">浏览</font></h3>
+<ul>
+<li><font id="42">上一页：<a href="views.html">编写视图</a></font></li>
+<li><font id="43">下一页：<a href="file-uploads.html">文件上传</a></font></li>
+</ul>
+<h3><font id="33">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="44">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="45">使用 Django</font></a>
+<ul><li><a href="index.html"><font id="46">处理HTTP 请求</font></a>
+<ul><li><font id="47">视图装饰器</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="34">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/http/decorators.txt" rel="nofollow"><font id="48">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="35">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="23"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="36">最后更新：</font></h3>
+<p class="topless"><font id="24">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="views.html" title="Writing views">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="file-uploads.html" title="File Uploads">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/http/decorators';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

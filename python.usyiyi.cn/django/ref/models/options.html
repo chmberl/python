@@ -1,0 +1,541 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>模型的元选项 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Models"/>
+<link href="instances.html" rel="next" title="Model instance reference"/>
+<link href="class.html" rel="prev" title="Model class reference"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/models/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/ref/models/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="104">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="class.html" title="Model class reference">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="instances.html" title="Model instance reference">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="ref-models-options">
+<div class="section" id="s-model-meta-options">
+<span id="model-meta-options"></span><h1><font id="105">模型<tt class="docutils literal"><span class="pre">元</span></tt>选项</font><a class="headerlink" href="options.html#model-meta-options" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">这篇文档阐述了所有可用的<a class="reference internal" href="../../topics/db/models.html#meta-options"><em>元选项</em></a>，你可以在你模型的<tt class="docutils literal"><span class="pre"></span><span class="pre">Meta</span></tt>类中设置他们。</font></p>
+<div class="section" id="s-available-meta-options">
+<span id="available-meta-options"></span><h2><font id="106">可用的<tt class="docutils literal"><span class="pre">元</span></tt>选项</font><a class="headerlink" href="options.html#available-meta-options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="s-abstract">
+<span id="abstract"></span><h3><font id="107">abstract</font><a class="headerlink" href="options.html#abstract" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.abstract">
+<tt class="descclassname">Options.</tt><tt class="descname">abstract</tt><a class="headerlink" href="options.html#django.db.models.Options.abstract" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="2">如果&nbsp;<tt class="docutils literal"><span class="pre">abstract</span> <span class="pre">=</span> <span class="pre">True</span></tt>， 就表示模型是 抽象基类 (<a class="reference internal" href="../../topics/db/models.html#abstract-base-classes"><em>abstract base class</em></a>).</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-app-label">
+<span id="app-label"></span><h3><font id="108">app_label</font><a class="headerlink" href="options.html#app-label" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.app_label">
+<tt class="descclassname">Options.</tt><tt class="descname">app_label</tt><a class="headerlink" href="options.html#django.db.models.Options.app_label" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="3">如果一个模型位于标准的位置之外（应用的<tt class="file docutils literal"><span class="pre">models.py</span></tt> 或<tt class="docutils literal"><span class="pre">models</span></tt> 包），该模型必须定义它属于哪个应用：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app_label</span> <span class="o">=</span> <span class="s">'myapp'</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<span class="title">New in Django 1.7:</span> <p><font id="4">定义在应用的<tt class="docutils literal"><span class="pre">models</span></tt> 模块以外的模型，不再需要<tt class="docutils literal"><span class="pre">app_label</span></tt>。
+</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-db-table">
+<span id="db-table"></span><h3><font id="109">db_table</font><a class="headerlink" href="options.html#db-table" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.db_table">
+<tt class="descclassname">Options.</tt><tt class="descname">db_table</tt><a class="headerlink" href="options.html#django.db.models.Options.db_table" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="5">该模型所用的数据表的名称：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db_table</span> <span class="o">=</span> <span class="s">'music_album'</span>
+</pre></div>
+</div>
+</dd></dl>
+<div class="section" id="s-table-names">
+<span id="s-id1"></span><span id="table-names"></span><span id="id1"></span><h4><font id="130">数据表名称</font><a class="headerlink" href="options.html#table-names" title="Permalink to this headline">¶</a></h4>
+<p><font id="6">为节省你的时间，Django 会根据模型类的名称和包含它的应用的名称自动指定数据库表名称。</font><font id="7">一个模型的数据库表名称，由这个模型的“应用标签”（在<a class="reference internal" href="../django-admin.html#django-admin-startapp"><tt class="xref std std-djadmin docutils literal"><span class="pre">manage.py</span> <span class="pre">startapp</span></tt></a>中使用的名称）和模型类名称之间加上下划线组成。</font></p>
+<p><font id="8">举个例子， &nbsp;<tt class="docutils literal"><span class="pre">bookstore</span></tt>应用(使用 &nbsp;<tt class="docutils literal"><span class="pre">manage.py</span> <span class="pre">startapp</span> <span class="pre">bookstore</span></tt> 创建)，里面有个名为 <tt class="docutils literal"><span class="pre"></span> <span class="pre">Book</span></tt>的模型，那数据表的名称就是 &nbsp;<tt class="docutils literal"><span class="pre">bookstore_book</span></tt> 。</font></p>
+<p><font id="9">使用<tt class="docutils literal"><span class="pre"></span> <span class="pre">Meta</span></tt>类中的&nbsp;<tt class="docutils literal"><span class="pre">db_table</span></tt> 参数来覆写数据表的名称。</font></p>
+<p><font id="10">数据表名称可以是 SQL 保留字，也可以包含不允许出现在 Python 变量中的特殊字符，</font><font id="11">这是因为 Django 会自动给列名和表名添加引号。</font></p>
+<div class="admonition-use-lowercase-table-names-for-mysql admonition">
+<p class="first admonition-title"><font id="12">在&nbsp;MySQL中使用小写字母为表命名</font></p>
+<p class="last"><font id="13">当你通过<tt class="docutils literal"><span class="pre">db_table</span></tt>覆写表名称时，强烈推荐使用小写字母给表命名，特别是如果你用了MySQL作为后端。</font><font id="14">详见<a class="reference internal" href="../databases.html#mysql-notes"><em>MySQL注意事项</em></a> 。</font></p>
+</div>
+<div class="admonition-table-name-quoting-for-oracle admonition">
+<p class="first admonition-title"><font id="15">Oracle中表名称的引号处理</font></p>
+<p><font id="16">为了遵从Oracle中30个字符的限制，以及一些常见的约定，Django会缩短表的名称，而且会把它全部转为大写。</font><font id="17">在<tt class="docutils literal"><span class="pre">db_table</span></tt>的值外面加上引号来避免这种情况：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db_table</span> <span class="o">=</span> <span class="s">'"name_left_in_lowercase"'</span>
+</pre></div>
+</div>
+<p class="last"><font id="18">这种带引号的名称也可以用于Django所支持的其他数据库后端，</font><font id="19">但是除了Oracle，引号不起任何作用。</font><font id="20">详见 <a class="reference internal" href="../databases.html#oracle-notes"><em>Oracle 注意事项</em></a> 。</font></p>
+</div>
+</div>
+</div>
+<div class="section" id="s-db-tablespace">
+<span id="db-tablespace"></span><h3><font id="110">db_tablespace</font><a class="headerlink" href="options.html#db-tablespace" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.db_tablespace">
+<tt class="descclassname">Options.</tt><tt class="descname">db_tablespace</tt><a class="headerlink" href="options.html#django.db.models.Options.db_tablespace" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="21">当前模型所使用的<a class="reference internal" href="../../topics/db/tablespaces.html"><em>数据库表空间</em></a> 的名字。</font><font id="22">默认值是项目设置中的<a class="reference internal" href="../settings.html#std:setting-DEFAULT_TABLESPACE"><tt class="xref std std-setting docutils literal"><span class="pre">DEFAULT_TABLESPACE</span></tt></a>，如果它存在的话。</font><font id="23">如果后端并不支持表空间，这个选项可以忽略。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-default-related-name">
+<span id="default-related-name"></span><h3><font id="111">default_related_name</font><a class="headerlink" href="options.html#default-related-name" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.default_related_name">
+<tt class="descclassname">Options.</tt><tt class="descname">default_related_name</tt><a class="headerlink" href="options.html#django.db.models.Options.default_related_name" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.8.</span> </div>
+<p><font id="24">这个名字会默认被用于一个关联对象到当前对象的关系。</font><font id="25">默认为 <tt class="docutils literal"><span class="pre">&lt;model_name&gt;_set</span></tt>。</font></p>
+<p><font id="26">由于一个字段的反转名称应该是唯一的，当你给你的模型设计子类时，要格外小心。</font><font id="27">为了规避名称冲突，名称的一部分应该含有<tt class="docutils literal"><span class="pre">'%(app_label)s'</span></tt>和<tt class="docutils literal"><span class="pre">'%(model_name)s'</span></tt>，它们会被应用标签的名称和模型的名称替换，二者都是小写的。</font><font id="28">详见<a class="reference internal" href="../../topics/db/models.html#abstract-related-name"><em>抽象模型的关联名称</em></a>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-get-latest-by">
+<span id="get-latest-by"></span><h3><font id="112">get_latest_by</font><a class="headerlink" href="options.html#get-latest-by" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.get_latest_by">
+<tt class="descclassname">Options.</tt><tt class="descname">get_latest_by</tt><a class="headerlink" href="options.html#django.db.models.Options.get_latest_by" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="29">模型中某个可排序的字段的名称，比如<a class="reference internal" href="fields.html#django.db.models.DateField" title="django.db.models.DateField"><tt class="xref py py-class docutils literal"><span class="pre">DateField</span></tt></a>、<a class="reference internal" href="fields.html#django.db.models.DateTimeField" title="django.db.models.DateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></tt></a>或者<a class="reference internal" href="fields.html#django.db.models.IntegerField" title="django.db.models.IntegerField"><tt class="xref py py-class docutils literal"><span class="pre">IntegerField</span></tt></a>。</font><font id="30">它指定了<a class="reference internal" href="../../topics/db/managers.html#django.db.models.Manager" title="django.db.models.Manager"><tt class="xref py py-class docutils literal"><span class="pre">Manager</span></tt></a>的<a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.latest" title="django.db.models.query.QuerySet.latest"><tt class="xref py py-meth docutils literal"><span class="pre">latest()</span></tt></a>和<a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.earliest" title="django.db.models.query.QuerySet.earliest"><tt class="xref py py-meth docutils literal"><span class="pre">earliest()</span></tt></a>中使用的默认字段。</font></p>
+<p><font id="31">例如：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">get_latest_by</span> <span class="o">=</span> <span class="s">"order_date"</span>
+</pre></div>
+</div>
+<p><font id="32">详见<a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.latest" title="django.db.models.query.QuerySet.latest"><tt class="xref py py-meth docutils literal"><span class="pre">latest()</span></tt></a> 文档。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-managed">
+<span id="managed"></span><h3><font id="113">managed</font><a class="headerlink" href="options.html#managed" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.managed">
+<tt class="descclassname">Options.</tt><tt class="descname">managed</tt><a class="headerlink" href="options.html#django.db.models.Options.managed" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="33">默认为<tt class="docutils literal"><span class="pre">True</span></tt>，意思是Django在<a class="reference internal" href="../django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>命令中创建合适的数据表，并且会在&nbsp;<a class="reference internal" href="../django-admin.html#django-admin-flush"><tt class="xref std std-djadmin docutils literal"><span class="pre">flush</span></tt></a> 管理命令中移除它们。</font><font id="34">换句话说，Django会<em>管理</em>这些数据表的生命周期。</font></p>
+<p><font id="35">如果是<tt class="docutils literal"><span class="pre">False</span></tt>，Django 就不会为当前模型创建和删除数据表。</font><font id="36">如果当前模型表示一个已经存在的，通过其它方法建立的数据库视图或者数据表，这会相当有用。</font><font id="37">这是设置为<tt class="docutils literal"><span class="pre">managed=False</span></tt>时<em>唯一</em>的不同之处。. </font><font id="38">模型处理的其它任何方面都和平常一样。</font><font id="39">这包括：</font></p>
+<ol class="arabic">
+<li><p class="first"><font id="40">如果你不声明它的话，会向你的模型中添加一个自增主键。</font><font id="41">为了避免给后面的代码读者带来混乱，强烈推荐你在使用未被管理的模型时，指定数据表中所有的列。</font></p>
+</li>
+<li><p class="first"><font id="42">如果一个带有<tt class="docutils literal"><span class="pre">managed=False</span></tt>的模型含有指向其他未被管理模型的<a class="reference internal" href="fields.html#django.db.models.ManyToManyField" title="django.db.models.ManyToManyField"><tt class="xref py py-class docutils literal"><span class="pre">ManyToManyField</span></tt></a>，那么多对多连接的中介表也不会被创建。</font><font id="43">但是，一个被管理模型和一个未被管理模型之间的中介表<em>会</em>被创建。</font></p>
+<p><font id="44">如果你需要修改这一默认行为，创建中介表作为显式的模型（设置为<tt class="docutils literal"><span class="pre">managed</span></tt>），并且使用<a class="reference internal" href="fields.html#django.db.models.ManyToManyField.through" title="django.db.models.ManyToManyField.through"><tt class="xref py py-attr docutils literal"><span class="pre">ManyToManyField.through</span></tt></a>为你的自定义模型创建关联。</font></p>
+</li>
+</ol>
+<p><font id="45">对于带有<tt class="docutils literal"><span class="pre">managed=False</span></tt>的模型的测试，你要确保在测试启动时建立正确的表。</font></p>
+<p><font id="46">如果你对修改模型类在Python层面的行为感兴趣，你<em>可以</em>设置&nbsp;<tt class="docutils literal"><span class="pre">managed=False</span></tt> ，并且创建一个已经存在模型的部分。</font><font id="47">但是这种情况下使用<a class="reference internal" href="../../topics/db/models.html#proxy-models"><em>代理模型</em></a>才是更好的方法。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-order-with-respect-to">
+<span id="order-with-respect-to"></span><h3><font id="114">order_with_respect_to</font><a class="headerlink" href="options.html#order-with-respect-to" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.order_with_respect_to">
+<tt class="descclassname">Options.</tt><tt class="descname">order_with_respect_to</tt><a class="headerlink" href="options.html#django.db.models.Options.order_with_respect_to" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="48">按照给定的字段把这个对象标记为”可排序的“。</font><font id="49">这一属性通常用到关联对象上面，使它在父对象中有序。</font><font id="50">比如，如果<tt class="docutils literal"><span class="pre">Answer</span></tt>和&nbsp;<tt class="docutils literal"><span class="pre">Question</span></tt>相关联，一个问题有至少一个答案，并且答案的顺序非常重要，你可以这样做：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Question</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
+    <span class="c"># ...</span>
+
+<span class="k">class</span> <span class="nc">Answer</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">question</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Question</span><span class="p">)</span>
+    <span class="c"># ...</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">order_with_respect_to</span> <span class="o">=</span> <span class="s">'question'</span>
+</pre></div>
+</div>
+<p><font id="51">当<tt class="docutils literal"><span class="pre">order_with_respect_to</span></tt> 设置之后，模型会提供两个用于设置和获取关联对象顺序的方法：<tt class="docutils literal"><span class="pre">get_RELATED_order()</span></tt> 和<tt class="docutils literal"><span class="pre">set_RELATED_order()</span></tt>，其中<tt class="docutils literal"><span class="pre">RELATED</span></tt>是小写的模型名称。</font><font id="52">例如，假设一个&nbsp;<tt class="docutils literal"><span class="pre">Question</span></tt> 对象有很多相关联的<tt class="docutils literal"><span class="pre">Answer</span></tt>对象，返回的列表中含有相关联<tt class="docutils literal"><span class="pre">Answer</span></tt>对象的主键：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">question</span> <span class="o">=</span> <span class="n">Question</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">question</span><span class="o">.</span><span class="n">get_answer_order</span><span class="p">()</span>
+<span class="go">[1, 2, 3]</span>
+</pre></div>
+</div>
+<p><font id="53">与<tt class="docutils literal"><span class="pre">Question</span></tt>对象相关联的<tt class="docutils literal"><span class="pre">Answer</span></tt>对象的顺序，可以通过传入一格包含<tt class="docutils literal"><span class="pre">Answer</span></tt> 主键的列表来设置：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">question</span><span class="o">.</span><span class="n">set_answer_order</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><font id="54">相关联的对象也有两个方法，&nbsp;<tt class="docutils literal"><span class="pre">get_next_in_order()</span></tt> 和<tt class="docutils literal"><span class="pre">get_previous_in_order()</span></tt>，用于按照合适的顺序访问它们。</font><font id="55">假设<tt class="docutils literal"><span class="pre">Answer</span></tt>对象按照&nbsp;<tt class="docutils literal"><span class="pre">id</span></tt>来排序：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">answer</span> <span class="o">=</span> <span class="n">Answer</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">answer</span><span class="o">.</span><span class="n">get_next_in_order</span><span class="p">()</span>
+<span class="go">&lt;Answer: 3&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">answer</span><span class="o">.</span><span class="n">get_previous_in_order</span><span class="p">()</span>
+<span class="go">&lt;Answer: 1&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+<div class="admonition-changing-order-with-respect-to admonition">
+<p class="first admonition-title"><font id="56">修改 order_with_respect_to</font></p>
+<p class="last"><font id="57"><tt class="docutils literal"><span class="pre">order_with_respect_to</span></tt>属性会添加一个额外的字段（/数据表中的列）叫做<tt class="docutils literal"><span class="pre">_order</span></tt>，所以如果你在首次<a class="reference internal" href="../django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">迁移</span></tt></a>之后添加或者修改了<tt class="docutils literal"><span class="pre">order_with_respect_to</span></tt>属性，要确保执行和应用了合适的迁移操作。</font></p>
+</div>
+</div>
+<div class="section" id="s-ordering">
+<span id="ordering"></span><h3><font id="115">ordering</font><a class="headerlink" href="options.html#ordering" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.ordering">
+<tt class="descclassname">Options.</tt><tt class="descname">ordering</tt><a class="headerlink" href="options.html#django.db.models.Options.ordering" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="58">对象默认的顺序，获取一个对象的列表时使用：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s">'-order_date'</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="59">它是一个字符串的列表或元组。</font><font id="60">每个字符串是一个字段名，前面带有可选的“-”前缀表示倒序。</font><font id="61">前面没有“-”的字段表示正序。</font><font id="62">使用"?"来表示随机排序。</font></p>
+<p><font id="63">例如，要按照<tt class="docutils literal"><span class="pre">pub_date</span></tt>字段的正序排序，这样写：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s">'pub_date'</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="64">按照<tt class="docutils literal"><span class="pre">pub_date</span></tt>字段的倒序排序，这样写：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s">'-pub_date'</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="65">先按照<tt class="docutils literal"><span class="pre">pub_date</span></tt>的倒序排序，再按照&nbsp;<tt class="docutils literal"><span class="pre">author</span></tt> 的正序排序，这样写：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s">'-pub_date'</span><span class="p">,</span> <span class="s">'author'</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="66">警告</font></p>
+<p class="last"><font id="67">排序并不是没有任何代价的操作。</font><font id="68">你向ordering属性添加的每个字段都会产生你数据库的开销。</font><font id="69">你添加的每个外键也会隐式包含它的默认顺序。</font></p>
+</div>
+</div>
+<div class="section" id="s-permissions">
+<span id="permissions"></span><h3><font id="116">permissions</font><a class="headerlink" href="options.html#permissions" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.permissions">
+<tt class="descclassname">Options.</tt><tt class="descname">permissions</tt><a class="headerlink" href="options.html#django.db.models.Options.permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="70">设置创建对象时权限表中额外的权限。</font><font id="71">增加、删除和修改权限会自动为每个模型创建。</font><font id="72">这个例子指定了一种额外的权限，<tt class="docutils literal"><span class="pre">can_deliver_pizzas</span></tt>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">permissions</span> <span class="o">=</span> <span class="p">((</span><span class="s">"can_deliver_pizzas"</span><span class="p">,</span> <span class="s">"Can deliver pizzas"</span><span class="p">),)</span>
+</pre></div>
+</div>
+<p><font id="73">它是一个包含二元组的元组或者列表，格式为&nbsp;<tt class="docutils literal"><span class="pre">(permission_code,</span> <span class="pre">human_readable_permission_name)</span></tt>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-default-permissions">
+<span id="default-permissions"></span><h3><font id="117">default_permissions</font><a class="headerlink" href="options.html#default-permissions" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.default_permissions">
+<tt class="descclassname">Options.</tt><tt class="descname">default_permissions</tt><a class="headerlink" href="options.html#django.db.models.Options.default_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<p><font id="74">默认为<tt class="docutils literal"><span class="pre">('add',</span> <span class="pre">'change',</span> <span class="pre">'delete')</span></tt>。</font><font id="75">你可以自定义这个列表，比如，如果你的应用不需要默认权限中的任何一项，可以把它设置成空列表。</font><font id="76">在模型被<a class="reference internal" href="../django-admin.html#django-admin-migrate"><tt class="xref std std-djadmin docutils literal"><span class="pre">migrate</span></tt></a>命令创建之前，这个属性必须被指定，以防一些遗漏的属性被创建。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-proxy">
+<span id="proxy"></span><h3><font id="118">proxy</font><a class="headerlink" href="options.html#proxy" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.proxy">
+<tt class="descclassname">Options.</tt><tt class="descname">proxy</tt><a class="headerlink" href="options.html#django.db.models.Options.proxy" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="77">如果<tt class="docutils literal"><span class="pre">proxy</span> <span class="pre">=</span> <span class="pre">True</span></tt>, 作为该模型子类的另一个模型会被视为<a class="reference internal" href="../../topics/db/models.html#proxy-models"><em>代理模型</em></a>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-select-on-save">
+<span id="select-on-save"></span><h3><font id="119">select_on_save</font><a class="headerlink" href="options.html#select-on-save" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.select_on_save">
+<tt class="descclassname">Options.</tt><tt class="descname">select_on_save</tt><a class="headerlink" href="options.html#django.db.models.Options.select_on_save" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="78">该选项决定了Django是否采用1.6之前的 <a class="reference internal" href="instances.html#django.db.models.Model.save" title="django.db.models.Model.save"><tt class="xref py py-meth docutils literal"><span class="pre">django.db.models.Model.save()</span></tt></a>算法。</font><font id="79">旧的算法使用<tt class="docutils literal"><span class="pre">SELECT</span></tt>来判断是否存在需要更新的行。</font><font id="80">而新式的算法直接尝试使用&nbsp;<tt class="docutils literal"><span class="pre">UPDATE</span></tt>。</font><font id="81">在一些小概率的情况中，一个已存在的行的<tt class="docutils literal"><span class="pre">UPDATE</span></tt>操作并不对Django可见。</font><font id="82">比如PostgreSQL的<tt class="docutils literal"><span class="pre">ON</span> <span class="pre">UPDATE</span></tt>触发器会返回<tt class="docutils literal"><span class="pre">NULL</span></tt>。</font><font id="83">这种情况下，新式的算法会在最后执行&nbsp;<tt class="docutils literal"><span class="pre">INSERT</span></tt> 操作，即使这一行已经在数据库中存在。</font></p>
+<p><font id="84">通常这个属性不需要设置。</font><font id="85">默认为<tt class="docutils literal"><span class="pre">False</span></tt>。</font></p>
+<p><font id="86">关于旧式和新式两种算法，请参见<a class="reference internal" href="instances.html#django.db.models.Model.save" title="django.db.models.Model.save"><tt class="xref py py-meth docutils literal"><span class="pre">django.db.models.Model.save()</span></tt></a>。</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-unique-together">
+<span id="unique-together"></span><h3><font id="120">unique_together</font><a class="headerlink" href="options.html#unique-together" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.unique_together">
+<tt class="descclassname">Options.</tt><tt class="descname">unique_together</tt><a class="headerlink" href="options.html#django.db.models.Options.unique_together" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="87">用来设置的不重复的字段组合：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">unique_together</span> <span class="o">=</span> <span class="p">((</span><span class="s">"driver"</span><span class="p">,</span> <span class="s">"restaurant"</span><span class="p">),)</span>
+</pre></div>
+</div>
+<p><font id="88">它是一个元组的元组，组合起来的时候必须是唯一的。</font><font id="89">它在Django后台中被使用，在数据库层上约束数据(比如，在 &nbsp;<tt class="docutils literal"><span class="pre">CREATE</span> <span class="pre">TABLE</span></tt>&nbsp; 语句中包含 &nbsp;<tt class="docutils literal"><span class="pre">UNIQUE</span></tt>语句)。</font></p>
+<p><font id="90">为了方便起见，处理单一字段的集合时，unique_together 可以是一维的元组：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s">"driver"</span><span class="p">,</span> <span class="s">"restaurant"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="91"><a class="reference internal" href="fields.html#django.db.models.ManyToManyField" title="django.db.models.ManyToManyField"><tt class="xref py py-class docutils literal"><span class="pre">ManyToManyField</span></tt></a>不能包含在unique_together中。</font><font id="92">（这意味着什么并不清楚！）</font><font id="93">如果你需要验证<a class="reference internal" href="fields.html#django.db.models.ManyToManyField" title="django.db.models.ManyToManyField"><tt class="xref py py-class docutils literal"><span class="pre">ManyToManyField</span></tt></a>关联的唯一性，试着使用信号或者显式的<a class="reference internal" href="fields.html#django.db.models.ManyToManyField.through" title="django.db.models.ManyToManyField.through"><tt class="xref py py-attr docutils literal"><span class="pre">贯穿</span></tt></a>模型(explicit through model)。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7:</span> <p><font id="94">当<tt class="docutils literal"><span class="pre">unique_together</span></tt>的约束被违反时，模型校验期间会抛出<tt class="docutils literal"><span class="pre">ValidationError</span></tt>异常。</font></p>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-index-together">
+<span id="index-together"></span><h3><font id="121">index_together</font><a class="headerlink" href="options.html#index-together" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.index_together">
+<tt class="descclassname">Options.</tt><tt class="descname">index_together</tt><a class="headerlink" href="options.html#django.db.models.Options.index_together" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="95">用来设置带有索引的字段组合：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">index_together</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="s">"pub_date"</span><span class="p">,</span> <span class="s">"deadline"</span><span class="p">],</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="96">列表中的字段将会建立索引（例如，会在<tt class="docutils literal"><span class="pre">CREATE</span> <span class="pre">INDEX</span></tt>语句中被使用）。</font></p>
+<div class="versionchanged">
+<span class="title">Changed in Django 1.7.</span> </div>
+<p><font id="97">为了方便起见，处理单一字段的集合时，<tt class="docutils literal"><span class="pre">index_together</span></tt>可以是一个一维的列表。</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">index_together</span> <span class="o">=</span> <span class="p">[</span><span class="s">"pub_date"</span><span class="p">,</span> <span class="s">"deadline"</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+<div class="section" id="s-verbose-name">
+<span id="verbose-name"></span><h3><font id="122">verbose_name</font><a class="headerlink" href="options.html#verbose-name" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.verbose_name">
+<tt class="descclassname">Options.</tt><tt class="descname">verbose_name</tt><a class="headerlink" href="options.html#django.db.models.Options.verbose_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="98">对象的一个易于理解的名称，为单数：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">verbose_name</span> <span class="o">=</span> <span class="s">"pizza"</span>
+</pre></div>
+</div>
+<p><font id="99">如果此项没有设置，Django会把类名拆分开来作为自述名，比如<tt class="docutils literal"><span class="pre">CamelCase</span></tt> 会变成<tt class="docutils literal"><span class="pre">camel</span> <span class="pre">case</span></tt>，</font></p>
+</dd></dl>
+</div>
+<div class="section" id="s-verbose-name-plural">
+<span id="verbose-name-plural"></span><h3><font id="123">verbose_name_plural</font><a class="headerlink" href="options.html#verbose-name-plural" title="Permalink to this headline">¶</a></h3>
+<dl class="attribute">
+<dt id="django.db.models.Options.verbose_name_plural">
+<tt class="descclassname">Options.</tt><tt class="descname">verbose_name_plural</tt><a class="headerlink" href="options.html#django.db.models.Options.verbose_name_plural" title="Permalink to this definition">¶</a></dt>
+<dd><p><font id="100">该对象复数形式的名称：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s">"stories"</span>
+</pre></div>
+</div>
+<p><font id="101">如果此项没有设置，Django 会使用&nbsp;<a class="reference internal" href="options.html#django.db.models.Options.verbose_name" title="django.db.models.Options.verbose_name"><tt class="xref py py-attr docutils literal"><span class="pre">verbose_name</span></tt></a> + <tt class="docutils literal"><span class="pre">"s"</span></tt>。</font></p>
+</dd></dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="124">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="options.html#"><font id="131">模型<tt class="docutils literal"><span class="pre">元</span></tt> 选项</font></a><ul>
+<li><a class="reference internal" href="options.html#available-meta-options"><font id="132">可用的 <tt class="docutils literal"><span class="pre">元</span></tt> 选项</font></a><ul>
+<li><a class="reference internal" href="options.html#abstract"><font id="133">abstract</font></a></li>
+<li><a class="reference internal" href="options.html#app-label"><font id="134">app_label</font></a></li>
+<li><a class="reference internal" href="options.html#db-table"><font id="135">db_table</font></a><ul>
+<li><a class="reference internal" href="options.html#table-names"><font id="136">数据表名称</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="options.html#db-tablespace"><font id="137">db_tablespace</font></a></li>
+<li><a class="reference internal" href="options.html#default-related-name"><font id="138">default_related_name</font></a></li>
+<li><a class="reference internal" href="options.html#get-latest-by"><font id="139">get_latest_by</font></a></li>
+<li><a class="reference internal" href="options.html#managed"><font id="140">managed</font></a></li>
+<li><a class="reference internal" href="options.html#order-with-respect-to"><font id="141">order_with_respect_to</font></a></li>
+<li><a class="reference internal" href="options.html#ordering"><font id="142">ordering</font></a></li>
+<li><a class="reference internal" href="options.html#permissions"><font id="143">permissions</font></a></li>
+<li><a class="reference internal" href="options.html#default-permissions"><font id="144">default_permissions</font></a></li>
+<li><a class="reference internal" href="options.html#proxy"><font id="145">proxy</font></a></li>
+<li><a class="reference internal" href="options.html#select-on-save"><font id="146">select_on_save</font></a></li>
+<li><a class="reference internal" href="options.html#unique-together"><font id="147">unique_together</font></a></li>
+<li><a class="reference internal" href="options.html#index-together"><font id="148">index_together</font></a></li>
+<li><a class="reference internal" href="options.html#verbose-name"><font id="149">verbose_name</font></a></li>
+<li><a class="reference internal" href="options.html#verbose-name-plural"><font id="150">verbose_name_plural</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="125">浏览</font></h3>
+<ul>
+<li><font id="151">上一页：<a href="class.html">模型类参考</a></font></li>
+<li><font id="152">下一页：<a href="instances.html">模型实例参考</a></font></li>
+</ul>
+<h3><font id="126">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="153">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="154">API 参考</font></a>
+<ul><li><a href="index.html"><font id="155">模型</font></a>
+<ul><li><font id="156">模型<tt class="docutils literal"><span class="pre">元</span></tt> 选项</font></li></ul>
+</li></ul></li></ul>
+</li>
+</ul>
+<h3><font id="127">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/ref/models/options.txt" rel="nofollow"><font id="157">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="128">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="102"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="129">最后更新：</font></h3>
+<p class="topless"><font id="103">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="class.html" title="Model class reference">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="API Reference">up</a>
+   |
+    <a href="instances.html" title="Model instance reference">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/ref/models/options';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

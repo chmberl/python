@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>基于类的视图 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="../index.html" rel="up" title="Using Django"/>
+<link href="intro.html" rel="next" title="Introduction to Class-based views"/>
+<link href="../templates.html" rel="prev" title="Templates"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/class-based-views/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="31">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="../templates.html" title="Templates">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="intro.html" title="Introduction to Class-based views">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-class-based-views-index">
+<div class="section" id="s-class-based-views">
+<span id="class-based-views"></span><h1><font id="32">基于类的视图</font><a class="headerlink" href="index.html#class-based-views" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">视图是一个可调用对象，它接收一个请求然后返回一个响应。</font><font id="2">这个可调用对象可以不只是函数，Django 提供一些可以用作视图的类。</font><font id="3">它们允许你结构化你的视图并且利用继承和混合重用代码。</font><font id="4">后面我们将介绍一些用于简单任务的通用视图，但你可能想要设计自己的可重用视图的结构以适合你的使用场景。</font><font id="5">完整的细节，请参见<a class="reference internal" href="../../ref/class-based-views/index.html"><em>基于类的视图的参考文档</em></a>。</font></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html"><font id="43">基于类的视图简介</font></a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-display.html"><font id="44">内建的基于类的通用视图</font></a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic-editing.html"><font id="45">使用基于类的视图处理表单</font></a></li>
+<li class="toctree-l1"><a class="reference internal" href="mixins.html"><font id="46">使用混合来扩展视图类</font></a></li>
+</ul>
+</div>
+<div class="section" id="s-basic-examples">
+<span id="basic-examples"></span><h2><font id="33">基本的示例</font><a class="headerlink" href="index.html#basic-examples" title="Permalink to this headline">¶</a></h2>
+<p><font id="6">Django 提供基本的视图类，它们适用于广泛的应用。</font><font id="7">所有的视图类继承自<a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.View" title="django.views.generic.base.View"><tt class="xref py py-class docutils literal"><span class="pre">View</span></tt></a> 类，它负责连接视图到URL、HTTP 方法调度和其它简单的功能。</font><font id="8"><a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.RedirectView" title="django.views.generic.base.RedirectView"><tt class="xref py py-class docutils literal"><span class="pre">RedirectView</span></tt></a> 用于简单的HTTP 重定向，<a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.TemplateView" title="django.views.generic.base.TemplateView"><tt class="xref py py-class docutils literal"><span class="pre">TemplateView</span></tt></a> 扩展基类来渲染模板。</font></p>
+</div>
+<div class="section" id="s-simple-usage-in-your-urlconf">
+<span id="simple-usage-in-your-urlconf"></span><h2><font id="34">在URLconf 中的简单用法</font><a class="headerlink" href="index.html#simple-usage-in-your-urlconf" title="Permalink to this headline">¶</a></h2>
+<p><font id="9">使用通用视图最简单的方法是在URLconf 中创建它们。</font><font id="10">如果你只是修改基于类的视图的一些简单属性，你可以将它们直接传递给<a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.View.as_view" title="django.views.generic.base.View.as_view"><tt class="xref py py-meth docutils literal"><span class="pre">as_view()</span></tt></a> 方法调用：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">TemplateView</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/'</span><span class="p">,</span> <span class="n">TemplateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="n">template_name</span><span class="o">=</span><span class="s">"about.html"</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="11">传递给<a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.View.as_view" title="django.views.generic.base.View.as_view"><tt class="xref py py-meth docutils literal"><span class="pre">as_view()</span></tt></a> 的参数将覆盖类中的属性。</font><font id="12">在这个例子中，我们设置<tt class="docutils literal"><span class="pre">TemplateView</span></tt> 的<tt class="docutils literal"><span class="pre">template_name</span></tt>。</font><font id="13">可以使用类似的方法覆盖<a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.RedirectView" title="django.views.generic.base.RedirectView"><tt class="xref py py-class docutils literal"><span class="pre">RedirectView</span></tt></a> 的<tt class="docutils literal"><span class="pre">url</span></tt> 属性。</font></p>
+</div>
+<div class="section" id="s-subclassing-generic-views">
+<span id="subclassing-generic-views"></span><h2><font id="35">子类化通用视图</font><a class="headerlink" href="index.html#subclassing-generic-views" title="Permalink to this headline">¶</a></h2>
+<p><font id="14">第二种，功能更强一点的使用通用视图的方式是继承一个已经存在的视图并在子类中覆盖其属性（例如<tt class="docutils literal"><span class="pre">template_name</span></tt>）或方法（例如<tt class="docutils literal"><span class="pre">get_context_data</span></tt>）以提供新的值或方法。</font><font id="15">例如，考虑只显示一个模板<tt class="docutils literal"><span class="pre">about.html</span></tt> 的视图。</font><font id="16">Django 有一个通用视图<a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.TemplateView" title="django.views.generic.base.TemplateView"><tt class="xref py py-class docutils literal"><span class="pre">TemplateView</span></tt></a>来做这件事，所以我们可以简单地子类化它，并覆盖模板的名称：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># some_app/views.py</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">TemplateView</span>
+
+<span class="k">class</span> <span class="nc">AboutView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s">"about.html"</span>
+</pre></div>
+</div>
+<p><font id="17">然后我们只需要添加这个新的视图到我们的URLconf 中。</font><font id="18"><a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.TemplateView" title="django.views.generic.base.TemplateView"><tt class="xref py py-class docutils literal"><span class="pre">TemplateView</span></tt></a> 是一个类不是一个函数，所以我们将URL 指向类的<a class="reference internal" href="../../ref/class-based-views/base.html#django.views.generic.base.View.as_view" title="django.views.generic.base.View.as_view"><tt class="xref py py-meth docutils literal"><span class="pre">as_view()</span></tt></a> 方法，它让基于类的视图提供一个类似函数的入口：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">some_app.views</span> <span class="kn">import</span> <span class="n">AboutView</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/'</span><span class="p">,</span> <span class="n">AboutView</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="19">关于如何使用内建的通用视图的更多信息，参考下一主题<a class="reference internal" href="generic-display.html"><em>通用的基于类的视图</em></a>。</font></p>
+<div class="section" id="s-supporting-other-http-methods">
+<span id="s-id1"></span><span id="supporting-other-http-methods"></span><span id="id1"></span><h3><font id="36">支持其它HTTP 方法</font><a class="headerlink" href="index.html#supporting-other-http-methods" title="Permalink to this headline">¶</a></h3>
+<p><font id="20">假设有人想通过HTTP 访问我们的书库，它使用视图作为API。</font><font id="21">这个API 客户端将随时连接并下载自上次访问以来新出版的书籍的数据。</font><font id="22">如果没有新的书籍，仍然从数据库中获取书籍、渲染一个完整的响应并发送给客户端将是对CPU 和带宽的浪费。</font><font id="23">如果有个API 用于查询书籍最新发布的时间将会更好。</font></p>
+<p><font id="24">我们在URLconf 中映射URL 到书籍列表视图：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">books.views</span> <span class="kn">import</span> <span class="n">BookListView</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r'^books/$'</span><span class="p">,</span> <span class="n">BookListView</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="25">下面是这个视图：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Book</span>
+
+<span class="k">class</span> <span class="nc">BookListView</span><span class="p">(</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Book</span>
+
+    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">last_book</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">latest</span><span class="p">(</span><span class="s">'publication_date'</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s">''</span><span class="p">)</span>
+        <span class="c"># RFC 1123 date format</span>
+        <span class="n">response</span><span class="p">[</span><span class="s">'Last-Modified'</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_book</span><span class="o">.</span><span class="n">publication_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">'%a, </span><span class="si">%d</span><span class="s"> %b %Y %H:%M:%S GMT'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p><font id="26">如果该视图从<tt class="docutils literal"><span class="pre">GET</span></tt> 请求访问，将在响应中返回一个普通而简单的对象列表（使用 <tt class="docutils literal"><span class="pre">book_list.html</span></tt> 模板）。</font><font id="27">但如果客户端发出一个<tt class="docutils literal"><span class="pre">HEAD</span></tt> 请求，响应将具有一个空的响应体而<tt class="docutils literal"><span class="pre">Last-Modified</span></tt> 头部会指示最新发布的书籍的时间。</font><font id="28">基于这个信息，客户端可以下载或不下载完整的对象列表。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="37">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="index.html#"><font id="47">基于类的视图</font></a><ul>
+<li><a class="reference internal" href="index.html#basic-examples"><font id="48">基本的示例</font></a></li>
+<li><a class="reference internal" href="index.html#simple-usage-in-your-urlconf"><font id="49">URLconf 中的简单用法</font></a></li>
+<li><a class="reference internal" href="index.html#subclassing-generic-views"><font id="50">子类化通用视图</font></a><ul>
+<li><a class="reference internal" href="index.html#supporting-other-http-methods"><font id="51">支持其它HTTP 方法</font></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><font id="38">浏览</font></h3>
+<ul>
+<li><font id="52">上一页：<a href="../templates.html">模板</a></font></li>
+<li><font id="53">下一页：<a href="intro.html">基于类的视图的简介</a></font></li>
+</ul>
+<h3><font id="39">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="54">Django 1.8.2 文档</font></a>
+<ul><li><a href="../index.html"><font id="55">使用Django</font></a>
+<ul><li><font id="56">基于类的视图</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="40">本页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/class-based-views/index.txt" rel="nofollow"><font id="57">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="41">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="29"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="42">最后更新：</font></h3>
+<p class="topless"><font id="30">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="../templates.html" title="Templates">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="intro.html" title="Introduction to Class-based views">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/class-based-views/index.html';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

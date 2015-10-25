@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>国际化与本地化 — Django 1.8.2 中文文档</title>
+<link href="../../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../../_static/jquery.js" type="text/javascript"></script>
+<script src="../../_static/underscore.js" type="text/javascript"></script>
+<script src="../../_static/doctools.js" type="text/javascript"></script>
+<link href="../../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="../index.html" rel="up" title="Using Django"/>
+<link href="translation.html" rel="next" title="Translation"/>
+<link href="../email.html" rel="prev" title="Sending email"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/i18n/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/topics/i18n/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="17">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../../index.html" title="Home page">Home</a>  |
+        <a href="../../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../../genindex.html" title="Global index">Index</a>  |
+        <a href="../../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="../email.html" title="Sending email">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="translation.html" title="Translation">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="topics-i18n-index">
+<div class="section" id="s-internationalization-and-localization">
+<span id="internationalization-and-localization"></span><h1><font id="18">国际化和本地化</font><a class="headerlink" href="index.html#internationalization-and-localization" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="s-overview">
+<span id="overview"></span><h2><font id="19">概述</font><a class="headerlink" href="index.html#overview" title="Permalink to this headline">¶</a></h2>
+<p><font id="1">国际化和本地化的目的就是让一个网站应用能做到根据用户语种和指定格式的不同而提供不同的内容。</font></p>
+<p><font id="2">Django 对<a class="reference internal" href="translation.html"><em>文本翻译</em></a>, <a class="reference internal" href="formatting.html"><em>日期、时间和数字的格式化</em></a>，以及<a class="reference internal" href="timezones.html"><em>时区</em></a>提供了完善的支持。</font></p>
+<p><font id="3">实际上，Django做了两件事：</font></p>
+<ul class="simple">
+<li><font id="27">由开发者和模板作者指定应用的哪些部分应该翻译，或是根据本地语种和文化进行相应的格式化。</font></li>
+<li><font id="28">根据用户的偏好设置，使用钩子将web应用本地化。</font></li>
+</ul>
+<p><font id="4">很显然，翻译取决于用户所选语言，而格式化通常取决于用户所在国家。 </font><font id="5">这些信息由浏览器通过<tt class="docutils literal"><span class="pre">Accept-Language</span></tt> 协议头提供。</font><font id="6">不过确定时区就不是这么简单了。</font></p>
+</div>
+<div class="section" id="s-definitions">
+<span id="definitions"></span><h2><font id="20">定义</font><a class="headerlink" href="index.html#definitions" title="Permalink to this headline">¶</a></h2>
+<p><font id="7">国际化和本地化通常会被混淆，</font><font id="8">这里我们对其进行简单的定义和区分：</font></p>
+<dl class="glossary docutils">
+<dt id="term-internationalization"><font id="40">国际化</font></dt>
+<dd><font id="38">让软件支持本地化的准备工作，通常由开发者完成。</font></dd>
+<dt id="term-localization"><font id="41">本地化</font></dt>
+<dd><font id="39">编写翻译和本地格式，通常由翻译者完成。</font></dd>
+</dl>
+<p><font id="9">更多细节详见<a class="reference external" href="http://www.w3.org/International/questions/qa-i18n">W3C Web Internationalization FAQ</a>、<a class="reference external" href="http://en.wikipedia.org/wiki/Internationalization_and_localization">Wikipedia article</a>和<a class="reference external" href="http://www.gnu.org/software/gettext/manual/gettext.html#Concepts">GNU gettext documentation</a>。</font></p>
+<div class="admonition warning">
+<p class="first admonition-title"><font id="10">警告</font></p>
+<p class="last"><font id="11">是否启用翻译和格式化分别由配置项<a class="reference internal" href="../../ref/settings.html#std:setting-USE_I18N"><tt class="xref std std-setting docutils literal"><span class="pre">USE_I18N</span></tt></a>和 <a class="reference internal" href="../../ref/settings.html#std:setting-USE_L10N"><tt class="xref std std-setting docutils literal"><span class="pre">USE_L10N</span></tt></a>&nbsp;决定。 </font><font id="12">但是，这两个配置项都同时影响国际化和本地化。 </font><font id="13">这种情况是Django的历史因素所致。</font></p>
+</div>
+<p><font id="14">下面几项可帮助我们更好地处理某种语言：</font></p>
+<dl class="glossary docutils">
+<dt id="term-locale-name"><font id="42">本地化名称</font></dt>
+<dd><font id="43">表示地域文化的名称，可以是<tt class="docutils literal"><span class="pre">ll</span></tt> 格式的语种代码，也可以是<tt class="docutils literal"><span class="pre">ll_CC</span></tt> 格式的语种和国家组合代码。</font><font id="44">例如： <tt class="docutils literal"><span class="pre">it</span></tt>, <tt class="docutils literal"><span class="pre">de_AT</span></tt>, <tt class="docutils literal"><span class="pre">es</span></tt>, <tt class="docutils literal"><span class="pre">pt_BR</span></tt>.&nbsp;。</font><font id="45">语种部分总是小写而国家部分则应是大写，</font><font id="46">中间以下划线(_)连接。</font></dd>
+<dt id="term-language-code"><font id="47">语言代码</font></dt>
+<dd><font id="48">表示语言的名称。</font><font id="49">浏览器会发送带有语言代码的 <tt class="docutils literal"><span class="pre">Accept-Language</span></tt>&nbsp; HTTP报头给服务器。 </font><font id="50">例如：<tt class="docutils literal"><span class="pre">it</span></tt>, <tt class="docutils literal"><span class="pre">de-at</span></tt>, <tt class="docutils literal"><span class="pre">es</span></tt>, <tt class="docutils literal"><span class="pre">pt-br</span></tt>。</font><font id="51">语种和国家部分都是小写，但是 HTTP <tt class="docutils literal"><span class="pre">Accept-Language</span></tt> 协议头是大小写不敏感的，</font><font id="52">中间以破折线(-)连接。</font></dd>
+<dt id="term-message-file"><font id="53">消息文件</font></dt>
+<dd><font id="54">消息文件是纯文本文件，包含某种语言下所有可用的<a class="reference internal" href="index.html#term-translation-string"><em class="xref std std-term">翻译字符串</em></a>及其对应的翻译结果。</font><font id="55">消息文件以&nbsp;<tt class="docutils literal"><span class="pre">.po</span></tt>做为文件扩展名。</font></dd>
+<dt id="term-translation-string"><font id="56">翻译字符串</font></dt>
+<dd><font id="57">可以被翻译的文字。</font></dd>
+<dt id="term-format-file"><font id="58">格式文件</font></dt>
+<dd><font id="59">针对某个地域定义数据格式的Python模块。</font></dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="21">Table Of Contents</font></h3>
+<ul>
+<li><a class="reference internal" href="index.html#"><font id="29">Internationalization and localization</font></a><ul>
+<li><a class="reference internal" href="index.html#overview"><font id="30">Overview</font></a></li>
+<li><a class="reference internal" href="index.html#definitions"><font id="31">Definitions</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="22">Browse</font></h3>
+<ul>
+<li><font id="32">Prev: <a href="../email.html">Sending email</a></font></li>
+<li><font id="33">Next: <a href="translation.html">Translation</a></font></li>
+</ul>
+<h3><font id="23">You are here:</font></h3>
+<ul>
+<li>
+<a href="../../index.html"><font id="34">Django 1.8.2.dev20150513143415 documentation</font></a>
+<ul><li><a href="../index.html"><font id="35">Using Django</font></a>
+<ul><li><font id="36">Internationalization and localization</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="24">This Page</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/topics/i18n/index.txt" rel="nofollow"><font id="37">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="25">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="15"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="26">Last update:</font></h3>
+<p class="topless"><font id="16">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="../email.html" title="Sending email">previous</a>
+     |
+    <a accesskey="U" href="../index.html" title="Using Django">up</a>
+   |
+    <a href="translation.html" title="Translation">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/topics/i18n/index';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

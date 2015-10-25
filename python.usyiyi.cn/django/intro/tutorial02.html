@@ -1,0 +1,564 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>编写你的第一个Django应用，第2部分 — Django 1.8.2 中文文档</title>
+<link href="../_static/default.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.8.2.dev20150513143415',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+<script src="../_static/jquery.js" type="text/javascript"></script>
+<script src="../_static/underscore.js" type="text/javascript"></script>
+<script src="../_static/doctools.js" type="text/javascript"></script>
+<link href="../index.html" rel="top" title="Django 1.8.2.dev20150513143415 documentation"/>
+<link href="index.html" rel="up" title="Getting started"/>
+<link href="tutorial03.html" rel="next" title="Writing your first Django app, part 3"/>
+<link href="tutorial01.html" rel="prev" title="Writing your first Django app, part 1"/>
+<script src="http://python.usyiyi.cn/django/templatebuiltins.js" type="text/javascript"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/intro/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='http://python.usyiyi.cn/django/intro/&quot;&#32;+&#32;base&#32;+&#32;&quot;#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="document">
+<div class="yui-t6" id="custom-doc">
+<div id="hd">
+<h1><font id="164">Django 1.8.2 文档</font></h1>
+<div id="global-nav">
+<a href="../index.html" title="Home page">Home</a>  |
+        <a href="../contents.html" title="Table of contents">Table of contents</a>  |
+        <a href="../genindex.html" title="Global index">Index</a>  |
+        <a href="../py-modindex.html" title="Module index">Modules</a>
+</div>
+<div class="nav">
+    « <a href="tutorial01.html" title="Writing your first Django app, part 1">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Getting started">up</a>
+   |
+    <a href="tutorial03.html" title="Writing your first Django app, part 3">next</a> »</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-g" id="intro-tutorial02">
+<div class="section" id="s-writing-your-first-django-app-part-2">
+<span id="writing-your-first-django-app-part-2"></span><h1><font id="165">编写你的第一个Django应用，第2部分</font><a class="headerlink" href="tutorial02.html#writing-your-first-django-app-part-2" title="Permalink to this headline">¶</a></h1>
+<p><font id="1">本教程上接<a class="reference internal" href="tutorial01.html"><em>教程第1部分</em></a>。</font><font id="2">我们将继续开发网页投票应用，并将注意力集中于Django自动生成的管理界面上。</font></p>
+<div class="admonition-philosophy admonition">
+<p class="first admonition-title"><font id="3">理念</font></p>
+<p><font id="4">为你的员工或者客户生成用于添加、修改和删除内容的管理性站点是一件单调乏味、缺乏创造力的工作。 </font><font id="5">为此，Django会根据你写的模型文件完全自动地生成管理界面。</font></p>
+<p><font id="6">Django是在新闻编辑室这样的环境中被开发出来的，这样的环境中“内容发布者”站点和“公共”站点有着非常明显的界限。 </font><font id="7">网站管理者使用管理界面来添加新闻故事、新闻事件、体育成绩等，这些内容会被展示在公共站点上。</font><font id="8">Django解决了为网站管理者创建统一的管理界面用以编辑内容这个问题。</font></p>
+<p class="last"><font id="9">管理界面不是让访问网站的人使用的，它服务于网站管理者。 </font><font id="10">它用于网站的管理员。</font></p>
+</div>
+<div class="section" id="s-creating-an-admin-user">
+<span id="creating-an-admin-user"></span><h2><font id="166">创建一个管理员用户</font><a class="headerlink" href="tutorial02.html#creating-an-admin-user" title="Permalink to this headline">¶</a></h2>
+<p><font id="11">首先，我们需要创建一个能够登录管理站点的用户。 </font><font id="12">运行如下命令：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py createsuperuser
+</pre></div>
+</div>
+<p><font id="13">键入你想要使用的用户名，然后按下回车键：</font></p>
+<div class="highlight-text"><div class="highlight"><pre>Username: admin
+</pre></div>
+</div>
+<p><font id="14">然后提示你输入想要使用的邮件地址：</font></p>
+<div class="highlight-text"><div class="highlight"><pre>Email address: admin@example.com
+</pre></div>
+</div>
+<p><font id="15">最后一步是输入你的密码。 </font><font id="16">你将被要求输入你的密码两次，第二次输入是为了确认第一次的输入。</font></p>
+<div class="highlight-text"><div class="highlight"><pre>Password: **********
+Password (again): *********
+Superuser created successfully.
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-start-the-development-server">
+<span id="start-the-development-server"></span><h2><font id="167">启动开发服务器&nbsp;</font><a class="headerlink" href="tutorial02.html#start-the-development-server" title="Permalink to this headline">¶</a></h2>
+<p><font id="17">Django的管理站点默认是启用的。 </font><font id="18">让我们启动开发服务器，然后探索它。</font></p>
+<p><font id="19">从教程1中我们了解到，你能通过使用如下命令来启动开发服务器：</font></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> python manage.py runserver
+</pre></div>
+</div>
+<p><font id="20">现在，打开一个浏览器访问你本地域名中的 “/admin/” —— 例如<a class="reference external" href="http://127.0.0.1:8000/admin/">http://127.0.0.1:8000/admin/</a>。</font><font id="21">你应该会看到管理站点的登录界面：</font></p>
+<img alt="Django admin login screen" src="../_images/admin01.png"/>
+<p><font id="22">由于<a class="reference internal" href="../topics/i18n/translation.html"><em>翻译功能</em></a>是默认打开的，登录界面可能会显示出你自己的语言，这取决于你的浏览器的设定和Django是否具有这种语言的翻译。</font></p>
+<div class="admonition-doesn-t-match-what-you-see admonition">
+<p class="first admonition-title"><font id="23">和你看到的不一样？</font></p>
+<p><font id="24">如果在这里，你看到的不是上面的登录界面，而是一个带有类似如下内容的错误页面：</font></p>
+<div class="highlight-python"><div class="highlight"><pre>ImportError at /admin/
+cannot import name patterns
+...
+</pre></div>
+</div>
+<p class="last"><font id="25">你可能使用的是不符合本教程的Django版本。 </font><font id="26">你需要换一个老版本的教程或者换一个新版的Django。</font></p>
+</div>
+</div>
+<div class="section" id="s-enter-the-admin-site">
+<span id="enter-the-admin-site"></span><h2><font id="168">进入管理站点</font><a class="headerlink" href="tutorial02.html#enter-the-admin-site" title="Permalink to this headline">¶</a></h2>
+<p><font id="27">现在，试着用你在上面创建的超级用户的账号来登录这个站点。 </font><font id="28">你应该会看到Django管理站点的首页面：</font></p>
+<img alt="Django admin index page" src="../_images/admin02.png"/>
+<p><font id="29">你将看到几类可编辑的内容：groups和users。 </font><font id="30">它们是由<a class="reference internal" href="../topics/auth/index.html#module-django.contrib.auth" title="django.contrib.auth: Django's authentication framework."><tt class="xref py py-mod docutils literal"><span class="pre">django.contrib.auth</span></tt></a>提供的，这个认证框架集成在Django中。</font></p>
+</div>
+<div class="section" id="s-make-the-poll-app-modifiable-in-the-admin">
+<span id="make-the-poll-app-modifiable-in-the-admin"></span><h2><font id="169">让poll应用在管理站点中可编辑</font><a class="headerlink" href="tutorial02.html#make-the-poll-app-modifiable-in-the-admin" title="Permalink to this headline">¶</a></h2>
+<p><font id="31">但我们的poll应用在哪儿？ </font><font id="32">它没有显示在管理站点的首页面上。</font></p>
+<p><font id="33">只需要做一件事：我们需要告诉管理站点<tt class="docutils literal"><span class="pre">Question</span></tt> 对象要有一个管理界面。 </font><font id="34">要做这件事，需要打开<tt class="file docutils literal"><span class="pre">polls/admin.py</span></tt>文件，把它编辑成这样：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Question</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Question</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="s-explore-the-free-admin-functionality">
+<span id="explore-the-free-admin-functionality"></span><h2><font id="170">探索管理站点的功能</font><a class="headerlink" href="tutorial02.html#explore-the-free-admin-functionality" title="Permalink to this headline">¶</a></h2>
+<p><font id="35">现在，我们已经在管理站点中注册了<tt class="docutils literal"><span class="pre">Question</span></tt>对象，Django知道它应该被显示在管理站点的首页面上：</font></p>
+<img alt="Django admin index page, now with polls displayed" src="../_images/admin03t.png"/>
+<p><font id="36">点击“Questions”。 </font><font id="37">现在，你会进入Question的“变更列表”。 </font><font id="38">这个界面显示了数据库中的所有question，你可以选择一个来更改它。 </font><font id="39">那里有我们在教程第1部分创建的“What’s up?” question:</font></p>
+<img alt="Polls change list page" src="../_images/admin04t.png"/>
+<p><font id="40">单击“What’s up?”来编辑它：</font></p>
+<img alt="Editing form for question object" src="../_images/admin05t.png"/>
+<p><font id="41">注意事项：</font></p>
+<ul class="simple">
+<li><font id="184">这个表单是根据<tt class="docutils literal"><span class="pre">Question</span></tt>模型文件自动生成的。&nbsp;</font></li>
+<li><font id="185">模型中不同类型的字段（<a class="reference internal" href="../ref/models/fields.html#django.db.models.DateTimeField" title="django.db.models.DateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></tt></a>、<a class="reference internal" href="../ref/models/fields.html#django.db.models.CharField" title="django.db.models.CharField"><tt class="xref py py-class docutils literal"><span class="pre">CharField</span></tt></a>）会对应相应的HTML输入控件。</font><font id="186">每一种类型的字段，Django管理站点都知道如何显示它们。</font></li>
+<li><font id="187">每个<a class="reference internal" href="../ref/models/fields.html#django.db.models.DateTimeField" title="django.db.models.DateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></tt></a>字段都会有个方便的JavaScript快捷方式。</font><font id="188">Date有个“Today”的快捷键和一个弹出式日历，time栏有个“Now”的快捷键和一个列出常用时间选项的弹出式窗口。</font></li>
+</ul>
+<p><font id="42">界面的底部有几个按钮：</font></p>
+<ul class="simple">
+<li><font id="189">Save &nbsp;—— 保存更改，并返回当前类型对象的变更列表界面。</font></li>
+<li><font id="190">Save and continue editing —— 保存更改并且重新载入当前对象的管理界面。</font></li>
+<li><font id="191">Save and add another &nbsp;—— 保存更改并且载入一个当前类型对象的新的、空白的表单。</font></li>
+<li><font id="192">Delete &nbsp;——&nbsp;显示一个删除确认界面。</font></li>
+</ul>
+<p><font id="43">如果“Date published”的值和你在教程1中创建这个Question对象时的时间不相符，可能是因为你忘记将<a class="reference internal" href="../ref/settings.html#std:setting-TIME_ZONE"><tt class="xref std std-setting docutils literal"><span class="pre">TIME_ZONE</span></tt></a>设置为正确的值。</font><font id="44">修改它，然后重新载入这个界面，检查一下正确的值是否出现。</font></p>
+<p><font id="45">通过“Today”和“Now”这两个快捷方式来更改“Date published”字段。 </font><font id="46">然后点击 “Save and continue editing”。</font><font id="47">然后点击右上角的“History”按钮。 </font><font id="48">你将看到一个页面，列出了通过Django管理界面对此对象所做的全部更改的清单，包含有时间戳和修改人的姓名等信息：</font></p>
+<img alt="History page for question object" src="../_images/admin06t.png"/>
+</div>
+<div class="section" id="s-customize-the-admin-form">
+<span id="customize-the-admin-form"></span><h2><font id="171">自定义管理表单</font><a class="headerlink" href="tutorial02.html#customize-the-admin-form" title="Permalink to this headline">¶</a></h2>
+<p><font id="49">花几分钟感叹一下吧，你没写什么代码，却得到了这一切。 </font><font id="50">只需使用<tt class="docutils literal"><span class="pre">admin.site.register(Question)</span></tt>注册<tt class="docutils literal"><span class="pre">Question</span></tt>模型，Django就能构造一个默认的表单表示。</font><font id="51">通常，你会想要自定义管理界面中表单的外观和功能。 </font><font id="52">你可以通过在注册对象的时候告知Django一些你想要的选项来自完成。</font></p>
+<p><font id="53">让我们通过对编辑表单上的字段重新排序来看一下它是如何工作的。 </font><font id="54">将<tt class="docutils literal"><span class="pre">admin.site.register(Question)</span></tt>行替换成：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Question</span>
+
+
+<span class="k">class</span> <span class="nc">QuestionAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'pub_date'</span><span class="p">,</span> <span class="s">'question_text'</span><span class="p">]</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Question</span><span class="p">,</span> <span class="n">QuestionAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="55">你将遵循这个模式 —— 创建一个管理模型的对象，然后将它作为<tt class="docutils literal"><span class="pre">admin.site.register()</span></tt>的第二个参数传入 —— 当你需要为一个对象修改管理选项的时候。</font></p>
+<p><font id="56">上面那特定的更改，使得“Publication date”字段排在“Question”字段前面：</font></p>
+<img alt="Fields have been reordered" src="../_images/admin07.png"/>
+<p><font id="57">仅有两个字段不会令你印象深刻，但是当管理有许多字段的表单时，选择一个直观的排序方式是一个重要而实用的细节。</font></p>
+<p><font id="58">说到有许多字段的表单，你可能想把表单分割成字段集：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Question</span>
+
+
+<span class="k">class</span> <span class="nc">QuestionAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="bp">None</span><span class="p">,</span>               <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'question_text'</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="s">'Date information'</span><span class="p">,</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'pub_date'</span><span class="p">]}),</span>
+    <span class="p">]</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Question</span><span class="p">,</span> <span class="n">QuestionAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="59"><a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.fieldsets" title="django.contrib.admin.ModelAdmin.fieldsets"><tt class="xref py py-attr docutils literal"><span class="pre">fieldsets</span></tt></a>中每个元组的第一个元素是字段集的标题。</font><font id="60">以下是我们的对象表单现在的样子：</font></p>
+<img alt="Form has fieldsets now" src="../_images/admin08t.png"/>
+<p><font id="61">你可以任意地为每个字段集指定HTML样式类。 </font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Question</span>
+
+
+<span class="k">class</span> <span class="nc">QuestionAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="bp">None</span><span class="p">,</span>               <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'question_text'</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="s">'Date information'</span><span class="p">,</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'pub_date'</span><span class="p">],</span> <span class="s">'classes'</span><span class="p">:</span> <span class="p">[</span><span class="s">'collapse'</span><span class="p">]}),</span>
+    <span class="p">]</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Question</span><span class="p">,</span> <span class="n">QuestionAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="Fieldset is initially collapsed" src="../_images/admin09.png"/>
+</div>
+<div class="section" id="s-adding-related-objects">
+<span id="adding-related-objects"></span><h2><font id="172">添加关联对象</font><a class="headerlink" href="tutorial02.html#adding-related-objects" title="Permalink to this headline">¶</a></h2>
+<p><font id="62">好了，我们已经有自己的Question管理界面。 </font><font id="63">但是一个<tt class="docutils literal"><span class="pre">Question</span></tt>有多个<tt class="docutils literal"><span class="pre">Choices</span></tt>，管理界面中并没有将选项显示出来。</font></p>
+<p><font id="64">只是暂时没有。</font></p>
+<p><font id="65">有两种方法来解决这个问题。 </font><font id="66">第一种是像我们为<tt class="docutils literal"><span class="pre">Question</span></tt>做的一样，在管理站点中注册<tt class="docutils literal"><span class="pre">Choice</span></tt>。</font><font id="67">这简单：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Choice</span><span class="p">,</span> <span class="n">Question</span>
+<span class="c"># ...</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Choice</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="68">现在，可以在Django管理站点中管理“Choices”。 </font><font id="69">“Add choice”表单看起来像这样：</font></p>
+<img alt="Choice admin page" src="../_images/admin10.png"/>
+<p><font id="70">在这个表单中，“Question”字段是一个可选的选项框，包含数据库中所有的Question。 </font><font id="71">Django知道<a class="reference internal" href="../ref/models/fields.html#django.db.models.ForeignKey" title="django.db.models.ForeignKey"><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt></a>应该在管理界面中显示为一个<tt class="docutils literal"><span class="pre">&lt;select&gt;</span></tt>选框。</font><font id="72">在我们的例子中，目前选框里只有一个Question。</font></p>
+<p><font id="73">另外，注意一下“Question”旁边的“Add Another”链接。 </font><font id="74">每个与其它对象拥有<tt class="docutils literal"><span class="pre">ForeignKey</span></tt>关系的对象都有一个这种链接。</font><font id="75">当你点击“Add Another”，你将看到一个带有“Add question”表单的弹出窗口。</font><font id="76">如果你在这个窗口中添加了一个Question并点击“Save”，Django会将保存这个Question到数据库中，然后动态地将这个对象添加为你正在查看的“Add choice”表单的选择项。</font></p>
+<p><font id="77">但事实上，这是一种不高效的方式来添加<tt class="docutils literal"><span class="pre">Choice</span></tt>对象到系统中。</font><font id="78">在创建<tt class="docutils literal"><span class="pre">Question</span></tt>对象的同时可以直接添加一组Choice将会更好。</font><font id="79">让我们实现这个功能。</font></p>
+<p><font id="80">移除对<tt class="docutils literal"><span class="pre">Choice</span></tt>模型的<tt class="docutils literal"><span class="pre">register()</span></tt>调用。</font><font id="81">然后将<tt class="docutils literal"><span class="pre">Question</span></tt>的注册代码编辑为：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Choice</span><span class="p">,</span> <span class="n">Question</span>
+
+
+<span class="k">class</span> <span class="nc">ChoiceInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">StackedInline</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Choice</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="mi">3</span>
+
+
+<span class="k">class</span> <span class="nc">QuestionAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="bp">None</span><span class="p">,</span>               <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'question_text'</span><span class="p">]}),</span>
+        <span class="p">(</span><span class="s">'Date information'</span><span class="p">,</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'pub_date'</span><span class="p">],</span> <span class="s">'classes'</span><span class="p">:</span> <span class="p">[</span><span class="s">'collapse'</span><span class="p">]}),</span>
+    <span class="p">]</span>
+    <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">ChoiceInline</span><span class="p">]</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Question</span><span class="p">,</span> <span class="n">QuestionAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="82">这告诉Django：<tt class="docutils literal"><span class="pre">Choice</span></tt>对象在<tt class="docutils literal"><span class="pre">Question</span></tt>的管理界面中编辑。</font><font id="83">默认提供足够3个Choice的空间。</font></p>
+<p><font id="84">打开“Add question”页面来看看它的样子：</font></p>
+<img alt="Add question page now has choices on it" src="../_images/admin11t.png"/>
+<p><font id="85">它这样工作：有三个所关联的Choice &nbsp;—— 由<tt class="docutils literal"><span class="pre">extra</span></tt>指定 —— 每次你回到已经存在对象的"Change"页面时，都会额外地获得三个空白Choice。</font></p>
+<p><font id="86">在现有的三个Choice的底部，你会发现一个“Add another Choice”的链接。 </font><font id="87">如果你点击它，就会增加一个新的空白Choice。 </font><font id="88">如果你想移除一个新增加的空白Choice，可以点击其右上角的X。 </font><font id="89">请注意，你无法移除那最初的三个空白Choice。 </font><font id="90">下面的图片展示新增加的一个空白Choice：</font></p>
+<img alt="Additional slot added dynamically" src="../_images/admin15t.png"/>
+<p><font id="91">还有个小问题。 </font><font id="92">显示所有关联的<tt class="docutils literal"><span class="pre">Choice</span></tt> 对象的字段占用大量的屏幕空间。&nbsp;</font><font id="93">为了解决这个问题，Django提供了一种以表格的形式显示内嵌的相关联对象的方法； </font><font id="94">你只需改变一下<tt class="docutils literal"><span class="pre">ChoiceInline</span></tt>&nbsp;的声明：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre>class ChoiceInline(admin.TabularInline):
+    #...
+</pre></div>
+</div>
+<p><font id="95">使用&nbsp;<tt class="docutils literal"><span class="pre">TabularInline</span></tt>（不是<tt class="docutils literal"><span class="pre">StackedInline</span></tt>），这些相关联的对象显示成紧凑的、基于表格的形式：</font></p>
+<img alt="Add question page now has more compact choices" src="../_images/admin12t.png"/>
+<p><font id="96">请注意有一个额外的列“Delete?”，它允许删除使用“Add Another Choice”按钮添加的行和已经保存的行。</font></p>
+</div>
+<div class="section" id="s-customize-the-admin-change-list">
+<span id="customize-the-admin-change-list"></span><h2><font id="173">自定义管理界面中的变更列表</font><a class="headerlink" href="tutorial02.html#customize-the-admin-change-list" title="Permalink to this headline">¶</a></h2>
+<p><font id="97">现在，Question管理界面看起来已经很好了，让我们再来稍微调整一下“变更列表”界面 —— 该界面显示系统中所有的Question。</font></p>
+<p><font id="98">下面是目前为止它的样子：</font></p>
+<img alt="Polls change list page" src="../_images/admin04t.png"/>
+<p><font id="99">默认地，Django显示每个对象的<tt class="docutils literal"><span class="pre">str()</span></tt>返回的内容。</font><font id="100">但有时如果我们能显示每个字段将很有帮助。 </font><font id="101">我们使用<a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.list_display" title="django.contrib.admin.ModelAdmin.list_display"><tt class="xref py py-attr docutils literal"><span class="pre">list_display</span></tt></a>&nbsp;选项来实现这个功能，它是一个要显示的字段名称的元组，在对象的变更列表页面上作为列显示：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">QuestionAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s">'question_text'</span><span class="p">,</span> <span class="s">'pub_date'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="102">为了更好地评估对象，让我们将教程1中自定义的方法<tt class="docutils literal"><span class="pre">was_published_recently</span></tt>&nbsp;添加进来：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/admin.py</div>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">QuestionAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s">'question_text'</span><span class="p">,</span> <span class="s">'pub_date'</span><span class="p">,</span> <span class="s">'was_published_recently'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><font id="103">现在，Question变更列表页面看起来就像如下所示：</font></p>
+<img alt="Polls change list page, updated" src="../_images/admin13t.png"/>
+<p><font id="104">你可以点击其中一列的头部来让列表按照这列的值来进行排序 —— 除了<tt class="docutils literal"><span class="pre">was_published_recently</span></tt>这列的头部，因为Django不支持按照随便一个方法的输出进行排序。</font><font id="105">另外注意， <tt class="docutils literal"><span class="pre">was_published_recently</span></tt>这列的头部默认是这个方法的名字（用空格取代下划线），并且这列的每一项内容都是用返回值的字符串形式表示。</font></p>
+<p><font id="106">你可以通过给这个方法（在<tt class="file docutils literal"><span class="pre">polls/models.py</span></tt>中）添加一些属性来改进这些：</font></p>
+<div class="highlight-python"><div class="snippet-filename">polls/models.py</div>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Question</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">def</span> <span class="nf">was_published_recently</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pub_date</span> <span class="o">&gt;=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">was_published_recently</span><span class="o">.</span><span class="n">admin_order_field</span> <span class="o">=</span> <span class="s">'pub_date'</span>
+    <span class="n">was_published_recently</span><span class="o">.</span><span class="n">boolean</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">was_published_recently</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s">'Published recently?'</span>
+</pre></div>
+</div>
+<p><font id="107">关于这些方法属性的更多信息，请参见 <a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.list_display" title="django.contrib.admin.ModelAdmin.list_display"><tt class="xref py py-attr docutils literal"><span class="pre">list_display</span></tt></a>。</font></p>
+<p><font id="108">再次编辑你的<tt class="file docutils literal"><span class="pre">polls/admin.py</span></tt>文件来改进<tt class="docutils literal"><span class="pre">Question</span></tt>变更列表页面：使用<a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.list_filter" title="django.contrib.admin.ModelAdmin.list_filter"><tt class="xref py py-attr docutils literal"><span class="pre">list_filter</span></tt></a>来添加过滤器。</font><font id="109">将下面这行添加进<tt class="docutils literal"><span class="pre">QuestionAdmin</span></tt>：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">list_filter</span> <span class="o">=</span> <span class="p">[</span><span class="s">'pub_date'</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="110">这行代码添加一个“Filter”侧边栏，可以使人们通过<tt class="docutils literal"><span class="pre">pub_date</span></tt>字段对变更列表进行过滤：</font></p>
+<img alt="Polls change list page, updated" src="../_images/admin14t.png"/>
+<p><font id="111">显示的过滤器的类型取决于你所使用的字段的类型。 </font><font id="112">因为<tt class="docutils literal"><span class="pre">pub_date</span></tt>是<a class="reference internal" href="../ref/models/fields.html#django.db.models.DateTimeField" title="django.db.models.DateTimeField"><tt class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></tt></a>类型的，Django知道给出合适的选项：“Any date”、“Today”、“Past 7 days”、“This month”、“This year”。</font></p>
+<p><font id="113">进展得很顺利。</font><font id="114">让我们添加一些搜索功能：</font></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">'question_text'</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="115">这行代码在变更列表的顶部添加了一个搜索框。 </font><font id="116">当有人将搜索的内容输入搜索框，Django将在<tt class="docutils literal"><span class="pre">question_text</span></tt>字段中进行搜索。&nbsp;</font><font id="117">你可以使用任意数量的字段 —— &nbsp;但由于它在后台使用<tt class="docutils literal"><span class="pre">LIKE</span></tt>进行查询，限制搜索字段的数量在会使你的数据库查询更容易。</font></p>
+<p><font id="118">现在又是一个好时机来告诉你变更列表界面提供方便的分页功能。 </font><font id="119">默认每页显示100条。 </font><font id="120"><a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.list_per_page" title="django.contrib.admin.ModelAdmin.list_per_page"><tt class="xref py py-attr docutils literal"><span class="pre">Change</span> <span class="pre">list</span> <span class="pre">pagination</span></tt></a>、<a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.search_fields" title="django.contrib.admin.ModelAdmin.search_fields"><tt class="xref py py-attr docutils literal"><span class="pre">search</span> <span class="pre">boxes</span></tt></a>、<a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.list_filter" title="django.contrib.admin.ModelAdmin.list_filter"><tt class="xref py py-attr docutils literal"><span class="pre">filters</span></tt></a>、<a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.date_hierarchy" title="django.contrib.admin.ModelAdmin.date_hierarchy"><tt class="xref py py-attr docutils literal"><span class="pre">date-hierarchies</span></tt></a>和<a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.ModelAdmin.list_display" title="django.contrib.admin.ModelAdmin.list_display"><tt class="xref py py-attr docutils literal"><span class="pre">column-header-ordering</span></tt></a> 都将按照你设想的那样工作。</font></p>
+</div>
+<div class="section" id="s-customize-the-admin-look-and-feel">
+<span id="customize-the-admin-look-and-feel"></span><h2><font id="174">自定义管理站点的外观</font><a class="headerlink" href="tutorial02.html#customize-the-admin-look-and-feel" title="Permalink to this headline">¶</a></h2>
+<p><font id="121">很明显，每个管理页面的顶部都有“Django administration”还蛮搞笑的。</font><font id="122">它仅仅起到了占位符的作用。</font></p>
+<p><font id="123">它可以用Django的模板系统轻松改变。 </font><font id="124">Django的管理站点是用Django自己制作出来的，它的界面代码使用的是Django自己的模板系统。</font></p>
+<div class="section" id="s-customizing-your-project-s-templates">
+<span id="s-ref-customizing-your-projects-templates"></span><span id="customizing-your-project-s-templates"></span><span id="ref-customizing-your-projects-templates"></span><h3><font id="176">自定义<em>项目</em>的模板</font><a class="headerlink" href="tutorial02.html#customizing-your-project-s-templates" title="Permalink to this headline">¶</a></h3>
+<p><font id="125">在你项目的文件夹内创建一个<tt class="docutils literal"><span class="pre">templates</span></tt>目录（包含 <tt class="docutils literal"><span class="pre">manage.py</span></tt>的目录）。</font><font id="126">模板可以放在Django能访问到的文件系统任何地方。 </font><font id="127">（运行你的服务器的用户即是运行Django的用户）。</font><font id="128">然而，将模板放在你的项目目录下是一个应该遵循的非常好的约定。</font></p>
+<p><font id="129">打开你的配置文件（记住是<tt class="file docutils literal"><span class="pre">mysite/settings.py</span></tt>）在<a class="reference internal" href="../ref/settings.html#std:setting-TEMPLATES"><tt class="xref std std-setting docutils literal"><span class="pre">TEMPLATES</span></tt></a>&nbsp;设置中添加一个<a class="reference internal" href="../ref/settings.html#std:setting-TEMPLATES-DIRS"><tt class="xref std std-setting docutils literal"><span class="pre">DIRS</span></tt></a>&nbsp;选项：</font></p>
+<div class="highlight-python"><div class="snippet-filename">mysite/settings.py</div>
+<div class="highlight"><pre><span class="n">TEMPLATES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.template.backends.django.DjangoTemplates'</span><span class="p">,</span>
+        <span class="s">'DIRS'</span><span class="p">:</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s">'templates'</span><span class="p">)],</span>
+        <span class="s">'APP_DIRS'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="s">'OPTIONS'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">'context_processors'</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s">'django.template.context_processors.debug'</span><span class="p">,</span>
+                <span class="s">'django.template.context_processors.request'</span><span class="p">,</span>
+                <span class="s">'django.contrib.auth.context_processors.auth'</span><span class="p">,</span>
+                <span class="s">'django.contrib.messages.context_processors.messages'</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p><font id="130"><a class="reference internal" href="../ref/settings.html#std:setting-TEMPLATES-DIRS"><tt class="xref std std-setting docutils literal"><span class="pre">DIRS</span></tt></a> 是加载Django模板时检查的一个文件系统目录列表；</font><font id="131">它是一个搜索路径。</font></p>
+<p><font id="132">现在，在<tt class="docutils literal"><span class="pre">templates</span></tt>下创建一个名为<tt class="docutils literal"><span class="pre">admin</span></tt>的目录，然后将<tt class="docutils literal"><span class="pre">admin/base_site.html</span></tt>从Django源码中管理站点的模板目录（<tt class="docutils literal"><span class="pre">django/contrib/admin/templates</span></tt>）拷贝到这个目录中。</font></p>
+<div class="admonition-where-are-the-django-source-files admonition">
+<p class="first admonition-title"><font id="133">Django的源文件在哪里？</font></p>
+<p><font id="134">如果你找不到Django源文件在你系统上的位置，运行如下命令：</font></p>
+<div class="last highlight-console"><div class="highlight"><pre><span class="gp">$</span> python -c <span class="s2">"</span>
+<span class="go">import sys</span>
+<span class="go">sys.path = sys.path[1:]</span>
+<span class="go">import django</span>
+<span class="go">print(django.__path__)"</span>
+</pre></div>
+</div>
+</div>
+<p><font id="135">然后，只需编辑该文件并替换<tt class="docutils literal"><span class="pre">{{</span> <span class="pre">site_header|default:_('Django</span> <span class="pre">administration')</span> <span class="pre">}}</span></tt> （包括花括号）为你认为合适的自己站点的名称。</font><font id="136">编辑完成后应该类似下面的代码片段：</font></p>
+<div class="highlight-html+django"><div class="highlight"><pre><span class="cp">{%</span> <span class="k">block</span> <span class="nv">branding</span> <span class="cp">%}</span>
+<span class="nt">&lt;h1</span> <span class="na">id=</span><span class="s">"site-name"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="k">url</span> <span class="s1">'admin:index'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Polls Administration<span class="nt">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p><font id="137">我们使用这个例子来教你如何覆盖模板。 </font><font id="138">在实际项目中，你可能会使用 <a class="reference internal" href="../ref/contrib/admin/index.html#django.contrib.admin.AdminSite.site_header" title="django.contrib.admin.AdminSite.site_header"><tt class="xref py py-attr docutils literal"><span class="pre">django.contrib.admin.AdminSite.site_header</span></tt></a>属性来更简单地实现这个自定义功能。</font></p>
+<p><font id="139">模板文件包含许多类似<tt class="docutils literal"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">branding</span> <span class="pre">%}</span></tt> 和<tt class="docutils literal"><span class="pre">{{</span> <span class="pre">title</span> <span class="pre">}}</span></tt>这样的文本。</font><font id="140">&nbsp;<tt class="docutils literal"><span class="pre">{%</span></tt> 和<tt class="docutils literal"><span class="pre">{{</span></tt> 是Django模板语言的一部分。</font><font id="141">当Django渲染 <tt class="docutils literal"><span class="pre">admin/base_site.html</span></tt>，这些模板语言将被求值以生成最终的HTML文件。 </font><font id="142">如果你被模板给弄愣了不用担心 —— 我们将在教程3深入讲解Django的模板语言。</font></p>
+<p><font id="143">注意任何Django管理站点的默认模板都可以被覆盖。 </font><font id="144">想要覆盖一个模板文件，只需要做和覆盖<tt class="docutils literal"><span class="pre">base_site.html</span></tt>相同的事就行 —— 将它从默认的目录拷贝到你自定义的目录中，然后修改它。</font></p>
+</div>
+<div class="section" id="s-customizing-your-application-s-templates">
+<span id="customizing-your-application-s-templates"></span><h3><font id="177">自定义<em>应用</em>的模板</font><a class="headerlink" href="tutorial02.html#customizing-your-application-s-templates" title="Permalink to this headline">¶</a></h3>
+<p><font id="145">细心的读者将会问：由于<a class="reference internal" href="../ref/settings.html#std:setting-TEMPLATES-DIRS"><tt class="xref std std-setting docutils literal"><span class="pre">DIRS</span></tt></a>默认是空的，Django是怎么找到默认的管理站点模板的？</font><font id="146">答案是，由于<a class="reference internal" href="../ref/settings.html#std:setting-TEMPLATES-APP_DIRS"><tt class="xref std std-setting docutils literal"><span class="pre">APP_DIRS</span></tt></a>设置为<tt class="docutils literal"><span class="pre">True</span></tt>，Django会自动地在每个应用包下面查找一个<tt class="docutils literal"><span class="pre">templates/</span></tt>子目录，留作备用。（别忘了，<tt class="docutils literal"><span class="pre">django.contrib.admin</span></tt>&nbsp;也是一个应用）。</font></p>
+<p><font id="147">我们的投票应用并不是太复杂，不需要自定义管理站点模板。 </font><font id="148">但是如果它变得更加复杂而且为了一些功能需要修改Django的标准管理站点模板，那么与修改<em>项目</em>中的模板相比，修改<em>应用</em>中的模板将是更明智的选择。</font><font id="149">使用这种方式，你可以在任何新项目中使用投票应用，并且可以确保Django将找到它需要的自定义模板文件。</font></p>
+<p><font id="150">更多关于Django如何找到它的模板文件的信息，请查看 <a class="reference internal" href="../topics/templates.html#template-loading"><em>模板加载的文档</em></a>。</font></p>
+</div>
+</div>
+<div class="section" id="s-customize-the-admin-index-page">
+<span id="customize-the-admin-index-page"></span><h2><font id="175">自定义管理站点的首页面&nbsp;</font><a class="headerlink" href="tutorial02.html#customize-the-admin-index-page" title="Permalink to this headline">¶</a></h2>
+<p><font id="151">与上面类似的是，你可能想自定义Django管理站点首页面的外观。</font></p>
+<p><font id="152">默认情况下，首页面显示所有位于<a class="reference internal" href="../ref/settings.html#std:setting-INSTALLED_APPS"><tt class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></tt></a>中且已经使用管理站点应用注册过的应用，这些应用按照字母顺序进行显示。</font><font id="153">你可能想在布局上做出重大改变。 </font><font id="154">毕竟，首页面可能是管理站点中最重要的页面，并且它用起来应该很简单。</font></p>
+<p><font id="155">需要自定义的模板文件是 <tt class="docutils literal"><span class="pre">admin/index.html</span></tt>。 </font><font id="156">（就像之前对<tt class="docutils literal"><span class="pre">admin/base_site.html</span></tt>做的那样 —— 将它从默认的目录拷贝到你自定义的目录中）。</font><font id="157">编辑这个文件，你将看到它有一个叫做<tt class="docutils literal"><span class="pre">app_list</span></tt>的变量。</font><font id="158">这个变量包含安装的所有Django应用。 </font><font id="159">你可以选择不像默认模板中那样使用它，而是以你认为最好的方式硬编码链接到每个对象自己的管理页面。 </font><font id="160">再次强调一点，你不理解模板语言也没关系 —— 我们将在教程3中对它进行详细介绍。</font></p>
+<p><font id="161">当你对管理站点感到满意后，请阅读<a class="reference internal" href="tutorial03.html"><em>教程的第3部分</em></a>开始制作投票应用的对外站点。</font></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="yui-b" id="sidebar">
+<div class="sphinxsidebar">
+<div class="sphinxsidebarwrapper">
+<h3><font id="178">目录</font></h3>
+<ul>
+<li><a class="reference internal" href="tutorial02.html#"><font id="193">编写你的第一个Django应用，第2部分</font></a><ul>
+<li><a class="reference internal" href="tutorial02.html#creating-an-admin-user"><font id="194">创建一个管理员用户</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#start-the-development-server"><font id="195">启动开发服务器</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#enter-the-admin-site"><font id="196">进入管理站点</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#make-the-poll-app-modifiable-in-the-admin"><font id="197">让投票应用在管理站点中可编辑</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#explore-the-free-admin-functionality"><font id="198">探索管理站点的功能</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#customize-the-admin-form"><font id="199">自定义管理表单</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#adding-related-objects"><font id="200">添加关联对象</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#customize-the-admin-change-list"><font id="201">自定义管理界面中的变更列表</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#customize-the-admin-look-and-feel"><font id="202">自定义管理站点的外观</font></a><ul>
+<li><a class="reference internal" href="tutorial02.html#customizing-your-project-s-templates"><font id="203">自定义<em>项目</em>的模板</font></a></li>
+<li><a class="reference internal" href="tutorial02.html#customizing-your-application-s-templates"><font id="204">自定义<em>应用</em>的模板</font></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="tutorial02.html#customize-the-admin-index-page"><font id="205">自定义管理站点的首页面</font></a></li>
+</ul>
+</li>
+</ul>
+<h3><font id="179">浏览</font></h3>
+<ul>
+<li><font id="206">上一页：<a href="tutorial01.html">编写你的第一个Django应用，第1部分</a></font></li>
+<li><font id="207">下一页：<a href="tutorial03.html">编写你的第一个Django要用，第3部分</a></font></li>
+</ul>
+<h3><font id="180">你在这里：</font></h3>
+<ul>
+<li>
+<a href="../index.html"><font id="208">Django 1.8.2 文档</font></a>
+<ul><li><a href="index.html"><font id="209">开始</font></a>
+<ul><li><font id="210">编写你的第一个Django应用，第2部分</font></li></ul>
+</li></ul>
+</li>
+</ul>
+<h3><font id="181">当前页</font></h3>
+<ul class="this-page-menu">
+<li><a href="http://python.usyiyi.cn/django/_sources/intro/tutorial02.txt" rel="nofollow"><font id="211">Show Source</font></a></li>
+</ul>
+<div id="searchbox" style="display: none">
+<h3><font id="182">Quick search</font></h3>
+<form action="http://python.usyiyi.cn/django/search.html" class="search" method="get">
+<input name="q" type="text"/>
+<input type="submit" value="Go"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<p class="searchtip" style="font-size: 90%"><font id="162"> Enter search terms or a module, class or function name. </font></p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+</div>
+<h3><font id="183">最后更新：</font></h3>
+<p class="topless"><font id="163">May 13, 2015</font></p>
+</div>
+</div>
+<div id="ft">
+<div class="nav">
+    « <a href="tutorial01.html" title="Writing your first Django app, part 1">previous</a>
+     |
+    <a accesskey="U" href="index.html" title="Getting started">up</a>
+   |
+    <a href="tutorial03.html" title="Writing your first Django app, part 3">next</a> »</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div id="disqus_thread"></div><br>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'djangocn'; // required: replace example with your forum shortname
+    var disqus_identifier = '/django/intro/tutorial02';
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a class="dsq-brlink" href="http://disqus.com">comments powered by <span class="logo-disqus">Disqus</span></a>
+<link href="http://python.usyiyi.cn/django/_static/ms_translator.css" rel="stylesheet" type="text/css"/>
+<script src="http://python.usyiyi.cn/django/_static/ms_translator.js" type="text/javascript"></script>
+<script src="http://python.usyiyi.cn/django/_static/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<div id="MicrosoftTranslator" style="display:none; position: absolute; z-index: 2147483647; margin: 0px; border: 2px solid rgb(210, 210, 210); padding: 0px; color: rgb(0, 0, 0); background-color: rgb(230, 230, 230); font-family: Arial,Helvetica,Sans-Serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; direction: ltr; text-align: left; left: 274px; top: 2048.03px; min-width: 400px;">
+    <div id="MSTCClose" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/tooltip_close.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCPopDown" style="float: right;" style="display: none;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popdown.gif">
+      </a>
+    </div>
+    <div id="MSTCPopUP" style="float: right;">
+      <a style="display: inline-block; cursor: pointer; text-decoration: none; vertical-align: top; border: 0px none; padding: 4px;">
+        <img src="http://python.usyiyi.cn/django/_static/popup.gif">
+      </a>
+    </div>
+    
+    <div id="MSTCTitle" style="margin: 4px 4px 8px; font-weight: bold;">原文
+    </div>
+    
+    <div style="direction: ltr; text-align: left;">
+      <span id="MSTCOrigion" style="display: inline-block; margin: 0px 4px 4px;"> </span>
+    </div>
+    
+    <div id="MicrosoftTranslatorCommunity" class="MSTCltr">
+      <div id="MSTCContent">
+        <a id="MSTCExpandLink">
+          <span id="MSTCImprove">改进翻译</span>
+          <span id="MSTCSuggest">最小化</span>
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggledown.gif" id="MSTCToggleDown">
+          <img src="http://python.usyiyi.cn/django/_static/ctftoggleup.gif" id="MSTCToggleUp">
+        </a>
+        <div id="MSTCRootPanel">
+          <span id="MSTCLoading" style="display: none;">正在加载...</span>
+          <div style="display: none;" id="MSTCTransPanelError">
+            <div class="MSTCTableRow">
+              <div class="MSTCTransPanelExc MSTCTableCell">
+                <img style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_exclamation.gif" id="ExclamationImage">
+              </div>
+              <div class="MSTCTableCell">
+                <span id="MSTCTransPanelErrorMsg"></span>
+              </div>
+            </div>
+            <div class="MSTCTableRow">
+              <div class="MSTCTableCell"></div>
+              <div class="MSTCTableCell MSTCFlipHoriz">
+                <input type="image" style="border-width:0px;" src="http://python.usyiyi.cn/django/_static/error_OK.gif" class="MSTCErrorButtons" id="MSTCOKImgBtn" name="MSTCOKImgBtn">
+              </div>
+            </div>
+          </div>
+          
+          <div id="MSTCTransPanel">
+          </div>
+          
+          <div id="MSTCPrevNextPanel">
+            <a id="MSTCPrevLink" style='border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>上一页</span>
+            </a>
+            <a style='color: black; border-right-width: 1px;border-right-style: solid;padding-right: 5px;'>
+              <span>第</span>
+              <span id="MSTCPage"></span>
+              <span>页</span>
+            </a>
+            <a id="MSTCNextLink" style='padding-left: 5px;'>
+              <span>下一页</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
